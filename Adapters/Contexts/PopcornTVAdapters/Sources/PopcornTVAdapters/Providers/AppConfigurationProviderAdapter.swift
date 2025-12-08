@@ -1,6 +1,6 @@
 //
 //  AppConfigurationProviderAdapter.swift
-//  PopcornPeopleAdapters
+//  PopcornTVAdapters
 //
 //  Created by Adam Young on 20/11/2025.
 //
