@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -euo pipefail
+set -eo pipefail
 
 # Disable macro fingerprint validation
 defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
