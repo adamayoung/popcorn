@@ -1,0 +1,55 @@
+//
+//  MoviePreview.swift
+//  MovieDetailsFeature
+//
+//  Created by Adam Young on 17/11/2025.
+//
+
+import Foundation
+
+public struct MoviePreview: Identifiable, Sendable, Equatable, Hashable {
+
+    public let id: Int
+    public let title: String
+    public let posterURL: URL?
+    public let backdropURL: URL?
+    public let logoURL: URL?
+
+    public init(
+        id: Int,
+        title: String,
+        posterURL: URL? = nil,
+        backdropURL: URL? = nil,
+        logoURL: URL? = nil
+    ) {
+        self.id = id
+        self.title = title
+        self.posterURL = posterURL
+        self.backdropURL = backdropURL
+        self.logoURL = logoURL
+    }
+
+}
+
+extension MoviePreview {
+
+    static var mocks: [MoviePreview] {
+        [
+            MoviePreview(
+                id: 1,
+                title: "The Running Man",
+                posterURL: URL(
+                    string: "https://image.tmdb.org/t/p/w780/dKL78O9zxczVgjtNcQ9UkbYLzqX.jpg"),
+                backdropURL: URL(
+                    string: "https://image.tmdb.org/t/p/w1280/docDyCJrhPoFXAckB1aOiIv9Mz0.jpg")
+            ),
+            MoviePreview(
+                id: 2,
+                title: "Black Phone 2",
+                posterURL: URL(
+                    string: "https://image.tmdb.org/t/p/w780/xUWUODKPIilQoFUzjHM6wKJkP3Y.jpg")
+            )
+        ]
+    }
+
+}

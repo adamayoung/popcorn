@@ -1,0 +1,68 @@
+//
+//  TrendingTVSeriesClient.swift
+//  TrendingTVSeriesFeature
+//
+//  Created by Adam Young on 18/11/2025.
+//
+
+import ComposableArchitecture
+import Foundation
+import TrendingApplication
+import TrendingKitAdapters
+
+struct TrendingTVSeriesClient: Sendable {
+
+    var fetch: @Sendable () async throws -> [TVSeriesPreview]
+
+}
+
+extension TrendingTVSeriesClient: DependencyKey {
+
+    static var liveValue: TrendingTVSeriesClient {
+        TrendingTVSeriesClient(
+            fetch: {
+                let useCase = DependencyValues._current.fetchTrendingTVSeries
+                let tvSeriesPreviews = try await useCase.execute()
+                let mapper = TVSeriesPreviewMapper()
+                return tvSeriesPreviews.map(mapper.map)
+            }
+        )
+    }
+
+    static var previewValue: TrendingTVSeriesClient {
+        TrendingTVSeriesClient(
+            fetch: {
+                [
+                    TVSeriesPreview(
+                        id: 225171,
+                        name: "Pluribus",
+                        posterURL: URL(
+                            string:
+                                "https://image.tmdb.org/t/p/w780/nrM2xFUfKJJEmZzd5d7kohT2G0C.jpg")
+                    ),
+                    TVSeriesPreview(
+                        id: 66732,
+                        name: "Stranger Things",
+                        posterURL: URL(
+                            string:
+                                "https://image.tmdb.org/t/p/w780/cVxVGwHce6xnW8UaVUggaPXbmoE.jpg")
+                    )
+                ]
+            }
+        )
+    }
+
+}
+
+extension DependencyValues {
+
+    var trendingTVSeries: TrendingTVSeriesClient {
+        get {
+            self[TrendingTVSeriesClient.self]
+        }
+        set {
+            self[TrendingTVSeriesClient.self] = newValue
+        }
+    }
+
+}

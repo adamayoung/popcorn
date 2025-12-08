@@ -1,0 +1,63 @@
+{
+  "fill" : {
+    "linear-gradient" : [
+      "display-p3:0.53012,0.73577,0.98752,1.00000",
+      "display-p3:0.24633,0.60549,1.00000,1.00000"
+    ],
+    "orientation" : {
+      "start" : {
+        "x" : 0.5,
+        "y" : 0
+      },
+      "stop" : {
+        "x" : 0.5,
+        "y" : 0.7
+      }
+    }
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "blend-mode" : "normal",
+          "glass" : true,
+          "image-name" : "Popcorn.png",
+          "name" : "Popcorn",
+          "opacity" : 0.8,
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              187.24944506802558,
+              295.49585362329435
+            ]
+          }
+        },
+        {
+          "image-name" : "PopcornBucket.svg",
+          "name" : "PopcornBucket",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}

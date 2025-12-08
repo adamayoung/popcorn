@@ -1,0 +1,66 @@
+//
+//  TrendingPeopleFeature.swift
+//  TrendingPeopleFeature
+//
+//  Created by Adam Young on 19/11/2025.
+//
+
+import ComposableArchitecture
+import Foundation
+
+@Reducer
+public struct TrendingPeopleFeature: Sendable {
+
+    @Dependency(\.trendingPeople) private var trendingPeople: TrendingPeopleClient
+
+    @ObservableState
+    public struct State {
+        var people: [PersonPreview]
+
+        public init(people: [PersonPreview] = []) {
+            self.people = people
+        }
+    }
+
+    public enum Action {
+        case loadTrendingPeople
+        case trendingPeopleLoaded([PersonPreview])
+        case navigate(Navigation)
+    }
+
+    public enum Navigation: Equatable, Hashable {
+        case personDetails(id: Int)
+    }
+
+    public init() {}
+
+    public var body: some Reducer<State, Action> {
+        Reduce { state, action in
+            switch action {
+            case .loadTrendingPeople:
+                return handleFetchTrendingPeople()
+            case .trendingPeopleLoaded(let people):
+                state.people = people
+                return .none
+            case .navigate:
+                return .none
+            }
+        }
+    }
+
+}
+
+extension TrendingPeopleFeature {
+
+    fileprivate func handleFetchTrendingPeople() -> EffectOf<Self> {
+        .run { send in
+            do {
+                let people = try await trendingPeople.fetch()
+                await send(.trendingPeopleLoaded(people))
+            } catch {
+                print("Error: \(error.localizedDescription)")
+            }
+        }
+    }
+
+}
