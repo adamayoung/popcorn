@@ -1,0 +1,38 @@
+{
+  "configurations" : [
+    {
+      "id" : "99F56D1C-587B-421A-9378-94C6B83BF9CA",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Platform\/DataPersistenceInfrastructure",
+        "identifier" : "DataPersistenceInfrastructureTests",
+        "name" : "DataPersistenceInfrastructureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Platform\/FeatureFlags",
+        "identifier" : "FeatureFlagsTests",
+        "name" : "FeatureFlagsTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Platform\/Caching",
+        "identifier" : "CachingTests",
+        "name" : "CachingTests"
+      }
+    }
+  ],
+  "version" : 1
+}

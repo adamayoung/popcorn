@@ -1,0 +1,164 @@
+{
+  "configurations" : [
+    {
+      "id" : "5923BB00-6697-4BCB-949C-F6BDD82C0D57",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornSearch",
+        "identifier" : "SearchDomainTests",
+        "name" : "SearchDomainTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornPeople",
+        "identifier" : "PeopleDomainTests",
+        "name" : "PeopleDomainTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornPeople",
+        "identifier" : "PeopleApplicationTests",
+        "name" : "PeopleApplicationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornMovies",
+        "identifier" : "MoviesApplicationTests",
+        "name" : "MoviesApplicationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornTV",
+        "identifier" : "TVDomainTests",
+        "name" : "TVDomainTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornMovies",
+        "identifier" : "MoviesDomainTests",
+        "name" : "MoviesDomainTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornTrending",
+        "identifier" : "TrendingApplicationTests",
+        "name" : "TrendingApplicationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornSearch",
+        "identifier" : "SearchInfrastructureTests",
+        "name" : "SearchInfrastructureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornConfiguration",
+        "identifier" : "ConfigurationApplicationTests",
+        "name" : "ConfigurationApplicationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornTrending",
+        "identifier" : "TrendingInfrastructureTests",
+        "name" : "TrendingInfrastructureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornQuiz",
+        "identifier" : "QuizInfrastructureTests",
+        "name" : "QuizInfrastructureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornConfiguration",
+        "identifier" : "ConfigurationDomainTests",
+        "name" : "ConfigurationDomainTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornTV",
+        "identifier" : "TVInfrastructureTests",
+        "name" : "TVInfrastructureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornConfiguration",
+        "identifier" : "ConfigurationInfrastructureTests",
+        "name" : "ConfigurationInfrastructureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornTrending",
+        "identifier" : "TrendingDomainTests",
+        "name" : "TrendingDomainTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornSearch",
+        "identifier" : "SearchApplicationTests",
+        "name" : "SearchApplicationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornTV",
+        "identifier" : "TVApplicationTests",
+        "name" : "TVApplicationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornPeople",
+        "identifier" : "PeopleInfrastructureTests",
+        "name" : "PeopleInfrastructureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornMovies",
+        "identifier" : "MoviesInfrastructureTests",
+        "name" : "MoviesInfrastructureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornQuiz",
+        "identifier" : "QuizApplicationTests",
+        "name" : "QuizApplicationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornQuiz",
+        "identifier" : "QuizDomainTests",
+        "name" : "QuizDomainTests"
+      }
+    }
+  ],
+  "version" : 1
+}

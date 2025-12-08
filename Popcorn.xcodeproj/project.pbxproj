@@ -57,7 +57,6 @@
 		666700102EE6FFA80082B4B8 /* Exceptions for "App" folder in "Popcorn" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				AIPlayground.swift,
 				"Popcorn-Info.plist",
 			);
 			target = 664551852ECB7C2100250D87 /* Popcorn */;
@@ -67,19 +66,6 @@
 			membershipExceptions = (
 				CoreDomain,
 				DesignSystem,
-			);
-			target = 664551852ECB7C2100250D87 /* Popcorn */;
-		};
-		668F58182ECCAD9E00B47B07 /* Exceptions for "Kits" folder in "Popcorn" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				ConfigurationKit,
-				MoviesKit,
-				PeopleKit,
-				QuizKit,
-				SearchKit,
-				TrendingKit,
-				TVKit,
 			);
 			target = 664551852ECB7C2100250D87 /* Popcorn */;
 		};
@@ -100,12 +86,6 @@
 		668F58812ECCDBA300B47B07 /* Exceptions for "Adapters" folder in "Popcorn" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
-				Kits/ConfigurationKitAdapters,
-				Kits/MoviesKitAdapters,
-				Kits/PeopleKitAdapters,
-				Kits/SearchKitAdapters,
-				Kits/TrendingKitAdapters,
-				Kits/TVKitAdapters,
 				Platform/FeatureFlagsAdapters,
 				Platform/TMDbAdapters,
 			);
@@ -158,12 +138,9 @@
 			path = Features;
 			sourceTree = "<group>";
 		};
-		668F58132ECCAD0100B47B07 /* Kits */ = {
+		668F58132ECCAD0100B47B07 /* Contexts */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				668F58182ECCAD9E00B47B07 /* Exceptions for "Kits" folder in "Popcorn" target */,
-			);
-			path = Kits;
+			path = Contexts;
 			sourceTree = "<group>";
 		};
 		668F58142ECCAD0F00B47B07 /* Core */ = {
@@ -241,7 +218,7 @@
 				664551882ECB7C2100250D87 /* App */,
 				668F58122ECCA72700B47B07 /* Features */,
 				668F587F2ECCDB8C00B47B07 /* Adapters */,
-				668F58132ECCAD0100B47B07 /* Kits */,
+				668F58132ECCAD0100B47B07 /* Contexts */,
 				668F58142ECCAD0F00B47B07 /* Core */,
 				6645B6A62ED63E6000B3AC7C /* Platform */,
 				664551962ECB7C2200250D87 /* PopcornTests */,
@@ -288,7 +265,7 @@
 				664551882ECB7C2100250D87 /* App */,
 				6645B6A62ED63E6000B3AC7C /* Platform */,
 				668F58122ECCA72700B47B07 /* Features */,
-				668F58132ECCAD0100B47B07 /* Kits */,
+				668F58132ECCAD0100B47B07 /* Contexts */,
 				668F58142ECCAD0F00B47B07 /* Core */,
 				668F587F2ECCDB8C00B47B07 /* Adapters */,
 				66FDEF712ED7261D0029B88A /* Configs */,

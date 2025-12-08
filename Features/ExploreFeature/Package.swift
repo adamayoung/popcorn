@@ -20,10 +20,10 @@ let package = Package(
 
     dependencies: [
         .package(path: "../../Core/DesignSystem"),
-        .package(path: "../../Kits/TrendingKit"),
-        .package(path: "../../Kits/MoviesKit"),
-        .package(path: "../../Adapters/Kits/TrendingKitAdapters"),
-        .package(path: "../../Adapters/Kits/MoviesKitAdapters"),
+        .package(path: "../../Contexts/PopcornTrending"),
+        .package(path: "../../Contexts/PopcornMovies"),
+        .package(path: "../../Adapters/Kits/PopcornTrendingAdapters"),
+        .package(path: "../../Adapters/Kits/PopcornMoviesAdapters"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1")
     ],
@@ -33,10 +33,10 @@ let package = Package(
             name: "ExploreFeature",
             dependencies: [
                 "DesignSystem",
-                .product(name: "TrendingApplication", package: "TrendingKit"),
-                .product(name: "MoviesApplication", package: "MoviesKit"),
-                "TrendingKitAdapters",
-                "MoviesKitAdapters",
+                .product(name: "TrendingApplication", package: "PopcornTrending"),
+                .product(name: "MoviesApplication", package: "PopcornMovies"),
+                "PopcornTrendingAdapters",
+                "PopcornMoviesAdapters",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         ),

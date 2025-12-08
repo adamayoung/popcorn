@@ -8,9 +8,9 @@
 import ComposableArchitecture
 import Foundation
 import MoviesApplication
-import MoviesKitAdapters
+import PopcornMoviesAdapters
+import PopcornTrendingAdapters
 import TrendingApplication
-import TrendingKitAdapters
 
 struct ExploreClient: Sendable {
 

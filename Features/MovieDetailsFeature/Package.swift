@@ -20,8 +20,8 @@ let package = Package(
 
     dependencies: [
         .package(path: "../../Core/DesignSystem"),
-        .package(path: "../../Kits/MoviesKit"),
-        .package(path: "../../Adapters/Kits/MoviesKitAdapters"),
+        .package(path: "../../Contexts/PopcornMovies"),
+        .package(path: "../../Adapters/Kits/PopcornMoviesAdapters"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1")
     ],
@@ -31,8 +31,8 @@ let package = Package(
             name: "MovieDetailsFeature",
             dependencies: [
                 "DesignSystem",
-                .product(name: "MoviesApplication", package: "MoviesKit"),
-                "MoviesKitAdapters",
+                .product(name: "MoviesApplication", package: "PopcornMovies"),
+                "PopcornMoviesAdapters",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         ),

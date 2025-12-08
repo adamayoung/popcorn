@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "5C5AF0EA-2926-4792-BA89-A1363B57488F",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Popcorn.xcodeproj",
+        "identifier" : "6645519C2ECB7C2200250D87",
+        "name" : "PopcornUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

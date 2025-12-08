@@ -8,7 +8,7 @@
 import ComposableArchitecture
 import Foundation
 import MoviesApplication
-import MoviesKitAdapters
+import PopcornMoviesAdapters
 
 struct MovieDetailsClientFactory {
 

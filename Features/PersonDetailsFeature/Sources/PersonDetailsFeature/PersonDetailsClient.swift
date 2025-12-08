@@ -8,7 +8,7 @@
 import ComposableArchitecture
 import Foundation
 import PeopleApplication
-import PeopleKitAdapters
+import PopcornPeopleAdapters
 
 struct PersonDetailsClient: Sendable {
 

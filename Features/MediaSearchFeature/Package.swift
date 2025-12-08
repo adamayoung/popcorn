@@ -20,8 +20,8 @@ let package = Package(
 
     dependencies: [
         .package(path: "../../Core/DesignSystem"),
-        .package(path: "../../Kits/SearchKit"),
-        .package(path: "../../Adapters/Kits/SearchKitAdapters"),
+        .package(path: "../..Contexts/PopcornSearch"),
+        .package(path: "../../Adapters/Kits/PopcornSearchAdapters"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1")
     ],
@@ -31,8 +31,8 @@ let package = Package(
             name: "MediaSearchFeature",
             dependencies: [
                 "DesignSystem",
-                .product(name: "SearchApplication", package: "SearchKit"),
-                "SearchKitAdapters",
+                .product(name: "SearchApplication", package: "PopcornSearch"),
+                "PopcornSearchAdapters",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         ),
