@@ -19,7 +19,7 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(path: "../../..Contexts/PopcornSearch"),
+        .package(path: "../../../Contexts/PopcornSearch"),
         .package(path: "../../../Contexts/PopcornConfiguration"),
         .package(path: "../../../Contexts/PopcornMovies"),
         .package(path: "../../../Contexts/PopcornTV"),
