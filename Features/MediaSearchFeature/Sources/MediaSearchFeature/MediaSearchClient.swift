@@ -7,8 +7,8 @@
 
 import ComposableArchitecture
 import Foundation
+import PopcornSearchAdapters
 import SearchApplication
-import SearchKitAdapters
 
 struct MediaSearchClient: Sendable {
 

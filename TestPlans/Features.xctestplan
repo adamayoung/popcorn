@@ -1,0 +1,80 @@
+{
+  "configurations" : [
+    {
+      "id" : "776D2D72-D9A0-43A9-8661-A4AB46FFD33A",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TrendingPeopleFeature",
+        "identifier" : "TrendingPeopleFeatureTests",
+        "name" : "TrendingPeopleFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TrendingTVSeriesFeature",
+        "identifier" : "TrendingTVSeriesFeatureTests",
+        "name" : "TrendingTVSeriesFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TVSeriesDetailsFeature",
+        "identifier" : "TVSeriesDetailsFeatureTests",
+        "name" : "TVSeriesDetailsFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TrendingMoviesFeature",
+        "identifier" : "TrendingMoviesFeatureTests",
+        "name" : "TrendingMoviesFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/MovieDetailsFeature",
+        "identifier" : "MovieDetailsFeatureTests",
+        "name" : "MovieDetailsFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/MediaSearchFeature",
+        "identifier" : "MediaSearchFeatureTests",
+        "name" : "MediaSearchFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Popcorn.xcodeproj",
+        "identifier" : "664551922ECB7C2200250D87",
+        "name" : "PopcornTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/PersonDetailsFeature",
+        "identifier" : "PersonDetailsFeatureTests",
+        "name" : "PersonDetailsFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/ExploreFeature",
+        "identifier" : "ExploreFeatureTests",
+        "name" : "ExploreFeatureTests"
+      }
+    }
+  ],
+  "version" : 1
+}

@@ -1,0 +1,65 @@
+// swift-tools-version: 6.2
+// The swift-tools-version declares the minimum version of Swift required to build this package.
+
+import PackageDescription
+
+let package = Package(
+    name: "PopcornSearch",
+
+    defaultLocalization: "en",
+
+    platforms: [
+        .iOS(.v26),
+        .macOS(.v26),
+        .visionOS(.v2)
+    ],
+
+    products: [
+        .library(name: "SearchApplication", targets: ["SearchApplication"]),
+        .library(name: "SearchDomain", targets: ["SearchDomain"]),
+        .library(name: "SearchInfrastructure", targets: ["SearchInfrastructure"])
+    ],
+
+    dependencies: [
+        .package(path: "../../Core/CoreDomain"),
+        .package(path: "../../Platform/DataPersistenceInfrastructure")
+    ],
+
+    targets: [
+        .target(
+            name: "SearchApplication",
+            dependencies: [
+                "SearchDomain",
+                "SearchInfrastructure",
+                "CoreDomain"
+            ]
+        ),
+        .testTarget(
+            name: "SearchApplicationTests",
+            dependencies: ["SearchApplication"]
+        ),
+
+        .target(
+            name: "SearchDomain",
+            dependencies: [
+                "CoreDomain"
+            ]
+        ),
+        .testTarget(
+            name: "SearchDomainTests",
+            dependencies: ["SearchDomain"]
+        ),
+
+        .target(
+            name: "SearchInfrastructure",
+            dependencies: [
+                "SearchDomain",
+                "DataPersistenceInfrastructure"
+            ]
+        ),
+        .testTarget(
+            name: "SearchInfrastructureTests",
+            dependencies: ["SearchInfrastructure"]
+        )
+    ]
+)

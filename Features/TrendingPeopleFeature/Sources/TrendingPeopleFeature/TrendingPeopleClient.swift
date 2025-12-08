@@ -7,8 +7,8 @@
 
 import ComposableArchitecture
 import Foundation
+import PopcornTrendingAdapters
 import TrendingApplication
-import TrendingKitAdapters
 
 struct TrendingPeopleClient: Sendable {
 

@@ -7,8 +7,8 @@
 
 import ComposableArchitecture
 import Foundation
+import PopcornTVAdapters
 import TVApplication
-import TVKitAdapters
 
 struct TVSeriesDetailsClient: Sendable {
 
