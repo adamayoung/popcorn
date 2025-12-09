@@ -19,7 +19,7 @@ struct MoviePreviewDetailsMapper {
     ) -> MoviePreviewDetails {
         let genres = moviePreview.genreIDs.compactMap { genresLookup[$0] }
         let posterURLSet = imagesConfiguration.posterURLSet(for: moviePreview.posterPath)
-        let backdropURLSet = imagesConfiguration.posterURLSet(for: moviePreview.backdropPath)
+        let backdropURLSet = imagesConfiguration.backdropURLSet(for: moviePreview.backdropPath)
 
         return MoviePreviewDetails(
             id: moviePreview.id,
