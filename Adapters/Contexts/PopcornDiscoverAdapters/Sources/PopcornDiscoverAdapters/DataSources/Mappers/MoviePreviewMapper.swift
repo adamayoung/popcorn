@@ -1,5 +1,5 @@
 //
-//  MovieListItemMapper.swift
+//  MoviePreviewMapper.swift
 //  PopcornDiscoverAdapters
 //
 //  Created by Adam Young on 29/05/2025.
