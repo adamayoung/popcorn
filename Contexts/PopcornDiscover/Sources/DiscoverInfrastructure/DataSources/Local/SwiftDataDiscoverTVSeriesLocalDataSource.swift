@@ -56,7 +56,7 @@ actor SwiftDataDiscoverTVSeriesLocalDataSource: DiscoverTVSeriesLocalDataSource,
                 "SwiftData EXPIRED: DiscoverTVSeries(filter: \(filterKey ?? "nil", privacy: .public), page: \(page, privacy: .public)) — deleting"
             )
 
-            let deleteDescriptor = FetchDescriptor<DiscoverMovieItemEntity>(
+            let deleteDescriptor = FetchDescriptor<DiscoverTVSeriesItemEntity>(
                 predicate: #Predicate { $0.page >= page }
             )
             do {
