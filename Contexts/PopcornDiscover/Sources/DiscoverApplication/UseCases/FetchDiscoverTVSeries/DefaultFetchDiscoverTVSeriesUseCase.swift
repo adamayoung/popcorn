@@ -52,7 +52,7 @@ final class DefaultFetchDiscoverTVSeriesUseCase: FetchDiscoverTVSeriesUseCase {
         do {
             (moviePreviews, genres, appConfiguration) = try await (
                 repository.tvSeries(filter: filter, page: page),
-                genreProvider.movieGenres(),
+                genreProvider.tvSeriesGenres(),
                 appConfigurationProvider.appConfiguration()
             )
         } catch let error {
