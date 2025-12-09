@@ -57,7 +57,7 @@ actor SwiftDataDiscoverMovieLocalDataSource: DiscoverMovieLocalDataSource,
             )
 
             let deleteDescriptor = FetchDescriptor<DiscoverMovieItemEntity>(
-                predicate: #Predicate { $0.page >= page }
+                predicate: #Predicate { $0.page >= page && $0.filterKey == filterKey }
             )
             do {
                 let entitiesToDelete = try modelContext.fetch(deleteDescriptor)
