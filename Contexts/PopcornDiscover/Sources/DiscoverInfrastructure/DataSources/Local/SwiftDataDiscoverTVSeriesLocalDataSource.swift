@@ -71,7 +71,7 @@ actor SwiftDataDiscoverTVSeriesLocalDataSource: DiscoverTVSeriesLocalDataSource,
         }
 
         Self.logger.trace(
-            "SwiftData HIT: DiscoverMovies(filter: \(filterKey ?? "nil", privacy: .public), page: \(page, privacy: .public))"
+            "SwiftData HIT: DiscoverTVSeries(filter: \(filterKey ?? "nil", privacy: .public), page: \(page, privacy: .public))"
         )
 
         let mapper = TVSeriesPreviewMapper()
