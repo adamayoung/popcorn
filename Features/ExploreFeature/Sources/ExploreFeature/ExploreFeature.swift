@@ -24,24 +24,28 @@ public struct ExploreFeature: Sendable {
             }
         }
 
+        var discoverMovies: ItemCollectionState<MoviePreview>
         var trendingMovies: ItemCollectionState<MoviePreview>
         var popularMovies: ItemCollectionState<MoviePreview>
         var trendingTVSeries: ItemCollectionState<TVSeriesPreview>
         var trendingPeople: ItemCollectionState<PersonPreview>
 
         var isReady: Bool {
-            trendingMovies.isReady
+            discoverMovies.isReady
+                && trendingMovies.isReady
                 && popularMovies.isReady
                 && trendingTVSeries.isReady
                 && trendingPeople.isReady
         }
 
         public init(
+            discoverMovies: ItemCollectionState<MoviePreview> = .init(),
             trendingMovies: ItemCollectionState<MoviePreview> = .init(),
             popularMovies: ItemCollectionState<MoviePreview> = .init(),
             trendingTVSeries: ItemCollectionState<TVSeriesPreview> = .init(),
             trendingPeople: ItemCollectionState<PersonPreview> = .init()
         ) {
+            self.discoverMovies = discoverMovies
             self.trendingMovies = trendingMovies
             self.popularMovies = popularMovies
             self.trendingTVSeries = trendingTVSeries
@@ -51,6 +55,7 @@ public struct ExploreFeature: Sendable {
 
     public enum Action {
         case load
+        case discoverMoviesLoaded([MoviePreview])
         case trendingMoviesLoaded([MoviePreview])
         case popularMoviesLoaded([MoviePreview])
         case trendingTVSeriesLoaded([TVSeriesPreview])
@@ -75,6 +80,9 @@ public struct ExploreFeature: Sendable {
                 //                }
 
                 return handleFetchAll()
+            case .discoverMoviesLoaded(let movies):
+                state.discoverMovies.items = movies
+                return .none
             case .trendingMoviesLoaded(let movies):
                 state.trendingMovies.items = movies
                 return .none
@@ -99,11 +107,23 @@ extension ExploreFeature {
 
     private func handleFetchAll() -> EffectOf<Self> {
         .merge(
+            handleFetchDiscoverMovies(),
             handleFetchTrendingMovies(),
             handleFetchPopularMovies(),
             handleFetchTrendingTVSeries(),
             handleFetchTrendingPeople()
         )
+    }
+
+    private func handleFetchDiscoverMovies() -> EffectOf<Self> {
+        .run { send in
+            do {
+                let movies = try await explore.fetchDiscoverMovies()
+                await send(.discoverMoviesLoaded(movies))
+            } catch {
+                print("Error: \(error.localizedDescription)")
+            }
+        }
     }
 
     private func handleFetchTrendingMovies() -> EffectOf<Self> {

@@ -22,8 +22,9 @@ actor SwiftDataMovieLocalDataSource: MovieLocalDataSource, SwiftDataFetchStreami
     private var ttl: TimeInterval = 60 * 60 * 24  // 1 day
 
     func movie(withID id: Int) async throws(MovieLocalDataSourceError) -> Movie? {
-        let entity: MovieEntity?
-        var descriptor = FetchDescriptor<MovieEntity>(predicate: #Predicate { $0.movieID == id })
+        let entity: MoviesMovieEntity?
+        var descriptor = FetchDescriptor<MoviesMovieEntity>(
+            predicate: #Predicate { $0.movieID == id })
         descriptor.fetchLimit = 1
         do {
             entity = try modelContext.fetch(descriptor).first
@@ -50,7 +51,8 @@ actor SwiftDataMovieLocalDataSource: MovieLocalDataSource, SwiftDataFetchStreami
     }
 
     func movieStream(forMovie id: Int) async -> AsyncThrowingStream<Movie?, Error> {
-        let descriptor = FetchDescriptor<MovieEntity>(predicate: #Predicate { $0.movieID == id })
+        let descriptor = FetchDescriptor<MoviesMovieEntity>(
+            predicate: #Predicate { $0.movieID == id })
         let stream = stream(for: descriptor) {
             MovieMapper().compactMap($0.first)
         }
@@ -60,8 +62,9 @@ actor SwiftDataMovieLocalDataSource: MovieLocalDataSource, SwiftDataFetchStreami
 
     func setMovie(_ movie: Movie) async throws(MovieLocalDataSourceError) {
         let id = movie.id
-        let descriptor = FetchDescriptor<MovieEntity>(predicate: #Predicate { $0.movieID == id })
-        let existing: MovieEntity?
+        let descriptor = FetchDescriptor<MoviesMovieEntity>(
+            predicate: #Predicate { $0.movieID == id })
+        let existing: MoviesMovieEntity?
         do {
             existing = try modelContext.fetch(descriptor).first
         } catch let error {

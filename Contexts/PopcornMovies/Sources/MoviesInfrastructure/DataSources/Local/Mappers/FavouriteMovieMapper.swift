@@ -10,7 +10,7 @@ import MoviesDomain
 
 struct FavouriteMovieMapper {
 
-    func map(_ entity: FavouriteMovieEntity) -> FavouriteMovie? {
+    func map(_ entity: MoviesFavouriteMovieEntity) -> FavouriteMovie? {
         guard
             let id = entity.movieID,
             let createdAt = entity.createdAt
@@ -24,8 +24,8 @@ struct FavouriteMovieMapper {
         )
     }
 
-    func map(_ favouriteMovie: FavouriteMovie) -> FavouriteMovieEntity {
-        FavouriteMovieEntity(
+    func map(_ favouriteMovie: FavouriteMovie) -> MoviesFavouriteMovieEntity {
+        MoviesFavouriteMovieEntity(
             movieID: favouriteMovie.id,
             createdAt: favouriteMovie.createdAt
         )

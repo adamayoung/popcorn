@@ -20,8 +20,10 @@ let package = Package(
 
     dependencies: [
         .package(path: "../../Core/DesignSystem"),
+        .package(path: "../../Contexts/PopcornDiscover"),
         .package(path: "../../Contexts/PopcornTrending"),
         .package(path: "../../Contexts/PopcornMovies"),
+        .package(path: "../../Adapters/Kits/PopcornDiscoverAdapters"),
         .package(path: "../../Adapters/Kits/PopcornTrendingAdapters"),
         .package(path: "../../Adapters/Kits/PopcornMoviesAdapters"),
         .package(
@@ -33,8 +35,10 @@ let package = Package(
             name: "ExploreFeature",
             dependencies: [
                 "DesignSystem",
+                .product(name: "DiscoverApplication", package: "PopcornDiscover"),
                 .product(name: "TrendingApplication", package: "PopcornTrending"),
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
+                "PopcornDiscoverAdapters",
                 "PopcornTrendingAdapters",
                 "PopcornMoviesAdapters",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")

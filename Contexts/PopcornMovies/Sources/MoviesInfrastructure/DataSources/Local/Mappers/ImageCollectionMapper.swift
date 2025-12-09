@@ -10,7 +10,7 @@ import MoviesDomain
 
 struct ImageCollectionMapper {
 
-    func map(_ entity: ImageCollectionEntity) -> ImageCollection {
+    func map(_ entity: MoviesImageCollectionEntity) -> ImageCollection {
         ImageCollection(
             id: entity.movieID,
             posterPaths: entity.posterPaths,
@@ -19,7 +19,7 @@ struct ImageCollectionMapper {
         )
     }
 
-    func compactMap(_ entity: ImageCollectionEntity?) -> ImageCollection? {
+    func compactMap(_ entity: MoviesImageCollectionEntity?) -> ImageCollection? {
         guard let entity else {
             return nil
         }
@@ -27,8 +27,8 @@ struct ImageCollectionMapper {
         return map(entity)
     }
 
-    func map(_ imageCollection: ImageCollection) -> ImageCollectionEntity {
-        ImageCollectionEntity(
+    func map(_ imageCollection: ImageCollection) -> MoviesImageCollectionEntity {
+        MoviesImageCollectionEntity(
             movieID: imageCollection.id,
             posterPaths: imageCollection.posterPaths,
             backdropPaths: imageCollection.backdropPaths,
@@ -36,7 +36,7 @@ struct ImageCollectionMapper {
         )
     }
 
-    func map(_ imageCollection: ImageCollection, to entity: ImageCollectionEntity) {
+    func map(_ imageCollection: ImageCollection, to entity: MoviesImageCollectionEntity) {
         entity.posterPaths = imageCollection.posterPaths
         entity.backdropPaths = imageCollection.backdropPaths
         entity.logoPaths = imageCollection.logoPaths

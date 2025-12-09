@@ -10,6 +10,6 @@ import PeopleDomain
 
 public protocol FetchPersonDetailsUseCase: Sendable {
 
-    func execute(id: Int) async throws(FetchPersonDetailsError) -> PersonDetails
+    func execute(id: Person.ID) async throws(FetchPersonDetailsError) -> PersonDetails
 
 }

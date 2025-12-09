@@ -14,6 +14,7 @@ public struct ExploreView: View {
     @Bindable var store: StoreOf<ExploreFeature>
     private let namespace: Namespace.ID
 
+    private var discoverMovies: [MoviePreview] { store.discoverMovies.items }
     private var trendingMovies: [MoviePreview] { store.trendingMovies.items }
     private var popularMovies: [MoviePreview] { store.popularMovies.items }
     private var trendingTVSeries: [TVSeriesPreview] { store.trendingTVSeries.items }
@@ -60,6 +61,7 @@ extension ExploreView {
     @ViewBuilder
     private var loadedBody: some View {
         LazyVStack {
+            discoverMoviesSection
             trendingMoviesSection
             popularMoviesSection
 
@@ -67,6 +69,26 @@ extension ExploreView {
 
             trendingPeopleSection
         }
+    }
+
+    @ViewBuilder private var discoverMoviesSection: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text("DISCOVER_MOVIES", bundle: .module)
+                .font(.title2)
+                .bold()
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 0)
+        .frame(maxWidth: .infinity, alignment: .leading)
+
+        MovieCarousel(
+            movies: discoverMovies,
+            type: .backdrop,
+            transitionNamespace: namespace,
+            didSelectMovie: { movie, transitionID in
+                store.send(.navigate(.movieDetails(id: movie.id, transitionID: transitionID)))
+            }
+        )
     }
 
     @ViewBuilder private var trendingMoviesSection: some View {

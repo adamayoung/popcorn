@@ -24,12 +24,12 @@ actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDa
     private var ttl: TimeInterval = 60 * 60 * 24  // 1 day
 
     func popular(page: Int) async throws(PopularMovieLocalDataSourceError) -> [MoviePreview]? {
-        let descriptor = FetchDescriptor<PopularMovieItemEntity>(
+        let descriptor = FetchDescriptor<MoviesPopularMovieItemEntity>(
             predicate: #Predicate { $0.page == page },
             sortBy: [SortDescriptor(\.sortIndex)]
         )
 
-        let entities: [PopularMovieItemEntity]
+        let entities: [MoviesPopularMovieItemEntity]
         do {
             entities = try modelContext.fetch(descriptor)
         } catch let error {
@@ -49,7 +49,7 @@ actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDa
             Self.logger.trace(
                 "SwiftData EXPIRED: PopularMovies(page: \(page, privacy: .public)) — deleting")
 
-            let deleteDescriptor = FetchDescriptor<PopularMovieItemEntity>(
+            let deleteDescriptor = FetchDescriptor<MoviesPopularMovieItemEntity>(
                 predicate: #Predicate { $0.page >= page }
             )
             do {
@@ -72,7 +72,7 @@ actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDa
     }
 
     func popularStream() -> AsyncThrowingStream<[MoviePreview]?, Error> {
-        let descriptor = FetchDescriptor<PopularMovieItemEntity>(
+        let descriptor = FetchDescriptor<MoviesPopularMovieItemEntity>(
             sortBy: [SortDescriptor(\.page), SortDescriptor(\.sortIndex)]
         )
         let stream = stream(for: descriptor) { entities -> [MoviePreview]? in
@@ -90,12 +90,12 @@ actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDa
     }
 
     func currentPopularStreamPage() async throws(PopularMovieLocalDataSourceError) -> Int? {
-        var descriptor = FetchDescriptor<PopularMovieItemEntity>(
+        var descriptor = FetchDescriptor<MoviesPopularMovieItemEntity>(
             sortBy: [SortDescriptor(\.page, order: .reverse)]
         )
         descriptor.fetchLimit = 1
 
-        let entity: PopularMovieItemEntity?
+        let entity: MoviesPopularMovieItemEntity?
         do {
             entity = try modelContext.fetch(descriptor).first
         } catch let error {
@@ -109,7 +109,7 @@ actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDa
         _ moviePreviews: [MoviePreview],
         page: Int
     ) async throws(PopularMovieLocalDataSourceError) {
-        let deleteDescriptor = FetchDescriptor<PopularMovieItemEntity>(
+        let deleteDescriptor = FetchDescriptor<MoviesPopularMovieItemEntity>(
             predicate: #Predicate { $0.page >= page }
         )
         do {
@@ -121,16 +121,16 @@ actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDa
 
         for (index, preview) in moviePreviews.enumerated() {
             let id = preview.id
-            let descriptor = FetchDescriptor<MoviePreviewEntity>(
+            let descriptor = FetchDescriptor<MoviesMoviePreviewEntity>(
                 predicate: #Predicate { $0.movieID == id })
             let mapper = MoviePreviewMapper()
 
-            let existing: MoviePreviewEntity?
+            let existing: MoviesMoviePreviewEntity?
             do { existing = try modelContext.fetch(descriptor).first } catch let error {
                 throw .persistence(error)
             }
 
-            let previewEntity: MoviePreviewEntity
+            let previewEntity: MoviesMoviePreviewEntity
             if let existing {
                 mapper.map(preview, to: existing)
                 previewEntity = existing
@@ -140,7 +140,7 @@ actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDa
                 previewEntity = entity
             }
 
-            let itemEntity = PopularMovieItemEntity(
+            let itemEntity = MoviesPopularMovieItemEntity(
                 sortIndex: index,
                 page: page,
                 movie: previewEntity

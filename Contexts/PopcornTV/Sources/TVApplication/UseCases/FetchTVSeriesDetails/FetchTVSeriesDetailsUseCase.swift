@@ -10,6 +10,6 @@ import TVDomain
 
 public protocol FetchTVSeriesDetailsUseCase: Sendable {
 
-    func execute(id: Int) async throws(FetchTVSeriesDetailsError) -> TVSeriesDetails
+    func execute(id: TVSeries.ID) async throws(FetchTVSeriesDetailsError) -> TVSeriesDetails
 
 }

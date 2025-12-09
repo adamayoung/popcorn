@@ -6,9 +6,10 @@
 //
 
 import Foundation
+import MoviesDomain
 
 public protocol FetchMovieDetailsUseCase: Sendable {
 
-    func execute(id: Int) async throws(FetchMovieDetailsError) -> MovieDetails
+    func execute(id: Movie.ID) async throws(FetchMovieDetailsError) -> MovieDetails
 
 }

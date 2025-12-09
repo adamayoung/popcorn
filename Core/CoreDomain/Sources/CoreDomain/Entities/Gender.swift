@@ -9,9 +9,9 @@ import Foundation
 
 public enum Gender: Equatable, Sendable {
 
-    case unknown
     case female
     case male
+    case unknown
     case other
 
 }

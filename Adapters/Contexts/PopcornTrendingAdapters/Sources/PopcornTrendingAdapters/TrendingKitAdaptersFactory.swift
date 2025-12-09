@@ -32,7 +32,7 @@ struct PopcornTrendingAdaptersFactory {
         let movieLogoProvider = MovieLogoImageProviderAdapter(
             fetchImageCollectionUseCase: fetchMovieImageCollectionUseCase
         )
-        let tvLogoProvider = TVSeriesLogoImageProviderAdapter(
+        let tvSeriesLogoProvider = TVSeriesLogoImageProviderAdapter(
             fetchTVSeriesImageCollectionUseCase: fetchTVSeriesImageCollectionUseCase
         )
 
@@ -40,7 +40,7 @@ struct PopcornTrendingAdaptersFactory {
             trendingRemoteDataSource: trendingRemoteDataSource,
             appConfigurationProvider: appConfigurationProvider,
             movieLogoImageProvider: movieLogoProvider,
-            tvSeriesLogoImageProvider: tvLogoProvider
+            tvSeriesLogoImageProvider: tvSeriesLogoProvider
         )
     }
 
