@@ -19,7 +19,7 @@ struct TVSeriesPreviewDetailsMapper {
     ) -> TVSeriesPreviewDetails {
         let genres = tvSeriesPreview.genreIDs.compactMap { genresLookup[$0] }
         let posterURLSet = imagesConfiguration.posterURLSet(for: tvSeriesPreview.posterPath)
-        let backdropURLSet = imagesConfiguration.posterURLSet(for: tvSeriesPreview.backdropPath)
+        let backdropURLSet = imagesConfiguration.backdropURLSet(for: tvSeriesPreview.backdropPath)
 
         return TVSeriesPreviewDetails(
             id: tvSeriesPreview.id,
