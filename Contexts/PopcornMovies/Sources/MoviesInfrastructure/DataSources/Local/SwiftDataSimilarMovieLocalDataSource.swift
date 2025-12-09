@@ -27,12 +27,12 @@ actor SwiftDataSimilarMovieLocalDataSource: SimilarMovieLocalDataSource, SwiftDa
         toMovie movieID: Int,
         page: Int
     ) async throws(SimilarMovieLocalDataSourceError) -> [MoviePreview]? {
-        let descriptor = FetchDescriptor<SimilarMovieItemEntity>(
+        let descriptor = FetchDescriptor<MoviesSimilarMovieItemEntity>(
             predicate: #Predicate { $0.movieID == movieID && $0.page == page },
             sortBy: [SortDescriptor(\.sortIndex)]
         )
 
-        let entities: [SimilarMovieItemEntity]
+        let entities: [MoviesSimilarMovieItemEntity]
         do {
             entities = try modelContext.fetch(descriptor)
         } catch let error {
@@ -51,7 +51,7 @@ actor SwiftDataSimilarMovieLocalDataSource: SimilarMovieLocalDataSource, SwiftDa
         if anyExpired {
             Self.logger.trace(
                 "SwiftData EXPIRED: SimilarMovies(page: \(page, privacy: .public)) — deleting")
-            let deleteDescriptor = FetchDescriptor<SimilarMovieItemEntity>(
+            let deleteDescriptor = FetchDescriptor<MoviesSimilarMovieItemEntity>(
                 predicate: #Predicate { $0.page >= page }
             )
             do {
@@ -76,7 +76,7 @@ actor SwiftDataSimilarMovieLocalDataSource: SimilarMovieLocalDataSource, SwiftDa
         toMovie movieID: Int,
         limit: Int? = nil
     ) -> AsyncThrowingStream<[MoviePreview]?, Error> {
-        var descriptor = FetchDescriptor<SimilarMovieItemEntity>(
+        var descriptor = FetchDescriptor<MoviesSimilarMovieItemEntity>(
             predicate: #Predicate { $0.movieID == movieID },
             sortBy: [SortDescriptor(\.page), SortDescriptor(\.sortIndex)]
         )
@@ -96,12 +96,12 @@ actor SwiftDataSimilarMovieLocalDataSource: SimilarMovieLocalDataSource, SwiftDa
     }
 
     func currentSimilarStreamPage() async throws(SimilarMovieLocalDataSourceError) -> Int? {
-        var descriptor = FetchDescriptor<SimilarMovieItemEntity>(
+        var descriptor = FetchDescriptor<MoviesSimilarMovieItemEntity>(
             sortBy: [SortDescriptor(\.page, order: .reverse)]
         )
         descriptor.fetchLimit = 1
 
-        let entity: SimilarMovieItemEntity?
+        let entity: MoviesSimilarMovieItemEntity?
         do {
             entity = try modelContext.fetch(descriptor).first
         } catch let error {
@@ -116,7 +116,7 @@ actor SwiftDataSimilarMovieLocalDataSource: SimilarMovieLocalDataSource, SwiftDa
         toMovie movieID: Int,
         page: Int
     ) async throws(SimilarMovieLocalDataSourceError) {
-        let deleteDescriptor = FetchDescriptor<SimilarMovieItemEntity>(
+        let deleteDescriptor = FetchDescriptor<MoviesSimilarMovieItemEntity>(
             predicate: #Predicate { $0.page >= page }
         )
         do {
@@ -129,15 +129,15 @@ actor SwiftDataSimilarMovieLocalDataSource: SimilarMovieLocalDataSource, SwiftDa
 
         for (index, preview) in moviePreviews.enumerated() {
             let id = preview.id
-            let descriptor = FetchDescriptor<MoviePreviewEntity>(
+            let descriptor = FetchDescriptor<MoviesMoviePreviewEntity>(
                 predicate: #Predicate { $0.movieID == id })
             let mapper = MoviePreviewMapper()
-            let existing: MoviePreviewEntity?
+            let existing: MoviesMoviePreviewEntity?
             do { existing = try modelContext.fetch(descriptor).first } catch let error {
                 throw .persistence(error)
             }
 
-            let previewEntity: MoviePreviewEntity
+            let previewEntity: MoviesMoviePreviewEntity
             if let existing {
                 mapper.map(preview, to: existing)
                 previewEntity = existing
@@ -147,7 +147,7 @@ actor SwiftDataSimilarMovieLocalDataSource: SimilarMovieLocalDataSource, SwiftDa
                 previewEntity = entity
             }
 
-            let itemEntity = SimilarMovieItemEntity(
+            let itemEntity = MoviesSimilarMovieItemEntity(
                 movieID: movieID,
                 sortIndex: index,
                 page: page,

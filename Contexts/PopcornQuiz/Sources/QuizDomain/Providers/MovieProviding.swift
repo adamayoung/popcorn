@@ -9,6 +9,6 @@ import Foundation
 
 public protocol MovieProviding: Sendable {
 
-    func randomMovie() async throws -> Movie
+    func randomMovie(filter: MovieFilter) async throws -> Movie
 
 }

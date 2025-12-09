@@ -22,7 +22,7 @@ final class DefaultFetchTVSeriesDetailsUseCase: FetchTVSeriesDetailsUseCase {
         self.appConfigurationProvider = appConfigurationProvider
     }
 
-    func execute(id: Int) async throws(FetchTVSeriesDetailsError) -> TVSeriesDetails {
+    func execute(id: TVSeries.ID) async throws(FetchTVSeriesDetailsError) -> TVSeriesDetails {
         let tvSeries: TVSeries
         let imageCollection: ImageCollection
         let appConfiguration: AppConfiguration

@@ -10,7 +10,7 @@ import SearchDomain
 
 struct MediaSearchHistoryEntryMapper {
 
-    func map(_ entity: MediaSearchHistoryEntryEntity) -> MediaSearchHistoryEntry? {
+    func map(_ entity: SearchMediaSearchHistoryEntryEntity) -> MediaSearchHistoryEntry? {
         guard let mediaType = entity.mediaType else {
             return nil
         }

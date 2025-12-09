@@ -26,8 +26,8 @@ actor SwiftDataMovieImageLocalDataSource: MovieImageLocalDataSource, SwiftDataFe
     func imageCollection(
         forMovie movieID: Int
     ) async throws(MovieImageLocalDataSourceError) -> ImageCollection? {
-        let entity: ImageCollectionEntity?
-        var descriptor = FetchDescriptor<ImageCollectionEntity>(
+        let entity: MoviesImageCollectionEntity?
+        var descriptor = FetchDescriptor<MoviesImageCollectionEntity>(
             predicate: #Predicate { $0.movieID == movieID }
         )
         descriptor.fetchLimit = 1
@@ -59,7 +59,7 @@ actor SwiftDataMovieImageLocalDataSource: MovieImageLocalDataSource, SwiftDataFe
     func imageCollectionStream(forMovie movieID: Int) -> AsyncThrowingStream<
         ImageCollection?, Error
     > {
-        let descriptor = FetchDescriptor<ImageCollectionEntity>(
+        let descriptor = FetchDescriptor<MoviesImageCollectionEntity>(
             predicate: #Predicate { $0.movieID == movieID }
         )
         let stream = stream(for: descriptor) {
@@ -73,11 +73,11 @@ actor SwiftDataMovieImageLocalDataSource: MovieImageLocalDataSource, SwiftDataFe
         _ imageCollection: ImageCollection
     ) async throws(MovieImageLocalDataSourceError) {
         let movieID = imageCollection.id
-        let descriptor = FetchDescriptor<ImageCollectionEntity>(
+        let descriptor = FetchDescriptor<MoviesImageCollectionEntity>(
             predicate: #Predicate { $0.movieID == movieID }
         )
         let mapper = ImageCollectionMapper()
-        let existing: ImageCollectionEntity?
+        let existing: MoviesImageCollectionEntity?
         do {
             existing = try modelContext.fetch(descriptor).first
         } catch let error {

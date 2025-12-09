@@ -10,7 +10,7 @@ import MoviesDomain
 
 struct MovieMapper {
 
-    func map(_ entity: MovieEntity) -> Movie {
+    func map(_ entity: MoviesMovieEntity) -> Movie {
         Movie(
             id: entity.movieID,
             title: entity.title,
@@ -21,7 +21,7 @@ struct MovieMapper {
         )
     }
 
-    func compactMap(_ entity: MovieEntity?) -> Movie? {
+    func compactMap(_ entity: MoviesMovieEntity?) -> Movie? {
         guard let entity else {
             return nil
         }
@@ -29,8 +29,8 @@ struct MovieMapper {
         return map(entity)
     }
 
-    func map(_ movie: Movie) -> MovieEntity {
-        MovieEntity(
+    func map(_ movie: Movie) -> MoviesMovieEntity {
+        MoviesMovieEntity(
             movieID: movie.id,
             title: movie.title,
             overview: movie.overview,
@@ -40,7 +40,7 @@ struct MovieMapper {
         )
     }
 
-    func map(_ movie: Movie, to entity: MovieEntity) {
+    func map(_ movie: Movie, to entity: MoviesMovieEntity) {
         entity.title = movie.title
         entity.overview = movie.overview
         entity.releaseDate = movie.releaseDate

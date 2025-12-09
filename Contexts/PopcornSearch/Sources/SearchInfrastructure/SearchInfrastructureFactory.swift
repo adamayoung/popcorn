@@ -13,7 +13,7 @@ package final class SearchInfrastructureFactory {
 
     private static let cloudKitModelContainer: ModelContainer = {
         let schema = Schema([
-            MediaSearchHistoryEntryEntity.self
+            SearchMediaSearchHistoryEntryEntity.self
         ])
 
         let storeURL = URL.documentsDirectory.appending(path: "searchkit-cloudkit.sqlite")

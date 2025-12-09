@@ -14,40 +14,41 @@ package final class MoviesInfrastructureFactory {
 
     private static let modelContainer: ModelContainer = {
         let schema = Schema([
-            MovieEntity.self,
-            ImageCollectionEntity.self,
-            MoviePreviewEntity.self,
-            PopularMovieItemEntity.self,
-            SimilarMovieItemEntity.self
+            MoviesMovieEntity.self,
+            MoviesImageCollectionEntity.self,
+            MoviesMoviePreviewEntity.self,
+            MoviesPopularMovieItemEntity.self,
+            MoviesSimilarMovieItemEntity.self
         ])
 
-        let storeURL = URL.documentsDirectory.appending(path: "movieskit.sqlite")
+        let storeURL = URL.documentsDirectory.appending(path: "popcorn-movies.sqlite")
         let config = ModelConfiguration(schema: schema, url: storeURL, cloudKitDatabase: .none)
 
         do {
             return try ModelContainer(for: schema, configurations: [config])
         } catch let error {
-            fatalError("MoviesKit: Cannot configure ModelContainer: \(error.localizedDescription)")
+            fatalError(
+                "PopcornMovies: Cannot configure ModelContainer: \(error.localizedDescription)")
         }
     }()
 
     private static let cloudKitModelContainer: ModelContainer = {
         let schema = Schema([
-            FavouriteMovieEntity.self
+            MoviesFavouriteMovieEntity.self
         ])
 
-        let storeURL = URL.documentsDirectory.appending(path: "movieskit-cloudkit.sqlite")
+        let storeURL = URL.documentsDirectory.appending(path: "popcorn-movies-cloudkit.sqlite")
         let config = ModelConfiguration(
             schema: schema,
             url: storeURL,
-            cloudKitDatabase: .private("iCloud.uk.co.adam-young.Movies")
+            cloudKitDatabase: .private("iCloud.uk.co.adam-young.Popcorn")
         )
 
         do {
             return try ModelContainer(for: schema, configurations: [config])
         } catch let error {
             fatalError(
-                "MoviesKit: Cannot configure CloudKit ModelContainer: \(error.localizedDescription)"
+                "PopcornMovies: Cannot configure CloudKit ModelContainer: \(error.localizedDescription)"
             )
         }
     }()
@@ -96,24 +97,29 @@ package final class MoviesInfrastructureFactory {
 
 extension MoviesInfrastructureFactory {
 
-    private static let movieLocalDataSource = SwiftDataMovieLocalDataSource(
-        modelContainer: modelContainer
-    )
+    private static let movieLocalDataSource: some MovieLocalDataSource =
+        SwiftDataMovieLocalDataSource(
+            modelContainer: modelContainer
+        )
 
-    private static let favouriteMovieLocalDataSource = SwiftDataFavouriteMovieLocalDataSource(
-        modelContainer: cloudKitModelContainer
-    )
+    private static let favouriteMovieLocalDataSource: some FavouriteMovieLocalDataSource =
+        SwiftDataFavouriteMovieLocalDataSource(
+            modelContainer: cloudKitModelContainer
+        )
 
-    private static let movieImageLocalDataSource = SwiftDataMovieImageLocalDataSource(
-        modelContainer: modelContainer
-    )
+    private static let movieImageLocalDataSource: some MovieImageLocalDataSource =
+        SwiftDataMovieImageLocalDataSource(
+            modelContainer: modelContainer
+        )
 
-    private static let popularMovieLocalDataSource = SwiftDataPopularMovieLocalDataSource(
-        modelContainer: modelContainer
-    )
+    private static let popularMovieLocalDataSource: some PopularMovieLocalDataSource =
+        SwiftDataPopularMovieLocalDataSource(
+            modelContainer: modelContainer
+        )
 
-    private static let similarMovieLocalDataSource = SwiftDataSimilarMovieLocalDataSource(
-        modelContainer: modelContainer
-    )
+    private static let similarMovieLocalDataSource: some SimilarMovieLocalDataSource =
+        SwiftDataSimilarMovieLocalDataSource(
+            modelContainer: modelContainer
+        )
 
 }

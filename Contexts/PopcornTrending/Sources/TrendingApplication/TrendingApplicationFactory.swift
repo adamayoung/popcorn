@@ -31,7 +31,7 @@ public final class TrendingApplicationFactory {
         DefaultFetchTrendingMoviesUseCase(
             repository: trendingRepository,
             appConfigurationProvider: appConfigurationProvider,
-            movieLogoImageProvider: movieLogoImageProvider
+            logoImageProvider: movieLogoImageProvider
         )
     }
 

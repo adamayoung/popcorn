@@ -31,6 +31,6 @@ actor CachedConfigurationLocalDataSource: ConfigurationLocalDataSource {
 extension CacheKey {
 
     static let appConfiguration = CacheKey(
-        "ConfigurationKit.ConfigurationInfrastructure.appConfiguration")
+        "PopcornConfiguration.ConfigurationInfrastructure.appConfiguration")
 
 }

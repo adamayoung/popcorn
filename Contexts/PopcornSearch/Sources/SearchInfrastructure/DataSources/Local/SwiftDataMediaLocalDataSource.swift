@@ -22,11 +22,11 @@ actor SwiftDataMediaLocalDataSource: MediaLocalDataSource,
     )
 
     func mediaSearchHistory() async throws(MediaLocalDataSourceError) -> [MediaSearchHistoryEntry] {
-        let descriptor = FetchDescriptor<MediaSearchHistoryEntryEntity>(
+        let descriptor = FetchDescriptor<SearchMediaSearchHistoryEntryEntity>(
             sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
         )
 
-        let entities: [MediaSearchHistoryEntryEntity]
+        let entities: [SearchMediaSearchHistoryEntryEntity]
         do {
             entities = try modelContext.fetch(descriptor)
         } catch let error {
@@ -40,13 +40,13 @@ actor SwiftDataMediaLocalDataSource: MediaLocalDataSource,
     }
 
     func movieSearchHistory() async throws(MediaLocalDataSourceError) -> [MovieSearchHistoryEntry] {
-        let mediaType = MediaSearchHistoryEntryEntity.MediaType.movie.rawValue
-        let descriptor = FetchDescriptor<MediaSearchHistoryEntryEntity>(
+        let mediaType = SearchMediaSearchHistoryEntryEntity.MediaType.movie.rawValue
+        let descriptor = FetchDescriptor<SearchMediaSearchHistoryEntryEntity>(
             predicate: #Predicate { $0.mediaType?.rawValue == mediaType },
             sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
         )
 
-        let entities: [MediaSearchHistoryEntryEntity]
+        let entities: [SearchMediaSearchHistoryEntryEntity]
         do {
             entities = try modelContext.fetch(descriptor)
         } catch let error {
@@ -62,13 +62,13 @@ actor SwiftDataMediaLocalDataSource: MediaLocalDataSource,
     func tvSeriesSearchHistory() async throws(MediaLocalDataSourceError)
         -> [TVSeriesSearchHistoryEntry]
     {
-        let mediaType = MediaSearchHistoryEntryEntity.MediaType.tvSeries.rawValue
-        let descriptor = FetchDescriptor<MediaSearchHistoryEntryEntity>(
+        let mediaType = SearchMediaSearchHistoryEntryEntity.MediaType.tvSeries.rawValue
+        let descriptor = FetchDescriptor<SearchMediaSearchHistoryEntryEntity>(
             predicate: #Predicate { $0.mediaType?.rawValue == mediaType },
             sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
         )
 
-        let entities: [MediaSearchHistoryEntryEntity]
+        let entities: [SearchMediaSearchHistoryEntryEntity]
         do {
             entities = try modelContext.fetch(descriptor)
         } catch let error {
@@ -83,13 +83,13 @@ actor SwiftDataMediaLocalDataSource: MediaLocalDataSource,
 
     func personSearchHistory() async throws(MediaLocalDataSourceError) -> [PersonSearchHistoryEntry]
     {
-        let mediaType = MediaSearchHistoryEntryEntity.MediaType.person.rawValue
-        let descriptor = FetchDescriptor<MediaSearchHistoryEntryEntity>(
+        let mediaType = SearchMediaSearchHistoryEntryEntity.MediaType.person.rawValue
+        let descriptor = FetchDescriptor<SearchMediaSearchHistoryEntryEntity>(
             predicate: #Predicate { $0.mediaType?.rawValue == mediaType },
             sortBy: [SortDescriptor(\.timestamp, order: .reverse)]
         )
 
-        let entities: [MediaSearchHistoryEntryEntity]
+        let entities: [SearchMediaSearchHistoryEntryEntity]
         do {
             entities = try modelContext.fetch(descriptor)
         } catch let error {
@@ -107,7 +107,7 @@ actor SwiftDataMediaLocalDataSource: MediaLocalDataSource,
     {
         try await removeSearchHistoryEntry(withMediaID: entry.id)
 
-        let entity = MediaSearchHistoryEntryEntity(
+        let entity = SearchMediaSearchHistoryEntryEntity(
             mediaID: entry.id,
             mediaType: .movie,
             timestamp: entry.timestamp
@@ -122,7 +122,7 @@ actor SwiftDataMediaLocalDataSource: MediaLocalDataSource,
     {
         try await removeSearchHistoryEntry(withMediaID: entry.id)
 
-        let entity = MediaSearchHistoryEntryEntity(
+        let entity = SearchMediaSearchHistoryEntryEntity(
             mediaID: entry.id,
             mediaType: .tvSeries,
             timestamp: entry.timestamp
@@ -137,7 +137,7 @@ actor SwiftDataMediaLocalDataSource: MediaLocalDataSource,
     {
         try await removeSearchHistoryEntry(withMediaID: entry.id)
 
-        let entity = MediaSearchHistoryEntryEntity(
+        let entity = SearchMediaSearchHistoryEntryEntity(
             mediaID: entry.id,
             mediaType: .person,
             timestamp: entry.timestamp
@@ -154,7 +154,7 @@ extension SwiftDataMediaLocalDataSource {
     private func removeSearchHistoryEntry(withMediaID id: Int)
         async throws(MediaLocalDataSourceError)
     {
-        let descriptor = FetchDescriptor<MediaSearchHistoryEntryEntity>(
+        let descriptor = FetchDescriptor<SearchMediaSearchHistoryEntryEntity>(
             predicate: #Predicate { $0.mediaID == id }
         )
         do {

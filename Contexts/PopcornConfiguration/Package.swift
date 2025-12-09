@@ -62,5 +62,4 @@ let package = Package(
             dependencies: ["ConfigurationInfrastructure"]
         )
     ]
-
 )

@@ -22,11 +22,11 @@ actor SwiftDataFavouriteMovieLocalDataSource: FavouriteMovieLocalDataSource,
     )
 
     func favourites() async throws(FavouriteMovieLocalDataSourceError) -> Set<FavouriteMovie> {
-        let descriptor = FetchDescriptor<FavouriteMovieEntity>(
+        let descriptor = FetchDescriptor<MoviesFavouriteMovieEntity>(
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
         )
 
-        let entities: [FavouriteMovieEntity]
+        let entities: [MoviesFavouriteMovieEntity]
         do {
             entities = try modelContext.fetch(descriptor)
         } catch let error {
@@ -40,13 +40,13 @@ actor SwiftDataFavouriteMovieLocalDataSource: FavouriteMovieLocalDataSource,
     }
 
     func isFavourite(movieID id: Int) async throws(FavouriteMovieLocalDataSourceError) -> Bool {
-        var descriptor = FetchDescriptor<FavouriteMovieEntity>(
+        var descriptor = FetchDescriptor<MoviesFavouriteMovieEntity>(
             predicate: #Predicate { $0.movieID == id },
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
         )
         descriptor.fetchLimit = 1
 
-        let favouriteMovie: FavouriteMovieEntity?
+        let favouriteMovie: MoviesFavouriteMovieEntity?
         do {
             favouriteMovie = try modelContext.fetch(descriptor).first
         } catch let error {
@@ -59,7 +59,7 @@ actor SwiftDataFavouriteMovieLocalDataSource: FavouriteMovieLocalDataSource,
     func saveFavourite(
         withID id: Int
     ) async throws(FavouriteMovieLocalDataSourceError) {
-        let favouriteMovieEntity = FavouriteMovieEntity(movieID: id, createdAt: .now)
+        let favouriteMovieEntity = MoviesFavouriteMovieEntity(movieID: id, createdAt: .now)
         modelContext.insert(favouriteMovieEntity)
 
         do { try modelContext.save() } catch let error {
@@ -70,7 +70,7 @@ actor SwiftDataFavouriteMovieLocalDataSource: FavouriteMovieLocalDataSource,
     func deleteFavourite(
         withID id: Int
     ) async throws(MoviesDomain.FavouriteMovieLocalDataSourceError) {
-        let deleteDescriptor = FetchDescriptor<FavouriteMovieEntity>(
+        let deleteDescriptor = FetchDescriptor<MoviesFavouriteMovieEntity>(
             predicate: #Predicate { $0.movieID == id }
         )
         do {
