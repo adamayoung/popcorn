@@ -21,7 +21,7 @@ let package = Package(
     dependencies: [
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Contexts/PopcornTV"),
-        .package(path: "../../Adapters/Kits/PopcornTVAdapters"),
+        .package(path: "../../Adapters/Contexts/PopcornTVAdapters"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1")
     ],

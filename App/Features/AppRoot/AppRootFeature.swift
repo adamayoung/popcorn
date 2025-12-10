@@ -19,9 +19,7 @@ struct AppRootFeature {
     struct State {
         var selectedTab: Tab = .explore
         var explore = ExploreRootFeature.State()
-        var movies = MoviesRootFeature.State()
-        var tv = TVRootFeature.State()
-        var people = PeopleRootFeature.State()
+        var games = GamesRootFeature.State()
         var search = SearchRootFeature.State()
         var isSearchEnabled: Bool = false
 
@@ -30,17 +28,13 @@ struct AppRootFeature {
 
     enum Tab {
         case explore
-        case movies
-        case tv
-        case people
+        case games
         case search
 
         var id: String {
             switch self {
             case .explore: "popcorn.tab.explore"
-            case .movies: "popcorn.tab.movies"
-            case .tv: "popcorn.tab.tv"
-            case .people: "popcorn.tab.people"
+            case .games: "popcorn.tab.games"
             case .search: "popcorn.tab.search"
             }
         }
@@ -51,9 +45,7 @@ struct AppRootFeature {
         case didAppear
         case featureFlagsLoaded(searchEnabled: Bool)
         case explore(ExploreRootFeature.Action)
-        case movies(MoviesRootFeature.Action)
-        case tv(TVRootFeature.Action)
-        case people(PeopleRootFeature.Action)
+        case games(GamesRootFeature.Action)
         case search(SearchRootFeature.Action)
     }
 
@@ -79,9 +71,7 @@ struct AppRootFeature {
         }
 
         Scope(state: \.explore, action: \.explore) { ExploreRootFeature() }
-        Scope(state: \.movies, action: \.movies) { MoviesRootFeature() }
-        Scope(state: \.tv, action: \.tv) { TVRootFeature() }
-        Scope(state: \.people, action: \.people) { PeopleRootFeature() }
+        Scope(state: \.games, action: \.games) { GamesRootFeature() }
         Scope(state: \.search, action: \.search) { SearchRootFeature() }
     }
 

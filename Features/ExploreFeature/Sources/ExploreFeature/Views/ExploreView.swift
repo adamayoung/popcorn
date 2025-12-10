@@ -44,7 +44,7 @@ public struct ExploreView: View {
                 loadingBody
             }
         }
-        .navigationTitle(Text("HOME", bundle: .module))
+        .navigationTitle(Text("EXPLORE", bundle: .module))
         .task { store.send(.load) }
     }
 

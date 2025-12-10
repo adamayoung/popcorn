@@ -48,11 +48,11 @@ struct SearchRootView: View {
 }
 
 #Preview {
-    MoviesRootView(
+    SearchRootView(
         store: Store(
-            initialState: MoviesRootFeature.State(),
+            initialState: SearchRootFeature.State(),
             reducer: {
-                MoviesRootFeature()
+                SearchRootFeature()
             }
         )
     )

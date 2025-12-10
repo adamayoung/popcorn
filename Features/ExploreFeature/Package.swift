@@ -23,9 +23,9 @@ let package = Package(
         .package(path: "../../Contexts/PopcornDiscover"),
         .package(path: "../../Contexts/PopcornTrending"),
         .package(path: "../../Contexts/PopcornMovies"),
-        .package(path: "../../Adapters/Kits/PopcornDiscoverAdapters"),
-        .package(path: "../../Adapters/Kits/PopcornTrendingAdapters"),
-        .package(path: "../../Adapters/Kits/PopcornMoviesAdapters"),
+        .package(path: "../../Adapters/Contexts/PopcornDiscoverAdapters"),
+        .package(path: "../../Adapters/Contexts/PopcornTrendingAdapters"),
+        .package(path: "../../Adapters/Contexts/PopcornMoviesAdapters"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1")
     ],

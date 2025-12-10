@@ -1,47 +1,48 @@
 //
-//  MoviesRootView.swift
+//  GamesRootView.swift
 //  Popcorn
 //
-//  Created by Adam Young on 18/11/2025.
+//  Created by Adam Young on 09/12/2025.
 //
 
 import ComposableArchitecture
-import MovieDetailsFeature
+import GamesCatalogFeature
+import PlotRemixGameFeature
 import SwiftUI
-import TrendingMoviesFeature
 
-struct MoviesRootView: View {
+struct GamesRootView: View {
 
-    @Bindable var store: StoreOf<MoviesRootFeature>
+    @Bindable var store: StoreOf<GamesRootFeature>
     @Namespace private var namespace
 
     var body: some View {
         NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
-            TrendingMoviesView(
+            GamesCatalogView(
                 store: store.scope(
-                    state: \.trending,
-                    action: \.trending
+                    state: \.gamesCatalog,
+                    action: \.gamesCatalog
                 ),
                 transitionNamespace: namespace
             )
         } destination: { store in
             switch store.case {
-            case .details(let store):
-                MovieDetailsView(
+            case .plotRemix(let store):
+                PlotRemixGameView(
                     store: store,
                     transitionNamespace: namespace
                 )
             }
         }
     }
+
 }
 
 #Preview {
-    MoviesRootView(
+    GamesRootView(
         store: Store(
-            initialState: MoviesRootFeature.State(),
+            initialState: GamesRootFeature.State(),
             reducer: {
-                MoviesRootFeature()
+                GamesRootFeature()
             }
         )
     )
