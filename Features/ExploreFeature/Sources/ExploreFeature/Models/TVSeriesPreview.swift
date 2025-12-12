@@ -42,7 +42,7 @@ extension TVSeriesPreview {
                 id: 66732,
                 name: "Stranger Things",
                 posterURL: URL(
-                    string: "https://image.tmdb.org/t/p/w780/cVxVGwHce6xnW8UaVUggaPXbmoE.jpg")
+                    string: "https://image.tmdb.org/t/p/w780/cVxVGwHce6xnW8UaVUggaPXbmoE.jpg"),
             )
         ]
     }

@@ -14,22 +14,6 @@ public struct MovieDetailsView: View {
     @Bindable private var store: StoreOf<MovieDetailsFeature>
     private let namespace: Namespace.ID
 
-    private var movie: Movie? {
-        store.movie
-    }
-
-    private var isFavourite: Bool {
-        store.movie?.isFavourite ?? false
-    }
-
-    private var similarMovies: [MoviePreview]? {
-        store.similarMovies
-    }
-
-    private var isReady: Bool {
-        store.isReady
-    }
-
     public init(
         store: StoreOf<MovieDetailsFeature>,
         transitionNamespace: Namespace.ID
@@ -40,28 +24,42 @@ public struct MovieDetailsView: View {
 
     public var body: some View {
         ZStack {
-            if isReady, let movie {
-                loadedBody(movie: movie)
+            switch store.viewState {
+            case .ready(let snapshot):
+                content(
+                    movie: snapshot.movie,
+                    similarMovies: snapshot.similarMovies
+                )
+            case .error(let error):
+                Text(verbatim: "\(error.localizedDescription)")
+
+            default:
+                EmptyView()
             }
         }
         .toolbar {
-            if isReady {
+            if case .ready(let snapshot) = store.viewState {
                 ToolbarItem(placement: .primaryAction) {
-                    Button("Favourite", systemImage: isFavourite ? "heart.fill" : "heart") {
+                    Button(
+                        "Favourite",
+                        systemImage: snapshot.movie.isFavourite ? "heart.fill" : "heart"
+                    ) {
                         store.send(.toggleFavourite)
                     }
-                    .sensoryFeedback(.selection, trigger: isFavourite)
+                    .sensoryFeedback(.selection, trigger: snapshot.movie.isFavourite)
                 }
             }
         }
         .contentTransition(.opacity)
-        .animation(.easeInOut(duration: 1), value: isReady)
+        .animation(.easeInOut(duration: 1), value: store.isReady)
         .overlay {
-            if !isReady {
+            if store.isLoading {
                 loadingBody
             }
         }
-        .task { await store.send(.stream).finish() }
+        .task {
+            await store.send(.stream).finish()
+        }
     }
 
 }
@@ -74,11 +72,14 @@ extension MovieDetailsView {
     }
 
     @ViewBuilder
-    private func loadedBody(movie: Movie) -> some View {
+    private func content(
+        movie: Movie,
+        similarMovies: [MoviePreview]
+    ) -> some View {
         StretchyHeaderScrollView(
             header: { header(movie: movie) },
             headerOverlay: { headerOverlay(movie: movie) },
-            content: { content(movie: movie) }
+            content: { body(movie: movie, similarMovies: similarMovies) }
         )
         .navigationTitle(movie.title)
         #if os(iOS)
@@ -90,7 +91,9 @@ extension MovieDetailsView {
     private func header(movie: Movie) -> some View {
         BackdropImage(url: movie.backdropURL)
             .flexibleHeaderContent(height: 600)
-        //            .backgroundExtensionEffect()
+            #if os(macOS)
+                .backgroundExtensionEffect()
+            #endif
     }
 
     @ViewBuilder
@@ -101,14 +104,17 @@ extension MovieDetailsView {
     }
 
     @ViewBuilder
-    private func content(movie: Movie) -> some View {
+    private func body(
+        movie: Movie,
+        similarMovies: [MoviePreview]
+    ) -> some View {
         VStack(alignment: .leading) {
             Text(verbatim: movie.overview)
                 .multilineTextAlignment(.leading)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal)
 
-            if let similarMovies, !similarMovies.isEmpty {
+            if !similarMovies.isEmpty {
                 MovieCarousel(movies: similarMovies) { moviePreview in
                     store.send(.navigate(.movieDetails(id: moviePreview.id)))
                 }
@@ -119,16 +125,41 @@ extension MovieDetailsView {
 
 }
 
-#Preview {
+#Preview("Ready") {
     @Previewable @Namespace var namespace
 
     NavigationStack {
         MovieDetailsView(
             store: Store(
-                initialState: MovieDetailsFeature.State(movieID: 1),
+                initialState: MovieDetailsFeature.State(
+                    movieID: Movie.mock.id,
+                    viewState: .ready(
+                        .init(
+                            movie: Movie.mock,
+                            similarMovies: MoviePreview.mocks
+                        )
+                    )
+                ),
                 reducer: {
-                    MovieDetailsFeature()
+                    EmptyReducer()
                 }
+            ),
+            transitionNamespace: namespace
+        )
+    }
+}
+
+#Preview("Loading") {
+    @Previewable @Namespace var namespace
+
+    NavigationStack {
+        MovieDetailsView(
+            store: Store(
+                initialState: MovieDetailsFeature.State(
+                    movieID: Movie.mock.id,
+                    viewState: .loading
+                ),
+                reducer: { EmptyReducer() }
             ),
             transitionNamespace: namespace
         )

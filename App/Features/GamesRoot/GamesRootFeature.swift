@@ -39,7 +39,7 @@ struct GamesRootFeature {
             case .gamesCatalog(.navigate(.game(let id))):
                 switch id {
                 case 1:
-                    state.path.append(.plotRemix(PlotRemixGameFeature.State()))
+                    state.path.append(.plotRemix(PlotRemixGameFeature.State(gameID: id)))
                 default:
                     return .none
                 }

@@ -46,10 +46,8 @@ final class DefaultMovieRepository: MovieRepository {
         let stream = await localDataSource.movieStream(forMovie: id)
 
         Task {
-            if try await localDataSource.movie(withID: id) == nil {
-                let movie = try await remoteDataSource.movie(withID: id)
-                try await localDataSource.setMovie(movie)
-            }
+            let movie = try await remoteDataSource.movie(withID: id)
+            try await localDataSource.setMovie(movie)
         }
 
         return stream

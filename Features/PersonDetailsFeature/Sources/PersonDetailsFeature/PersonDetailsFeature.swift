@@ -14,28 +14,55 @@ public struct PersonDetailsFeature: Sendable {
     @Dependency(\.personDetails) var personDetails: PersonDetailsClient
 
     @ObservableState
-    public struct State {
-        var id: Int
+    public struct State: Sendable {
+        var personID: Int
         public let transitionID: String?
-        var person: Person?
-        var isLoading: Bool
+        public var viewState: ViewState
+
+        public var isLoading: Bool {
+            switch viewState {
+            case .loading: true
+            default: false
+            }
+        }
+
+        public var isReady: Bool {
+            switch viewState {
+            case .ready: true
+            default: false
+            }
+        }
 
         public init(
-            id: Int,
+            personID: Int,
             transitionID: String? = nil,
-            person: Person? = nil,
-            isLoading: Bool = false
+            viewState: ViewState = .initial
         ) {
-            self.id = id
+            self.personID = personID
             self.transitionID = transitionID
+            self.viewState = viewState
+        }
+    }
+
+    public enum ViewState: Sendable {
+        case initial
+        case loading
+        case ready(ViewSnapshot)
+        case error(Error)
+    }
+
+    public struct ViewSnapshot: Sendable {
+        public let person: Person
+
+        public init(person: Person) {
             self.person = person
-            self.isLoading = isLoading
         }
     }
 
     public enum Action {
-        case loadPerson
-        case personLoaded(Person)
+        case fetch
+        case loaded(ViewSnapshot)
+        case loadFailed(Error)
     }
 
     public init() {}
@@ -43,13 +70,19 @@ public struct PersonDetailsFeature: Sendable {
     public var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
-            case .loadPerson:
-                state.isLoading = true
+            case .fetch:
+                if state.isReady {
+                    state.viewState = .loading
+                }
+
                 return handleFetchPerson(&state)
 
-            case .personLoaded(let person):
-                state.isLoading = false
-                state.person = person
+            case .loaded(let snapshot):
+                state.viewState = .ready(snapshot)
+                return .none
+
+            case .loadFailed(let error):
+                state.viewState = .error(error)
                 return .none
             }
         }
@@ -60,13 +93,13 @@ public struct PersonDetailsFeature: Sendable {
 extension PersonDetailsFeature {
 
     fileprivate func handleFetchPerson(_ state: inout State) -> EffectOf<Self> {
-        let id = state.id
-
-        return .run { send in
+        .run { [state] send in
             do {
-                let movie = try await personDetails.fetch(id)
-                await send(.personLoaded(movie))
+                let person = try await personDetails.fetch(state.personID)
+                let snapshot = ViewSnapshot(person: person)
+                await send(.loaded(snapshot))
             } catch {
+                await send(.loadFailed(error))
                 print("Error: \(error.localizedDescription)")
             }
         }

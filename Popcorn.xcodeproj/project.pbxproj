@@ -92,6 +92,7 @@
 				Contexts/PopcornDiscoverAdapters,
 				Contexts/PopcornGamesCatalogAdapters,
 				Contexts/PopcornGenresAdapters,
+				Contexts/PopcornPlotRemixGameAdapters,
 				Platform/FeatureFlagsAdapters,
 				Platform/TMDbAdapters,
 			);

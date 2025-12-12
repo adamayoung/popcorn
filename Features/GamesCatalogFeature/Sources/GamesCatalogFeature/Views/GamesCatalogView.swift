@@ -24,22 +24,46 @@ public struct GamesCatalogView: View {
 
     public var body: some View {
         ScrollView {
-            LazyVGrid(columns: [.init(), .init()]) {
-                if let games = store.games {
-                    ForEach(games) { game in
-                        Button {
-                            store.send(.navigate(.game(id: game.id)))
-                        } label: {
-                            card(for: game)
-                        }
-                        .matchedTransitionSource(id: game.id, in: namespace)
-                    }
-                }
+            switch store.viewState {
+            case .ready(let snapshot):
+                content(games: snapshot.games)
+            case .error(let error):
+                Text(verbatim: "\(error.localizedDescription)")
+            default:
+                EmptyView()
             }
-            .padding()
+        }
+        .overlay {
+            if store.isLoading {
+                loadingBody
+            }
         }
         .navigationTitle(Text("GAMES", bundle: .module))
-        .task { store.send(.loadGames) }
+        .task { store.send(.fetch) }
+    }
+
+}
+
+extension GamesCatalogView {
+
+    private var loadingBody: some View {
+        ProgressView()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    @ViewBuilder
+    private func content(games: [GameMetadata]) -> some View {
+        LazyVGrid(columns: [.init(), .init()]) {
+            ForEach(games) { game in
+                Button {
+                    store.send(.navigate(.game(id: game.id)))
+                } label: {
+                    card(for: game)
+                }
+                .matchedTransitionSource(id: game.id, in: namespace)
+            }
+        }
+        .padding()
     }
 
     private func card(for game: GameMetadata) -> some View {
@@ -72,19 +96,36 @@ public struct GamesCatalogView: View {
 
 }
 
-#Preview {
+#Preview("Ready") {
     @Previewable @Namespace var namespace
 
     NavigationStack {
         GamesCatalogView(
             store: Store(
-                initialState: GamesCatalogFeature.State(),
-                reducer: {
-                    GamesCatalogFeature()
-                }
+                initialState: GamesCatalogFeature.State(
+                    viewState: .ready(
+                        .init(games: GameMetadata.mocks)
+                    )
+                ),
+                reducer: { EmptyReducer() }
             ),
             transitionNamespace: namespace
         )
     }
+}
 
+#Preview("Loading") {
+    @Previewable @Namespace var namespace
+
+    NavigationStack {
+        GamesCatalogView(
+            store: Store(
+                initialState: GamesCatalogFeature.State(
+                    viewState: .loading
+                ),
+                reducer: { EmptyReducer() }
+            ),
+            transitionNamespace: namespace
+        )
+    }
 }

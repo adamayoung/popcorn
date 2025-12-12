@@ -14,9 +14,6 @@ public struct TVSeriesDetailsView: View {
     @Bindable private var store: StoreOf<TVSeriesDetailsFeature>
     private let namespace: Namespace.ID
 
-    private var tvSeries: TVSeries? { store.tvSeries }
-    private var isReady: Bool { store.isReady }
-
     public init(
         store: StoreOf<TVSeriesDetailsFeature>,
         transitionNamespace: Namespace.ID
@@ -27,19 +24,30 @@ public struct TVSeriesDetailsView: View {
 
     public var body: some View {
         ZStack {
-            if isReady {
-                loadedBody
+            switch store.viewState {
+            case .ready(let snapshot):
+                content(tvSeries: snapshot.tvSeries)
+            case .error(let error):
+                Text(verbatim: "\(error.localizedDescription)")
+            default:
+                EmptyView()
             }
         }
         .contentTransition(.opacity)
-        .animation(.easeInOut(duration: 1), value: isReady)
+        .animation(.easeInOut(duration: 1), value: store.isReady)
         .overlay {
-            if !isReady {
+            if store.isLoading {
                 loadingBody
             }
         }
-        .task { store.send(.load) }
+        .task {
+            await store.send(.fetch).finish()
+        }
     }
+
+}
+
+extension TVSeriesDetailsView {
 
     private var loadingBody: some View {
         ProgressView()
@@ -47,36 +55,38 @@ public struct TVSeriesDetailsView: View {
     }
 
     @ViewBuilder
-    private var loadedBody: some View {
+    private func content(tvSeries: TVSeries) -> some View {
         StretchyHeaderScrollView(
-            header: { header },
-            headerOverlay: { headerOverlay },
-            content: { content }
+            header: { header(tvSeries: tvSeries) },
+            headerOverlay: { headerOverlay(tvSeries: tvSeries) },
+            content: { body(tvSeries: tvSeries) }
         )
-        .navigationTitle(tvSeries?.name ?? "")
+        .navigationTitle(tvSeries.name)
         #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
         #endif
     }
 
     @ViewBuilder
-    private var header: some View {
-        BackdropImage(url: tvSeries?.backdropURL)
+    private func header(tvSeries: TVSeries) -> some View {
+        BackdropImage(url: tvSeries.backdropURL)
             .flexibleHeaderContent(height: 600)
-            .backgroundExtensionEffect()
+            #if os(macOS)
+                .backgroundExtensionEffect()
+            #endif
     }
 
     @ViewBuilder
-    private var headerOverlay: some View {
-        LogoImage(url: tvSeries?.logoURL)
+    private func headerOverlay(tvSeries: TVSeries) -> some View {
+        LogoImage(url: tvSeries.logoURL)
             .padding(.bottom, 20)
             .frame(maxWidth: 300, maxHeight: 150, alignment: .bottom)
     }
 
     @ViewBuilder
-    private var content: some View {
+    private func body(tvSeries: TVSeries) -> some View {
         VStack(alignment: .leading) {
-            Text(verbatim: tvSeries?.overview ?? "")
+            Text(verbatim: tvSeries.overview)
                 .multilineTextAlignment(.leading)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal)
@@ -86,16 +96,36 @@ public struct TVSeriesDetailsView: View {
 
 }
 
-#Preview {
+#Preview("Ready") {
     @Previewable @Namespace var namespace
 
-    TVSeriesDetailsView(
-        store: Store(
-            initialState: TVSeriesDetailsFeature.State(id: 1),
-            reducer: {
-                TVSeriesDetailsFeature()
-            }
-        ),
-        transitionNamespace: namespace
-    )
+    NavigationStack {
+        TVSeriesDetailsView(
+            store: Store(
+                initialState: TVSeriesDetailsFeature.State(
+                    tvSeriesID: 1,
+                    viewState: .ready(.init(tvSeries: TVSeries.mock))
+                ),
+                reducer: { EmptyReducer() }
+            ),
+            transitionNamespace: namespace
+        )
+    }
+}
+
+#Preview("Loading") {
+    @Previewable @Namespace var namespace
+
+    NavigationStack {
+        TVSeriesDetailsView(
+            store: Store(
+                initialState: TVSeriesDetailsFeature.State(
+                    tvSeriesID: 1,
+                    viewState: .loading
+                ),
+                reducer: { EmptyReducer() }
+            ),
+            transitionNamespace: namespace
+        )
+    }
 }

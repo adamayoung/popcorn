@@ -11,22 +11,50 @@ import Foundation
 @Reducer
 public struct GamesCatalogFeature: Sendable {
 
-    @Dependency(\.gamesCatalog) private var gamesCatalog: GamesCatalogClient
+    @Dependency(\.gamesCatalogClient) private var gamesCatalogClient
 
     @ObservableState
     public struct State {
-        var games: [GameMetadata]?
+        var viewState: ViewState
 
-        public init(
-            games: [GameMetadata]? = nil
-        ) {
+        public var isLoading: Bool {
+            switch viewState {
+            case .loading: true
+            default: false
+            }
+        }
+
+        public var isReady: Bool {
+            switch viewState {
+            case .ready: true
+            default: false
+            }
+        }
+
+        public init(viewState: ViewState = .initial) {
+            self.viewState = viewState
+        }
+    }
+
+    public enum ViewState: Sendable {
+        case initial
+        case loading
+        case ready(ViewSnapshot)
+        case error(Error)
+    }
+
+    public struct ViewSnapshot: Sendable {
+        public let games: [GameMetadata]
+
+        public init(games: [GameMetadata]) {
             self.games = games
         }
     }
 
     public enum Action {
-        case loadGames
-        case gamesLoaded([GameMetadata])
+        case fetch
+        case loaded(ViewSnapshot)
+        case loadFailed(Error)
         case navigate(Navigation)
     }
 
@@ -39,11 +67,19 @@ public struct GamesCatalogFeature: Sendable {
     public var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
-            case .loadGames:
-                return handleLoadGames(state: &state)
+            case .fetch:
+                if state.isReady {
+                    state.viewState = .loading
+                }
 
-            case .gamesLoaded(let games):
-                state.games = games
+                return handleFetchGames(state: &state)
+
+            case .loaded(let snapshot):
+                state.viewState = .ready(snapshot)
+                return .none
+
+            case .loadFailed(let error):
+                state.viewState = .error(error)
                 return .none
 
             case .navigate:
@@ -56,10 +92,15 @@ public struct GamesCatalogFeature: Sendable {
 
 extension GamesCatalogFeature {
 
-    private func handleLoadGames(state: inout State) -> EffectOf<Self> {
+    private func handleFetchGames(state: inout State) -> EffectOf<Self> {
         .run { send in
-            let games = try await gamesCatalog.fetchGames()
-            await send(.gamesLoaded(games))
+            do {
+                let games = try await gamesCatalogClient.fetchGames()
+                let snapshot = ViewSnapshot(games: games)
+                await send(.loaded(snapshot))
+            } catch let error {
+                await send(.loadFailed(error))
+            }
         }
     }
 

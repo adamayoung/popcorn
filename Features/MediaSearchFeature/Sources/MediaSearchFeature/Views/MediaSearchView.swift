@@ -12,7 +12,7 @@ import SwiftUI
 public struct MediaSearchView: View {
 
     @Bindable private var store: StoreOf<MediaSearchFeature>
-    @FocusState private var focusedField: MediaSearchFeature.State.Field?
+    @FocusState private var focusedField: MediaSearchFeature.Field?
 
     public init(store: StoreOf<MediaSearchFeature>) {
         self._store = .init(store)
@@ -20,46 +20,48 @@ public struct MediaSearchView: View {
 
     public var body: some View {
         List {
-            switch store.content {
-            case .overview:
-                notSearchingContent
+            switch store.viewState {
+            case .genres(let snapshot):
+                genresContent(snapshot.genres)
 
-            case .searchHistory:
-                searchHistoryContent
+            case .searchHistory(let snapshot):
+                searchHistoryContent(snapshot.media)
 
-            case .searchResults(let results):
-                resultsContent(results)
+            case .searchResults(let snapshot):
+                searchResultsContent(snapshot.results)
 
             default:
                 EmptyView()
             }
         }
         .overlay {
-            if case .noSearchResults(let query) = store.content {
-                noResultsContent(query)
+            if case .noSearchResults(let snapshot) = store.viewState {
+                noSearchResultsContent(snapshot.query)
             }
         }
         .scrollDismissesKeyboard(.interactively)
         .searchable(
             text: $store.query.sending(\.queryChanged),
-            placement: .navigationBarDrawer(displayMode: .always),
+            //            placement: .navigationBarDrawer(displayMode: .always),
             prompt: Text("MOVIES_TV_OR_PEOPLE", bundle: .module)
         )
         .searchFocused($focusedField, equals: .search)
         .bind($store.focusedField.sending(\.focusChanged), to: self.$focusedField)
-        .task { store.send(.loadSearchHistory) }
+        .task { store.send(.fetchGenresAndSearchHistory) }
         .navigationTitle(Text("SEARCH", bundle: .module))
     }
 
     @ViewBuilder
-    private var notSearchingContent: some View {
-
+    private func genresContent(_ genres: [Genre]) -> some View {
+        Section {
+            Text("Genres...")
+        }
     }
 
     @ViewBuilder
-    private var searchHistoryContent: some View {
+    private func searchHistoryContent(_ media: [MediaPreview]) -> some View {
         Section {
-            ForEach(store.searchHistoryItems) { media in
+            ForEach(media) { media in
                 mediaRow(for: media)
             }
         } header: {
@@ -68,7 +70,7 @@ public struct MediaSearchView: View {
     }
 
     @ViewBuilder
-    private func resultsContent(_ results: [MediaPreview]) -> some View {
+    private func searchResultsContent(_ results: [MediaPreview]) -> some View {
         Section {
             ForEach(results) { media in
                 mediaRow(for: media)
@@ -77,7 +79,7 @@ public struct MediaSearchView: View {
     }
 
     @ViewBuilder
-    private func noResultsContent(_ query: String) -> some View {
+    private func noSearchResultsContent(_ query: String) -> some View {
         ContentUnavailableView(
             LocalizedStringResource("NO_RESULTS", bundle: .module),
             systemImage: "magnifyingglass",
@@ -134,49 +136,121 @@ extension MediaSearchView {
     }
 
     private func personRow(for person: PersonPreview) -> some View {
-        NavigationRow {
+        Button {
             store.send(.navigate(.personDetails(id: person.id)))
-        } content: {
+        } label: {
             HStack {
                 ProfileImage(url: person.profileURL)
                     .frame(width: 60, height: 60)
-                    .cornerRadius(30)
-                    .clipped()
+                    .clipShape(Circle())
 
                 Text(verbatim: person.name)
             }
         }
+        .buttonStyle(.plain)
     }
 
 }
 
-#Preview("Overview") {
-    NavigationStack {
-        MediaSearchView(
-            store: Store(
-                initialState: MediaSearchFeature.State(
-                    content: .overview
-                ),
-                reducer: {
-                    EmptyReducer()
-                }
-            )
-        )
+#Preview("Genres") {
+    TabView {
+        Tab(
+            "SEARCH",
+            systemImage: "magnifyingglass",
+            role: .search
+        ) {
+            NavigationStack {
+                MediaSearchView(
+                    store: Store(
+                        initialState: MediaSearchFeature.State(
+                            viewState: .genres(.init(genres: Genre.mocks))
+                        ),
+                        reducer: {
+                            EmptyReducer()
+                        }
+                    )
+                )
+            }
+        }
     }
 }
 
-#Preview("Overview") {
-    NavigationStack {
-        MediaSearchView(
-            store: Store(
-                initialState: MediaSearchFeature.State(
-                    content: .searchHistory,
-                    searchHistoryItems: MediaPreview.mocks
-                ),
-                reducer: {
-                    EmptyReducer()
-                }
-            )
-        )
+#Preview("Search History") {
+    TabView {
+        Tab(
+            "SEARCH",
+            systemImage: "magnifyingglass",
+            role: .search
+        ) {
+            NavigationStack {
+                MediaSearchView(
+                    store: Store(
+                        initialState: MediaSearchFeature.State(
+                            viewState: .searchHistory(.init(media: MediaPreview.mocks))
+                        ),
+                        reducer: {
+                            EmptyReducer()
+                        }
+                    )
+                )
+            }
+        }
+    }
+}
+
+#Preview("Search Results") {
+    TabView {
+        Tab(
+            "SEARCH",
+            systemImage: "magnifyingglass",
+            role: .search
+        ) {
+            NavigationStack {
+                MediaSearchView(
+                    store: Store(
+                        initialState: MediaSearchFeature.State(
+                            viewState: .searchResults(
+                                .init(
+                                    query: "running",
+                                    results: MediaPreview.mocks
+                                )
+                            ),
+                            query: "running"
+                        ),
+                        reducer: {
+                            EmptyReducer()
+                        }
+                    )
+                )
+            }
+        }
+    }
+}
+
+#Preview("No Search Results") {
+    TabView {
+        Tab(
+            "SEARCH",
+            systemImage: "magnifyingglass",
+            role: .search
+        ) {
+            NavigationStack {
+                MediaSearchView(
+                    store: Store(
+                        initialState: MediaSearchFeature.State(
+                            viewState: .noSearchResults(
+                                .init(
+                                    query: "running"
+                                )
+                            ),
+                            query: "running"
+                        ),
+                        reducer: {
+                            EmptyReducer()
+                        }
+                    )
+                )
+            }
+        }
     }
 }

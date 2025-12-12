@@ -11,26 +11,54 @@ import Foundation
 @Reducer
 public struct MovieDetailsFeature: Sendable {
 
-    @Dependency(\.movieDetails) var movieDetails: MovieDetailsClient
+    @Dependency(\.movieDetailsClient) private var movieDetailsClient
 
     @ObservableState
-    public struct State {
-        var movieID: Int
+    public struct State: Sendable {
+        let movieID: Int
         public let transitionID: String?
-        var movie: Movie?
-        var similarMovies: [MoviePreview]?
-        var isReady: Bool {
-            movie != nil && similarMovies != nil
+        var viewState: ViewState
+
+        public var isLoading: Bool {
+            switch viewState {
+            case .loading: true
+            default: false
+            }
+        }
+
+        public var isReady: Bool {
+            switch viewState {
+            case .ready: true
+            default: false
+            }
         }
 
         public init(
             movieID: Int,
             transitionID: String? = nil,
-            movie: Movie? = nil,
-            similarMovies: [MoviePreview]? = nil
+            viewState: ViewState = .initial
         ) {
             self.movieID = movieID
             self.transitionID = transitionID
+            self.viewState = viewState
+        }
+    }
+
+    public enum ViewState: Sendable {
+        case initial
+        case loading
+        case ready(ViewSnapshot)
+        case error(Error)
+    }
+
+    public struct ViewSnapshot: Sendable {
+        public let movie: Movie
+        public let similarMovies: [MoviePreview]
+
+        public init(
+            movie: Movie,
+            similarMovies: [MoviePreview]
+        ) {
             self.movie = movie
             self.similarMovies = similarMovies
         }
@@ -38,8 +66,9 @@ public struct MovieDetailsFeature: Sendable {
 
     public enum Action {
         case stream
-        case movieLoaded(Movie)
-        case similarMoviesLoaded([MoviePreview])
+        case cancelStream
+        case loaded(ViewSnapshot)
+        case loadFailed(Error)
         case toggleFavourite
         case navigate(Navigation)
     }
@@ -54,14 +83,20 @@ public struct MovieDetailsFeature: Sendable {
         Reduce { state, action in
             switch action {
             case .stream:
+                if case .initial = state.viewState {
+                    state.viewState = .loading
+                }
                 return handleStreamAll(&state)
 
-            case .movieLoaded(let movie):
-                state.movie = movie
+            case .cancelStream:
+                return .cancel(id: CancelID.stream)
+
+            case .loaded(let snapshot):
+                state.viewState = .ready(snapshot)
                 return .none
 
-            case .similarMoviesLoaded(let moviePreviews):
-                state.similarMovies = moviePreviews
+            case .loadFailed(let error):
+                state.viewState = .error(error)
                 return .none
 
             case .toggleFavourite:
@@ -77,37 +112,70 @@ public struct MovieDetailsFeature: Sendable {
 
 extension MovieDetailsFeature {
 
+    private enum CancelID { case stream }
+
     private func handleStreamAll(_ state: inout State) -> EffectOf<Self> {
-        .merge(
-            handleStreamMovie(&state),
-            handleStreamSimilarMovies(&state)
-        )
-    }
+        .run { [state, movieDetailsClient] send in
+            do {
+                actor Snapshot {
+                    var movie: Movie?
+                    var similarMovies: [MoviePreview]?
 
-    private func handleStreamMovie(_ state: inout State) -> EffectOf<Self> {
-        let id = state.movieID
-        return .run { send in
-            for try await movie in await movieDetails.streamMovie(id) {
-                if let movie {
-                    await send(.movieLoaded(movie))
+                    func update(
+                        movie: Movie? = nil,
+                        similarMovies: [MoviePreview]? = nil,
+                        send: Send<MovieDetailsFeature.Action>
+                    ) async {
+                        if let movie { self.movie = movie }
+                        if let similarMovies { self.similarMovies = similarMovies }
+
+                        guard
+                            let movie = self.movie,
+                            let similarMovies = self.similarMovies
+                        else {
+                            return
+                        }
+
+                        let viewSnapshot = ViewSnapshot(movie: movie, similarMovies: similarMovies)
+
+                        await send(.loaded(viewSnapshot))
+                    }
                 }
-            }
-        }
-    }
 
-    private func handleStreamSimilarMovies(_ state: inout State) -> EffectOf<Self> {
-        let id = state.movieID
-        return .run { send in
-            for try await moviePreviews in await movieDetails.streamSimilar(id) {
-                await send(.similarMoviesLoaded(moviePreviews))
+                let snapshot = Snapshot()
+
+                try await withThrowingTaskGroup(of: Void.self) { group in
+                    group.addTask {
+                        let stream = try await movieDetailsClient.streamMovie(state.movieID)
+                        for try await value in stream {
+                            await snapshot.update(
+                                movie: value,
+                                send: send
+                            )
+                        }
+                    }
+
+                    group.addTask {
+                        let stream = try await movieDetailsClient.streamSimilar(state.movieID)
+                        for try await value in stream {
+                            await snapshot.update(
+                                similarMovies: value,
+                                send: send
+                            )
+                        }
+                    }
+
+                    try await group.waitForAll()
+                }
+            } catch let error {
+                await send(.loadFailed(error))
             }
         }
     }
 
     private func handleToggleFavourite(_ state: inout State) -> EffectOf<Self> {
-        let id = state.movieID
-        return .run { send in
-            try await movieDetails.toggleFavourite(id)
+        .run { [state] send in
+            try await movieDetailsClient.toggleFavourite(state.movieID)
         }
     }
 }

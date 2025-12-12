@@ -11,6 +11,7 @@ import GamesCatalogApplication
 import GamesCatalogDomain
 import PopcornGamesCatalogAdapters
 
+@DependencyClient
 struct GamesCatalogClient: Sendable {
 
     var fetchGames: @Sendable () async throws -> [GameMetadata]
@@ -20,12 +21,11 @@ struct GamesCatalogClient: Sendable {
 extension GamesCatalogClient: DependencyKey {
 
     static var liveValue: GamesCatalogClient {
-        let factory = GamesCatalogClientFactory()
+        @Dependency(\.fetchGames) var fetchGames
 
         return GamesCatalogClient(
             fetchGames: {
-                let useCase = factory.makeFetchGames()
-                let games = try await useCase.execute()
+                let games = try await fetchGames.execute()
                 let mapper = GameMetadataMapper()
                 return games.map(mapper.map)
             }
@@ -45,7 +45,7 @@ extension GamesCatalogClient: DependencyKey {
 
 extension DependencyValues {
 
-    var gamesCatalog: GamesCatalogClient {
+    var gamesCatalogClient: GamesCatalogClient {
         get {
             self[GamesCatalogClient.self]
         }

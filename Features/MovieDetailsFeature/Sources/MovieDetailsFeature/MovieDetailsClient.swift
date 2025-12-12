@@ -10,10 +10,11 @@ import Foundation
 import MoviesApplication
 import PopcornMoviesAdapters
 
+@DependencyClient
 struct MovieDetailsClient: Sendable {
 
-    var streamMovie: @Sendable (Int) async -> AsyncThrowingStream<Movie?, Error>
-    var streamSimilar: @Sendable (Int) async -> AsyncThrowingStream<[MoviePreview], Error>
+    var streamMovie: @Sendable (Int) async throws -> AsyncThrowingStream<Movie?, Error>
+    var streamSimilar: @Sendable (Int) async throws -> AsyncThrowingStream<[MoviePreview], Error>
     var toggleFavourite: @Sendable (Int) async throws -> Void
 
 }
@@ -21,11 +22,13 @@ struct MovieDetailsClient: Sendable {
 extension MovieDetailsClient: DependencyKey {
 
     static var liveValue: MovieDetailsClient {
-        let factory = MovieDetailsClientFactory()
+        @Dependency(\.streamMovieDetails) var streamMovieDetails
+        @Dependency(\.streamSimilarMovies) var streamSimilarMovies
+        @Dependency(\.toggleFavouriteMovie) var toggleFavouriteMovie
+
         return MovieDetailsClient(
             streamMovie: { id in
-                let useCase = factory.makeStreamMovieDetails()
-                let movieStream = await useCase.stream(id: id)
+                let movieStream = await streamMovieDetails.stream(id: id)
                 return AsyncThrowingStream<Movie?, Error> { continuation in
                     let task = Task {
                         let mapper = MovieMapper()
@@ -35,7 +38,6 @@ extension MovieDetailsClient: DependencyKey {
                                 continue
                             }
 
-                            print("Streaming movie '\(movie.title)'")
                             continuation.yield(mapper.map(movie))
                         }
                         continuation.finish()
@@ -44,8 +46,7 @@ extension MovieDetailsClient: DependencyKey {
                 }
             },
             streamSimilar: { id in
-                let useCase = factory.makeStreamSimilarMovies()
-                let moviePreviewStream = await useCase.stream(movieID: id, limit: 5)
+                let moviePreviewStream = await streamSimilarMovies.stream(movieID: id, limit: 5)
                 return AsyncThrowingStream<[MoviePreview], Error> { continuation in
                     let task = Task {
                         let mapper = MoviePreviewMapper()
@@ -60,8 +61,7 @@ extension MovieDetailsClient: DependencyKey {
                 }
             },
             toggleFavourite: { id in
-                let useCase = factory.makeToggleFavouriteMovie()
-                try await useCase.execute(id: id)
+                try await toggleFavouriteMovie.execute(id: id)
             }
         )
     }
@@ -71,15 +71,16 @@ extension MovieDetailsClient: DependencyKey {
             streamMovie: { _ in
                 AsyncThrowingStream<Movie?, Error> { continuation in
                     continuation.yield(Movie.mock)
+                    continuation.finish()
                 }
             },
             streamSimilar: { _ in
                 AsyncThrowingStream<[MoviePreview], Error> { continuation in
                     continuation.yield(MoviePreview.mocks)
+                    continuation.finish()
                 }
             },
-            toggleFavourite: { _ in
-            }
+            toggleFavourite: { _ in }
         )
     }
 
@@ -87,13 +88,9 @@ extension MovieDetailsClient: DependencyKey {
 
 extension DependencyValues {
 
-    var movieDetails: MovieDetailsClient {
-        get {
-            self[MovieDetailsClient.self]
-        }
-        set {
-            self[MovieDetailsClient.self] = newValue
-        }
+    var movieDetailsClient: MovieDetailsClient {
+        get { self[MovieDetailsClient.self] }
+        set { self[MovieDetailsClient.self] = newValue }
     }
 
 }

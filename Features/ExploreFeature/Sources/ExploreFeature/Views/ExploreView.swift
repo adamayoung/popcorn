@@ -14,13 +14,6 @@ public struct ExploreView: View {
     @Bindable var store: StoreOf<ExploreFeature>
     private let namespace: Namespace.ID
 
-    private var discoverMovies: [MoviePreview] { store.discoverMovies.items }
-    private var trendingMovies: [MoviePreview] { store.trendingMovies.items }
-    private var popularMovies: [MoviePreview] { store.popularMovies.items }
-    private var trendingTVSeries: [TVSeriesPreview] { store.trendingTVSeries.items }
-    private var trendingPeople: [PersonPreview] { store.trendingPeople.items }
-    private var isReady: Bool { store.isReady }
-
     public init(
         store: StoreOf<ExploreFeature>,
         transitionNamespace: Namespace.ID
@@ -30,17 +23,26 @@ public struct ExploreView: View {
     }
 
     public var body: some View {
-        ZStack {
-            if isReady {
-                ScrollView {
-                    loadedBody
-                }
+        ScrollView {
+            switch store.viewState {
+            case .ready(let snapshot):
+                content(
+                    discoverMovies: snapshot.discoverMovies,
+                    trendingMovies: snapshot.trendingMovies,
+                    popularMovies: snapshot.popularMovies,
+                    trendingTVSeries: snapshot.trendingTVSeries,
+                    trendingPeople: snapshot.trendingPeople
+                )
+
+            case .error(let error):
+                Text(verbatim: error.localizedDescription)
+
+            default:
+                EmptyView()
             }
         }
-        .contentTransition(.opacity)
-        .animation(.easeInOut(duration: 1), value: isReady)
         .overlay {
-            if !isReady {
+            if store.isLoading {
                 loadingBody
             }
         }
@@ -59,19 +61,26 @@ extension ExploreView {
     }
 
     @ViewBuilder
-    private var loadedBody: some View {
+    private func content(
+        discoverMovies: [MoviePreview],
+        trendingMovies: [MoviePreview],
+        popularMovies: [MoviePreview],
+        trendingTVSeries: [TVSeriesPreview],
+        trendingPeople: [PersonPreview]
+    ) -> some View {
         LazyVStack {
-            discoverMoviesSection
-            trendingMoviesSection
-            popularMoviesSection
+            discoverMoviesSection(discoverMovies)
+            trendingMoviesSection(trendingMovies)
+            popularMoviesSection(popularMovies)
 
-            trendingTVSeriesSection
+            trendingTVSeriesSection(trendingTVSeries)
 
-            trendingPeopleSection
+            trendingPeopleSection(trendingPeople)
         }
     }
 
-    @ViewBuilder private var discoverMoviesSection: some View {
+    @ViewBuilder
+    private func discoverMoviesSection(_ movies: [MoviePreview]) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("DISCOVER_MOVIES", bundle: .module)
                 .font(.title2)
@@ -82,7 +91,7 @@ extension ExploreView {
         .frame(maxWidth: .infinity, alignment: .leading)
 
         MovieCarousel(
-            movies: discoverMovies,
+            movies: movies,
             type: .backdrop,
             transitionNamespace: namespace,
             didSelectMovie: { movie, transitionID in
@@ -91,7 +100,8 @@ extension ExploreView {
         )
     }
 
-    @ViewBuilder private var trendingMoviesSection: some View {
+    @ViewBuilder
+    private func trendingMoviesSection(_ movies: [MoviePreview]) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("TRENDING_MOVIES", bundle: .module)
                 .font(.title2)
@@ -102,7 +112,7 @@ extension ExploreView {
         .frame(maxWidth: .infinity, alignment: .leading)
 
         MovieCarousel(
-            movies: trendingMovies,
+            movies: movies,
             type: .poster,
             transitionNamespace: namespace,
             didSelectMovie: { movie, transitionID in
@@ -111,7 +121,8 @@ extension ExploreView {
         )
     }
 
-    @ViewBuilder private var popularMoviesSection: some View {
+    @ViewBuilder
+    private func popularMoviesSection(_ movies: [MoviePreview]) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("POPULAR_MOVIES", bundle: .module)
                 .font(.title2)
@@ -122,7 +133,7 @@ extension ExploreView {
         .frame(maxWidth: .infinity, alignment: .leading)
 
         MovieCarousel(
-            movies: popularMovies,
+            movies: movies,
             type: .backdrop,
             transitionNamespace: namespace,
             didSelectMovie: { movie, transitionID in
@@ -131,7 +142,8 @@ extension ExploreView {
         )
     }
 
-    @ViewBuilder private var trendingTVSeriesSection: some View {
+    @ViewBuilder
+    private func trendingTVSeriesSection(_ tvSeries: [TVSeriesPreview]) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("TRENDING_TV_SERIES", bundle: .module)
                 .font(.title2)
@@ -142,7 +154,7 @@ extension ExploreView {
         .frame(maxWidth: .infinity, alignment: .leading)
 
         TVSeriesCarousel(
-            tvSeries: trendingTVSeries,
+            tvSeries: tvSeries,
             type: .poster,
             transitionNamespace: namespace,
             didSelectTVSeries: { tvSeries, transitionID in
@@ -151,7 +163,8 @@ extension ExploreView {
         )
     }
 
-    @ViewBuilder private var trendingPeopleSection: some View {
+    @ViewBuilder
+    private func trendingPeopleSection(_ people: [PersonPreview]) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             Text("TRENDING_PEOPLE", bundle: .module)
                 .font(.title2)
@@ -162,7 +175,7 @@ extension ExploreView {
         .frame(maxWidth: .infinity, alignment: .leading)
 
         PersonCarousel(
-            people: trendingPeople,
+            people: people,
             transitionNamespace: namespace,
             didSelectPerson: { person, transitionID in
                 store.send(.navigate(.personDetails(id: person.id, transitionID: transitionID)))
@@ -172,16 +185,40 @@ extension ExploreView {
 
 }
 
-#Preview {
+#Preview("Ready") {
     @Previewable @Namespace var namespace
 
     NavigationStack {
         ExploreView(
             store: Store(
-                initialState: ExploreFeature.State(),
-                reducer: {
-                    ExploreFeature()
-                }
+                initialState: ExploreFeature.State(
+                    viewState: .ready(
+                        .init(
+                            discoverMovies: MoviePreview.mocks,
+                            trendingMovies: MoviePreview.mocks,
+                            popularMovies: MoviePreview.mocks,
+                            trendingTVSeries: TVSeriesPreview.mocks,
+                            trendingPeople: PersonPreview.mocks
+                        )
+                    )
+                ),
+                reducer: { EmptyReducer() }
+            ),
+            transitionNamespace: namespace
+        )
+    }
+}
+
+#Preview("Loading") {
+    @Previewable @Namespace var namespace
+
+    NavigationStack {
+        ExploreView(
+            store: Store(
+                initialState: ExploreFeature.State(
+                    viewState: .loading
+                ),
+                reducer: { EmptyReducer() }
             ),
             transitionNamespace: namespace
         )

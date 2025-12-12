@@ -10,6 +10,7 @@ import Foundation
 import PopcornSearchAdapters
 import SearchApplication
 
+@DependencyClient
 struct MediaSearchClient: Sendable {
 
     var search: @Sendable (String) async throws -> [MediaPreview]
@@ -23,32 +24,29 @@ struct MediaSearchClient: Sendable {
 extension MediaSearchClient: DependencyKey {
 
     static var liveValue: MediaSearchClient {
-        let factory = MediaSearchClientFactory()
+        @Dependency(\.searchMedia) var searchMedia
+        @Dependency(\.fetchMediaSearchHistory) var fetchMediaSearchHistory
+        @Dependency(\.addMediaSearchHistoryEntry) var addMediaSearchHistoryEntry
 
         return MediaSearchClient(
             search: { query in
-                let useCase = factory.makeSearchMedia()
-                let media = try await useCase.execute(query: query)
+                let media = try await searchMedia.execute(query: query)
                 let mapper = MediaPreviewMapper()
                 return media.map(mapper.map)
             },
             fetchMediaSearchHistory: {
-                let useCase = factory.makeFetchMediaSearchHistory()
-                let media = try await useCase.execute()
+                let media = try await fetchMediaSearchHistory.execute()
                 let mapper = MediaPreviewMapper()
                 return media.map(mapper.map)
             },
             addMovieSearchHistoryEntry: { id in
-                let useCase = factory.makeAddMediaSearchHistoryEntry()
-                try await useCase.execute(movieID: id)
+                try await addMediaSearchHistoryEntry.execute(movieID: id)
             },
             addTVSeriesSearchHistoryEntry: { id in
-                let useCase = factory.makeAddMediaSearchHistoryEntry()
-                try await useCase.execute(movieID: id)
+                try await addMediaSearchHistoryEntry.execute(tvSeriesID: id)
             },
             addPersonSearchHistoryEntry: { id in
-                let useCase = factory.makeAddMediaSearchHistoryEntry()
-                try await useCase.execute(personID: id)
+                try await addMediaSearchHistoryEntry.execute(personID: id)
             }
         )
     }
@@ -72,7 +70,7 @@ extension MediaSearchClient: DependencyKey {
 
 extension DependencyValues {
 
-    var mediaSearch: MediaSearchClient {
+    var mediaSearchClient: MediaSearchClient {
         get {
             self[MediaSearchClient.self]
         }

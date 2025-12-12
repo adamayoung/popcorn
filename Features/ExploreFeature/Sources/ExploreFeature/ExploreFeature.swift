@@ -11,39 +11,51 @@ import Foundation
 @Reducer
 public struct ExploreFeature: Sendable {
 
-    @Dependency(\.explore) private var explore: ExploreClient
+    @Dependency(\.exploreClient) private var exploreClient: ExploreClient
 
     @ObservableState
     public struct State {
-        public struct ItemCollectionState<Item> {
-            var items: [Item]
-            var isReady: Bool { !items.isEmpty }
+        public var viewState: ViewState
 
-            public init(items: [Item] = []) {
-                self.items = items
+        public var isLoading: Bool {
+            switch viewState {
+            case .loading: true
+            default: false
             }
         }
 
-        var discoverMovies: ItemCollectionState<MoviePreview>
-        var trendingMovies: ItemCollectionState<MoviePreview>
-        var popularMovies: ItemCollectionState<MoviePreview>
-        var trendingTVSeries: ItemCollectionState<TVSeriesPreview>
-        var trendingPeople: ItemCollectionState<PersonPreview>
-
-        var isReady: Bool {
-            discoverMovies.isReady
-                && trendingMovies.isReady
-                && popularMovies.isReady
-                && trendingTVSeries.isReady
-                && trendingPeople.isReady
+        public var isReady: Bool {
+            switch viewState {
+            case .ready: true
+            default: false
+            }
         }
 
+        public init(viewState: ViewState = .initial) {
+            self.viewState = viewState
+        }
+    }
+
+    public enum ViewState {
+        case initial
+        case loading
+        case ready(ViewSnapshot)
+        case error(Error)
+    }
+
+    public struct ViewSnapshot {
+        public let discoverMovies: [MoviePreview]
+        public let trendingMovies: [MoviePreview]
+        public let popularMovies: [MoviePreview]
+        public let trendingTVSeries: [TVSeriesPreview]
+        public let trendingPeople: [PersonPreview]
+
         public init(
-            discoverMovies: ItemCollectionState<MoviePreview> = .init(),
-            trendingMovies: ItemCollectionState<MoviePreview> = .init(),
-            popularMovies: ItemCollectionState<MoviePreview> = .init(),
-            trendingTVSeries: ItemCollectionState<TVSeriesPreview> = .init(),
-            trendingPeople: ItemCollectionState<PersonPreview> = .init()
+            discoverMovies: [MoviePreview],
+            trendingMovies: [MoviePreview],
+            popularMovies: [MoviePreview],
+            trendingTVSeries: [TVSeriesPreview],
+            trendingPeople: [PersonPreview]
         ) {
             self.discoverMovies = discoverMovies
             self.trendingMovies = trendingMovies
@@ -55,11 +67,8 @@ public struct ExploreFeature: Sendable {
 
     public enum Action {
         case load
-        case discoverMoviesLoaded([MoviePreview])
-        case trendingMoviesLoaded([MoviePreview])
-        case popularMoviesLoaded([MoviePreview])
-        case trendingTVSeriesLoaded([TVSeriesPreview])
-        case trendingPeopleLoaded([PersonPreview])
+        case loaded(ViewSnapshot)
+        case loadFailed(Error)
         case navigate(Navigation)
     }
 
@@ -75,25 +84,17 @@ public struct ExploreFeature: Sendable {
         Reduce { state, action in
             switch action {
             case .load:
-                //                guard !state.isReady else {
-                //                    return .none
-                //                }
+                guard !state.isReady else {
+                    return .none
+                }
 
+                state.viewState = .loading
                 return handleFetchAll()
-            case .discoverMoviesLoaded(let movies):
-                state.discoverMovies.items = movies
+            case .loaded(let snapshot):
+                state.viewState = .ready(snapshot)
                 return .none
-            case .trendingMoviesLoaded(let movies):
-                state.trendingMovies.items = movies
-                return .none
-            case .popularMoviesLoaded(let movies):
-                state.popularMovies.items = movies
-                return .none
-            case .trendingTVSeriesLoaded(let tvSeries):
-                state.trendingTVSeries.items = tvSeries
-                return .none
-            case .trendingPeopleLoaded(let people):
-                state.trendingPeople.items = people
+            case .loadFailed(let error):
+                state.viewState = .error(error)
                 return .none
             case .navigate:
                 return .none
@@ -106,66 +107,25 @@ public struct ExploreFeature: Sendable {
 extension ExploreFeature {
 
     private func handleFetchAll() -> EffectOf<Self> {
-        .merge(
-            handleFetchDiscoverMovies(),
-            handleFetchTrendingMovies(),
-            handleFetchPopularMovies(),
-            handleFetchTrendingTVSeries(),
-            handleFetchTrendingPeople()
-        )
-    }
+        .run { [exploreClient] send in
+            async let discoverMovies = exploreClient.fetchDiscoverMovies()
+            async let trendingMovies = exploreClient.fetchTrendingMovies()
+            async let popularMovies = exploreClient.fetchPopularMovies()
+            async let trendingTVSeries = exploreClient.fetchTrendingTVSeries()
+            async let trendingPeople = exploreClient.fetchTrendingPeople()
 
-    private func handleFetchDiscoverMovies() -> EffectOf<Self> {
-        .run { send in
             do {
-                let movies = try await explore.fetchDiscoverMovies()
-                await send(.discoverMoviesLoaded(movies))
-            } catch {
-                print("Error: \(error.localizedDescription)")
-            }
-        }
-    }
+                let snapshot = try await ViewSnapshot(
+                    discoverMovies: discoverMovies,
+                    trendingMovies: trendingMovies,
+                    popularMovies: popularMovies,
+                    trendingTVSeries: trendingTVSeries,
+                    trendingPeople: trendingPeople
+                )
 
-    private func handleFetchTrendingMovies() -> EffectOf<Self> {
-        .run { send in
-            do {
-                let movies = try await explore.fetchTrendingMovies()
-                await send(.trendingMoviesLoaded(movies))
-            } catch {
-                print("Error: \(error.localizedDescription)")
-            }
-        }
-    }
-
-    private func handleFetchPopularMovies() -> EffectOf<Self> {
-        .run { send in
-            do {
-                let movies = try await explore.fetchPopularMovies()
-                await send(.popularMoviesLoaded(movies))
-            } catch {
-                print("Error: \(error.localizedDescription)")
-            }
-        }
-    }
-
-    private func handleFetchTrendingTVSeries() -> EffectOf<Self> {
-        .run { send in
-            do {
-                let tvSeries = try await explore.fetchTrendingTVSeries()
-                await send(.trendingTVSeriesLoaded(tvSeries))
-            } catch {
-                print("Error: \(error.localizedDescription)")
-            }
-        }
-    }
-
-    private func handleFetchTrendingPeople() -> EffectOf<Self> {
-        .run { send in
-            do {
-                let people = try await explore.fetchTrendingPeople()
-                await send(.trendingPeopleLoaded(people))
-            } catch {
-                print("Error: \(error.localizedDescription)")
+                await send(.loaded(snapshot))
+            } catch let error {
+                await send(.loadFailed(error))
             }
         }
     }

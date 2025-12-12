@@ -42,16 +42,23 @@ struct ExploreRootFeature {
             case .explore(.navigate(.movieDetails(let id, let transitionID))):
                 state.path.append(
                     .movieDetails(
-                        MovieDetailsFeature.State(movieID: id, transitionID: transitionID)))
+                        MovieDetailsFeature.State(movieID: id, transitionID: transitionID)
+                    )
+                )
                 return .none
             case .explore(.navigate(.tvSeriesDetails(let id, let transitionID))):
                 state.path.append(
                     .tvSeriesDetails(
-                        TVSeriesDetailsFeature.State(id: id, transitionID: transitionID)))
+                        TVSeriesDetailsFeature.State(tvSeriesID: id, transitionID: transitionID)
+                    )
+                )
                 return .none
             case .explore(.navigate(.personDetails(let id, let transitionID))):
                 state.path.append(
-                    .personDetails(PersonDetailsFeature.State(id: id, transitionID: transitionID)))
+                    .personDetails(
+                        PersonDetailsFeature.State(personID: id, transitionID: transitionID)
+                    )
+                )
                 return .none
             case .path(.element(_, .movieDetails(.navigate(.movieDetails(let id))))):
                 state.path.append(.movieDetails(MovieDetailsFeature.State(movieID: id)))
