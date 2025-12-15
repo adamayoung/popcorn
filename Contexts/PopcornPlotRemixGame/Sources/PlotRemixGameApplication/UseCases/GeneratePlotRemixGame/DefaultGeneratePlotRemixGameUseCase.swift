@@ -77,7 +77,8 @@ final class DefaultGeneratePlotRemixGameUseCase: GeneratePlotRemixGameUseCase {
                 for try await (movie, riddle, similarMovies) in taskGroup {
                     Self.signposter.emitEvent("Question generated", id: signpostID)
 
-                    let correctAnswer = AnswerOption(id: movie.id, title: movie.title, isCorrect: true)
+                    let correctAnswer = AnswerOption(
+                        id: movie.id, title: movie.title, isCorrect: true)
                     let incorrectAnswers = similarMovies.map { movie in
                         AnswerOption(id: movie.id, title: movie.title, isCorrect: false)
                     }

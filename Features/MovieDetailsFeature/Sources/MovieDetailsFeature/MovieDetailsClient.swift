@@ -8,8 +8,8 @@
 import ComposableArchitecture
 import Foundation
 import MoviesApplication
-import PopcornMoviesAdapters
 import OSLog
+import PopcornMoviesAdapters
 
 @DependencyClient
 struct MovieDetailsClient: Sendable {

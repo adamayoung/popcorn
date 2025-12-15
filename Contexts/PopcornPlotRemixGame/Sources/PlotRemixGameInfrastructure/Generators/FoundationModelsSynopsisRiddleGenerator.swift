@@ -7,8 +7,8 @@
 
 import Foundation
 import FoundationModels
-import PlotRemixGameDomain
 import OSLog
+import PlotRemixGameDomain
 
 final class FoundationModelsSynopsisRiddleGenerator: SynopsisRiddleGenerating {
 
@@ -19,9 +19,10 @@ final class FoundationModelsSynopsisRiddleGenerator: SynopsisRiddleGenerating {
 
     // Cache instruction phrases to avoid repeated computation
     private static let instructionPhrasesByTheme: [GameTheme: String] = {
-        Dictionary(uniqueKeysWithValues: GameTheme.allCases.map { theme in
-            (theme, FoundationModelsSynopsisRiddleGenerator.instructionPhrase(for: theme))
-        })
+        Dictionary(
+            uniqueKeysWithValues: GameTheme.allCases.map { theme in
+                (theme, FoundationModelsSynopsisRiddleGenerator.instructionPhrase(for: theme))
+            })
     }()
 
     init() {}
@@ -45,15 +46,17 @@ final class FoundationModelsSynopsisRiddleGenerator: SynopsisRiddleGenerating {
         do {
             response = try await session.respond(to: prompt)
         } catch {
-            Self.logger.error("Failed to create riddle for '\(movie.title)': \(error.localizedDescription)")
+            Self.logger.error(
+                "Failed to create riddle for '\(movie.title)': \(error.localizedDescription)")
             throw .generation(error)
         }
 
         let content = response.content.description
-        
+
         // Validate response quality
         guard !content.isEmpty, content.count >= 20 else {
-            Self.logger.warning("Received unusually short response for '\(movie.title)': '\(content)'")
+            Self.logger.warning(
+                "Received unusually short response for '\(movie.title)': '\(content)'")
             throw .generation(nil)
         }
 

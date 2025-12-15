@@ -6,13 +6,13 @@
 //
 
 import ComposableArchitecture
-import ConfigurationApplication
+import ConfigurationComposition
 import Foundation
 import TMDbAdapters
 
 extension DependencyValues {
 
-    var configurationFactory: ConfigurationApplicationFactory {
+    var configurationFactory: PopcornConfigurationFactory {
         PopcornConfigurationAdaptersFactory(
             configurationService: self.configurationService
         ).makeConfigurationFactory()

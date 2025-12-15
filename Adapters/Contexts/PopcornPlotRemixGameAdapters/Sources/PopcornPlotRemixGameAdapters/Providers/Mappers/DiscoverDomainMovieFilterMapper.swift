@@ -5,8 +5,8 @@
 //  Created by Adam Young on 12/12/2025.
 //
 
-import Foundation
 import DiscoverDomain
+import Foundation
 import PlotRemixGameDomain
 
 struct DiscoverDomainMovieFilterMapper {
@@ -33,4 +33,3 @@ struct DiscoverDomainMovieFilterMapper {
     }
 
 }
-

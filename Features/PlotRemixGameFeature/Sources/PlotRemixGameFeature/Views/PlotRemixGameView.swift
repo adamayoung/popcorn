@@ -38,10 +38,11 @@ public struct PlotRemixGameView: View {
                 } else if let metadata = store.metadata {
                     PlotRemixGameStartView(
                         metadata: metadata,
-                        progress: store.generatingProgress) {
-                            store.send(.generateGame)
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        progress: store.generatingProgress
+                    ) {
+                        store.send(.generateGame)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
             .background {

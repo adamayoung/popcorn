@@ -7,9 +7,9 @@
 
 import ConfigurationApplication
 import DiscoverApplication
-import MoviesApplication
 import Foundation
 import GenresApplication
+import MoviesApplication
 import PlotRemixGameApplication
 import TMDb
 

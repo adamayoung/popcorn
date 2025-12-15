@@ -5,7 +5,7 @@
 //  Created by Adam Young on 26/11/2025.
 //
 
-import ConfigurationApplication
+import ConfigurationComposition
 import Foundation
 import TMDb
 
@@ -13,12 +13,12 @@ struct PopcornConfigurationAdaptersFactory {
 
     let configurationService: any ConfigurationService
 
-    func makeConfigurationFactory() -> ConfigurationApplicationFactory {
+    func makeConfigurationFactory() -> PopcornConfigurationFactory {
         let configurationRemoteDataSource = TMDbConfigurationRemoteDataSource(
             configurationService: configurationService
         )
 
-        return ConfigurationComposition.makeConfigurationFactory(
+        return PopcornConfigurationFactory(
             configurationRemoteDataSource: configurationRemoteDataSource
         )
     }

@@ -8,16 +8,18 @@
 import ConfigurationDomain
 import Foundation
 
-public final class ConfigurationApplicationFactory {
+package final class ConfigurationApplicationFactory {
 
     private let configurationRepository: any ConfigurationRepository
 
-    init(configurationRepository: some ConfigurationRepository) {
+    package init(configurationRepository: some ConfigurationRepository) {
         self.configurationRepository = configurationRepository
     }
 
-    public func makeFetchAppConfigurationUseCase() -> some FetchAppConfigurationUseCase {
-        DefaultFetchAppConfigurationUseCase(repository: configurationRepository)
+    package func makeFetchAppConfigurationUseCase() -> some FetchAppConfigurationUseCase {
+        DefaultFetchAppConfigurationUseCase(
+            repository: configurationRepository
+        )
     }
 
 }

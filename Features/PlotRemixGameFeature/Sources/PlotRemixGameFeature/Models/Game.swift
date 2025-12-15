@@ -33,7 +33,8 @@ extension Game {
                     movie: Movie(
                         id: 118,
                         title: "Charlie and the Chocolate Factory",
-                        overview: "A young boy wins a tour through the most magnificent chocolate factory in the world, led by the world's most unusual candy maker.",
+                        overview:
+                            "A young boy wins a tour through the most magnificent chocolate factory in the world, led by the world's most unusual candy maker.",
                         posterPath: URL(string: "/iKP6wg3c6COUe8gYutoGG7qcPnO.jpg"),
                         backdropPath: URL(string: "/atoIgfAk2Ig2HFJLD0VUnjiPWEz.jpg")
                     ),

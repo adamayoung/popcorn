@@ -12,9 +12,8 @@ import Foundation
 enum FetchAppConfigurationUseCaseKey: DependencyKey {
 
     static var liveValue: any FetchAppConfigurationUseCase {
-        DependencyValues._current
-            .configurationFactory
-            .makeFetchAppConfigurationUseCase()
+        @Dependency(\.configurationFactory) var configurationFactory
+        return configurationFactory.makeFetchAppConfigurationUseCase()
     }
 
 }

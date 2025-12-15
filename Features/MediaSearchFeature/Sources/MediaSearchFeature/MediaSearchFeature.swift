@@ -135,7 +135,8 @@ public struct MediaSearchFeature: Sendable {
                 effect = .none
 
             case .genresAndSearchHistoryLoadFailed(let error):
-                Self.logger.error("Failed loading genres and search history: \(error.localizedDescription)")
+                Self.logger.error(
+                    "Failed loading genres and search history: \(error.localizedDescription)")
                 effect = .none
 
             case .queryChanged(let query):

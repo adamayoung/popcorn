@@ -5,11 +5,11 @@
 //  Created by Adam Young on 11/12/2025.
 //
 
-import DiscoverDomain
 import DiscoverApplication
-import MoviesDomain
-import MoviesApplication
+import DiscoverDomain
 import Foundation
+import MoviesApplication
+import MoviesDomain
 import PlotRemixGameDomain
 
 public struct MovieProviderAdapter: MovieProviding {

@@ -10,8 +10,8 @@ import Foundation
 import PlotRemixGameApplication
 import PopcornConfigurationAdapters
 import PopcornDiscoverAdapters
-import PopcornMoviesAdapters
 import PopcornGenresAdapters
+import PopcornMoviesAdapters
 import TMDbAdapters
 
 extension DependencyValues {

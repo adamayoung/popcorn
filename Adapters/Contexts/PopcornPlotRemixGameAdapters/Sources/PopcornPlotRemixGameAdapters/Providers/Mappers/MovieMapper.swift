@@ -6,9 +6,9 @@
 //
 
 import DiscoverApplication
+import Foundation
 import MoviesApplication
 import PlotRemixGameDomain
-import Foundation
 
 struct MovieMapper {
 

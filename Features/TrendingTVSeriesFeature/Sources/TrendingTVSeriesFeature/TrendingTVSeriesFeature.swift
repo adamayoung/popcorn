@@ -64,7 +64,8 @@ extension TrendingTVSeriesFeature {
                 let tvSeries = try await trendingTVSeries.fetch()
                 await send(.trendingTVSeriesLoaded(tvSeries))
             } catch {
-                Self.logger.error("Failed fetching trending TV series: \(error.localizedDescription)")
+                Self.logger.error(
+                    "Failed fetching trending TV series: \(error.localizedDescription)")
             }
         }
     }
