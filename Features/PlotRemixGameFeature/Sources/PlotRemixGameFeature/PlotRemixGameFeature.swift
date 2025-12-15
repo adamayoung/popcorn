@@ -12,57 +12,49 @@ import Foundation
 public struct PlotRemixGameFeature: Sendable {
 
     @Dependency(\.plotRemixGameClient) private var plotRemixGameClient
+    @Dependency(\.dismiss) private var dismiss
 
     @ObservableState
     public struct State: Sendable {
         var gameID: Int
-        public var viewState: ViewState
-        @Presents var playGame: PlotRemixGamePlayFeature.State?
-
-        public var isLoading: Bool {
-            switch viewState {
-            case .loading: true
-            default: false
-            }
-        }
-
-        public var isReady: Bool {
-            switch viewState {
-            case .ready: true
-            default: false
-            }
-        }
+        var isLoading: Bool
+        var metadata: GameMetadata?
+        var isGeneratingGame: Bool
+        var generatingProgress: Float?
+        var game: Game?
+        var error: Error?
 
         public init(
             gameID: Int,
-            viewState: ViewState = .initial
+            isLoading: Bool = false,
+            metadata: GameMetadata? = nil,
+            isGeneratingGame: Bool = false,
+            generatingProgress: Float? = nil,
+            game: Game? = nil,
+            error: Error? = nil
         ) {
             self.gameID = gameID
-            self.viewState = viewState
-        }
-    }
-
-    public enum ViewState: Sendable {
-        case initial
-        case loading
-        case ready(ViewSnapshot)
-        case error(Error)
-    }
-
-    public struct ViewSnapshot: Sendable {
-        public let metadata: GameMetadata
-
-        public init(metadata: GameMetadata) {
+            self.isLoading = isLoading
             self.metadata = metadata
+            self.isGeneratingGame = isGeneratingGame
+            self.generatingProgress = generatingProgress
+            self.game = game
+            self.error = error
         }
     }
 
     public enum Action {
-        case fetch
-        case loaded(ViewSnapshot)
-        case loadFailed(Error)
+        case fetchMetadata
+        case metadataLoaded(GameMetadata)
+        case metadataLoadFailed(Error)
+        case generateGame
+        case generatingGame(Float)
+        case generatedGame(Game)
+        case generateGameFailed(Error)
         case startGame
-        case playGame(PresentationAction<PlotRemixGamePlayFeature.Action>)
+        case answerQuestion(Int, Int)
+        case endGame
+        case close
 
     }
 
@@ -71,34 +63,58 @@ public struct PlotRemixGameFeature: Sendable {
     public var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
-            case .fetch:
-                if state.isReady {
-                    state.viewState = .loading
+            case .fetchMetadata:
+                guard state.metadata == nil else {
+                    return .none
                 }
 
                 return handleFetchGameMetadata(&state)
 
-            case .loaded(let snapshot):
-                state.viewState = .ready(snapshot)
+            case .metadataLoaded(let metadata):
+                state.metadata = metadata
                 return .none
 
-            case .loadFailed(let error):
-                state.viewState = .error(error)
+            case .metadataLoadFailed(let error):
+                state.error = error
+                return .none
+
+            case .generateGame:
+                state.isGeneratingGame = true
+                return handleGenerateGame(&state)
+
+            case .generatingGame(let progress):
+                state.generatingProgress = progress
+                return .none
+
+            case .generatedGame(let game):
+                state.game = game
+                return .run { send in
+                    await send(.startGame)
+                }
+
+            case .generateGameFailed(let error):
+                state.generatingProgress = nil
+                state.isGeneratingGame = false
+                state.error = error
                 return .none
 
             case .startGame:
-                if case .ready(let snapshot) = state.viewState {
-                    state.playGame = .init(metadata: snapshot.metadata)
+                guard state.game != nil else {
+                    return .none
                 }
-
                 return .none
 
-            case .playGame:
+            case .answerQuestion(let questionID, let answerID):
                 return .none
+
+            case .endGame:
+                return .none
+
+            case .close:
+                return .run { _ in
+                    await dismiss()
+                }
             }
-        }
-        .ifLet(\.$playGame, action: \.playGame) {
-            PlotRemixGamePlayFeature()
         }
     }
 
@@ -110,12 +126,39 @@ extension PlotRemixGameFeature {
         .run { [state] send in
             do {
                 let metadata = try await plotRemixGameClient.gameMetadata(state.gameID)
-                let snapshot = ViewSnapshot(metadata: metadata)
-                await send(.loaded(snapshot))
+                await send(.metadataLoaded(metadata))
             } catch {
                 print("Error: \(error.localizedDescription)")
-                await send(.loadFailed(error))
+                await send(.metadataLoadFailed(error))
             }
+        }
+    }
+
+    private func handleGenerateGame(_ state: inout State) -> EffectOf<Self> {
+        .run { [state] send in
+            guard let metadata = state.metadata else {
+                return
+            }
+
+            let game: Game
+            do {
+                game = try await plotRemixGameClient.generateGame { progress in
+                    guard !Task.isCancelled else { return }
+                    Task {
+                        guard !Task.isCancelled else { return }
+                        await send(.generatingGame(progress))
+                    }
+                }
+            } catch is CancellationError {
+                return
+            } catch let error {
+                guard !Task.isCancelled else { return }
+                await send(.generateGameFailed(error))
+                return
+            }
+
+            guard !Task.isCancelled else { return }
+            await send(.generatedGame(game))
         }
     }
 }

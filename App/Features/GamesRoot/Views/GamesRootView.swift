@@ -16,7 +16,7 @@ struct GamesRootView: View {
     @Namespace private var namespace
 
     var body: some View {
-        NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
+        NavigationStack {
             GamesCatalogView(
                 store: store.scope(
                     state: \.gamesCatalog,
@@ -24,14 +24,14 @@ struct GamesRootView: View {
                 ),
                 transitionNamespace: namespace
             )
-        } destination: { store in
-            switch store.case {
-            case .plotRemix(let store):
-                PlotRemixGameView(
-                    store: store,
-                    transitionNamespace: namespace
-                )
-            }
+        }
+        .fullScreenCover(
+            store: store.scope(
+                state: \.$plotRemixGame,
+                action: \.plotRemixGame
+            )
+        ) { store in
+            PlotRemixGameView(store: store, transitionNamespace: namespace)
         }
     }
 

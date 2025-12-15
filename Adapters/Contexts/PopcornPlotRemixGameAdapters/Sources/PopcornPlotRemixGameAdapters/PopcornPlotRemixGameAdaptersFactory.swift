@@ -7,6 +7,7 @@
 
 import ConfigurationApplication
 import DiscoverApplication
+import MoviesApplication
 import Foundation
 import GenresApplication
 import PlotRemixGameApplication
@@ -16,6 +17,7 @@ struct PopcornPlotRemixGameAdaptersFactory {
 
     let fetchAppConfigurationUseCase: any FetchAppConfigurationUseCase
     let fetchDiscoverMoviesUseCase: any FetchDiscoverMoviesUseCase
+    let fetchSimilarMoviesUseCase: any FetchSimilarMoviesUseCase
     let fetchMovieGenresUseCase: any FetchMovieGenresUseCase
 
     func makePlotRemixGameFactory() -> PlotRemixGameApplicationFactory {
@@ -23,7 +25,8 @@ struct PopcornPlotRemixGameAdaptersFactory {
             fetchUseCase: fetchAppConfigurationUseCase
         )
         let movieProvider = MovieProviderAdapter(
-            fetchDiscoverMoviesUseCase: fetchDiscoverMoviesUseCase
+            fetchDiscoverMoviesUseCase: fetchDiscoverMoviesUseCase,
+            fetchSimilarMoviesUseCase: fetchSimilarMoviesUseCase
         )
         let genreProvider = GenreProviderAdapter(fetchMovieGenresUseCase: fetchMovieGenresUseCase)
 

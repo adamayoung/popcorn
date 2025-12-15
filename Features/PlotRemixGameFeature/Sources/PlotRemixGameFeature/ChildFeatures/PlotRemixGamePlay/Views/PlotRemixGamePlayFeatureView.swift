@@ -25,8 +25,7 @@ public struct PlotRemixGamePlayFeatureView: View {
                         content(game: snapshot.game)
                     }
                 }
-                .tabViewStyle(.page)
-                .indexViewStyle(.page(backgroundDisplayMode: .always))
+                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
 
                 Rectangle()
                     .fill(.clear)
@@ -94,10 +93,12 @@ extension PlotRemixGamePlayFeatureView {
 
                 GlassEffectContainer(spacing: 16) {
                     VStack(spacing: 16) {
-                        AnswerButton(title: "Charlie and the Chocolate Factory", action: {})
-                        AnswerButton(title: "The Giver", action: {})
-                        AnswerButton(title: "Ender’s Game", action: {})
-                        AnswerButton(title: "Little Women", action: {})
+                        ForEach(question.options) { option in
+                            AnswerButton(
+                                title: "\(option.title) \(option.isCorrect ? "✅" : "")",
+                                action: {
+                                })
+                        }
                     }
                 }
             }
@@ -129,21 +130,7 @@ struct AnswerButton: View {
             initialState: PlotRemixGamePlayFeature.State(
                 metadata: GameMetadata.mock,
                 viewState: .ready(
-                    .init(
-                        game: Game(
-                            id: UUID(),
-                            questions: [
-                                GameQuestion(
-                                    id: UUID(),
-                                    movie: Movie(
-                                        id: 1, title: "A", overview: "A", posterPath: nil,
-                                        backdropPath: nil),
-                                    riddle:
-                                        "A reclusive chocolatier invites local kids on a tour of his factory."
-                                )
-                            ]
-                        )
-                    )
+                    .init(game: Game.mock)
                 )
             ),
             reducer: {

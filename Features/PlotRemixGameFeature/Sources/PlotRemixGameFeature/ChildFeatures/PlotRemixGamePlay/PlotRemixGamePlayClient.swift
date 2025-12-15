@@ -27,7 +27,11 @@ extension PlotRemixGamePlayClient: DependencyKey {
 
         return PlotRemixGamePlayClient(
             generateGame: { progress in
-                let config = GameConfig(theme: .darkCryptic)
+                let config = GameConfig(
+                    theme: .child,
+                    genreID: 10751,
+                    primaryReleaseYearFilter: .betweenYears(start: 2015, end: 2025)
+                )
                 let game = try await generatePlotRemixGame.execute(
                     config: config,
                     progress: progress

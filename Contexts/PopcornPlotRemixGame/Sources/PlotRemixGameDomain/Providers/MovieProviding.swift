@@ -11,6 +11,11 @@ public protocol MovieProviding: Sendable {
 
     func randomMovies(filter: MovieFilter, limit: Int) async throws(MovieProviderError) -> [Movie]
 
+    func randomSimilarMovies(
+        to movieID: Int,
+        limit: Int
+    ) async throws(MovieProviderError) -> [Movie]
+
 }
 
 public enum MovieProviderError: Error {

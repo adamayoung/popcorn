@@ -15,8 +15,9 @@ struct GamesRootFeature {
 
     @ObservableState
     struct State {
-        var path = StackState<Path.State>()
         var gamesCatalog = GamesCatalogFeature.State()
+
+        @Presents var plotRemixGame: PlotRemixGameFeature.State?
     }
 
     @Reducer
@@ -26,7 +27,7 @@ struct GamesRootFeature {
 
     enum Action {
         case gamesCatalog(GamesCatalogFeature.Action)
-        case path(StackActionOf<Path>)
+        case plotRemixGame(PresentationAction<PlotRemixGameFeature.Action>)
     }
 
     var body: some Reducer<State, Action> {
@@ -39,17 +40,20 @@ struct GamesRootFeature {
             case .gamesCatalog(.navigate(.game(let id))):
                 switch id {
                 case 1:
-                    state.path.append(.plotRemix(PlotRemixGameFeature.State(gameID: id)))
+                    state.plotRemixGame = .init(gameID: 1)
+                    return .none
+
                 default:
                     return .none
                 }
 
-                return .none
             default:
                 return .none
             }
         }
-        .forEach(\.path, action: \.path)
+        .ifLet(\.$plotRemixGame, action: \.plotRemixGame) {
+            PlotRemixGameFeature()
+        }
     }
 
 }

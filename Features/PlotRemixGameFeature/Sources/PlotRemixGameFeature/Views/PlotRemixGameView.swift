@@ -14,13 +14,12 @@ public struct PlotRemixGameView: View {
     @Bindable private var store: StoreOf<PlotRemixGameFeature>
     private let namespace: Namespace.ID
 
+    private var metadata: GameMetadata? {
+        store.metadata
+    }
+
     private var backgroundColor: Color {
-        switch store.viewState {
-        case .ready(let snapshot):
-            return snapshot.metadata.color
-        default:
-            return .clear
-        }
+        store.metadata?.color ?? .black
     }
 
     public init(
@@ -32,38 +31,40 @@ public struct PlotRemixGameView: View {
     }
 
     public var body: some View {
-        ZStack {
-            switch store.viewState {
-            case .ready(let snapshot):
-                content(metadata: snapshot.metadata)
-            case .error(let error):
-                Text(verbatim: "\(error.localizedDescription)")
-            default:
-                EmptyView()
+        NavigationStack {
+            ZStack {
+                if let game = store.game {
+                    PlotRemixGameQuestionsView(questions: game.questions)
+                } else if let metadata = store.metadata {
+                    PlotRemixGameStartView(
+                        metadata: metadata,
+                        progress: store.generatingProgress) {
+                            store.send(.generateGame)
+                        }
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
+            .background {
+                AnimatedMeshBackground(baseColor: backgroundColor)
+                    .ignoresSafeArea()
+            }
+            .overlay {
+                if store.isLoading {
+                    loadingBody
+                }
+            }
+            .task {
+                store.send(.fetchMetadata)
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(role: .close) {
+                        store.send(.close)
+                    }
+                }
             }
         }
-        .frame(maxHeight: .infinity)
-        .background {
-            backgroundColor
-            //            AnimatedMeshBackground(baseColor: backgroundColor)
-        }
-        .overlay {
-            if store.isLoading {
-                loadingBody
-            }
-        }
-        .ignoresSafeArea()
-        .fullScreenCover(
-            store: store.scope(
-                state: \.$playGame,
-                action: \.playGame
-            )
-        ) { store in
-            PlotRemixGamePlayFeatureView(store: store)
-        }
-        .task {
-            await store.send(.fetch).finish()
-        }
+
     }
 
 }
@@ -75,50 +76,6 @@ extension PlotRemixGameView {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    @ViewBuilder
-    private func content(metadata: GameMetadata) -> some View {
-        VStack(spacing: 50) {
-            VStack {
-                Image(systemName: metadata.iconSystemName)
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 60, height: 60)
-
-                Text(verbatim: metadata.name)
-                    .font(.largeTitle)
-                    .bold()
-            }
-
-            Text(verbatim: metadata.description)
-
-            //            GlassEffectContainer {
-            Button {
-                store.send(.startGame)
-            } label: {
-                Label(
-                    LocalizedStringResource("START", bundle: .module),
-                    systemImage: "play.fill"
-                )
-                .bold()
-                .labelStyle(.iconOnly)
-                .padding()
-            }
-            .buttonStyle(.glassProminent)
-            //            }
-
-        }
-        .toolbar {
-            ToolbarItem(placement: .navigation) {
-                Button("HIGH_SCORES", systemImage: "list.bullet.rectangle.portrait") {
-
-                }
-            }
-        }
-        .padding()
-        .foregroundStyle(Color.white)
-        .frame(maxWidth: .infinity)
-    }
-
 }
 
 #Preview("Ready") {
@@ -128,8 +85,7 @@ extension PlotRemixGameView {
         PlotRemixGameView(
             store: Store(
                 initialState: PlotRemixGameFeature.State(
-                    gameID: GameMetadata.mock.id,
-                    viewState: .ready(.init(metadata: GameMetadata.mock))
+                    gameID: GameMetadata.mock.id
                 ),
                 reducer: {
                     EmptyReducer()

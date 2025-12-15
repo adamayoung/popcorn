@@ -8,8 +8,21 @@
 import Foundation
 import FoundationModels
 import PlotRemixGameDomain
+import OSLog
 
 final class FoundationModelsSynopsisRiddleGenerator: SynopsisRiddleGenerating {
+
+    private static let logger = Logger(
+        subsystem: "PopcornPlotRemixGame",
+        category: "FoundationModelsSynopsisRiddleGenerator"
+    )
+
+    // Cache instruction phrases to avoid repeated computation
+    private static let instructionPhrasesByTheme: [GameTheme: String] = {
+        Dictionary(uniqueKeysWithValues: GameTheme.allCases.map { theme in
+            (theme, FoundationModelsSynopsisRiddleGenerator.instructionPhrase(for: theme))
+        })
+    }()
 
     init() {}
 
@@ -17,17 +30,7 @@ final class FoundationModelsSynopsisRiddleGenerator: SynopsisRiddleGenerating {
         for movie: Movie,
         theme: GameTheme
     ) async throws(SynopsisRiddleGeneratorError) -> String {
-        let instructions = """
-                You rewrite movie summaries as \(instructionPhrases(for: theme)).
-                Keep core plot beats.
-                DO NOT mention movie titles.
-                DO NOT mention character names.
-                DO NOT mention Place names.
-                DO NOT mention explicit title.
-                DO NOT generate unsafe content that would trigger safety guardrails.
-                Give the summary ONLY.
-            """
-
+        let instructions = Self.createInstructions(for: theme)
         let session = LanguageModelSession(instructions: instructions)
 
         let prompt = """
@@ -41,18 +44,43 @@ final class FoundationModelsSynopsisRiddleGenerator: SynopsisRiddleGenerating {
         let response: LanguageModelSession.Response<String>
         do {
             response = try await session.respond(to: prompt)
-        } catch let error {
+        } catch {
+            Self.logger.error("Failed to create riddle for '\(movie.title)': \(error.localizedDescription)")
             throw .generation(error)
         }
 
-        return response.content.description
+        let content = response.content.description
+        
+        // Validate response quality
+        guard !content.isEmpty, content.count >= 20 else {
+            Self.logger.warning("Received unusually short response for '\(movie.title)': '\(content)'")
+            throw .generation(nil)
+        }
+
+        return content
+    }
+
+    private static func createInstructions(for theme: GameTheme) -> String {
+        """
+        You are a quiz master who rewrites movie summaries using the style defined by \(instructionPhrasesByTheme[theme]!) for a person to guess.
+
+        --- RULES ---
+        - Preserve the core plot: the main conflict, 3-5 key events, and the resolution
+        - Replace specific names with descriptive roles (e.g., "a detective", "two siblings")
+        - Replace specific locations with generic settings (e.g., "a coastal town", "deep space")
+        - Change surface details (professions, time periods, objects) while keeping the story logic
+        - DO NOT include character names, actor names, movie titles, franchise names, or unique invented terms
+        - DO NOT reference release years, awards, taglines, or famous quotes
+        - Keep the same general tone as the original (serious plots stay serious, comedies stay light)
+        - Output ONLY the rewritten summary as 2-4 sentences in plain text
+        """
     }
 
 }
 
 extension FoundationModelsSynopsisRiddleGenerator {
 
-    private func instructionPhrases(for theme: GameTheme) -> String {
+    private static func instructionPhrase(for theme: GameTheme) -> String {
         switch theme {
         case .darkCryptic:
             return "dark, cryptic riddles"

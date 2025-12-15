@@ -18,6 +18,7 @@ final class DefaultGeneratePlotRemixGameUseCase: GeneratePlotRemixGameUseCase {
     private static let signposter = OSSignposter(logger: logger)
 
     private static let questionCount = 10
+    private static let answersCount = 4
 
     private let appConfigurationProvider: any AppConfigurationProviding
     private let movieProvider: any MovieProviding
@@ -59,17 +60,31 @@ final class DefaultGeneratePlotRemixGameUseCase: GeneratePlotRemixGameUseCase {
             questions = try await withThrowingTaskGroup { taskGroup in
                 for movie in movies {
                     taskGroup.addTask {
-                        try await (
-                            movie,
-                            self.synopsisRiddleGenerator.riddle(for: movie, theme: config.theme)
+                        async let riddle = self.synopsisRiddleGenerator.riddle(
+                            for: movie,
+                            theme: config.theme
                         )
+                        async let similarMovies = self.movieProvider.randomSimilarMovies(
+                            to: movie.id,
+                            limit: Self.answersCount - 1
+                        )
+
+                        return try await (movie, riddle, similarMovies)
                     }
                 }
 
                 var results: [GameQuestion] = []
-                for try await (movie, riddle) in taskGroup {
+                for try await (movie, riddle, similarMovies) in taskGroup {
                     Self.signposter.emitEvent("Question generated", id: signpostID)
-                    let question = GameQuestion(movie: movie, riddle: riddle)
+
+                    let correctAnswer = AnswerOption(id: movie.id, title: movie.title, isCorrect: true)
+                    let incorrectAnswers = similarMovies.map { movie in
+                        AnswerOption(id: movie.id, title: movie.title, isCorrect: false)
+                    }
+
+                    let options = ([correctAnswer] + incorrectAnswers).shuffled()
+
+                    let question = GameQuestion(movie: movie, riddle: riddle, options: options)
                     results.append(question)
 
                     let progressValue = min(
