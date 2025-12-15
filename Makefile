@@ -24,7 +24,7 @@ format:
 
 .PHONY: lint format-check
 lint format-check:
-	@swift format lint -r -p .
+	@swift format lint -r -p --strict .
 
 .PHONY: build
 build:

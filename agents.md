@@ -1,34 +1,202 @@
-# Popcorn Agents Guide
+# Popcorn - AI Coding Assistant Guide
 
-This repo is a modular SwiftUI app built with The Composable Architecture (TCA) and a domain-driven package layout. It targets iOS/macOS/visionOS (Swift 6.2, iOS 26+).
+## Project Overview
 
-## Top-Level Layout
-- `App/` – app entry (`PopcornApp`), platform scenes, root TCA feature wiring, Info.plist, assets, localization.
-- `Features/` – UI feature packages (e.g., Explore, Trending*, Details, Search). Each is an SPM package with `Feature.swift`, `Client`/`Dependency` adapters, models/mappers, and SwiftUI views.
-- `Contexts/` – bounded contexts split into `*Application` (use cases), `*Domain` (entities, repositories, protocols), and `*Infrastructure` (data sources, repositories, mappers, storage). `*Composition` factories wire the layers.
-- `Adapters/Contexts/` – bridges from platform or third parties into contexts (e.g., TMDb-backed data sources, TCA dependency factories).
-- `Adapters/Platform/` – adapters for cross-cutting platform concerns (e.g., TMDb SDK, Statsig feature flags).
-- `Core/` – shared foundations: `CoreDomain` (small cross-context entities) and `DesignSystem` (SwiftUI components using SDWebImageSwiftUI).
-- `Platform/` – cross-cutting infrastructure packages (caching, data persistence primitives, feature flag abstraction).
-- `Configs/`, `ci_scripts/`, `TestPlans/`, `Makefile` – build/test config and tooling.
+Popcorn is a modular SwiftUI application for browsing movies and TV series, built with The Composable Architecture (TCA) and a domain-driven design (DDD) approach. The app targets iOS, macOS, and visionOS platforms using Swift 6.2 with a minimum deployment target of iOS 26+, macOS 26+, and visionOS 2+.
 
-## Architecture & Data Flow
-- **TCA-first UI:** Features declare `@Reducer` types with nested `State`/`Action`; views bind via `StoreOf<Feature>` and use `Scope`/`NavigationStack` with `StackState` for navigation. Side effects are in helper methods returning `EffectOf<Self>` and injected through `@Dependency`.
-- **Clients over use cases:** Each feature defines a `*Client` as a `DependencyKey` that wraps application-layer use cases (pulled from `DependencyValues._current`). Clients map application/domain models to lightweight view models (e.g., `MoviePreviewMapper`).
-- **DDD-style contexts:** For each domain (Movies, TV, People, Genres, Discover, Trending, Search, Configuration), the `Application` layer exposes use-case protocols and default implementations. Repositories are defined in `Domain` and implemented in `Infrastructure`, which wires local/remote data sources and mappers.
-- **Adapters:** Context adapters implement `Domain` protocols using platform SDKs (TMDb) or services, translate errors, and assemble `ApplicationFactory` instances exposed to TCA via `DependencyValues` extensions (e.g., `discoverFactory`, `trendingMovies`, etc.).
-- **Cross-cutting services:** `FeatureFlags` wraps a provider; Statsig is initialised in `PhoneScene` via `StatsigFeatureFlagInitialiser`, gating search/tab availability. `Caching` offers in-memory caches; `DataPersistenceInfrastructure` hosts persistence primitives (e.g., SwiftData-based local sources).
-- **Design system:** Reusable SwiftUI components for carousels, media rows, and image rendering (`PosterImage`, `BackdropImage`, `ProfileImage`, etc.) using SDWebImageSwiftUI and transition namespaces for matched-geometry effects.
+## Architecture
 
-## Coding Standards & Conventions
-- **Language/Targets:** Swift 6.2, iOS 26/macOS 26/visionOS 2 minimums. Prefer `Sendable` on models/clients and typed throws (`async throws(ErrorType)`).
-- **State management:** Use `@ObservableState` for state structs; `BindingReducer` for bindings; navigation via `StackState`/`Path` reducers. Actions use `navigate` cases to drive path mutations.
-- **Dependencies:** Inject everything through TCA `@Dependency` and `DependencyKey` clients. Live values usually reach into factories/use cases provided by adapters; preview values return stubbed async data with delays.
-- **Mapping & errors:** Keep mappers near the boundary (e.g., TMDb ↔ domain, domain ↔ view). Convert third-party errors into domain-specific error enums before surfacing them.
-- **UI style:** SwiftUI with dark theme preference, `Localizable.xcstrings` for copy, `@Namespace` for transitions, `LazyVStack` + custom carousels for lists. Prefer small private computed vars over repeated state access.
-- **Tests/tooling:** `Makefile` targets `format`/`lint` (swift-format), `build`, and `test` with overridable `DESTINATION`. Secrets pulled from env or Info.plist via `AppConfig`.
+### Technology Stack
+- **UI Framework:** SwiftUI with TCA (The Composable Architecture)
+- **Language:** Swift 6.2 with strict concurrency (`Sendable`, typed throws)
+- **Platforms:** iOS 26+, macOS 26+, visionOS 2+
+- **Data Source:** TMDb (The Movie Database) API
+- **Design Pattern:** Domain-Driven Design (DDD) with hexagonal architecture
+- **Image Loading:** SDWebImageSwiftUI
+- **Feature Flags:** Statsig
+- **Persistence:** SwiftData for local caching
 
-## Typical Wiring Example
-`ExploreView` → `ExploreFeature` → `ExploreClient` (`DependencyKey`) → Discover/Trending/Genres use cases (from adapters) → repositories → TMDb adapters + caches/persistence → mappers → view models displayed via `DesignSystem` carousels.
+### Directory Structure
 
-Keep new code consistent with this modular, DI-driven, TCA approach: add domain contracts first, implement in infrastructure, expose via adapters/factories, then consume through feature clients with preview stubs.
+```
+Popcorn/
+├── App/                    # App entry point, scenes, root feature wiring
+├── Features/              # UI feature packages (SPM packages)
+├── Contexts/              # Bounded contexts (DDD layers)
+├── Adapters/              # Platform and third-party bridges
+│   ├── Contexts/         # Context-specific adapters (TMDb implementations)
+│   └── Platform/         # Cross-cutting adapters (TMDb SDK, Statsig)
+├── Core/                  # Shared foundations
+│   ├── CoreDomain/       # Cross-context entities
+│   └── DesignSystem/     # SwiftUI components
+├── Platform/              # Cross-cutting infrastructure
+└── Configs/              # Build and configuration files
+```
+
+## Key Architectural Patterns
+
+### TCA Integration
+- Features use `@Reducer` types with nested `State` and `Action`
+- Views bind via `StoreOf<Feature>` and use `Scope`/`NavigationStack`
+- Navigation uses `StackState` and `NavigationStack`
+- Side effects return `EffectOf<Self>` and are injected via `@Dependency`
+- State structs use `@ObservableState`
+- Bindings managed via `BindingReducer`
+- Navigation driven by `navigate` action cases that mutate path
+
+### Domain-Driven Design
+Each domain context (Movies, TV, People, Genres, Discover, Trending, Search, Configuration) follows this structure:
+
+1. **Domain Layer:** Entities, repository protocols, value objects
+2. **Application Layer:** Use case protocols and default implementations
+3. **Infrastructure Layer:** Repository implementations, data sources, mappers
+4. **Composition Layer:** Factory that wires everything together
+
+### Data Flow
+```
+View → Feature (TCA) → Client (DependencyKey) → Use Cases → Repository → Data Sources → API/Cache
+```
+
+### Dependency Injection
+- Everything injected through TCA's `@Dependency` and `DependencyKey`
+- Live implementations pull from factories/use cases provided by adapters
+- Preview/test values return stubbed async data with delays
+- Factories exposed via `DependencyValues` extensions (e.g., `discoverFactory`, `trendingMovies`)
+
+## Features
+
+Current features are organized as SPM packages in `Features/`:
+- **Explore:** Main discovery interface with trending content, genres
+- **Details:** Movie/TV series detail views
+- **Search:** Content search (feature-flagged via Statsig)
+- Additional trending and discovery features
+
+## Coding Standards
+
+### Swift Conventions
+- Use Swift 6.2 language features
+- Prefer `Sendable` on models and clients
+- Use typed throws: `async throws(ErrorType)`
+- Keep mappers near boundaries (API ↔ domain, domain ↔ view)
+- Convert third-party errors to domain-specific error enums
+
+### UI Patterns
+- Dark theme preference
+- Localization via `Localizable.xcstrings`
+- Transitions using `@Namespace` for matched geometry
+- `LazyVStack` with custom carousels for lists
+- Prefer small private computed vars over repeated state access
+
+### Testing
+- Use `Makefile` for build tasks: `format`, `lint`, `build`, `test`
+- Swift-format for code formatting and linting
+- Test destinations overridable via `DESTINATION` variable
+- Secrets from environment or Info.plist via `AppConfig`
+
+## Common Patterns
+
+### Adding a New Feature
+1. Create feature package in `Features/`
+2. Define `Feature.swift` with `@Reducer`
+3. Create `Client` as `DependencyKey` wrapping use cases
+4. Define models and mappers
+5. Build SwiftUI views using `DesignSystem` components
+6. Add preview stubs for development
+
+### Adding a New Context
+1. Create domain contracts in `*Domain` package
+2. Implement repositories in `*Infrastructure`
+3. Create adapters in `Adapters/Contexts/`
+4. Build factory in `*Composition`
+5. Expose via `DependencyValues` extension
+6. Consume through feature clients
+
+### Working with Images
+Use design system components from `Core/DesignSystem`:
+- `PosterImage` for movie/TV posters
+- `BackdropImage` for backdrop images
+- `ProfileImage` for people/cast photos
+All use SDWebImageSwiftUI under the hood
+
+## Cross-Cutting Concerns
+
+### Feature Flags
+- Managed via Statsig integration
+- Initialized in `PhoneScene` via `StatsigFeatureFlagInitialiser`
+- Used to gate features like search and tabs
+- Abstract via `FeatureFlags` protocol
+
+### Caching
+- In-memory caches via `Caching` package
+- Local persistence via SwiftData in `DataPersistenceInfrastructure`
+- Cache entities implement expiration via `ModelExpirable`
+
+### Configuration
+- App configuration in `AppConfig`
+- API keys and secrets from environment or Info.plist
+- Platform-specific configurations in `Configs/`
+
+## Development Workflow
+
+### Build Commands
+```bash
+make format          # Format code with swift-format
+make lint           # Lint code
+make build          # Build project
+make test           # Run tests
+```
+
+### Adding Dependencies
+Features and contexts are SPM packages. Update `Package.swift` in the relevant package directory.
+
+## Example Wiring
+
+A typical data flow for the Explore feature:
+
+```
+ExploreView (SwiftUI)
+  ↓
+ExploreFeature (@Reducer with State/Action)
+  ↓
+ExploreClient (DependencyKey)
+  ↓
+Discover/Trending/Genres Use Cases (from adapters)
+  ↓
+Repositories (domain protocols, infrastructure implementations)
+  ↓
+TMDb Adapters + Caches/Persistence
+  ↓
+Mappers (domain ↔ view models)
+  ↓
+DesignSystem Carousels (back to view)
+```
+
+## Best Practices
+
+1. **Consistency:** Keep new code aligned with the modular, DI-driven TCA approach
+2. **Domain First:** Add domain contracts before implementations
+3. **Adapter Pattern:** Expose implementations via adapters and factories
+4. **Preview Stubs:** Always provide preview values for `@Dependency` clients
+5. **Error Handling:** Map all third-party errors to domain errors at boundaries
+6. **Testing:** Write tests at each layer (domain, application, infrastructure)
+7. **Modularity:** Keep features isolated; communicate via defined contracts
+8. **Type Safety:** Leverage Swift's type system and concurrency features
+
+## Resources
+
+- Build configuration: `Makefile`
+- Test plans: `TestPlans/`
+- CI scripts: `ci_scripts/`
+
+## Notes for AI Assistants
+
+When working on this codebase:
+- Always read existing implementations before suggesting changes
+- Follow the established DDD and TCA patterns
+- Maintain the separation between layers (Domain, Application, Infrastructure)
+- Use existing design system components rather than creating new ones
+- Respect the dependency injection patterns via TCA
+- Keep mappers at architectural boundaries
+- Test changes using the Makefile commands
+- Consider feature flag implications for new features
+- After making code changes, always verify linting with: `swift format lint -r -p --strict .`
