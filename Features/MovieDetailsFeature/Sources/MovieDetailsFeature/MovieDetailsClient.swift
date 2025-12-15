@@ -9,9 +9,15 @@ import ComposableArchitecture
 import Foundation
 import MoviesApplication
 import PopcornMoviesAdapters
+import OSLog
 
 @DependencyClient
 struct MovieDetailsClient: Sendable {
+
+    private static let logger = Logger(
+        subsystem: "MovieDetailsFeature",
+        category: "MovieDetailsClient"
+    )
 
     var streamMovie: @Sendable (Int) async throws -> AsyncThrowingStream<Movie?, Error>
     var streamSimilar: @Sendable (Int) async throws -> AsyncThrowingStream<[MoviePreview], Error>
@@ -51,8 +57,7 @@ extension MovieDetailsClient: DependencyKey {
                     let task = Task {
                         let mapper = MoviePreviewMapper()
                         for try await moviePreviews in moviePreviewStream {
-
-                            print("Streaming \(moviePreviews.count) similar movies")
+                            Self.logger.trace("Streaming \(moviePreviews.count) similar movies")
                             continuation.yield(moviePreviews.map(mapper.map))
                         }
                         continuation.finish()

@@ -7,12 +7,18 @@
 
 import ComposableArchitecture
 import Foundation
+import OSLog
 
 @Reducer
 public struct PlotRemixGameFeature: Sendable {
 
     @Dependency(\.plotRemixGameClient) private var plotRemixGameClient
     @Dependency(\.dismiss) private var dismiss
+
+    private static let logger = Logger(
+        subsystem: "PlotRemixGameFeature",
+        category: "PlotRemixGameFeatureReducer"
+    )
 
     @ObservableState
     public struct State: Sendable {
@@ -128,7 +134,7 @@ extension PlotRemixGameFeature {
                 let metadata = try await plotRemixGameClient.gameMetadata(state.gameID)
                 await send(.metadataLoaded(metadata))
             } catch {
-                print("Error: \(error.localizedDescription)")
+                Self.logger.error("Failed fetching game metadata: \(error.localizedDescription)")
                 await send(.metadataLoadFailed(error))
             }
         }
@@ -136,7 +142,7 @@ extension PlotRemixGameFeature {
 
     private func handleGenerateGame(_ state: inout State) -> EffectOf<Self> {
         .run { [state] send in
-            guard let metadata = state.metadata else {
+            guard state.metadata != nil else {
                 return
             }
 

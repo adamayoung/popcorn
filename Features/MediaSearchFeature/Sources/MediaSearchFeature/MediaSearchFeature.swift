@@ -7,9 +7,15 @@
 
 import ComposableArchitecture
 import Foundation
+import OSLog
 
 @Reducer
 public struct MediaSearchFeature: Sendable {
+
+    private static let logger = Logger(
+        subsystem: "MediaSearchFeature",
+        category: "MediaSearchFeatureReducer"
+    )
 
     @Dependency(\.mediaSearchClient) private var mediaSearchClient
 
@@ -129,7 +135,7 @@ public struct MediaSearchFeature: Sendable {
                 effect = .none
 
             case .genresAndSearchHistoryLoadFailed(let error):
-                print("Error: \(error)")
+                Self.logger.error("Failed loading genres and search history: \(error.localizedDescription)")
                 effect = .none
 
             case .queryChanged(let query):
@@ -163,7 +169,7 @@ public struct MediaSearchFeature: Sendable {
                 effect = .none
 
             case .searchResultsLoadFailed(let error):
-                print("Error: \(error)")
+                Self.logger.error("Failed searching: \(error.localizedDescription)")
                 effect = .none
 
             case .navigate(.movieDetails(let movieID)):

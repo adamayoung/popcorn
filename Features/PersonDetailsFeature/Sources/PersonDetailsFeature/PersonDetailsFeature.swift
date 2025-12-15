@@ -7,11 +7,17 @@
 
 import ComposableArchitecture
 import Foundation
+import OSLog
 
 @Reducer
 public struct PersonDetailsFeature: Sendable {
 
     @Dependency(\.personDetails) var personDetails: PersonDetailsClient
+
+    private static let logger = Logger(
+        subsystem: "PersonDetailsFeature",
+        category: "PersonDetailsFeatureReducer"
+    )
 
     @ObservableState
     public struct State: Sendable {
@@ -99,8 +105,8 @@ extension PersonDetailsFeature {
                 let snapshot = ViewSnapshot(person: person)
                 await send(.loaded(snapshot))
             } catch {
+                Self.logger.error("Failed to fetch person: \(error)")
                 await send(.loadFailed(error))
-                print("Error: \(error.localizedDescription)")
             }
         }
     }

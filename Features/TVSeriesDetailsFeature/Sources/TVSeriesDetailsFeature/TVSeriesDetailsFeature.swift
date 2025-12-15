@@ -7,11 +7,17 @@
 
 import ComposableArchitecture
 import Foundation
+import OSLog
 
 @Reducer
 public struct TVSeriesDetailsFeature: Sendable {
 
     @Dependency(\.tvSeriesDetailsClient) private var tvSeriesDetailsClient
+
+    private static let logger = Logger(
+        subsystem: "TVSeriesDetailsFeature",
+        category: "TVSeriesDetailsFeatureReducer"
+    )
 
     @ObservableState
     public struct State: Sendable {
@@ -99,7 +105,7 @@ extension TVSeriesDetailsFeature {
                 let snapshot = ViewSnapshot(tvSeries: tvSeries)
                 await send(.loaded(snapshot))
             } catch {
-                print("Error: \(error.localizedDescription)")
+                Self.logger.error("Failed fetching TV series: \(error.localizedDescription)")
                 await send(.loadFailed(error))
             }
         }
