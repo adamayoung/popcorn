@@ -1,5 +1,5 @@
 //
-//  ConfigurationApplicationFactory+TCA.swift
+//  ConfigurationFactory+TCA.swift
 //  PopcornConfigurationAdapters
 //
 //  Created by Adam Young on 25/11/2025.

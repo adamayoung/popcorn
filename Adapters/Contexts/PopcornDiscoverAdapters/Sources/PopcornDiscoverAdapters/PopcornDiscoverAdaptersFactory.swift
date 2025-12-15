@@ -6,7 +6,7 @@
 //
 
 import ConfigurationApplication
-import DiscoverApplication
+import DiscoverComposition
 import Foundation
 import GenresApplication
 import MoviesApplication
@@ -22,7 +22,7 @@ struct PopcornDiscoverAdaptersFactory {
     let fetchMovieImageCollectionUseCase: any FetchMovieImageCollectionUseCase
     let fetchTVSeriesImageCollectionUseCase: any FetchTVSeriesImageCollectionUseCase
 
-    func makeDiscoverFactory() -> DiscoverApplicationFactory {
+    func makeDiscoverFactory() -> PopcornDiscoverFactory {
         let discoverRemoteDataSource = TMDbDiscoverRemoteDataSource(
             discoverService: discoverService)
 
@@ -42,7 +42,7 @@ struct PopcornDiscoverAdaptersFactory {
             fetchTVSeriesImageCollectionUseCase: fetchTVSeriesImageCollectionUseCase
         )
 
-        return DiscoverComposition.makeDiscoverFactory(
+        return PopcornDiscoverFactory(
             discoverRemoteDataSource: discoverRemoteDataSource,
             appConfigurationProvider: appConfigurationProvider,
             genreProvider: genreProvider,

@@ -1,12 +1,12 @@
 //
-//  DiscoverApplicationFactory+TCA.swift
+//  DiscoverFactory+TCA.swift
 //  PopcornDiscoverAdapters
 //
 //  Created by Adam Young on 09/12/2025.
 //
 
 import ComposableArchitecture
-import DiscoverApplication
+import DiscoverComposition
 import Foundation
 import PopcornConfigurationAdapters
 import PopcornGenresAdapters
@@ -16,7 +16,7 @@ import TMDbAdapters
 
 extension DependencyValues {
 
-    var discoverFactory: DiscoverApplicationFactory {
+    var discoverFactory: PopcornDiscoverFactory {
         PopcornDiscoverAdaptersFactory(
             discoverService: self.discoverService,
             fetchAppConfigurationUseCase: self.fetchAppConfiguration,

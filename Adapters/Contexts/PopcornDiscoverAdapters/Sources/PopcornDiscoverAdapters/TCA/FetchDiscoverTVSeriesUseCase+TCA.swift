@@ -12,9 +12,8 @@ import Foundation
 enum FetchDiscoverTVSeriesUseCaseKey: DependencyKey {
 
     static var liveValue: any FetchDiscoverTVSeriesUseCase {
-        DependencyValues._current
-            .discoverFactory
-            .makeFetchDiscoverTVSeriesUseCase()
+        @Dependency(\.discoverFactory) var discoverFactory
+        return discoverFactory.makeFetchDiscoverTVSeriesUseCase()
     }
 
 }

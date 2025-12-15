@@ -12,9 +12,8 @@ import Foundation
 enum FetchDiscoverMoviesUseCaseKey: DependencyKey {
 
     static var liveValue: any FetchDiscoverMoviesUseCase {
-        DependencyValues._current
-            .discoverFactory
-            .makeFetchDiscoverMoviesUseCase()
+        @Dependency(\.discoverFactory) var discoverFactory
+        return discoverFactory.makeFetchDiscoverMoviesUseCase()
     }
 
 }

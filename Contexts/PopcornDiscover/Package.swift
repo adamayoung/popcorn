@@ -15,6 +15,7 @@ let package = Package(
     ],
 
     products: [
+        .library(name: "DiscoverComposition", targets: ["DiscoverComposition"]),
         .library(name: "DiscoverApplication", targets: ["DiscoverApplication"]),
         .library(name: "DiscoverDomain", targets: ["DiscoverDomain"]),
         .library(name: "DiscoverInfrastructure", targets: ["DiscoverInfrastructure"])
@@ -27,10 +28,18 @@ let package = Package(
 
     targets: [
         .target(
+            name: "DiscoverComposition",
+            dependencies: [
+                "DiscoverApplication",
+                "DiscoverDomain",
+                "DiscoverInfrastructure"
+            ]
+        ),
+
+        .target(
             name: "DiscoverApplication",
             dependencies: [
                 "DiscoverDomain",
-                "DiscoverInfrastructure",
                 "CoreDomain"
             ]
         ),

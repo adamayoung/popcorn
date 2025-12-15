@@ -1,39 +1,45 @@
 //
-//  DiscoverComposition.swift
+//  PopcornDiscoverFactory.swift
 //  PopcornDiscover
 //
-//  Created by Adam Young on 20/11/2025.
+//  Created by Adam Young on 15/12/2025.
 //
 
+import DiscoverApplication
 import DiscoverDomain
 import DiscoverInfrastructure
 import Foundation
 
-public struct DiscoverComposition {
+public final class PopcornDiscoverFactory {
 
-    private init() {}
+    private let applicationFactory: DiscoverApplicationFactory
 
-    public static func makeDiscoverFactory(
+    public init(
         discoverRemoteDataSource: some DiscoverRemoteDataSource,
         appConfigurationProvider: some AppConfigurationProviding,
         genreProvider: some GenreProviding,
         movieLogoImageProvider: some MovieLogoImageProviding,
         tvSeriesLogoImageProvider: some TVSeriesLogoImageProviding
-    ) -> DiscoverApplicationFactory {
+    ) {
         let infrastructureFactory = DiscoverInfrastructureFactory(
             discoverRemoteDataSource: discoverRemoteDataSource
         )
-        let discoverMovieRepository = infrastructureFactory.makeDiscoverMovieRepository()
-        let discoverTVSeriesRepository = infrastructureFactory.makeDiscoverTVSeriesRepository()
-
-        return DiscoverApplicationFactory(
-            discoverMovieRepository: discoverMovieRepository,
-            discoverTVSeriesRepository: discoverTVSeriesRepository,
+        self.applicationFactory = DiscoverApplicationFactory(
+            discoverMovieRepository: infrastructureFactory.makeDiscoverMovieRepository(),
+            discoverTVSeriesRepository: infrastructureFactory.makeDiscoverTVSeriesRepository(),
             genreProvider: genreProvider,
             appConfigurationProvider: appConfigurationProvider,
             movieLogoImageProvider: movieLogoImageProvider,
             tvSeriesLogoImageProvider: tvSeriesLogoImageProvider
         )
+    }
+
+    public func makeFetchDiscoverMoviesUseCase() -> some FetchDiscoverMoviesUseCase {
+        applicationFactory.makeFetchDiscoverMoviesUseCase()
+    }
+
+    public func makeFetchDiscoverTVSeriesUseCase() -> some FetchDiscoverTVSeriesUseCase {
+        applicationFactory.makeFetchDiscoverTVSeriesUseCase()
     }
 
 }
