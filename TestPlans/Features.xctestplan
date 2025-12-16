@@ -14,41 +14,6 @@
   "testTargets" : [
     {
       "target" : {
-        "containerPath" : "container:Features\/TrendingPeopleFeature",
-        "identifier" : "TrendingPeopleFeatureTests",
-        "name" : "TrendingPeopleFeatureTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Features\/TrendingTVSeriesFeature",
-        "identifier" : "TrendingTVSeriesFeatureTests",
-        "name" : "TrendingTVSeriesFeatureTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Features\/TVSeriesDetailsFeature",
-        "identifier" : "TVSeriesDetailsFeatureTests",
-        "name" : "TVSeriesDetailsFeatureTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Features\/TrendingMoviesFeature",
-        "identifier" : "TrendingMoviesFeatureTests",
-        "name" : "TrendingMoviesFeatureTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Features\/MovieDetailsFeature",
-        "identifier" : "MovieDetailsFeatureTests",
-        "name" : "MovieDetailsFeatureTests"
-      }
-    },
-    {
-      "target" : {
         "containerPath" : "container:Features\/MediaSearchFeature",
         "identifier" : "MediaSearchFeatureTests",
         "name" : "MediaSearchFeatureTests"
@@ -70,9 +35,58 @@
     },
     {
       "target" : {
+        "containerPath" : "container:Features\/TVSeriesDetailsFeature",
+        "identifier" : "TVSeriesDetailsFeatureTests",
+        "name" : "TVSeriesDetailsFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/MovieDetailsFeature",
+        "identifier" : "MovieDetailsFeatureTests",
+        "name" : "MovieDetailsFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TrendingTVSeriesFeature",
+        "identifier" : "TrendingTVSeriesFeatureTests",
+        "name" : "TrendingTVSeriesFeatureTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Features\/ExploreFeature",
         "identifier" : "ExploreFeatureTests",
         "name" : "ExploreFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/PlotRemixGameFeature",
+        "identifier" : "PlotRemixGameFeatureTests",
+        "name" : "PlotRemixGameFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TrendingPeopleFeature",
+        "identifier" : "TrendingPeopleFeatureTests",
+        "name" : "TrendingPeopleFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TrendingMoviesFeature",
+        "identifier" : "TrendingMoviesFeatureTests",
+        "name" : "TrendingMoviesFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/GamesCatalogFeature",
+        "identifier" : "GamesCatalogFeatureTests",
+        "name" : "GamesCatalogFeatureTests"
       }
     }
   ],

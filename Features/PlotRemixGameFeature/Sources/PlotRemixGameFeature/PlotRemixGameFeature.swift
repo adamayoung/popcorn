@@ -110,7 +110,7 @@ public struct PlotRemixGameFeature: Sendable {
                 }
                 return .none
 
-            case .answerQuestion(let questionID, let answerID):
+            case .answerQuestion:
                 return .none
 
             case .endGame:

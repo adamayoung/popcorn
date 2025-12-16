@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import TVApplication
+import TVSeriesApplication
 
 struct TVSeriesMapper {
 

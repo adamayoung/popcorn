@@ -9,7 +9,7 @@ import ConfigurationApplication
 import Foundation
 import MoviesApplication
 import TMDb
-import TVApplication
+import TVSeriesApplication
 import TrendingComposition
 
 public final class PopcornTrendingAdaptersFactory {

@@ -1,0 +1,41 @@
+//
+//  PopcornTVSeriesAdaptersFactory.swift
+//  PopcornTVSeriesAdapters
+//
+//  Created by Adam Young on 25/11/2025.
+//
+
+import ConfigurationApplication
+import Foundation
+import TMDb
+import TVSeriesComposition
+
+public final class PopcornTVSeriesAdaptersFactory {
+
+    private let tvSeriesService: any TVSeriesService
+    private let fetchAppConfigurationUseCase: any FetchAppConfigurationUseCase
+
+    public init(
+        tvSeriesService: some TVSeriesService,
+        fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase
+    ) {
+        self.tvSeriesService = tvSeriesService
+        self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
+    }
+
+    public func makeTVSeriesFactory() -> PopcornTVSeriesFactory {
+        let tvSeriesRemoteDataSource = TMDbTVSeriesRemoteDataSource(
+            tvSeriesService: tvSeriesService
+        )
+
+        let appConfigurationProvider = AppConfigurationProviderAdapter(
+            fetchUseCase: fetchAppConfigurationUseCase
+        )
+
+        return PopcornTVSeriesFactory(
+            tvSeriesRemoteDataSource: tvSeriesRemoteDataSource,
+            appConfigurationProvider: appConfigurationProvider
+        )
+    }
+
+}

@@ -11,10 +11,10 @@ import MoviesApplication
 import PeopleApplication
 import PopcornMoviesAdapters
 import PopcornPeopleAdapters
-import PopcornTVAdapters
+import PopcornTVSeriesAdapters
 import SearchComposition
 import TMDb
-import TVApplication
+import TVSeriesApplication
 
 public final class PopcornSearchAdaptersFactory {
 

@@ -31,7 +31,7 @@ final class FoundationModelsSynopsisRiddleGenerator: SynopsisRiddleGenerating {
         for movie: Movie,
         theme: GameTheme
     ) async throws(SynopsisRiddleGeneratorError) -> String {
-        let instructions = Self.createInstructions(for: theme)
+        let instructions = try Self.createInstructions(for: theme)
         let session = LanguageModelSession(instructions: instructions)
 
         let prompt = """
@@ -63,20 +63,26 @@ final class FoundationModelsSynopsisRiddleGenerator: SynopsisRiddleGenerating {
         return content
     }
 
-    private static func createInstructions(for theme: GameTheme) -> String {
-        """
-        You are a quiz master who rewrites movie summaries using the style defined by \(instructionPhrasesByTheme[theme]!) for a person to guess.
+    private static func createInstructions(for theme: GameTheme)
+        throws(SynopsisRiddleGeneratorError) -> String
+    {
+        guard let themeInstructions = instructionPhrasesByTheme[theme] else {
+            throw .generation()
+        }
 
-        --- RULES ---
-        - Preserve the core plot: the main conflict, 3-5 key events, and the resolution
-        - Replace specific names with descriptive roles (e.g., "a detective", "two siblings")
-        - Replace specific locations with generic settings (e.g., "a coastal town", "deep space")
-        - Change surface details (professions, time periods, objects) while keeping the story logic
-        - DO NOT include character names, actor names, movie titles, franchise names, or unique invented terms
-        - DO NOT reference release years, awards, taglines, or famous quotes
-        - Keep the same general tone as the original (serious plots stay serious, comedies stay light)
-        - Output ONLY the rewritten summary as 2-4 sentences in plain text
-        """
+        return """
+            You are a quiz master who rewrites movie summaries using the style defined by \(themeInstructions) for a person to guess.
+
+            --- RULES ---
+            - Preserve the core plot: the main conflict, 3-5 key events, and the resolution
+            - Replace specific names with descriptive roles (e.g., "a detective", "two siblings")
+            - Replace specific locations with generic settings (e.g., "a coastal town", "deep space")
+            - Change surface details (professions, time periods, objects) while keeping the story logic
+            - DO NOT include character names, actor names, movie titles, franchise names, or unique invented terms
+            - DO NOT reference release years, awards, taglines, or famous quotes
+            - Keep the same general tone as the original (serious plots stay serious, comedies stay light)
+            - Output ONLY the rewritten summary as 2-4 sentences in plain text
+            """
     }
 
 }

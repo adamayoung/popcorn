@@ -8,7 +8,7 @@
 import AppDependencies
 import ComposableArchitecture
 import Foundation
-import TVApplication
+import TVSeriesApplication
 
 @DependencyClient
 struct TVSeriesDetailsClient: Sendable {

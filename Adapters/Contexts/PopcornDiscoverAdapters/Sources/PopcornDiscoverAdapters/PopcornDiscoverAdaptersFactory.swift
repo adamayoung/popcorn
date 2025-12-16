@@ -11,7 +11,7 @@ import Foundation
 import GenresApplication
 import MoviesApplication
 import TMDb
-import TVApplication
+import TVSeriesApplication
 
 public final class PopcornDiscoverAdaptersFactory {
 
