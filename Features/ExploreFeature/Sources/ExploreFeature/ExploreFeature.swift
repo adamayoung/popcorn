@@ -108,17 +108,23 @@ extension ExploreFeature {
 
     private func handleFetchAll() -> EffectOf<Self> {
         .run { [exploreClient] send in
+            let isDiscoverMoviesEnabled = (try? exploreClient.isDiscoverMoviesEnabled()) ?? false
+            let isTrendingMoviesEnabled = (try? exploreClient.isTrendingMoviesEnabled()) ?? false
+            let isPopularMoviesEnabled = (try? exploreClient.isPopularMoviesEnabled()) ?? false
+            let isTrendingTVSeriesEnabled =
+                (try? exploreClient.isTrendingTVSeriesEnabled()) ?? false
+            let isTrendingPeopleEnabled = (try? exploreClient.isTrendingPeopleEnabled()) ?? false
+
             async let discoverMovies =
-                exploreClient.isDiscoverMoviesEnabled() ? exploreClient.fetchDiscoverMovies() : []
+                isDiscoverMoviesEnabled ? exploreClient.fetchDiscoverMovies() : []
             async let trendingMovies =
-                exploreClient.isTrendingMoviesEnabled() ? exploreClient.fetchTrendingMovies() : []
+                isTrendingMoviesEnabled ? exploreClient.fetchTrendingMovies() : []
             async let popularMovies =
-                exploreClient.isPopularMoviesEnabled() ? exploreClient.fetchPopularMovies() : []
+                isPopularMoviesEnabled ? exploreClient.fetchPopularMovies() : []
             async let trendingTVSeries =
-                exploreClient.isTrendingTVSeriesEnabled()
-                ? exploreClient.fetchTrendingTVSeries() : []
+                isTrendingTVSeriesEnabled ? exploreClient.fetchTrendingTVSeries() : []
             async let trendingPeople =
-                exploreClient.isTrendingPeopleEnabled() ? exploreClient.fetchTrendingPeople() : []
+                isTrendingPeopleEnabled ? exploreClient.fetchTrendingPeople() : []
 
             do {
                 let snapshot = try await ViewSnapshot(

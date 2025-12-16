@@ -42,7 +42,12 @@ extension AppRootClient: DependencyKey {
                     apiKey: AppConfig.featureFlagsKey
                 )
 
-                return try await featureFlagsInitialiser.start(config)
+                do {
+                    try await featureFlagsInitialiser.start(config)
+                } catch let error {
+                    Self.logger.error(
+                        "Feature flags failed to initialise: \(error.localizedDescription)")
+                }
             },
             isExploreEnabled: {
                 featureFlags.isEnabled(.explore)

@@ -34,7 +34,7 @@ package final class MoviesInfrastructureFactory {
 
     private static let cloudKitModelContainer: ModelContainer = {
         let schema = Schema([
-            MoviesFavouriteMovieEntity.self
+            MoviesWatchlistMovieEntity.self
         ])
 
         let storeURL = URL.documentsDirectory.appending(path: "popcorn-movies-cloudkit.sqlite")
@@ -66,9 +66,9 @@ package final class MoviesInfrastructureFactory {
         )
     }
 
-    package func makeFavouriteMovieRepository() -> some FavouriteMovieRepository {
-        DefaultFavouriteMovieRepository(
-            localDataSource: Self.favouriteMovieLocalDataSource
+    package func makeMovieWatchlistRepository() -> some MovieWatchlistRepository {
+        DefaultMovieWatchlistRepository(
+            localDataSource: Self.movieWatchlistLocalDataSource
         )
     }
 
@@ -102,8 +102,8 @@ extension MoviesInfrastructureFactory {
             modelContainer: modelContainer
         )
 
-    private static let favouriteMovieLocalDataSource: some FavouriteMovieLocalDataSource =
-        SwiftDataFavouriteMovieLocalDataSource(
+    private static let movieWatchlistLocalDataSource: some MovieWatchlistLocalDataSource =
+        SwiftDataMovieWatchlistLocalDataSource(
             modelContainer: cloudKitModelContainer
         )
 

@@ -19,7 +19,19 @@ final class DefaultGameRepository: GameRepository {
     func games() async throws(GameRepositoryError) -> [GameMetadata] {
         Self.availableGames.values
             .filter { game in
+                if game.id == 1 && !isPlotRemixEnabled {
+                    return false
+                }
+
+                if game.id == 2 && !isPosterPixelationGameEnabled {
+                    return false
+                }
+
                 if game.id == 3 && !isEmojiPlotDecoderEnabled {
+                    return false
+                }
+
+                if game.id == 4 && !isTimelineTangleGameEnabled {
                     return false
                 }
 
@@ -42,9 +54,25 @@ final class DefaultGameRepository: GameRepository {
 
 extension DefaultGameRepository {
 
+    private var isPlotRemixEnabled: Bool {
+        (try? featureFlagProvider.isPlotRemixGameEnabled()) == true
+    }
+
     private var isEmojiPlotDecoderEnabled: Bool {
         (try? featureFlagProvider.isEmojiPlotDecoderEnabled()) == true
     }
+
+    private var isPosterPixelationGameEnabled: Bool {
+        (try? featureFlagProvider.isPosterPixelationGameEnabled()) == true
+    }
+
+    private var isTimelineTangleGameEnabled: Bool {
+        (try? featureFlagProvider.isTimelineTangleGameEnabled()) == true
+    }
+
+}
+
+extension DefaultGameRepository {
 
     private static let availableGames: [GameMetadata.ID: GameMetadata] = [
         1: GameMetadata(

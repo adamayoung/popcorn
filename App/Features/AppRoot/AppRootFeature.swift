@@ -27,6 +27,7 @@ struct AppRootFeature {
 
         var hasStarted: Bool = false
         var isReady: Bool = false
+        var error: Error? = nil
     }
 
     enum Tab {
@@ -47,6 +48,7 @@ struct AppRootFeature {
         case binding(BindingAction<State>)
         case didAppear
         case featureFlagsInitialised
+        case featureFlagsFailedToInitialise(Error)
         case updateFeatureFlags
         case explore(ExploreRootFeature.Action)
         case games(GamesRootFeature.Action)
@@ -72,6 +74,10 @@ struct AppRootFeature {
                     await send(.updateFeatureFlags)
                 }
 
+            case .featureFlagsFailedToInitialise(let error):
+                state.error = error
+                return .none
+
             case .updateFeatureFlags:
                 state.isExploreEnabled = (try? appRootClient.isExploreEnabled()) ?? false
                 state.isGamesEnabled = (try? appRootClient.isGamesEnabled()) ?? false
@@ -95,7 +101,13 @@ extension AppRootFeature {
 
     private func handleInitialiseFeatureFlags() -> EffectOf<Self> {
         .run { [appRootClient] send in
-            try await appRootClient.startFeatureFlags()
+            do {
+                try await appRootClient.startFeatureFlags()
+            } catch let error {
+                await send(.featureFlagsFailedToInitialise(error))
+                return
+            }
+
             await send(.featureFlagsInitialised)
         }
     }

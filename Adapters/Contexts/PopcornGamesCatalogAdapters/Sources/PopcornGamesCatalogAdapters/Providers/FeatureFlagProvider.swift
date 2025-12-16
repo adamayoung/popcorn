@@ -21,4 +21,16 @@ final class FeatureFlagProvider: GamesCatalogDomain.FeatureFlagProviding {
         featureFlags.isEnabled(.emojiPlotDecoderGame)
     }
 
+    func isPlotRemixGameEnabled() throws(FeatureFlagProviderError) -> Bool {
+        featureFlags.isEnabled(.plotRemixGame)
+    }
+
+    func isPosterPixelationGameEnabled() throws(FeatureFlagProviderError) -> Bool {
+        featureFlags.isEnabled(.posterPixelationGame)
+    }
+
+    func isTimelineTangleGameEnabled() throws(FeatureFlagProviderError) -> Bool {
+        featureFlags.isEnabled(.timelineTangleGame)
+    }
+
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum FeatureFlag: String, Sendable {
+public enum FeatureFlag: String, Sendable, CaseIterable {
     // Navigation
     case explore = "explore"
     case mediaSearch = "media_search"
@@ -21,8 +21,11 @@ public enum FeatureFlag: String, Sendable {
 
     // Games
     case games = "games"
+    case plotRemixGame = "plot_remix_game"
     case emojiPlotDecoderGame = "emoji_plot_decoder_game"
+    case posterPixelationGame = "poster_pixelation_game"
+    case timelineTangleGame = "timeline_tangle_game"
 
     // App Wide
-    case watchList = "watch_list"
+    case watchlist = "watchlist"
 }

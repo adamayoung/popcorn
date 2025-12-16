@@ -6,8 +6,14 @@
 //
 
 import Foundation
+import OSLog
 
 struct FeatureFlagService: FeatureFlags, FeatureFlagInitialising {
+
+    private static let logger = Logger(
+        subsystem: "FeatureFlags",
+        category: "FeatureFlagService"
+    )
 
     private let provider: any FeatureFlagProviding
 
@@ -17,6 +23,14 @@ struct FeatureFlagService: FeatureFlags, FeatureFlagInitialising {
 
     func start(_ config: FeatureFlagsConfiguration) async throws {
         try await provider.start(config)
+
+        var flagStatuses: [String] = []
+        for featureFlag in FeatureFlag.allCases {
+            let value = isEnabled(featureFlag)
+            flagStatuses.append("\(featureFlag.rawValue): \(value)")
+        }
+
+        Self.logger.info("Feature flags:\n\(flagStatuses.joined(separator: "\n"))")
     }
 
     func isEnabled(_ flag: FeatureFlag) -> Bool {

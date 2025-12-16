@@ -9,9 +9,9 @@ import ComposableArchitecture
 import Foundation
 import MoviesApplication
 
-enum ToggleFavouriteMovieUseCaseKey: DependencyKey {
+enum ToggleWatchlistMovieUseCaseKey: DependencyKey {
 
-    static var liveValue: any ToggleFavouriteMovieUseCase {
+    static var liveValue: any ToggleWatchlistMovieUseCase {
         @Dependency(\.moviesFactory) var moviesFactory
         return moviesFactory.makeToggleFavouriteMovieUseCase()
     }
@@ -20,9 +20,9 @@ enum ToggleFavouriteMovieUseCaseKey: DependencyKey {
 
 extension DependencyValues {
 
-    public var toggleFavouriteMovie: any ToggleFavouriteMovieUseCase {
-        get { self[ToggleFavouriteMovieUseCaseKey.self] }
-        set { self[ToggleFavouriteMovieUseCaseKey.self] = newValue }
+    public var toggleWatchlistMovie: any ToggleWatchlistMovieUseCase {
+        get { self[ToggleWatchlistMovieUseCaseKey.self] }
+        set { self[ToggleWatchlistMovieUseCaseKey.self] = newValue }
     }
 
 }

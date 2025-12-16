@@ -11,7 +11,7 @@ import MoviesDomain
 package final class MoviesApplicationFactory {
 
     private let movieRepository: any MovieRepository
-    private let favouriteMovieRepository: any FavouriteMovieRepository
+    private let movieWatchlistRepository: any MovieWatchlistRepository
     private let movieImageRepository: any MovieImageRepository
     private let popularMovieRepository: any PopularMovieRepository
     private let similarMovieRepository: any SimilarMovieRepository
@@ -19,14 +19,14 @@ package final class MoviesApplicationFactory {
 
     package init(
         movieRepository: some MovieRepository,
-        favouriteMovieRepository: some FavouriteMovieRepository,
+        movieWatchlistRepository: some MovieWatchlistRepository,
         movieImageRepository: some MovieImageRepository,
         popularMovieRepository: some PopularMovieRepository,
         similarMovieRepository: some SimilarMovieRepository,
         appConfigurationProvider: some AppConfigurationProviding
     ) {
         self.movieRepository = movieRepository
-        self.favouriteMovieRepository = favouriteMovieRepository
+        self.movieWatchlistRepository = movieWatchlistRepository
         self.movieImageRepository = movieImageRepository
         self.popularMovieRepository = popularMovieRepository
         self.similarMovieRepository = similarMovieRepository
@@ -37,7 +37,7 @@ package final class MoviesApplicationFactory {
         DefaultFetchMovieDetailsUseCase(
             movieRepository: movieRepository,
             movieImageRepository: movieImageRepository,
-            favouriteMovieRepository: favouriteMovieRepository,
+            movieWatchlistRepository: movieWatchlistRepository,
             appConfigurationProvider: appConfigurationProvider
         )
     }
@@ -46,15 +46,15 @@ package final class MoviesApplicationFactory {
         DefaultStreamMovieDetailsUseCase(
             movieRepository: movieRepository,
             movieImageRepository: movieImageRepository,
-            favouriteMovieRepository: favouriteMovieRepository,
+            movieWatchlistRepository: movieWatchlistRepository,
             appConfigurationProvider: appConfigurationProvider
         )
     }
 
-    package func makeToggleFavouriteMovieUseCase() -> some ToggleFavouriteMovieUseCase {
-        DefaultToggleFavouriteMovieUseCase(
+    package func makeToggleWatchlistMovieUseCase() -> some ToggleWatchlistMovieUseCase {
+        DefaultToggleWatchlistMovieUseCase(
             movieRepository: movieRepository,
-            favouriteMovieRepository: favouriteMovieRepository
+            movieWatchlistRepository: movieWatchlistRepository
         )
     }
 

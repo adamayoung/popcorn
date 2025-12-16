@@ -17,6 +17,8 @@ struct AppRootView: View {
         Group {
             if store.isReady {
                 content
+            } else if let error = store.error {
+                errorView(with: error)
             } else {
                 ProgressView()
             }
@@ -85,6 +87,15 @@ struct AppRootView: View {
             .tabViewCustomization($customization)
         #endif
         .minimizeTabBar()
+    }
+
+    private func errorView(with error: Error) -> some View {
+        ContentUnavailableView(
+            "FAILED_TO_LOAD",
+            systemImage: "exclamationmark.triangle.fill",
+            description: Text("APP_FAILED_TO_START_TRY_AGAIN")
+        )
+
     }
 
 }

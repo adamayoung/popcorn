@@ -18,7 +18,7 @@ struct MovieMapper {
             posterURL: movieDetails.posterURLSet?.detail,
             backdropURL: movieDetails.backdropURLSet?.full,
             logoURL: movieDetails.logoURLSet?.detail,
-            isFavourite: movieDetails.isFavourite
+            isOnWatchlist: movieDetails.isOnWatchlist
         )
     }
 

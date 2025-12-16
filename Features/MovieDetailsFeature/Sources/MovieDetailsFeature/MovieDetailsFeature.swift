@@ -19,6 +19,8 @@ public struct MovieDetailsFeature: Sendable {
         public let transitionID: String?
         var viewState: ViewState
 
+        var isWatchlistEnabled: Bool
+
         public var isLoading: Bool {
             switch viewState {
             case .loading: true
@@ -36,11 +38,13 @@ public struct MovieDetailsFeature: Sendable {
         public init(
             movieID: Int,
             transitionID: String? = nil,
-            viewState: ViewState = .initial
+            viewState: ViewState = .initial,
+            isWatchlistEnabled: Bool = false
         ) {
             self.movieID = movieID
             self.transitionID = transitionID
             self.viewState = viewState
+            self.isWatchlistEnabled = isWatchlistEnabled
         }
     }
 
@@ -65,11 +69,13 @@ public struct MovieDetailsFeature: Sendable {
     }
 
     public enum Action {
+        case didAppear
+        case updateFeatureFlags
         case stream
         case cancelStream
         case loaded(ViewSnapshot)
         case loadFailed(Error)
-        case toggleFavourite
+        case toggleOnWatchlist
         case navigate(Navigation)
     }
 
@@ -82,6 +88,14 @@ public struct MovieDetailsFeature: Sendable {
     public var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
+            case .didAppear:
+                return .run { send in
+                    await send(.updateFeatureFlags)
+                }
+            case .updateFeatureFlags:
+                state.isWatchlistEnabled = (try? movieDetailsClient.isWatchlistEnabled()) ?? false
+                return .none
+
             case .stream:
                 if case .initial = state.viewState {
                     state.viewState = .loading
@@ -99,8 +113,12 @@ public struct MovieDetailsFeature: Sendable {
                 state.viewState = .error(error)
                 return .none
 
-            case .toggleFavourite:
-                return handleToggleFavourite(&state)
+            case .toggleOnWatchlist:
+                guard state.isWatchlistEnabled else {
+                    return .none
+                }
+
+                return handleToggleOnWatchlist(&state)
 
             default:
                 return .none
@@ -173,9 +191,9 @@ extension MovieDetailsFeature {
         }
     }
 
-    private func handleToggleFavourite(_ state: inout State) -> EffectOf<Self> {
+    private func handleToggleOnWatchlist(_ state: inout State) -> EffectOf<Self> {
         .run { [state] send in
-            try await movieDetailsClient.toggleFavourite(state.movieID)
+            try await movieDetailsClient.toggleOnWatchlist(state.movieID)
         }
     }
 }

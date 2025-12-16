@@ -38,15 +38,15 @@ public struct MovieDetailsView: View {
             }
         }
         .toolbar {
-            if case .ready(let snapshot) = store.viewState {
+            if case .ready(let snapshot) = store.viewState, store.isWatchlistEnabled {
                 ToolbarItem(placement: .primaryAction) {
                     Button(
                         "Favourite",
-                        systemImage: snapshot.movie.isFavourite ? "heart.fill" : "heart"
+                        systemImage: snapshot.movie.isOnWatchlist ? "heart.fill" : "heart"
                     ) {
-                        store.send(.toggleFavourite)
+                        store.send(.toggleOnWatchlist)
                     }
-                    .sensoryFeedback(.selection, trigger: snapshot.movie.isFavourite)
+                    .sensoryFeedback(.selection, trigger: snapshot.movie.isOnWatchlist)
                 }
             }
         }
@@ -56,6 +56,9 @@ public struct MovieDetailsView: View {
             if store.isLoading {
                 loadingBody
             }
+        }
+        .onAppear {
+            store.send(.didAppear)
         }
         .task {
             await store.send(.stream).finish()

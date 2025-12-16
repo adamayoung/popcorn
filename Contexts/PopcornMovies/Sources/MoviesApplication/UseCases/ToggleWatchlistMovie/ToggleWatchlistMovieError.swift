@@ -1,5 +1,5 @@
 //
-//  ToggleFavouriteMovieError.swift
+//  ToggleWatchlistMovieError.swift
 //  PopcornMovies
 //
 //  Created by Adam Young on 03/12/2025.
@@ -8,14 +8,14 @@
 import Foundation
 import MoviesDomain
 
-public enum ToggleFavouriteMovieError: Error {
+public enum ToggleWatchlistMovieError: Error {
 
     case notFound
     case unknown(Error?)
 
 }
 
-extension ToggleFavouriteMovieError {
+extension ToggleWatchlistMovieError {
 
     init(_ error: Error) {
         if let repositoryError = error as? MovieRepositoryError {
@@ -23,7 +23,7 @@ extension ToggleFavouriteMovieError {
             return
         }
 
-        if let repositoryError = error as? FavouriteMovieRepositoryError {
+        if let repositoryError = error as? MovieWatchlistRepositoryError {
             self.init(repositoryError)
             return
         }
@@ -44,7 +44,7 @@ extension ToggleFavouriteMovieError {
         }
     }
 
-    init(_ error: FavouriteMovieRepositoryError) {
+    init(_ error: MovieWatchlistRepositoryError) {
         switch error {
         case .unknown(let error):
             self = .unknown(error)

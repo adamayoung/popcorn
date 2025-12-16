@@ -1,5 +1,5 @@
 //
-//  SwiftDataFavouriteMovieLocalDataSource.swift
+//  SwiftDataMovieWatchlistLocalDataSource.swift
 //  PopcornMovies
 //
 //  Created by Adam Young on 03/12/2025.
@@ -12,41 +12,41 @@ import OSLog
 import SwiftData
 
 @ModelActor
-actor SwiftDataFavouriteMovieLocalDataSource: FavouriteMovieLocalDataSource,
+actor SwiftDataMovieWatchlistLocalDataSource: MovieWatchlistLocalDataSource,
     SwiftDataFetchStreaming, Sendable
 {
 
     private static let logger = Logger(
         subsystem: "PopcornMovies",
-        category: "SwiftDataFavouriteMovieLocalDataSource"
+        category: "SwiftDataMovieWatchlistLocalDataSource"
     )
 
-    func favourites() async throws(FavouriteMovieLocalDataSourceError) -> Set<FavouriteMovie> {
-        let descriptor = FetchDescriptor<MoviesFavouriteMovieEntity>(
+    func movies() async throws(MovieWatchlistLocalDataSourceError) -> Set<WatchlistMovie> {
+        let descriptor = FetchDescriptor<MoviesWatchlistMovieEntity>(
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
         )
 
-        let entities: [MoviesFavouriteMovieEntity]
+        let entities: [MoviesWatchlistMovieEntity]
         do {
             entities = try modelContext.fetch(descriptor)
         } catch let error {
             throw .persistence(error)
         }
 
-        let mapper = FavouriteMovieMapper()
-        let favouriteMovies = entities.compactMap(mapper.map)
+        let mapper = WatchlistMovieMapper()
+        let watchlistMovies = entities.compactMap(mapper.map)
 
-        return Set(favouriteMovies)
+        return Set(watchlistMovies)
     }
 
-    func isFavourite(movieID id: Int) async throws(FavouriteMovieLocalDataSourceError) -> Bool {
-        var descriptor = FetchDescriptor<MoviesFavouriteMovieEntity>(
+    func isOnWatchlist(movieID id: Int) async throws(MovieWatchlistLocalDataSourceError) -> Bool {
+        var descriptor = FetchDescriptor<MoviesWatchlistMovieEntity>(
             predicate: #Predicate { $0.movieID == id },
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
         )
         descriptor.fetchLimit = 1
 
-        let favouriteMovie: MoviesFavouriteMovieEntity?
+        let favouriteMovie: MoviesWatchlistMovieEntity?
         do {
             favouriteMovie = try modelContext.fetch(descriptor).first
         } catch let error {
@@ -56,10 +56,10 @@ actor SwiftDataFavouriteMovieLocalDataSource: FavouriteMovieLocalDataSource,
         return favouriteMovie != nil
     }
 
-    func saveFavourite(
+    func addMovie(
         withID id: Int
-    ) async throws(FavouriteMovieLocalDataSourceError) {
-        let favouriteMovieEntity = MoviesFavouriteMovieEntity(movieID: id, createdAt: .now)
+    ) async throws(MovieWatchlistLocalDataSourceError) {
+        let favouriteMovieEntity = MoviesWatchlistMovieEntity(movieID: id, createdAt: .now)
         modelContext.insert(favouriteMovieEntity)
 
         do { try modelContext.save() } catch let error {
@@ -67,10 +67,10 @@ actor SwiftDataFavouriteMovieLocalDataSource: FavouriteMovieLocalDataSource,
         }
     }
 
-    func deleteFavourite(
+    func removeMovie(
         withID id: Int
-    ) async throws(MoviesDomain.FavouriteMovieLocalDataSourceError) {
-        let deleteDescriptor = FetchDescriptor<MoviesFavouriteMovieEntity>(
+    ) async throws(MoviesDomain.MovieWatchlistLocalDataSourceError) {
+        let deleteDescriptor = FetchDescriptor<MoviesWatchlistMovieEntity>(
             predicate: #Predicate { $0.movieID == id }
         )
         do {

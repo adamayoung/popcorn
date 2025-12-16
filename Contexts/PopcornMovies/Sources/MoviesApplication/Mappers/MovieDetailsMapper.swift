@@ -14,7 +14,7 @@ struct MovieDetailsMapper {
     func map(
         _ movie: Movie,
         imageCollection: ImageCollection,
-        isFavourite: Bool = false,
+        isOnWatchlist: Bool = false,
         imagesConfiguration: ImagesConfiguration
     ) -> MovieDetails {
         let posterURLSet = imagesConfiguration.posterURLSet(for: movie.posterPath)
@@ -28,7 +28,7 @@ struct MovieDetailsMapper {
             posterURLSet: posterURLSet,
             backdropURLSet: backdropURLSet,
             logoURLSet: logoURLSet,
-            isFavourite: isFavourite
+            isOnWatchlist: isOnWatchlist
         )
     }
 

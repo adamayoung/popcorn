@@ -20,9 +20,14 @@ struct StatsigFeatureFlagProvider: FeatureFlagProviding {
     func start(_ config: FeatureFlagsConfiguration) async throws {
         try await withCheckedThrowingContinuation {
             (continuation: CheckedContinuation<Void, Error>) in
+            let options = StatsigOptions(
+                environment: StatsigEnvironment(tier: config.environment.statsigTier)
+            )
+
             Statsig.initialize(
                 sdkKey: config.apiKey,
                 user: StatsigUser(userID: config.userID),
+                options: options,
                 completion: { error in
                     if let error {
                         Self.logger.error(
@@ -43,4 +48,16 @@ struct StatsigFeatureFlagProvider: FeatureFlagProviding {
     func isEnabled(_ key: String) -> Bool {
         Statsig.checkGate(key)
     }
+}
+
+extension FeatureFlagsConfiguration.Environment {
+
+    fileprivate var statsigTier: StatsigEnvironment.EnvironmentTier {
+        switch self {
+        case .development: .Development
+        case .staging: .Staging
+        case .production: .Production
+        }
+    }
+
 }
