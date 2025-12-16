@@ -6,19 +6,23 @@
 //
 
 import Foundation
-import GenresApplication
+import GenresComposition
 import TMDb
 
-struct PopcornGenresAdaptersFactory {
+public final class PopcornGenresAdaptersFactory {
 
-    let genreService: any GenreService
+    private let genreService: any GenreService
 
-    func makeGenresFactory() -> GenresApplicationFactory {
+    public init(genreService: some GenreService) {
+        self.genreService = genreService
+    }
+
+    public func makeGenresFactory() -> PopcornGenresFactory {
         let genreRemoteDataSource = TMDbGenreRemoteDataSource(
             genreService: genreService
         )
 
-        return GenresComposition.makeGenresFactory(
+        return PopcornGenresFactory(
             genreRemoteDataSource: genreRemoteDataSource
         )
     }

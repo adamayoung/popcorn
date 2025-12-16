@@ -5,20 +5,24 @@
 //  Created by Adam Young on 26/11/2025.
 //
 
-import ConfigurationApplication
+import ConfigurationComposition
 import Foundation
 import TMDb
 
-struct PopcornConfigurationAdaptersFactory {
+public final class PopcornConfigurationAdaptersFactory {
 
-    let configurationService: any ConfigurationService
+    private let configurationService: any ConfigurationService
 
-    func makeConfigurationFactory() -> ConfigurationApplicationFactory {
+    public init(configurationService: some ConfigurationService) {
+        self.configurationService = configurationService
+    }
+
+    public func makeConfigurationFactory() -> PopcornConfigurationFactory {
         let configurationRemoteDataSource = TMDbConfigurationRemoteDataSource(
             configurationService: configurationService
         )
 
-        return ConfigurationComposition.makeConfigurationFactory(
+        return PopcornConfigurationFactory(
             configurationRemoteDataSource: configurationRemoteDataSource
         )
     }

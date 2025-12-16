@@ -5,15 +5,14 @@
 //  Created by Adam Young on 21/11/2025.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import DiscoverApplication
 import Foundation
 import MoviesApplication
-import PopcornDiscoverAdapters
-import PopcornMoviesAdapters
-import PopcornTrendingAdapters
 import TrendingApplication
 
+@DependencyClient
 struct ExploreClient: Sendable {
 
     var fetchDiscoverMovies: @Sendable () async throws -> [MoviePreview]
@@ -27,36 +26,37 @@ struct ExploreClient: Sendable {
 extension ExploreClient: DependencyKey {
 
     static var liveValue: ExploreClient {
-        ExploreClient(
+        @Dependency(\.fetchDiscoverMovies) var fetchDiscoverMovies
+        @Dependency(\.fetchTrendingMovies) var fetchTrendingMovies
+        @Dependency(\.fetchPopularMovies) var fetchPopularMovies
+        @Dependency(\.fetchTrendingTVSeries) var fetchTrendingTVSeries
+        @Dependency(\.fetchTrendingPeople) var fetchTrendingPeople
+
+        return ExploreClient(
             fetchDiscoverMovies: {
-                let useCase = DependencyValues._current.fetchDiscoverMovies
-                let moviePreviews = try await useCase.execute()
+                let moviePreviews = try await fetchDiscoverMovies.execute()
                 let mapper = MoviePreviewMapper()
                 let movies = moviePreviews.map(mapper.map)
                 return movies
             },
             fetchTrendingMovies: {
-                let useCase = DependencyValues._current.fetchTrendingMovies
-                let moviePreviews = try await useCase.execute()
+                let moviePreviews = try await fetchTrendingMovies.execute()
                 let mapper = MoviePreviewMapper()
                 let movies = moviePreviews.map(mapper.map)
                 return movies
             },
             fetchPopularMovies: {
-                let useCase = DependencyValues._current.fetchPopularMovies
-                let moviePreviews = try await useCase.execute()
+                let moviePreviews = try await fetchPopularMovies.execute()
                 let mapper = MoviePreviewMapper()
                 return moviePreviews.map(mapper.map)
             },
             fetchTrendingTVSeries: {
-                let useCase = DependencyValues._current.fetchTrendingTVSeries
-                let tvSeriesPreviews = try await useCase.execute()
+                let tvSeriesPreviews = try await fetchTrendingTVSeries.execute()
                 let mapper = TVSeriesPreviewMapper()
                 return tvSeriesPreviews.map(mapper.map)
             },
             fetchTrendingPeople: {
-                let useCase = DependencyValues._current.fetchTrendingPeople
-                let personPreviews = try await useCase.execute()
+                let personPreviews = try await fetchTrendingPeople.execute()
                 let mapper = PersonPreviewMapper()
                 return personPreviews.map(mapper.map)
             }
@@ -92,7 +92,7 @@ extension ExploreClient: DependencyKey {
 
 extension DependencyValues {
 
-    var explore: ExploreClient {
+    var exploreClient: ExploreClient {
         get {
             self[ExploreClient.self]
         }

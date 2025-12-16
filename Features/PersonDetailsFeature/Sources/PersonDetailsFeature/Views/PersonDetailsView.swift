@@ -24,26 +24,37 @@ public struct PersonDetailsView: View {
 
     public var body: some View {
         ScrollView {
-            if let person = store.person {
-                content(person: person)
+            switch store.viewState {
+            case .ready(let snapshot):
+                content(person: snapshot.person)
+            case .error(let error):
+                Text(verbatim: "\(error.localizedDescription)")
+            default:
+                EmptyView()
             }
         }
+        .contentTransition(.opacity)
+        .animation(.easeInOut(duration: 1), value: store.isReady)
         .overlay {
             if store.isLoading {
-                ProgressView()
+                loadingBody
             }
         }
         .task {
-            store.send(.loadPerson)
+            store.send(.fetch)
         }
+    }
+
+    private var loadingBody: some View {
+        ProgressView()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     @ViewBuilder
     private func content(person: Person) -> some View {
         ProfileImage(url: person.profileURL)
             .frame(width: 300, height: 300)
-            .cornerRadius(150)
-            .clipped()
+            .clipShape(.circle)
 
         VStack {
             Text(verbatim: person.name)
@@ -59,15 +70,37 @@ public struct PersonDetailsView: View {
 
 }
 
-#Preview {
+#Preview("Ready") {
     @Previewable @Namespace var namespace
 
     NavigationStack {
         PersonDetailsView(
             store: Store(
-                initialState: PersonDetailsFeature.State(id: 1),
+                initialState: PersonDetailsFeature.State(
+                    personID: Person.mock.id,
+                    viewState: .ready(.init(person: Person.mock))
+                ),
                 reducer: {
-                    PersonDetailsFeature()
+                    EmptyReducer()
+                }
+            ),
+            transitionNamespace: namespace
+        )
+    }
+}
+
+#Preview("Loading") {
+    @Previewable @Namespace var namespace
+
+    NavigationStack {
+        PersonDetailsView(
+            store: Store(
+                initialState: PersonDetailsFeature.State(
+                    personID: Person.mock.id,
+                    viewState: .loading
+                ),
+                reducer: {
+                    EmptyReducer()
                 }
             ),
             transitionNamespace: namespace

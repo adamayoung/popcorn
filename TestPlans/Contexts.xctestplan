@@ -14,16 +14,9 @@
   "testTargets" : [
     {
       "target" : {
-        "containerPath" : "container:Contexts\/PopcornSearch",
-        "identifier" : "SearchDomainTests",
-        "name" : "SearchDomainTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Contexts\/PopcornPeople",
-        "identifier" : "PeopleDomainTests",
-        "name" : "PeopleDomainTests"
+        "containerPath" : "container:Contexts\/PopcornDiscover",
+        "identifier" : "DiscoverDomainTests",
+        "name" : "DiscoverDomainTests"
       }
     },
     {
@@ -35,16 +28,16 @@
     },
     {
       "target" : {
-        "containerPath" : "container:Contexts\/PopcornMovies",
-        "identifier" : "MoviesApplicationTests",
-        "name" : "MoviesApplicationTests"
+        "containerPath" : "container:Contexts\/PopcornGenres",
+        "identifier" : "GenresDomainTests",
+        "name" : "GenresDomainTests"
       }
     },
     {
       "target" : {
-        "containerPath" : "container:Contexts\/PopcornTV",
-        "identifier" : "TVDomainTests",
-        "name" : "TVDomainTests"
+        "containerPath" : "container:Contexts\/PopcornGamesCatalog",
+        "identifier" : "GamesCatalogApplicationTests",
+        "name" : "GamesCatalogApplicationTests"
       }
     },
     {
@@ -56,37 +49,16 @@
     },
     {
       "target" : {
+        "containerPath" : "container:Contexts\/PopcornGamesCatalog",
+        "identifier" : "GamesCatalogInfrastructureTests",
+        "name" : "GamesCatalogInfrastructureTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Contexts\/PopcornTrending",
         "identifier" : "TrendingApplicationTests",
         "name" : "TrendingApplicationTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Contexts\/PopcornSearch",
-        "identifier" : "SearchInfrastructureTests",
-        "name" : "SearchInfrastructureTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Contexts\/PopcornConfiguration",
-        "identifier" : "ConfigurationApplicationTests",
-        "name" : "ConfigurationApplicationTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Contexts\/PopcornTrending",
-        "identifier" : "TrendingInfrastructureTests",
-        "name" : "TrendingInfrastructureTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Contexts\/PopcornQuiz",
-        "identifier" : "QuizInfrastructureTests",
-        "name" : "QuizInfrastructureTests"
       }
     },
     {
@@ -98,23 +70,44 @@
     },
     {
       "target" : {
-        "containerPath" : "container:Contexts\/PopcornTV",
-        "identifier" : "TVInfrastructureTests",
-        "name" : "TVInfrastructureTests"
+        "containerPath" : "container:Contexts\/PopcornPlotRemixGame",
+        "identifier" : "PlotRemixGameApplicationTests",
+        "name" : "PlotRemixGameApplicationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornGenres",
+        "identifier" : "GenresInfrastructureTests",
+        "name" : "GenresInfrastructureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornPlotRemixGame",
+        "identifier" : "PlotRemixGameInfrastructureTests",
+        "name" : "PlotRemixGameInfrastructureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornMovies",
+        "identifier" : "MoviesApplicationTests",
+        "name" : "MoviesApplicationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornPeople",
+        "identifier" : "PeopleDomainTests",
+        "name" : "PeopleDomainTests"
       }
     },
     {
       "target" : {
         "containerPath" : "container:Contexts\/PopcornConfiguration",
-        "identifier" : "ConfigurationInfrastructureTests",
-        "name" : "ConfigurationInfrastructureTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Contexts\/PopcornTrending",
-        "identifier" : "TrendingDomainTests",
-        "name" : "TrendingDomainTests"
+        "identifier" : "ConfigurationApplicationTests",
+        "name" : "ConfigurationApplicationTests"
       }
     },
     {
@@ -126,9 +119,23 @@
     },
     {
       "target" : {
-        "containerPath" : "container:Contexts\/PopcornTV",
-        "identifier" : "TVApplicationTests",
-        "name" : "TVApplicationTests"
+        "containerPath" : "container:Contexts\/PopcornDiscover",
+        "identifier" : "DiscoverApplicationTests",
+        "name" : "DiscoverApplicationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornSearch",
+        "identifier" : "SearchDomainTests",
+        "name" : "SearchDomainTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornTrending",
+        "identifier" : "TrendingInfrastructureTests",
+        "name" : "TrendingInfrastructureTests"
       }
     },
     {
@@ -140,23 +147,58 @@
     },
     {
       "target" : {
+        "containerPath" : "container:Contexts\/PopcornDiscover",
+        "identifier" : "DiscoverInfrastructureTests",
+        "name" : "DiscoverInfrastructureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornGenres",
+        "identifier" : "GenresApplicationTests",
+        "name" : "GenresApplicationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornConfiguration",
+        "identifier" : "ConfigurationInfrastructureTests",
+        "name" : "ConfigurationInfrastructureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornGamesCatalog",
+        "identifier" : "GamesCatalogDomainTests",
+        "name" : "GamesCatalogDomainTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornSearch",
+        "identifier" : "SearchInfrastructureTests",
+        "name" : "SearchInfrastructureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornTrending",
+        "identifier" : "TrendingDomainTests",
+        "name" : "TrendingDomainTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornPlotRemixGame",
+        "identifier" : "PlotRemixGameDomainTests",
+        "name" : "PlotRemixGameDomainTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Contexts\/PopcornMovies",
         "identifier" : "MoviesInfrastructureTests",
         "name" : "MoviesInfrastructureTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Contexts\/PopcornQuiz",
-        "identifier" : "QuizApplicationTests",
-        "name" : "QuizApplicationTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Contexts\/PopcornQuiz",
-        "identifier" : "QuizDomainTests",
-        "name" : "QuizDomainTests"
       }
     }
   ],

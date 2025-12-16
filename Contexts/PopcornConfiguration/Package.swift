@@ -15,6 +15,7 @@ let package = Package(
     ],
 
     products: [
+        .library(name: "ConfigurationComposition", targets: ["ConfigurationComposition"]),
         .library(name: "ConfigurationApplication", targets: ["ConfigurationApplication"]),
         .library(name: "ConfigurationDomain", targets: ["ConfigurationDomain"]),
         .library(name: "ConfigurationInfrastructure", targets: ["ConfigurationInfrastructure"])
@@ -27,16 +28,26 @@ let package = Package(
 
     targets: [
         .target(
+            name: "ConfigurationComposition",
+            dependencies: [
+                "ConfigurationApplication",
+                "ConfigurationDomain",
+                "ConfigurationInfrastructure"
+            ]
+        ),
+
+        .target(
             name: "ConfigurationApplication",
             dependencies: [
                 "ConfigurationDomain",
-                "ConfigurationInfrastructure",
                 "CoreDomain"
             ]
         ),
         .testTarget(
             name: "ConfigurationApplicationTests",
-            dependencies: ["ConfigurationApplication"]
+            dependencies: [
+                "ConfigurationApplication"
+            ]
         ),
 
         .target(
@@ -47,7 +58,9 @@ let package = Package(
         ),
         .testTarget(
             name: "ConfigurationDomainTests",
-            dependencies: ["ConfigurationDomain"]
+            dependencies: [
+                "ConfigurationDomain"
+            ]
         ),
 
         .target(
@@ -59,7 +72,9 @@ let package = Package(
         ),
         .testTarget(
             name: "ConfigurationInfrastructureTests",
-            dependencies: ["ConfigurationInfrastructure"]
+            dependencies: [
+                "ConfigurationInfrastructure"
+            ]
         )
     ]
 )

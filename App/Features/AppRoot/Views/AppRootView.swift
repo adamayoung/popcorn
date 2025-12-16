@@ -22,7 +22,11 @@ struct AppRootView: View {
 
     private var content: some View {
         TabView(selection: $store.selectedTab) {
-            Tab("HOME", systemImage: "house", value: AppRootFeature.Tab.explore) {
+            Tab(
+                "EXPLORE",
+                systemImage: "popcorn",
+                value: AppRootFeature.Tab.explore
+            ) {
                 ExploreRootView(
                     store: store.scope(
                         state: \.explore,
@@ -32,35 +36,19 @@ struct AppRootView: View {
             }
             .customizationID(AppRootFeature.Tab.explore.id)
 
-            Tab("MOVIES", systemImage: "film", value: AppRootFeature.Tab.movies) {
-                MoviesRootView(
+            Tab(
+                "GAMES",
+                systemImage: "flag.and.flag.filled.crossed",
+                value: AppRootFeature.Tab.games
+            ) {
+                GamesRootView(
                     store: store.scope(
-                        state: \.movies,
-                        action: \.movies
+                        state: \.games,
+                        action: \.games
                     )
                 )
             }
-            .customizationID(AppRootFeature.Tab.movies.id)
-
-            Tab("TV", systemImage: "tv", value: AppRootFeature.Tab.tv) {
-                TVRootView(
-                    store: store.scope(
-                        state: \.tv,
-                        action: \.tv
-                    )
-                )
-            }
-            .customizationID(AppRootFeature.Tab.tv.id)
-
-            Tab("PEOPLE", systemImage: "person", value: AppRootFeature.Tab.people) {
-                PeopleRootView(
-                    store: store.scope(
-                        state: \.people,
-                        action: \.people
-                    )
-                )
-            }
-            .customizationID(AppRootFeature.Tab.people.id)
+            .customizationID(AppRootFeature.Tab.games.id)
 
             if store.isSearchEnabled {
                 Tab(

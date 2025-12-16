@@ -9,5 +9,5 @@ defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
 if [ $CI_XCODEBUILD_ACTION = 'analyze' ];
 then
     cd $CI_PRIMARY_REPOSITORY_PATH
-    swift format lint -r -p .
+    swift format lint -r -p --strict .
 fi

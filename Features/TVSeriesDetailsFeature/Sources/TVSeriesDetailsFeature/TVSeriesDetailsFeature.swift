@@ -7,35 +7,68 @@
 
 import ComposableArchitecture
 import Foundation
+import OSLog
 
 @Reducer
 public struct TVSeriesDetailsFeature: Sendable {
 
-    @Dependency(\.tvSeriesDetails) private var tvSeriesDetails: TVSeriesDetailsClient
+    @Dependency(\.tvSeriesDetailsClient) private var tvSeriesDetailsClient
+
+    private static let logger = Logger(
+        subsystem: "TVSeriesDetailsFeature",
+        category: "TVSeriesDetailsFeatureReducer"
+    )
 
     @ObservableState
-    public struct State {
-        var id: Int
+    public struct State: Sendable {
+        var tvSeriesID: Int
         public let transitionID: String?
-        var tvSeries: TVSeries?
-        var isReady: Bool {
-            tvSeries != nil
+        public var viewState: ViewState
+
+        public var isLoading: Bool {
+            switch viewState {
+            case .loading: true
+            default: false
+            }
+        }
+
+        public var isReady: Bool {
+            switch viewState {
+            case .ready: true
+            default: false
+            }
         }
 
         public init(
-            id: Int,
+            tvSeriesID: Int,
             transitionID: String? = nil,
-            tvSeries: TVSeries? = nil
+            viewState: ViewState = .initial
         ) {
-            self.id = id
+            self.tvSeriesID = tvSeriesID
             self.transitionID = transitionID
+            self.viewState = viewState
+        }
+    }
+
+    public enum ViewState: Sendable {
+        case initial
+        case loading
+        case ready(ViewSnapshot)
+        case error(Error)
+    }
+
+    public struct ViewSnapshot: Sendable {
+        public let tvSeries: TVSeries
+
+        public init(tvSeries: TVSeries) {
             self.tvSeries = tvSeries
         }
     }
 
     public enum Action {
-        case load
-        case tvSeriesLoaded(TVSeries)
+        case fetch
+        case loaded(ViewSnapshot)
+        case loadFailed(Error)
     }
 
     public init() {}
@@ -43,11 +76,19 @@ public struct TVSeriesDetailsFeature: Sendable {
     public var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
-            case .load:
+            case .fetch:
+                if state.isReady {
+                    state.viewState = .loading
+                }
+
                 return handleFetchTVSeries(&state)
 
-            case .tvSeriesLoaded(let tvSeries):
-                state.tvSeries = tvSeries
+            case .loaded(let snapshot):
+                state.viewState = .ready(snapshot)
+                return .none
+
+            case .loadFailed(let error):
+                state.viewState = .error(error)
                 return .none
             }
         }
@@ -57,15 +98,15 @@ public struct TVSeriesDetailsFeature: Sendable {
 
 extension TVSeriesDetailsFeature {
 
-    fileprivate func handleFetchTVSeries(_ state: inout State) -> EffectOf<Self> {
-        let id = state.id
-
-        return .run { send in
+    private func handleFetchTVSeries(_ state: inout State) -> EffectOf<Self> {
+        .run { [state] send in
             do {
-                let tvSeries = try await tvSeriesDetails.fetch(id)
-                await send(.tvSeriesLoaded(tvSeries))
+                let tvSeries = try await tvSeriesDetailsClient.fetch(state.tvSeriesID)
+                let snapshot = ViewSnapshot(tvSeries: tvSeries)
+                await send(.loaded(snapshot))
             } catch {
-                print("Error: \(error.localizedDescription)")
+                Self.logger.error("Failed fetching TV series: \(error.localizedDescription)")
+                await send(.loadFailed(error))
             }
         }
     }

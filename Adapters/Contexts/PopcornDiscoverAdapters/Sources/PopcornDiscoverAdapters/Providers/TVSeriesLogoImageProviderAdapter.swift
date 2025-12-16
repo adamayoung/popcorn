@@ -7,7 +7,7 @@
 
 import CoreDomain
 import DiscoverDomain
-import TVApplication
+import TVSeriesApplication
 
 final class TVSeriesLogoImageProviderAdapter: TVSeriesLogoImageProviding {
 

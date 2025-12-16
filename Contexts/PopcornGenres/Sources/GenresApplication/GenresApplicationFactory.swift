@@ -8,19 +8,19 @@
 import Foundation
 import GenresDomain
 
-public final class GenresApplicationFactory {
+package final class GenresApplicationFactory {
 
     private let genreRepository: any GenreRepository
 
-    init(genreRepository: some GenreRepository) {
+    package init(genreRepository: some GenreRepository) {
         self.genreRepository = genreRepository
     }
 
-    public func makeFetchMovieGenresUseCase() -> some FetchMovieGenresUseCase {
+    package func makeFetchMovieGenresUseCase() -> some FetchMovieGenresUseCase {
         DefaultFetchMovieGenresUseCase(repository: genreRepository)
     }
 
-    public func makeFetchTVSeriesGenresUseCase() -> some FetchTVSeriesGenresUseCase {
+    package func makeFetchTVSeriesGenresUseCase() -> some FetchTVSeriesGenresUseCase {
         DefaultFetchTVSeriesGenresUseCase(repository: genreRepository)
     }
 

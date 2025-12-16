@@ -22,10 +22,6 @@ let package = Package(
         .package(path: "../../../Contexts/PopcornMovies"),
         .package(path: "../../../Contexts/PopcornConfiguration"),
         .package(path: "../../../Core/CoreDomain"),
-        .package(path: "../PopcornConfigurationAdapters"),
-        .package(path: "../../Platform/TMDbAdapters"),
-        .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"),
         .package(url: "https://github.com/adamayoung/TMDb.git", from: "13.4.0")
     ],
 
@@ -33,15 +29,12 @@ let package = Package(
         .target(
             name: "PopcornMoviesAdapters",
             dependencies: [
-                .product(name: "MoviesApplication", package: "PopcornMovies"),
+                .product(name: "MoviesComposition", package: "PopcornMovies"),
                 .product(name: "MoviesDomain", package: "PopcornMovies"),
                 .product(name: "MoviesInfrastructure", package: "PopcornMovies"),
                 .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),
                 "CoreDomain",
-                "PopcornConfigurationAdapters",
-                "TMDbAdapters",
-                "TMDb",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                "TMDb"
             ]
         )
     ]

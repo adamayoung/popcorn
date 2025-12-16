@@ -59,10 +59,8 @@ final class DefaultSimilarMovieRepository: SimilarMovieRepository {
 
         Task {
             let page = 1
-            if try await localDataSource.similar(toMovie: movieID, page: page) == nil {
-                let movies = try await remoteDataSource.similar(toMovie: movieID, page: page)
-                try await localDataSource.setSimilar(movies, toMovie: movieID, page: page)
-            }
+            let movies = try await remoteDataSource.similar(toMovie: movieID, page: page)
+            try await localDataSource.setSimilar(movies, toMovie: movieID, page: page)
         }
 
         return stream

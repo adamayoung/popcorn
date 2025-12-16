@@ -5,11 +5,12 @@
 //  Created by Adam Young on 17/11/2025.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import Foundation
 import PeopleApplication
-import PopcornPeopleAdapters
 
+@DependencyClient
 struct PersonDetailsClient: Sendable {
 
     var fetch: @Sendable (Int) async throws -> Person
@@ -19,10 +20,11 @@ struct PersonDetailsClient: Sendable {
 extension PersonDetailsClient: DependencyKey {
 
     static var liveValue: PersonDetailsClient {
-        PersonDetailsClient(
+        @Dependency(\.fetchPersonDetails) var fetchPersonDetails
+
+        return PersonDetailsClient(
             fetch: { id in
-                let useCase = DependencyValues._current.fetchPersonDetails
-                let person = try await useCase.execute(id: id)
+                let person = try await fetchPersonDetails.execute(id: id)
                 let mapper = PersonMapper()
                 return mapper.map(person)
             }

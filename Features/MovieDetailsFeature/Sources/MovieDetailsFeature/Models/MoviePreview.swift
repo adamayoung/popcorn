@@ -36,18 +36,24 @@ extension MoviePreview {
     static var mocks: [MoviePreview] {
         [
             MoviePreview(
-                id: 1,
+                id: 798645,
                 title: "The Running Man",
                 posterURL: URL(
                     string: "https://image.tmdb.org/t/p/w780/dKL78O9zxczVgjtNcQ9UkbYLzqX.jpg"),
                 backdropURL: URL(
-                    string: "https://image.tmdb.org/t/p/w1280/docDyCJrhPoFXAckB1aOiIv9Mz0.jpg")
+                    string: "https://image.tmdb.org/t/p/w1280/docDyCJrhPoFXAckB1aOiIv9Mz0.jpg"),
+                logoURL: URL(
+                    string: "https://image.tmdb.org/t/p/w500/qVFenxaKbLr76dSJN5qRMM82X2u.png"),
             ),
             MoviePreview(
-                id: 2,
+                id: 1_197_137,
                 title: "Black Phone 2",
                 posterURL: URL(
-                    string: "https://image.tmdb.org/t/p/w780/xUWUODKPIilQoFUzjHM6wKJkP3Y.jpg")
+                    string: "https://image.tmdb.org/t/p/w780/xUWUODKPIilQoFUzjHM6wKJkP3Y.jpg"),
+                backdropURL: URL(
+                    string: "https://image.tmdb.org/t/p/w1280/6zKjoOOb3OZnZuiHtQZn4Kd69Gq.jpg"),
+                logoURL: URL(
+                    string: "https://image.tmdb.org/t/p/w500/edPw35KtvaP8mJNtujFNsbPCmJV.png"),
             )
         ]
     }

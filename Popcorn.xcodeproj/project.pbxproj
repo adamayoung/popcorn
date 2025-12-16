@@ -15,6 +15,8 @@
 		668F58892ECCFEBE00B47B07 /* TrendingMoviesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 668F58882ECCFEBE00B47B07 /* TrendingMoviesFeature */; };
 		668F588C2ECDB2D500B47B07 /* TrendingTVSeriesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 668F588B2ECDB2D500B47B07 /* TrendingTVSeriesFeature */; };
 		668F58912ECDD5CA00B47B07 /* TVSeriesDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 668F58902ECDD5CA00B47B07 /* TVSeriesDetailsFeature */; };
+		66D8F4112EE8BE8F00B8AE7A /* GamesCatalogFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66D8F4102EE8BE8F00B8AE7A /* GamesCatalogFeature */; };
+		66D8F4142EE8C93900B8AE7A /* PlotRemixGameFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66D8F4132EE8C93900B8AE7A /* PlotRemixGameFeature */; };
 		66FDEF692ED714190029B88A /* FeatureFlags in Frameworks */ = {isa = PBXBuildFile; productRef = 66FDEF682ED714190029B88A /* FeatureFlags */; };
 		66FDEF6C2ED71D320029B88A /* FeatureFlagsAdapters in Frameworks */ = {isa = PBXBuildFile; productRef = 66FDEF6B2ED71D320029B88A /* FeatureFlagsAdapters */; };
 		900E28EA2ED0781900ED5DFC /* ExploreFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 900E28E92ED0781900ED5DFC /* ExploreFeature */; };
@@ -41,6 +43,7 @@
 		664551862ECB7C2100250D87 /* Popcorn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Popcorn.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		664551932ECB7C2200250D87 /* PopcornTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PopcornTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6645519D2ECB7C2200250D87 /* PopcornUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PopcornUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6653A7302EF0D2D200CDE7DF /* AppDependencies */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = AppDependencies; sourceTree = "<group>"; };
 		66E814782EE05BDF004BA237 /* Popcorn.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Popcorn.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -76,6 +79,7 @@
 				MediaSearchFeature,
 				MovieDetailsFeature,
 				PersonDetailsFeature,
+				PlotRemixGameFeature,
 				TrendingMoviesFeature,
 				TrendingPeopleFeature,
 				TrendingTVSeriesFeature,
@@ -87,9 +91,10 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Contexts/PopcornDiscoverAdapters,
+				Contexts/PopcornGamesCatalogAdapters,
 				Contexts/PopcornGenresAdapters,
+				Contexts/PopcornPlotRemixGameAdapters,
 				Platform/FeatureFlagsAdapters,
-				Platform/TMDbAdapters,
 			);
 			target = 664551852ECB7C2100250D87 /* Popcorn */;
 		};
@@ -195,6 +200,8 @@
 				668F58892ECCFEBE00B47B07 /* TrendingMoviesFeature in Frameworks */,
 				900E28EA2ED0781900ED5DFC /* ExploreFeature in Frameworks */,
 				666AEE492ECE0A1B0038814E /* PersonDetailsFeature in Frameworks */,
+				66D8F4142EE8C93900B8AE7A /* PlotRemixGameFeature in Frameworks */,
+				66D8F4112EE8BE8F00B8AE7A /* GamesCatalogFeature in Frameworks */,
 				666AEE272ECDEEEC0038814E /* TrendingPeopleFeature in Frameworks */,
 				668F587E2ECCB82A00B47B07 /* MovieDetailsFeature in Frameworks */,
 				66FDEF6C2ED71D320029B88A /* FeatureFlagsAdapters in Frameworks */,
@@ -226,6 +233,7 @@
 		6645517D2ECB7C2100250D87 = {
 			isa = PBXGroup;
 			children = (
+				6653A7302EF0D2D200CDE7DF /* AppDependencies */,
 				66E814782EE05BDF004BA237 /* Popcorn.entitlements */,
 				66FDEF712ED7261D0029B88A /* Configs */,
 				664551882ECB7C2100250D87 /* App */,
@@ -296,6 +304,8 @@
 				6645B6442ED60A1800B3AC7C /* MediaSearchFeature */,
 				66FDEF682ED714190029B88A /* FeatureFlags */,
 				66FDEF6B2ED71D320029B88A /* FeatureFlagsAdapters */,
+				66D8F4102EE8BE8F00B8AE7A /* GamesCatalogFeature */,
+				66D8F4132EE8C93900B8AE7A /* PlotRemixGameFeature */,
 			);
 			productName = MoviesTCA;
 			productReference = 664551862ECB7C2100250D87 /* Popcorn.app */;
@@ -883,6 +893,14 @@
 		668F58902ECDD5CA00B47B07 /* TVSeriesDetailsFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TVSeriesDetailsFeature;
+		};
+		66D8F4102EE8BE8F00B8AE7A /* GamesCatalogFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GamesCatalogFeature;
+		};
+		66D8F4132EE8C93900B8AE7A /* PlotRemixGameFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PlotRemixGameFeature;
 		};
 		66FDEF682ED714190029B88A /* FeatureFlags */ = {
 			isa = XCSwiftPackageProductDependency;

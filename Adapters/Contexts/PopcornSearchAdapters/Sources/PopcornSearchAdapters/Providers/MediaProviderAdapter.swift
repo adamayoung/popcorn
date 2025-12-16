@@ -10,7 +10,7 @@ import CoreDomain
 import MoviesApplication
 import PeopleApplication
 import SearchDomain
-import TVApplication
+import TVSeriesApplication
 
 public struct MediaProviderAdapter: MediaProviding {
 

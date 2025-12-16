@@ -15,39 +15,49 @@ let package = Package(
     ],
 
     products: [
+        .library(name: "GenresComposition", targets: ["GenresComposition"]),
         .library(name: "GenresApplication", targets: ["GenresApplication"]),
         .library(name: "GenresDomain", targets: ["GenresDomain"]),
         .library(name: "GenresInfrastructure", targets: ["GenresInfrastructure"])
     ],
 
     dependencies: [
-        .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Platform/Caching")
     ],
 
     targets: [
         .target(
-            name: "GenresApplication",
+            name: "GenresComposition",
             dependencies: [
+                "GenresApplication",
                 "GenresDomain",
                 "GenresInfrastructure",
-                "CoreDomain"
+                "Caching"
+            ]
+        ),
+
+        .target(
+            name: "GenresApplication",
+            dependencies: [
+                "GenresDomain"
             ]
         ),
         .testTarget(
             name: "GenresApplicationTests",
-            dependencies: ["GenresApplication"]
+            dependencies: [
+                "GenresApplication"
+            ]
         ),
 
         .target(
             name: "GenresDomain",
-            dependencies: [
-                "CoreDomain"
-            ]
+            dependencies: []
         ),
         .testTarget(
             name: "GenresDomainTests",
-            dependencies: ["GenresDomain"]
+            dependencies: [
+                "GenresDomain"
+            ]
         ),
 
         .target(
@@ -59,7 +69,9 @@ let package = Package(
         ),
         .testTarget(
             name: "GenresInfrastructureTests",
-            dependencies: ["GenresInfrastructure"]
+            dependencies: [
+                "GenresInfrastructure"
+            ]
         )
     ]
 )

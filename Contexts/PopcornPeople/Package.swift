@@ -15,6 +15,7 @@ let package = Package(
     ],
 
     products: [
+        .library(name: "PeopleComposition", targets: ["PeopleComposition"]),
         .library(name: "PeopleApplication", targets: ["PeopleApplication"]),
         .library(name: "PeopleDomain", targets: ["PeopleDomain"]),
         .library(name: "PeopleInfrastructure", targets: ["PeopleInfrastructure"])
@@ -27,10 +28,18 @@ let package = Package(
 
     targets: [
         .target(
+            name: "PeopleComposition",
+            dependencies: [
+                "PeopleApplication",
+                "PeopleDomain",
+                "PeopleInfrastructure"
+            ]
+        ),
+
+        .target(
             name: "PeopleApplication",
             dependencies: [
                 "PeopleDomain",
-                "PeopleInfrastructure",
                 "CoreDomain"
             ]
         ),

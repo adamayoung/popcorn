@@ -15,6 +15,7 @@ let package = Package(
     ],
 
     products: [
+        .library(name: "TrendingComposition", targets: ["TrendingComposition"]),
         .library(name: "TrendingApplication", targets: ["TrendingApplication"]),
         .library(name: "TrendingDomain", targets: ["TrendingDomain"]),
         .library(name: "TrendingInfrastructure", targets: ["TrendingInfrastructure"])
@@ -26,10 +27,18 @@ let package = Package(
 
     targets: [
         .target(
+            name: "TrendingComposition",
+            dependencies: [
+                "TrendingApplication",
+                "TrendingDomain",
+                "TrendingInfrastructure"
+            ]
+        ),
+
+        .target(
             name: "TrendingApplication",
             dependencies: [
                 "TrendingDomain",
-                "TrendingInfrastructure",
                 "CoreDomain"
             ]
         ),

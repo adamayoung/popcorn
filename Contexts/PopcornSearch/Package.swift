@@ -15,6 +15,7 @@ let package = Package(
     ],
 
     products: [
+        .library(name: "SearchComposition", targets: ["SearchComposition"]),
         .library(name: "SearchApplication", targets: ["SearchApplication"]),
         .library(name: "SearchDomain", targets: ["SearchDomain"]),
         .library(name: "SearchInfrastructure", targets: ["SearchInfrastructure"])
@@ -27,10 +28,18 @@ let package = Package(
 
     targets: [
         .target(
+            name: "SearchComposition",
+            dependencies: [
+                "SearchApplication",
+                "SearchDomain",
+                "SearchInfrastructure"
+            ]
+        ),
+
+        .target(
             name: "SearchApplication",
             dependencies: [
                 "SearchDomain",
-                "SearchInfrastructure",
                 "CoreDomain"
             ]
         ),

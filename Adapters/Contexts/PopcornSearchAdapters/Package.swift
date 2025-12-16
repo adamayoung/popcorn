@@ -22,16 +22,12 @@ let package = Package(
         .package(path: "../../../Contexts/PopcornSearch"),
         .package(path: "../../../Contexts/PopcornConfiguration"),
         .package(path: "../../../Contexts/PopcornMovies"),
-        .package(path: "../../../Contexts/PopcornTV"),
+        .package(path: "../../../Contexts/PopcornTVSeries"),
         .package(path: "../../../Contexts/PopcornPeople"),
         .package(path: "../../../Core/CoreDomain"),
-        .package(path: "../PopcornConfigurationAdapters"),
         .package(path: "../PopcornMoviesAdapters"),
-        .package(path: "../PopcornTVAdapters"),
+        .package(path: "../PopcornTVSeriesAdapters"),
         .package(path: "../PopcornPeopleAdapters"),
-        .package(path: "../../../Platform/TMDbAdapters"),
-        .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"),
         .package(url: "https://github.com/adamayoung/TMDb.git", from: "13.4.0")
     ],
 
@@ -39,19 +35,16 @@ let package = Package(
         .target(
             name: "PopcornSearchAdapters",
             dependencies: [
-                .product(name: "SearchApplication", package: "PopcornSearch"),
+                .product(name: "SearchComposition", package: "PopcornSearch"),
                 .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
-                .product(name: "TVApplication", package: "PopcornTV"),
+                .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
                 .product(name: "PeopleApplication", package: "PopcornPeople"),
                 "CoreDomain",
-                "PopcornConfigurationAdapters",
                 "PopcornMoviesAdapters",
-                "PopcornTVAdapters",
+                "PopcornTVSeriesAdapters",
                 "PopcornPeopleAdapters",
-                "TMDbAdapters",
-                "TMDb",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                "TMDb"
             ]
         )
     ]

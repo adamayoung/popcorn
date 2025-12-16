@@ -19,9 +19,9 @@ let package = Package(
     ],
 
     dependencies: [
+        .package(path: "../../AppDependencies"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Contexts/PopcornPeople"),
-        .package(path: "../../Adapters/Kits/PopcornPeopleAdapters"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1")
     ],
@@ -30,9 +30,9 @@ let package = Package(
         .target(
             name: "PersonDetailsFeature",
             dependencies: [
+                "AppDependencies",
                 "DesignSystem",
                 .product(name: "PeopleApplication", package: "PopcornPeople"),
-                "PopcornPeopleAdapters",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         ),

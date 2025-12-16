@@ -7,51 +7,100 @@
 
 import ComposableArchitecture
 import Foundation
+import OSLog
 
 @Reducer
 public struct MediaSearchFeature: Sendable {
 
-    @Dependency(\.mediaSearch) private var mediaSearch: MediaSearchClient
+    private static let logger = Logger(
+        subsystem: "MediaSearchFeature",
+        category: "MediaSearchFeatureReducer"
+    )
+
+    @Dependency(\.mediaSearchClient) private var mediaSearchClient
 
     @ObservableState
-    public struct State {
+    public struct State: Sendable {
 
-        public enum Field: String, Hashable {
-            case search
-        }
-
-        public enum Content: Equatable {
-            case overview
-            case searchHistory
-            case searchResults([MediaPreview])
-            case noSearchResults(String)
-        }
-
-        var content: Content
+        var viewState: ViewState
         var query: String
-        var searchHistoryItems: [MediaPreview]
         var focusedField: Field?
 
+        fileprivate var genresSnapshot = GenresViewSnapshot()
+        fileprivate var searchHistorySnapshot = SearchHistoryViewSnapshot()
+
         public init(
-            content: Content = .overview,
+            viewState: ViewState = .initial,
             query: String = "",
-            searchHistoryItems: [MediaPreview] = [],
             focusedField: Field? = nil
         ) {
-            self.content = content
+            self.viewState = viewState
             self.query = query
-            self.searchHistoryItems = searchHistoryItems
             self.focusedField = focusedField
         }
     }
 
+    public enum Field: String, Hashable, Sendable {
+        case search
+    }
+
+    public enum ViewState: Sendable {
+        case initial
+        case loading
+        case genres(GenresViewSnapshot)
+        case searchHistory(SearchHistoryViewSnapshot)
+        case searchResults(SearchResultsViewSnapshot)
+        case noSearchResults(NoSearchResultsViewSnapshot)
+        case error(Error)
+    }
+
+    public struct GenresViewSnapshot: Sendable {
+        public let genres: [Genre]
+
+        public init(genres: [Genre] = []) {
+            self.genres = genres
+        }
+    }
+
+    public struct SearchHistoryViewSnapshot: Sendable {
+        public let media: [MediaPreview]
+
+        public init(media: [MediaPreview] = []) {
+            self.media = media
+        }
+    }
+
+    public struct SearchResultsViewSnapshot: Sendable {
+        public let query: String
+        public let results: [MediaPreview]
+
+        public init(query: String = "", results: [MediaPreview] = []) {
+            self.query = query
+            self.results = results
+        }
+    }
+
+    public struct NoSearchResultsViewSnapshot: Sendable {
+        public let query: String
+
+        public init(query: String = "") {
+            self.query = query
+        }
+    }
+
     public enum Action {
-        case loadSearchHistory
-        case searchHistoryLoaded([MediaPreview])
+        case fetchGenresAndSearchHistory
+        case genresAndSearchHistoryLoaded(GenresViewSnapshot, SearchHistoryViewSnapshot)
+        case genresAndSearchHistoryLoadFailed(Error)
+
         case queryChanged(String)
-        case performSearch
-        case searchResultsLoaded(query: String, results: [MediaPreview])
-        case focusChanged(State.Field?)
+        case focusChanged(Field?)
+
+        case search
+        case searchResultsLoaded(SearchResultsViewSnapshot)
+        case searchWithNoResultsLoaded(NoSearchResultsViewSnapshot)
+        case searchResultsLoadFailed(Error)
+
         case navigate(Navigation)
     }
 
@@ -69,11 +118,25 @@ public struct MediaSearchFeature: Sendable {
         Reduce { state, action in
             let effect: EffectOf<Self>
             switch action {
-            case .loadSearchHistory:
-                effect = handleLoadSearchHistory(state: &state)
+            case .fetchGenresAndSearchHistory:
+                guard case .initial = state.viewState else {
+                    effect = .none
+                    break
+                }
 
-            case .searchHistoryLoaded(let items):
-                state.searchHistoryItems = items
+                state.viewState = .loading
+                effect = handleFetchGenresAndSearchHistory()
+            case .genresAndSearchHistoryLoaded(let genresSnapshot, let searchHistorySnapshot):
+                state.genresSnapshot = genresSnapshot
+                state.searchHistorySnapshot = searchHistorySnapshot
+                if case .loading = state.viewState {
+                    state.viewState = .genres(genresSnapshot)
+                }
+                effect = .none
+
+            case .genresAndSearchHistoryLoadFailed(let error):
+                Self.logger.error(
+                    "Failed loading genres and search history: \(error.localizedDescription)")
                 effect = .none
 
             case .queryChanged(let query):
@@ -82,7 +145,7 @@ public struct MediaSearchFeature: Sendable {
                     effect = .cancel(id: CancelID.search)
                 } else {
                     effect = .run { send in
-                        await send(.performSearch)
+                        await send(.search)
                     }
                     .debounce(
                         id: CancelID.search,
@@ -91,19 +154,23 @@ public struct MediaSearchFeature: Sendable {
                     )
                 }
 
-            case .performSearch:
-                effect = handlePerformSearch(state: &state)
-
-            case .searchResultsLoaded(let query, let results):
-                if results.isEmpty {
-                    state.content = .noSearchResults(query)
-                } else {
-                    state.content = .searchResults(results)
-                }
-                effect = .none
-
             case .focusChanged(let field):
                 state.focusedField = field
+                effect = .none
+
+            case .search:
+                effect = handleSearch(state: &state)
+
+            case .searchResultsLoaded(let snapshot):
+                state.viewState = .searchResults(snapshot)
+                effect = .none
+
+            case .searchWithNoResultsLoaded(let snapshot):
+                state.viewState = .noSearchResults(snapshot)
+                effect = .none
+
+            case .searchResultsLoadFailed(let error):
+                Self.logger.error("Failed searching: \(error.localizedDescription)")
                 effect = .none
 
             case .navigate(.movieDetails(let movieID)):
@@ -116,7 +183,7 @@ public struct MediaSearchFeature: Sendable {
                 effect = handleAddPersonSearchHistoryEntry(personID: personID)
             }
 
-            updateContent(state: &state)
+            updateViewState(state: &state)
             return effect
         }
     }
@@ -125,9 +192,9 @@ public struct MediaSearchFeature: Sendable {
 
 extension MediaSearchFeature {
 
-    private func updateContent(state: inout State) {
+    private func updateViewState(state: inout State) {
         let hasResultsOrOutcome: Bool
-        switch state.content {
+        switch state.viewState {
         case .searchResults, .noSearchResults:
             hasResultsOrOutcome = true
         default:
@@ -136,49 +203,69 @@ extension MediaSearchFeature {
 
         if state.query.isEmpty {
             if state.focusedField == .search {
-                state.content = .searchHistory
+                state.viewState = .searchHistory(state.searchHistorySnapshot)
             } else {
-                state.content = .overview
+                state.viewState = .genres(state.genresSnapshot)
             }
             return
         }
 
         if state.focusedField == .search && hasResultsOrOutcome == false {
-            state.content = .searchHistory
+            state.viewState = .searchHistory(state.searchHistorySnapshot)
             return
         }
     }
 
-    private func handleLoadSearchHistory(state: inout State) -> EffectOf<Self> {
+    private func handleFetchGenresAndSearchHistory() -> EffectOf<Self> {
         .run { send in
-            let items = try await mediaSearch.fetchMediaSearchHistory()
-            await send(.searchHistoryLoaded(items))
+            async let searchHistoryMedia = mediaSearchClient.fetchMediaSearchHistory()
+
+            do {
+                let genresSnapshot = GenresViewSnapshot(genres: [])
+                let searchHistorySnapshot = try await SearchHistoryViewSnapshot(
+                    media: searchHistoryMedia)
+                await send(.genresAndSearchHistoryLoaded(genresSnapshot, searchHistorySnapshot))
+            } catch let error {
+                await send(.genresAndSearchHistoryLoadFailed(error))
+            }
         }
     }
 
-    private func handlePerformSearch(state: inout State) -> EffectOf<Self> {
-        let query = state.query
-        return .run { send in
-            let results = try await mediaSearch.search(query)
-            await send(.searchResultsLoaded(query: query, results: results))
+    private func handleSearch(state: inout State) -> EffectOf<Self> {
+        .run { [state] send in
+            let results: [MediaPreview]
+            do {
+                results = try await mediaSearchClient.search(state.query)
+            } catch let error {
+                await send(.searchResultsLoadFailed(error))
+                return
+            }
+
+            if results.isEmpty {
+                let snapshot = NoSearchResultsViewSnapshot(query: state.query)
+                await send(.searchWithNoResultsLoaded(snapshot))
+            } else {
+                let snapshot = SearchResultsViewSnapshot(query: state.query, results: results)
+                await send(.searchResultsLoaded(snapshot))
+            }
         }
     }
 
     private func handleAddMovieSearchHistoryEntry(movieID: Int) -> EffectOf<Self> {
         .run { _ in
-            try await mediaSearch.addMovieSearchHistoryEntry(movieID)
+            try await mediaSearchClient.addMovieSearchHistoryEntry(movieID)
         }
     }
 
     private func handleAddTVSeriesSearchHistoryEntry(tvSeriesID: Int) -> EffectOf<Self> {
         .run { _ in
-            try await mediaSearch.addTVSeriesSearchHistoryEntry(tvSeriesID)
+            try await mediaSearchClient.addTVSeriesSearchHistoryEntry(tvSeriesID)
         }
     }
 
     private func handleAddPersonSearchHistoryEntry(personID: Int) -> EffectOf<Self> {
         .run { _ in
-            try await mediaSearch.addPersonSearchHistoryEntry(personID)
+            try await mediaSearchClient.addPersonSearchHistoryEntry(personID)
         }
     }
 

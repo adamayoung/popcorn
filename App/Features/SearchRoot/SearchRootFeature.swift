@@ -45,10 +45,10 @@ struct SearchRootFeature {
                 state.path.append(.movieDetails(MovieDetailsFeature.State(movieID: id)))
                 return .none
             case .mediaSearch(.navigate(.tvSeriesDetails(let id))):
-                state.path.append(.tvSeriesDetails(TVSeriesDetailsFeature.State(id: id)))
+                state.path.append(.tvSeriesDetails(TVSeriesDetailsFeature.State(tvSeriesID: id)))
                 return .none
             case .mediaSearch(.navigate(.personDetails(let id))):
-                state.path.append(.personDetails(PersonDetailsFeature.State(id: id)))
+                state.path.append(.personDetails(PersonDetailsFeature.State(personID: id)))
                 return .none
             case .path(.element(_, .movieDetails(.navigate(.movieDetails(let id))))):
                 state.path.append(.movieDetails(MovieDetailsFeature.State(movieID: id)))

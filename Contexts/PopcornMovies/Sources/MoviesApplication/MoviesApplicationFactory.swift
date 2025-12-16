@@ -8,7 +8,7 @@
 import Foundation
 import MoviesDomain
 
-public final class MoviesApplicationFactory {
+package final class MoviesApplicationFactory {
 
     private let movieRepository: any MovieRepository
     private let favouriteMovieRepository: any FavouriteMovieRepository
@@ -17,7 +17,7 @@ public final class MoviesApplicationFactory {
     private let similarMovieRepository: any SimilarMovieRepository
     private let appConfigurationProvider: any AppConfigurationProviding
 
-    init(
+    package init(
         movieRepository: some MovieRepository,
         favouriteMovieRepository: some FavouriteMovieRepository,
         movieImageRepository: some MovieImageRepository,
@@ -33,7 +33,7 @@ public final class MoviesApplicationFactory {
         self.appConfigurationProvider = appConfigurationProvider
     }
 
-    public func makeFetchMovieDetailsUseCase() -> some FetchMovieDetailsUseCase {
+    package func makeFetchMovieDetailsUseCase() -> some FetchMovieDetailsUseCase {
         DefaultFetchMovieDetailsUseCase(
             movieRepository: movieRepository,
             movieImageRepository: movieImageRepository,
@@ -42,7 +42,7 @@ public final class MoviesApplicationFactory {
         )
     }
 
-    public func makeStreamMovieDetailsUseCase() -> some StreamMovieDetailsUseCase {
+    package func makeStreamMovieDetailsUseCase() -> some StreamMovieDetailsUseCase {
         DefaultStreamMovieDetailsUseCase(
             movieRepository: movieRepository,
             movieImageRepository: movieImageRepository,
@@ -51,21 +51,21 @@ public final class MoviesApplicationFactory {
         )
     }
 
-    public func makeToggleFavouriteMovieUseCase() -> some ToggleFavouriteMovieUseCase {
+    package func makeToggleFavouriteMovieUseCase() -> some ToggleFavouriteMovieUseCase {
         DefaultToggleFavouriteMovieUseCase(
             movieRepository: movieRepository,
             favouriteMovieRepository: favouriteMovieRepository
         )
     }
 
-    public func makeFetchMovieImageCollectionUseCase() -> some FetchMovieImageCollectionUseCase {
+    package func makeFetchMovieImageCollectionUseCase() -> some FetchMovieImageCollectionUseCase {
         DefaultFetchMovieImageCollectionUseCase(
             movieImageRepository: movieImageRepository,
             appConfigurationProvider: appConfigurationProvider
         )
     }
 
-    public func makeFetchPopularMoviesUseCase() -> some FetchPopularMoviesUseCase {
+    package func makeFetchPopularMoviesUseCase() -> some FetchPopularMoviesUseCase {
         DefaultFetchPopularMoviesUseCase(
             popularMovieRepository: popularMovieRepository,
             movieImageRepository: movieImageRepository,
@@ -73,7 +73,7 @@ public final class MoviesApplicationFactory {
         )
     }
 
-    public func makeStreamPopularMoviesUseCase() -> some StreamPopularMoviesUseCase {
+    package func makeStreamPopularMoviesUseCase() -> some StreamPopularMoviesUseCase {
         DefaultStreamPopularMoviesUseCase(
             popularMovieRepository: popularMovieRepository,
             movieImageRepository: movieImageRepository,
@@ -81,7 +81,7 @@ public final class MoviesApplicationFactory {
         )
     }
 
-    public func makeFetchSimilarMoviesUseCase() -> some FetchSimilarMoviesUseCase {
+    package func makeFetchSimilarMoviesUseCase() -> some FetchSimilarMoviesUseCase {
         DefaultFetchSimilarMoviesUseCase(
             similarMovieRepository: similarMovieRepository,
             movieImageRepository: movieImageRepository,
@@ -89,7 +89,7 @@ public final class MoviesApplicationFactory {
         )
     }
 
-    public func makeStreamSimilarMoviesUseCase() -> some StreamSimilarMoviesUseCase {
+    package func makeStreamSimilarMoviesUseCase() -> some StreamSimilarMoviesUseCase {
         DefaultStreamSimilarMoviesUseCase(
             similarMovieRepository: similarMovieRepository,
             movieImageRepository: movieImageRepository,

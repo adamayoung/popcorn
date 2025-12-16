@@ -15,6 +15,7 @@ let package = Package(
     ],
 
     products: [
+        .library(name: "MoviesComposition", targets: ["MoviesComposition"]),
         .library(name: "MoviesApplication", targets: ["MoviesApplication"]),
         .library(name: "MoviesDomain", targets: ["MoviesDomain"]),
         .library(name: "MoviesInfrastructure", targets: ["MoviesInfrastructure"])
@@ -28,10 +29,18 @@ let package = Package(
 
     targets: [
         .target(
+            name: "MoviesComposition",
+            dependencies: [
+                "MoviesApplication",
+                "MoviesDomain",
+                "MoviesInfrastructure"
+            ]
+        ),
+
+        .target(
             name: "MoviesApplication",
             dependencies: [
                 "MoviesDomain",
-                "MoviesInfrastructure",
                 "CoreDomain"
             ]
         ),

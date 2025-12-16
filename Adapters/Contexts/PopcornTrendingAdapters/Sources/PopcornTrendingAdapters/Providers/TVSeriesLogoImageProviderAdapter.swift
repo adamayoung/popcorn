@@ -6,7 +6,7 @@
 //
 
 import CoreDomain
-import TVApplication
+import TVSeriesApplication
 import TrendingDomain
 
 final class TVSeriesLogoImageProviderAdapter: TVSeriesLogoImageProviding {
