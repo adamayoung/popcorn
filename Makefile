@@ -21,15 +21,15 @@ clean:
 
 .PHONY: format
 format:
-	@swift format -r -p -i .
+	@git ls-files -z '*.swift' | xargs -0 swift format -p -i
 
 .PHONY: lint format-check
 lint format-check:
-	@swift format lint -r --strict -p .
+	@git ls-files -z '*.swift' | xargs -0 swift format lint --strict -p
 
 .PHONY: build
 build:
-rm -rf $(RESULT_BUNDLE)
+	rm -rf $(RESULT_BUNDLE)
 ifneq ($(CLEAN),0)
 	$(XCODEBUILD) clean -scheme $(SCHEME)
 endif
@@ -47,8 +47,8 @@ endif
 
 .PHONY: build-ios
 build-ios:
-	$(MAKE) build PLATFORM=ios DESTINATION='platform=iOS Simulator,name=iPhone 17,OS=26.1'
+	$(MAKE) build PLATFORM=ios DESTINATION='$(DESTINATION)'
 
 .PHONY: test-ios
 test-ios:
-	$(MAKE) test PLATFORM=ios DESTINATION='platform=iOS Simulator,name=iPhone 17,OS=26.1'
+	$(MAKE) test PLATFORM=ios DESTINATION='$(DESTINATION)'

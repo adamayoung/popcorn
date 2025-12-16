@@ -29,7 +29,6 @@ let package = Package(
             name: "PopcornConfigurationAdapters",
             dependencies: [
                 .product(name: "ConfigurationComposition", package: "PopcornConfiguration"),
-                .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),
                 .product(name: "ConfigurationDomain", package: "PopcornConfiguration"),
                 .product(name: "ConfigurationInfrastructure", package: "PopcornConfiguration"),
                 "CoreDomain",

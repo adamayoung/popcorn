@@ -35,11 +35,8 @@ let package = Package(
                 "AppDependencies",
                 "DesignSystem",
                 .product(name: "DiscoverApplication", package: "PopcornDiscover"),
-                .product(name: "DiscoverDomain", package: "PopcornDiscover"),
                 .product(name: "TrendingApplication", package: "PopcornTrending"),
-                .product(name: "TrendingDomain", package: "PopcornTrending"),
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
-                .product(name: "MoviesDomain", package: "PopcornMovies"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         ),

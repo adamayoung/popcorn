@@ -25,10 +25,6 @@ let package = Package(
         .package(path: "../../../Contexts/PopcornGenres"),
         .package(path: "../../../Contexts/PopcornConfiguration"),
         .package(path: "../../../Core/CoreDomain"),
-        .package(path: "../PopcornMoviesAdapters"),
-        .package(path: "../PopcornTVSeriesAdapters"),
-        .package(path: "../PopcornGenresAdapters"),
-        .package(path: "../PopcornConfigurationAdapters"),
         .package(url: "https://github.com/adamayoung/TMDb.git", from: "13.4.0")
     ],
 
@@ -37,20 +33,13 @@ let package = Package(
             name: "PopcornDiscoverAdapters",
             dependencies: [
                 .product(name: "DiscoverComposition", package: "PopcornDiscover"),
-                .product(name: "DiscoverApplication", package: "PopcornDiscover"),
                 .product(name: "DiscoverDomain", package: "PopcornDiscover"),
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
-                .product(name: "MoviesDomain", package: "PopcornMovies"),
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
-                .product(name: "TVSeriesDomain", package: "PopcornTVSeries"),
                 .product(name: "GenresApplication", package: "PopcornGenres"),
                 .product(name: "GenresDomain", package: "PopcornGenres"),
                 .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),
                 "CoreDomain",
-                "PopcornMoviesAdapters",
-                "PopcornTVSeriesAdapters",
-                "PopcornGenresAdapters",
-                "PopcornConfigurationAdapters",
                 "TMDb"
             ]
         )

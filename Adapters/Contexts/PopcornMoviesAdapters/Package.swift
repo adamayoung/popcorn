@@ -22,7 +22,6 @@ let package = Package(
         .package(path: "../../../Contexts/PopcornMovies"),
         .package(path: "../../../Contexts/PopcornConfiguration"),
         .package(path: "../../../Core/CoreDomain"),
-        .package(path: "../PopcornConfigurationAdapters"),
         .package(url: "https://github.com/adamayoung/TMDb.git", from: "13.4.0")
     ],
 
@@ -31,12 +30,10 @@ let package = Package(
             name: "PopcornMoviesAdapters",
             dependencies: [
                 .product(name: "MoviesComposition", package: "PopcornMovies"),
-                .product(name: "MoviesApplication", package: "PopcornMovies"),
                 .product(name: "MoviesDomain", package: "PopcornMovies"),
                 .product(name: "MoviesInfrastructure", package: "PopcornMovies"),
                 .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),
                 "CoreDomain",
-                "PopcornConfigurationAdapters",
                 "TMDb"
             ]
         )

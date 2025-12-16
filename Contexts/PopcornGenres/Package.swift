@@ -22,7 +22,6 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Platform/Caching")
     ],
 
@@ -32,15 +31,15 @@ let package = Package(
             dependencies: [
                 "GenresApplication",
                 "GenresDomain",
-                "CoreDomain"
+                "GenresInfrastructure",
+                "Caching"
             ]
         ),
 
         .target(
             name: "GenresApplication",
             dependencies: [
-                "GenresDomain",
-                "CoreDomain"
+                "GenresDomain"
             ]
         ),
         .testTarget(
@@ -52,9 +51,7 @@ let package = Package(
 
         .target(
             name: "GenresDomain",
-            dependencies: [
-                "CoreDomain"
-            ]
+            dependencies: []
         ),
         .testTarget(
             name: "GenresDomainTests",

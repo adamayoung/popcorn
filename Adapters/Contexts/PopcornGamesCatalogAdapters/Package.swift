@@ -26,10 +26,7 @@ let package = Package(
         .target(
             name: "PopcornGamesCatalogAdapters",
             dependencies: [
-                .product(name: "GamesCatalogComposition", package: "PopcornGamesCatalog"),
-                .product(name: "GamesCatalogApplication", package: "PopcornGamesCatalog"),
-                .product(name: "GamesCatalogDomain", package: "PopcornGamesCatalog"),
-                .product(name: "GamesCatalogInfrastructure", package: "PopcornGamesCatalog")
+                .product(name: "GamesCatalogComposition", package: "PopcornGamesCatalog")
             ]
         )
     ]

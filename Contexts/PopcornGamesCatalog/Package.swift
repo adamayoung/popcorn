@@ -21,10 +21,7 @@ let package = Package(
         .library(name: "GamesCatalogInfrastructure", targets: ["GamesCatalogInfrastructure"])
     ],
 
-    dependencies: [
-        .package(path: "../../Core/CoreDomain"),
-        .package(path: "../../Platform/DataPersistenceInfrastructure")
-    ],
+    dependencies: [],
 
     targets: [
         .target(
@@ -49,9 +46,7 @@ let package = Package(
 
         .target(
             name: "GamesCatalogDomain",
-            dependencies: [
-                "CoreDomain"
-            ]
+            dependencies: []
         ),
         .testTarget(
             name: "GamesCatalogDomainTests",
@@ -61,8 +56,7 @@ let package = Package(
         .target(
             name: "GamesCatalogInfrastructure",
             dependencies: [
-                "GamesCatalogDomain",
-                "DataPersistenceInfrastructure"
+                "GamesCatalogDomain"
             ]
         ),
         .testTarget(

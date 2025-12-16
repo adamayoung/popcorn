@@ -33,7 +33,6 @@ let package = Package(
                 "AppDependencies",
                 "DesignSystem",
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
-                .product(name: "TVSeriesDomain", package: "PopcornTVSeries"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         ),

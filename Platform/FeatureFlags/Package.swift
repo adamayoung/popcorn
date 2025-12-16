@@ -18,16 +18,11 @@ let package = Package(
         .library(name: "FeatureFlags", targets: ["FeatureFlags"])
     ],
 
-    dependencies: [
-        .package(url: "https://github.com/statsig-io/statsig-kit.git", from: "1.55.1")
-    ],
+    dependencies: [],
 
     targets: [
         .target(
-            name: "FeatureFlags",
-            dependencies: [
-                .product(name: "Statsig", package: "statsig-kit")
-            ]
+            name: "FeatureFlags"
         ),
         .testTarget(
             name: "FeatureFlagsTests",
