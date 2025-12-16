@@ -46,21 +46,21 @@ actor SwiftDataMovieWatchlistLocalDataSource: MovieWatchlistLocalDataSource,
         )
         descriptor.fetchLimit = 1
 
-        let favouriteMovie: MoviesWatchlistMovieEntity?
+        let watchlistMovieEntity: MoviesWatchlistMovieEntity?
         do {
-            favouriteMovie = try modelContext.fetch(descriptor).first
+            watchlistMovieEntity = try modelContext.fetch(descriptor).first
         } catch let error {
             throw .persistence(error)
         }
 
-        return favouriteMovie != nil
+        return watchlistMovieEntity != nil
     }
 
     func addMovie(
         withID id: Int
     ) async throws(MovieWatchlistLocalDataSourceError) {
-        let favouriteMovieEntity = MoviesWatchlistMovieEntity(movieID: id, createdAt: .now)
-        modelContext.insert(favouriteMovieEntity)
+        let watchlistMovieEntity = MoviesWatchlistMovieEntity(movieID: id, createdAt: .now)
+        modelContext.insert(watchlistMovieEntity)
 
         do { try modelContext.save() } catch let error {
             throw .persistence(error)

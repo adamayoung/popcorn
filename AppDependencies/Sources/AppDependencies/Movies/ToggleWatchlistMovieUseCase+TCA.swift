@@ -1,5 +1,5 @@
 //
-//  ToggleFavouriteMovieUseCase+TCA.swift
+//  ToggleWatchlistMovieUseCase+TCA.swift
 //  AppDependencies
 //
 //  Created by Adam Young on 03/12/2025.
@@ -13,7 +13,7 @@ enum ToggleWatchlistMovieUseCaseKey: DependencyKey {
 
     static var liveValue: any ToggleWatchlistMovieUseCase {
         @Dependency(\.moviesFactory) var moviesFactory
-        return moviesFactory.makeToggleFavouriteMovieUseCase()
+        return moviesFactory.makeToggleWatchlistMovieUseCase()
     }
 
 }

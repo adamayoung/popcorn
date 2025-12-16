@@ -41,8 +41,8 @@ public struct MovieDetailsView: View {
             if case .ready(let snapshot) = store.viewState, store.isWatchlistEnabled {
                 ToolbarItem(placement: .primaryAction) {
                     Button(
-                        "Favourite",
-                        systemImage: snapshot.movie.isOnWatchlist ? "heart.fill" : "heart"
+                        snapshot.movie.isOnWatchlist ? "REMOVE_FROM_WATCHLIST" : "ADD_TO_WATCHLIST",
+                        systemImage: snapshot.movie.isOnWatchlist ? "eye.square.fill" : "eye.square"
                     ) {
                         store.send(.toggleOnWatchlist)
                     }

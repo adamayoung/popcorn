@@ -39,7 +39,7 @@ public struct PopcornMoviesFactory {
         applicationFactory.makeStreamMovieDetailsUseCase()
     }
 
-    public func makeToggleFavouriteMovieUseCase() -> some ToggleWatchlistMovieUseCase {
+    public func makeToggleWatchlistMovieUseCase() -> some ToggleWatchlistMovieUseCase {
         applicationFactory.makeToggleWatchlistMovieUseCase()
     }
 

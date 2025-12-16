@@ -30,8 +30,8 @@ final class DefaultToggleWatchlistMovieUseCase: ToggleWatchlistMovieUseCase {
         }
 
         do {
-            let isFavouriteStatus = try await movieWatchlistRepository.isOnWatchlist(movieID: id)
-            if isFavouriteStatus {
+            let isOnWatchlist = try await movieWatchlistRepository.isOnWatchlist(movieID: id)
+            if isOnWatchlist {
                 try await movieWatchlistRepository.removeMovie(withID: id)
             } else {
                 try await movieWatchlistRepository.addMovie(withID: id)
