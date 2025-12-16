@@ -164,9 +164,8 @@ Current features are organized as SPM packages in `Features/`:
 
 ### Testing
 
-- Use `Makefile` for build tasks: `format`, `lint`, `build`, `test`
+- Use `Makefile` for build tasks: `format`, `lint`
 - swift-format for code formatting and linting
-- Test destinations overridable via `DESTINATION` variable
 - Secrets from environment or Info.plist via `AppConfig`
 
 ## Common Patterns

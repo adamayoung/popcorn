@@ -14,8 +14,10 @@ public final class PopcornGamesCatalogFactory {
 
     private let applicationFactory: GamesCatalogApplicationFactory
 
-    public init() {
-        let infrastructureFactory = GamesCatalogInfrastructureFactory()
+    public init(featureFlagProvider: some FeatureFlagProviding) {
+        let infrastructureFactory = GamesCatalogInfrastructureFactory(
+            featureFlagProvider: featureFlagProvider
+        )
         self.applicationFactory = GamesCatalogApplicationFactory(
             gameRepository: infrastructureFactory.makeGameRepository()
         )

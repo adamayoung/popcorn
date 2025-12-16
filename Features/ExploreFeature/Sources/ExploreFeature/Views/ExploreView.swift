@@ -69,13 +69,23 @@ extension ExploreView {
         trendingPeople: [PersonPreview]
     ) -> some View {
         LazyVStack {
-            discoverMoviesSection(discoverMovies)
-            trendingMoviesSection(trendingMovies)
-            popularMoviesSection(popularMovies)
+            if !discoverMovies.isEmpty {
+                discoverMoviesSection(discoverMovies)
+            }
+            if !trendingMovies.isEmpty {
+                trendingMoviesSection(trendingMovies)
+            }
+            if !popularMovies.isEmpty {
+                popularMoviesSection(popularMovies)
+            }
 
-            trendingTVSeriesSection(trendingTVSeries)
+            if !trendingTVSeries.isEmpty {
+                trendingTVSeriesSection(trendingTVSeries)
+            }
 
-            trendingPeopleSection(trendingPeople)
+            if !trendingPeople.isEmpty {
+                trendingPeopleSection(trendingPeople)
+            }
         }
     }
 

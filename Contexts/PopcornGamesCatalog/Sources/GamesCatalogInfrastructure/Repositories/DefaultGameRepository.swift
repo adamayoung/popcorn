@@ -10,12 +10,24 @@ import GamesCatalogDomain
 
 final class DefaultGameRepository: GameRepository {
 
-    init() {}
+    private let featureFlagProvider: any FeatureFlagProviding
+
+    init(featureFlagProvider: some FeatureFlagProviding) {
+        self.featureFlagProvider = featureFlagProvider
+    }
 
     func games() async throws(GameRepositoryError) -> [GameMetadata] {
-        Self.availableGames.values.sorted {
-            $0.name.localizedCompare($1.name) == .orderedAscending
-        }
+        Self.availableGames.values
+            .filter { game in
+                if game.id == 3 && !isEmojiPlotDecoderEnabled {
+                    return false
+                }
+
+                return true
+            }
+            .sorted {
+                $0.name.localizedCompare($1.name) == .orderedAscending
+            }
     }
 
     func game(id: Int) async throws(GameRepositoryError) -> GameMetadata {
@@ -29,6 +41,10 @@ final class DefaultGameRepository: GameRepository {
 }
 
 extension DefaultGameRepository {
+
+    private var isEmojiPlotDecoderEnabled: Bool {
+        (try? featureFlagProvider.isEmojiPlotDecoderEnabled()) == true
+    }
 
     private static let availableGames: [GameMetadata.ID: GameMetadata] = [
         1: GameMetadata(

@@ -1,13 +1,13 @@
 //
-//  FeatureFlagConfig.swift
-//  FeatureFlagsAdapters
+//  FeatureFlagsConfiguration.swift
+//  FeatureFlags
 //
-//  Created by Adam Young on 26/11/2025.
+//  Created by Adam Young on 16/12/2025.
 //
 
 import Foundation
 
-public struct StatsigFeatureFlagConfig: Sendable {
+public struct FeatureFlagsConfiguration: Sendable {
 
     public let userID: String
     public let environment: Environment
@@ -25,7 +25,7 @@ public struct StatsigFeatureFlagConfig: Sendable {
 
 }
 
-extension StatsigFeatureFlagConfig {
+extension FeatureFlagsConfiguration {
 
     public enum Environment: String, Sendable {
         case development

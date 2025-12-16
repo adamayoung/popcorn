@@ -11,8 +11,8 @@ ENV_FILE ?= .env
 # Load env vars if a local .env (or custom ENV_FILE) exists; ignored if absent.
 -include $(ENV_FILE)
 
-XCODEBUILD = set -o pipefail && NSUnbufferedIO=YES IDEBuildOperationMaxNumberOfConcurrentCompileTasks=9 xcodebuild
-XCODEBUILD_FLAGS = -scheme $(SCHEME) -derivedDataPath $(DERIVED_DATA) -resultBundlePath $(RESULT_BUNDLE) -destination $(DESTINATION) -parallelizeTargets
+XCODEBUILD = set -o pipefail && NSUnbufferedIO=YES xcodebuild
+XCODEBUILD_FLAGS = -scheme $(SCHEME) -destination $(DESTINATION) -parallelizeTargets
 
 .PHONY: clean
 clean:
@@ -47,8 +47,8 @@ endif
 
 .PHONY: build-ios
 build-ios:
-	$(MAKE) build PLATFORM=ios DESTINATION='$(DESTINATION)'
+	$(XCODEBUILD) build $(XCODEBUILD_FLAGS) PLATFORM=ios DESTINATION='$(DESTINATION)'
 
 .PHONY: test-ios
 test-ios:
-	$(MAKE) test PLATFORM=ios DESTINATION='$(DESTINATION)'
+	$(XCODEBUILD) test $(XCODEBUILD_FLAGS) PLATFORM=ios DESTINATION='$(DESTINATION)'

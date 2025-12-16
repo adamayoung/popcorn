@@ -108,11 +108,17 @@ extension ExploreFeature {
 
     private func handleFetchAll() -> EffectOf<Self> {
         .run { [exploreClient] send in
-            async let discoverMovies = exploreClient.fetchDiscoverMovies()
-            async let trendingMovies = exploreClient.fetchTrendingMovies()
-            async let popularMovies = exploreClient.fetchPopularMovies()
-            async let trendingTVSeries = exploreClient.fetchTrendingTVSeries()
-            async let trendingPeople = exploreClient.fetchTrendingPeople()
+            async let discoverMovies =
+                exploreClient.isDiscoverMoviesEnabled() ? exploreClient.fetchDiscoverMovies() : []
+            async let trendingMovies =
+                exploreClient.isTrendingMoviesEnabled() ? exploreClient.fetchTrendingMovies() : []
+            async let popularMovies =
+                exploreClient.isPopularMoviesEnabled() ? exploreClient.fetchPopularMovies() : []
+            async let trendingTVSeries =
+                exploreClient.isTrendingTVSeriesEnabled()
+                ? exploreClient.fetchTrendingTVSeries() : []
+            async let trendingPeople =
+                exploreClient.isTrendingPeopleEnabled() ? exploreClient.fetchTrendingPeople() : []
 
             do {
                 let snapshot = try await ViewSnapshot(

@@ -14,41 +14,51 @@ struct AppRootView: View {
     @State private var customization = TabViewCustomization()
 
     var body: some View {
-        content
-            .task {
-                store.send(.didAppear)
+        Group {
+            if store.isReady {
+                content
+            } else {
+                ProgressView()
             }
+        }
+        .task {
+            store.send(.didAppear)
+        }
     }
 
     private var content: some View {
         TabView(selection: $store.selectedTab) {
-            Tab(
-                "EXPLORE",
-                systemImage: "popcorn",
-                value: AppRootFeature.Tab.explore
-            ) {
-                ExploreRootView(
-                    store: store.scope(
-                        state: \.explore,
-                        action: \.explore
+            if store.isExploreEnabled {
+                Tab(
+                    "EXPLORE",
+                    systemImage: "popcorn",
+                    value: AppRootFeature.Tab.explore
+                ) {
+                    ExploreRootView(
+                        store: store.scope(
+                            state: \.explore,
+                            action: \.explore
+                        )
                     )
-                )
+                }
+                .customizationID(AppRootFeature.Tab.explore.id)
             }
-            .customizationID(AppRootFeature.Tab.explore.id)
 
-            Tab(
-                "GAMES",
-                systemImage: "flag.and.flag.filled.crossed",
-                value: AppRootFeature.Tab.games
-            ) {
-                GamesRootView(
-                    store: store.scope(
-                        state: \.games,
-                        action: \.games
+            if store.isGamesEnabled {
+                Tab(
+                    "GAMES",
+                    systemImage: "flag.and.flag.filled.crossed",
+                    value: AppRootFeature.Tab.games
+                ) {
+                    GamesRootView(
+                        store: store.scope(
+                            state: \.games,
+                            action: \.games
+                        )
                     )
-                )
+                }
+                .customizationID(AppRootFeature.Tab.games.id)
             }
-            .customizationID(AppRootFeature.Tab.games.id)
 
             if store.isSearchEnabled {
                 Tab(
