@@ -25,15 +25,14 @@ format:
 
 .PHONY: lint format-check
 lint format-check:
-	@swift format lint -r -p --strict .
+	@swift format lint -r --strict -p .
 
 .PHONY: build
 build:
+rm -rf $(RESULT_BUNDLE)
 ifneq ($(CLEAN),0)
-	rm -rf $(RESULT_BUNDLE)
 	$(XCODEBUILD) clean -scheme $(SCHEME)
 endif
-	rm -rf $(RESULT_BUNDLE)
 	$(XCODEBUILD) build $(XCODEBUILD_FLAGS)
 
 .PHONY: test

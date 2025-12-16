@@ -17,7 +17,7 @@ public struct PopcornPlotRemixGameFactory {
     public init(
         appConfigurationProvider: some AppConfigurationProviding,
         movieProvider: some MovieProviding,
-        genreProvider: some GenreProviding,
+        genreProvider: some GenreProviding
     ) {
         let infrastructureFactory = PlotRemixGameInfrastructureFactory()
         let synopsisRiddleGenerator = infrastructureFactory.makeSynopsisRiddleGenerator()
