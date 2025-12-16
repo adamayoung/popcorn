@@ -5,25 +5,25 @@
 //  Created by Adam Young on 26/11/2025.
 //
 
-import FeatureFlagsAdapters
+import FeatureFlags
 import Foundation
 
 struct AppConfig {
 
-    static let statsigKey: String = {
+    static let featureFlagsKey: String = {
         resolveValue(
             infoPlistKey: "StatsigSDKKey",
             environmentKey: "STATSIG_SDK_KEY"
         )
     }()
 
-    static let statsigEnvironment: StatsigFeatureFlagConfig.Environment = {
+    static let featureFlagsEnvironment: FeatureFlagsConfiguration.Environment = {
         let raw = resolveValue(
             infoPlistKey: "StatsigEnvironment",
             environmentKey: "STATSIG_ENVIRONMENT"
         )
 
-        guard let value = StatsigFeatureFlagConfig.Environment(rawValue: raw) else {
+        guard let value = FeatureFlagsConfiguration.Environment(rawValue: raw) else {
             fatalError("Invalid STATSIG_ENVIRONMENT: \(raw)")
         }
 

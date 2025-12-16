@@ -7,13 +7,57 @@
 
 import FeatureFlags
 import Foundation
+import OSLog
 import Statsig
 
-public struct StatsigFeatureFlagProvider: FeatureFlagProviding {
+struct StatsigFeatureFlagProvider: FeatureFlagProviding {
 
-    public init() {}
+    private static let logger = Logger(
+        subsystem: "FeatureFlagsAdapters",
+        category: "StatsigFeatureFlagProvider"
+    )
 
-    public func isEnabled(_ key: String) -> Bool {
+    func start(_ config: FeatureFlagsConfiguration) async throws {
+        try await withCheckedThrowingContinuation {
+            (continuation: CheckedContinuation<Void, Error>) in
+            let options = StatsigOptions(
+                environment: StatsigEnvironment(tier: config.environment.statsigTier)
+            )
+
+            Statsig.initialize(
+                sdkKey: config.apiKey,
+                user: StatsigUser(userID: config.userID),
+                options: options,
+                completion: { error in
+                    if let error {
+                        Self.logger.error(
+                            "Statsig failed to initialise: \(error.localizedDescription)")
+                        continuation.resume(throwing: error)
+                        return
+                    }
+
+                    Self.logger.trace(
+                        "Statsig initialised: (user: \(config.userID), environment: \(config.environment.rawValue))"
+                    )
+                    continuation.resume()
+                }
+            )
+        }
+    }
+
+    func isEnabled(_ key: String) -> Bool {
         Statsig.checkGate(key)
     }
+}
+
+extension FeatureFlagsConfiguration.Environment {
+
+    fileprivate var statsigTier: StatsigEnvironment.EnvironmentTier {
+        switch self {
+        case .development: .Development
+        case .staging: .Staging
+        case .production: .Production
+        }
+    }
+
 }

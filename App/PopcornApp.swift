@@ -6,7 +6,6 @@
 //
 
 import ComposableArchitecture
-import FeatureFlagsAdapters
 import SwiftUI
 
 @main
@@ -18,8 +17,6 @@ struct PopcornApp: App {
             AppRootFeature()
         }
     )
-
-    @State private var isReady = false
 
     var body: some Scene {
         #if os(macOS)

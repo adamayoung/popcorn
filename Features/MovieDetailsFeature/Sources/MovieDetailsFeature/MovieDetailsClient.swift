@@ -21,7 +21,9 @@ struct MovieDetailsClient: Sendable {
 
     var streamMovie: @Sendable (Int) async throws -> AsyncThrowingStream<Movie?, Error>
     var streamSimilar: @Sendable (Int) async throws -> AsyncThrowingStream<[MoviePreview], Error>
-    var toggleFavourite: @Sendable (Int) async throws -> Void
+    var toggleOnWatchlist: @Sendable (Int) async throws -> Void
+
+    var isWatchlistEnabled: @Sendable () throws -> Bool
 
 }
 
@@ -30,7 +32,8 @@ extension MovieDetailsClient: DependencyKey {
     static var liveValue: MovieDetailsClient {
         @Dependency(\.streamMovieDetails) var streamMovieDetails
         @Dependency(\.streamSimilarMovies) var streamSimilarMovies
-        @Dependency(\.toggleFavouriteMovie) var toggleFavouriteMovie
+        @Dependency(\.toggleWatchlistMovie) var toggleWatchlistMovie
+        @Dependency(\.featureFlags) var featureFlags
 
         return MovieDetailsClient(
             streamMovie: { id in
@@ -65,8 +68,11 @@ extension MovieDetailsClient: DependencyKey {
                     continuation.onTermination = { _ in task.cancel() }
                 }
             },
-            toggleFavourite: { id in
-                try await toggleFavouriteMovie.execute(id: id)
+            toggleOnWatchlist: { id in
+                try await toggleWatchlistMovie.execute(id: id)
+            },
+            isWatchlistEnabled: {
+                featureFlags.isEnabled(.watchlist)
             }
         )
     }
@@ -85,7 +91,10 @@ extension MovieDetailsClient: DependencyKey {
                     continuation.finish()
                 }
             },
-            toggleFavourite: { _ in }
+            toggleOnWatchlist: { _ in },
+            isWatchlistEnabled: {
+                true
+            }
         )
     }
 

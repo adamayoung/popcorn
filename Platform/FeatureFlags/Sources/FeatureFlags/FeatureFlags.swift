@@ -2,21 +2,15 @@
 //  FeatureFlags.swift
 //  FeatureFlags
 //
-//  Created by Adam Young on 26/11/2025.
+//  Created by Adam Young on 16/12/2025.
 //
 
 import Foundation
 
-public struct FeatureFlags: Sendable {
+public protocol FeatureFlags: Sendable {
 
-    private let provider: any FeatureFlagProviding
+    func isEnabled(_ flag: FeatureFlag) -> Bool
 
-    public init(provider: some FeatureFlagProviding) {
-        self.provider = provider
-    }
-
-    public func isEnabled(_ key: some StringProtocol) -> Bool {
-        provider.isEnabled(key.description)
-    }
+    func isEnabled(_ key: some StringProtocol) -> Bool
 
 }

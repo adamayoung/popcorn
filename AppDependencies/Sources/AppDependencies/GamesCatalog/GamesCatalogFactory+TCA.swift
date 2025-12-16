@@ -13,7 +13,10 @@ import PopcornGamesCatalogAdapters
 extension DependencyValues {
 
     var gamesCatalogFactory: PopcornGamesCatalogFactory {
-        PopcornGamesCatalogAdaptersFactory().makeGamesCatalogFactory()
+        @Dependency(\.featureFlags) var featureFlags
+        return PopcornGamesCatalogAdaptersFactory(
+            featureFlags: featureFlags
+        ).makeGamesCatalogFactory()
     }
 
 }

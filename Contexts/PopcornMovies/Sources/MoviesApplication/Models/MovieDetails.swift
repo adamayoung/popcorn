@@ -17,7 +17,7 @@ public struct MovieDetails: Identifiable, Equatable, Sendable {
     public let posterURLSet: ImageURLSet?
     public let backdropURLSet: ImageURLSet?
     public let logoURLSet: ImageURLSet?
-    public let isFavourite: Bool
+    public let isOnWatchlist: Bool
 
     public init(
         id: Int,
@@ -27,7 +27,7 @@ public struct MovieDetails: Identifiable, Equatable, Sendable {
         posterURLSet: ImageURLSet? = nil,
         backdropURLSet: ImageURLSet? = nil,
         logoURLSet: ImageURLSet? = nil,
-        isFavourite: Bool
+        isOnWatchlist: Bool
     ) {
         self.id = id
         self.title = title
@@ -36,7 +36,7 @@ public struct MovieDetails: Identifiable, Equatable, Sendable {
         self.posterURLSet = posterURLSet
         self.backdropURLSet = backdropURLSet
         self.logoURLSet = logoURLSet
-        self.isFavourite = isFavourite
+        self.isOnWatchlist = isOnWatchlist
     }
 
 }

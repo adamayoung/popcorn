@@ -15,7 +15,7 @@ public struct Movie: Identifiable, Sendable, Equatable, Hashable {
     public let posterURL: URL?
     public let backdropURL: URL?
     public let logoURL: URL?
-    public let isFavourite: Bool
+    public let isOnWatchlist: Bool
 
     public init(
         id: Int,
@@ -24,7 +24,7 @@ public struct Movie: Identifiable, Sendable, Equatable, Hashable {
         posterURL: URL? = nil,
         backdropURL: URL? = nil,
         logoURL: URL? = nil,
-        isFavourite: Bool
+        isOnWatchlist: Bool
     ) {
         self.id = id
         self.title = title
@@ -32,7 +32,7 @@ public struct Movie: Identifiable, Sendable, Equatable, Hashable {
         self.posterURL = posterURL
         self.backdropURL = backdropURL
         self.logoURL = logoURL
-        self.isFavourite = isFavourite
+        self.isOnWatchlist = isOnWatchlist
     }
 
 }
@@ -50,7 +50,7 @@ extension Movie {
             backdropURL: URL(
                 string: "https://image.tmdb.org/t/p/w1280/docDyCJrhPoFXAckB1aOiIv9Mz0.jpg"),
             logoURL: URL(string: "https://image.tmdb.org/t/p/w500/qVFenxaKbLr76dSJN5qRMM82X2u.png"),
-            isFavourite: false
+            isOnWatchlist: false
         )
     }
 

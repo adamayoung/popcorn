@@ -10,10 +10,14 @@ import GamesCatalogDomain
 
 package final class GamesCatalogInfrastructureFactory {
 
-    package init() {}
+    private let featureFlagProvider: any FeatureFlagProviding
+
+    package init(featureFlagProvider: some FeatureFlagProviding) {
+        self.featureFlagProvider = featureFlagProvider
+    }
 
     package func makeGameRepository() -> some GameRepository {
-        DefaultGameRepository()
+        DefaultGameRepository(featureFlagProvider: featureFlagProvider)
     }
 
 }

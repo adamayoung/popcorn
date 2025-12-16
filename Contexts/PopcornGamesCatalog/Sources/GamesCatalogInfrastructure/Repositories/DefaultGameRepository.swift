@@ -10,12 +10,36 @@ import GamesCatalogDomain
 
 final class DefaultGameRepository: GameRepository {
 
-    init() {}
+    private let featureFlagProvider: any FeatureFlagProviding
+
+    init(featureFlagProvider: some FeatureFlagProviding) {
+        self.featureFlagProvider = featureFlagProvider
+    }
 
     func games() async throws(GameRepositoryError) -> [GameMetadata] {
-        Self.availableGames.values.sorted {
-            $0.name.localizedCompare($1.name) == .orderedAscending
-        }
+        Self.availableGames.values
+            .filter { game in
+                if game.id == 1 && !isPlotRemixEnabled {
+                    return false
+                }
+
+                if game.id == 2 && !isPosterPixelationGameEnabled {
+                    return false
+                }
+
+                if game.id == 3 && !isEmojiPlotDecoderEnabled {
+                    return false
+                }
+
+                if game.id == 4 && !isTimelineTangleGameEnabled {
+                    return false
+                }
+
+                return true
+            }
+            .sorted {
+                $0.name.localizedCompare($1.name) == .orderedAscending
+            }
     }
 
     func game(id: Int) async throws(GameRepositoryError) -> GameMetadata {
@@ -24,6 +48,26 @@ final class DefaultGameRepository: GameRepository {
         }
 
         return game
+    }
+
+}
+
+extension DefaultGameRepository {
+
+    private var isPlotRemixEnabled: Bool {
+        (try? featureFlagProvider.isPlotRemixGameEnabled()) == true
+    }
+
+    private var isEmojiPlotDecoderEnabled: Bool {
+        (try? featureFlagProvider.isEmojiPlotDecoderEnabled()) == true
+    }
+
+    private var isPosterPixelationGameEnabled: Bool {
+        (try? featureFlagProvider.isPosterPixelationGameEnabled()) == true
+    }
+
+    private var isTimelineTangleGameEnabled: Bool {
+        (try? featureFlagProvider.isTimelineTangleGameEnabled()) == true
     }
 
 }

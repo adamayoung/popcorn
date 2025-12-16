@@ -13,31 +13,31 @@ final class DefaultFetchMovieDetailsUseCase: FetchMovieDetailsUseCase {
 
     private let movieRepository: any MovieRepository
     private let movieImageRepository: any MovieImageRepository
-    private let favouriteMovieRepository: any FavouriteMovieRepository
+    private let movieWatchlistRepository: any MovieWatchlistRepository
     private let appConfigurationProvider: any AppConfigurationProviding
 
     init(
         movieRepository: some MovieRepository,
         movieImageRepository: some MovieImageRepository,
-        favouriteMovieRepository: some FavouriteMovieRepository,
+        movieWatchlistRepository: some MovieWatchlistRepository,
         appConfigurationProvider: some AppConfigurationProviding
     ) {
         self.movieRepository = movieRepository
         self.movieImageRepository = movieImageRepository
-        self.favouriteMovieRepository = favouriteMovieRepository
+        self.movieWatchlistRepository = movieWatchlistRepository
         self.appConfigurationProvider = appConfigurationProvider
     }
 
     func execute(id: Movie.ID) async throws(FetchMovieDetailsError) -> MovieDetails {
         let movie: Movie
         let imageCollection: ImageCollection
-        let isFavourite: Bool
+        let isOnWatchlist: Bool
         let appConfiguration: AppConfiguration
         do {
-            (movie, imageCollection, isFavourite, appConfiguration) = try await (
+            (movie, imageCollection, isOnWatchlist, appConfiguration) = try await (
                 movieRepository.movie(withID: id),
                 movieImageRepository.imageCollection(forMovie: id),
-                favouriteMovieRepository.isFavourite(movieID: id),
+                movieWatchlistRepository.isOnWatchlist(movieID: id),
                 appConfigurationProvider.appConfiguration()
             )
         } catch let error {
@@ -48,7 +48,7 @@ final class DefaultFetchMovieDetailsUseCase: FetchMovieDetailsUseCase {
         return mapper.map(
             movie,
             imageCollection: imageCollection,
-            isFavourite: isFavourite,
+            isOnWatchlist: isOnWatchlist,
             imagesConfiguration: appConfiguration.images
         )
     }

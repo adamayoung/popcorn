@@ -21,6 +21,12 @@ struct ExploreClient: Sendable {
     var fetchTrendingTVSeries: @Sendable () async throws -> [TVSeriesPreview]
     var fetchTrendingPeople: @Sendable () async throws -> [PersonPreview]
 
+    var isDiscoverMoviesEnabled: @Sendable () throws -> Bool
+    var isTrendingMoviesEnabled: @Sendable () throws -> Bool
+    var isPopularMoviesEnabled: @Sendable () throws -> Bool
+    var isTrendingTVSeriesEnabled: @Sendable () throws -> Bool
+    var isTrendingPeopleEnabled: @Sendable () throws -> Bool
+
 }
 
 extension ExploreClient: DependencyKey {
@@ -31,6 +37,7 @@ extension ExploreClient: DependencyKey {
         @Dependency(\.fetchPopularMovies) var fetchPopularMovies
         @Dependency(\.fetchTrendingTVSeries) var fetchTrendingTVSeries
         @Dependency(\.fetchTrendingPeople) var fetchTrendingPeople
+        @Dependency(\.featureFlags) var featureFlags
 
         return ExploreClient(
             fetchDiscoverMovies: {
@@ -59,6 +66,21 @@ extension ExploreClient: DependencyKey {
                 let personPreviews = try await fetchTrendingPeople.execute()
                 let mapper = PersonPreviewMapper()
                 return personPreviews.map(mapper.map)
+            },
+            isDiscoverMoviesEnabled: {
+                featureFlags.isEnabled(.exploreDiscoverMovies)
+            },
+            isTrendingMoviesEnabled: {
+                featureFlags.isEnabled(.exploreTrendingMovies)
+            },
+            isPopularMoviesEnabled: {
+                featureFlags.isEnabled(.explorePopularMovies)
+            },
+            isTrendingTVSeriesEnabled: {
+                featureFlags.isEnabled(.exploreTrendingTVSeries)
+            },
+            isTrendingPeopleEnabled: {
+                featureFlags.isEnabled(.exploreTrendingPeople)
             }
         )
     }
@@ -84,6 +106,21 @@ extension ExploreClient: DependencyKey {
             fetchTrendingPeople: {
                 try await Task.sleep(for: .seconds(2))
                 return PersonPreview.mocks
+            },
+            isDiscoverMoviesEnabled: {
+                true
+            },
+            isTrendingMoviesEnabled: {
+                true
+            },
+            isPopularMoviesEnabled: {
+                true
+            },
+            isTrendingTVSeriesEnabled: {
+                true
+            },
+            isTrendingPeopleEnabled: {
+                true
             }
         )
     }

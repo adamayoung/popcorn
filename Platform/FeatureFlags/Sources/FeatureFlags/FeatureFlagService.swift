@@ -1,0 +1,44 @@
+//
+//  FeatureFlagService.swift
+//  FeatureFlags
+//
+//  Created by Adam Young on 26/11/2025.
+//
+
+import Foundation
+import OSLog
+
+struct FeatureFlagService: FeatureFlags, FeatureFlagInitialising {
+
+    private static let logger = Logger(
+        subsystem: "FeatureFlags",
+        category: "FeatureFlagService"
+    )
+
+    private let provider: any FeatureFlagProviding
+
+    init(provider: some FeatureFlagProviding) {
+        self.provider = provider
+    }
+
+    func start(_ config: FeatureFlagsConfiguration) async throws {
+        try await provider.start(config)
+
+        var flagStatuses: [String] = []
+        for featureFlag in FeatureFlag.allCases {
+            let value = isEnabled(featureFlag)
+            flagStatuses.append("\(featureFlag.rawValue): \(value)")
+        }
+
+        Self.logger.info("Feature flags:\n\(flagStatuses.joined(separator: "\n"))")
+    }
+
+    func isEnabled(_ flag: FeatureFlag) -> Bool {
+        provider.isEnabled(flag.rawValue)
+    }
+
+    func isEnabled(_ key: some StringProtocol) -> Bool {
+        provider.isEnabled(key.description)
+    }
+
+}

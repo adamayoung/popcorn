@@ -8,6 +8,7 @@
 #if os(visionOS)
     import ComposableArchitecture
     import SwiftUI
+    import UIKit
 
     struct VisionScene: Scene {
 
@@ -18,27 +19,18 @@
 
         var body: some Scene {
             WindowGroup("MOVIES", id: "app") {
-                Group {
-                    if isReady {
-                        AppRootView(store: store)
-                    } else {
-                        EmptyView()
+                AppRootView(store: store)
+                    .preferredColorScheme(.dark)
+                    .onAppear {
+                        if let windowScene = UIApplication.shared.connectedScenes.first
+                            as? UIWindowScene
+                        {
+                            let geometryPreferences = UIWindowScene.GeometryPreferences.Vision(
+                                resizingRestrictions: .uniform
+                            )
+                            windowScene.requestGeometryUpdate(geometryPreferences)
+                        }
                     }
-                }
-                .preferredColorScheme(.dark)
-                .task {
-                    await initialiseFeatureFlags()
-                }
-                .onAppear {
-                    if let windowScene = UIApplication.shared.connectedScenes.first
-                        as? UIWindowScene
-                    {
-                        let geometryPreferences = UIWindowScene.GeometryPreferences.Vision(
-                            resizingRestrictions: .uniform
-                        )
-                        windowScene.requestGeometryUpdate(geometryPreferences)
-                    }
-                }
             }
             .windowStyle(.plain)
             .windowResizability(.contentMinSize)

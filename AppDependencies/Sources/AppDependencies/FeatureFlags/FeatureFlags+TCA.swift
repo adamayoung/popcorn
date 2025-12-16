@@ -7,21 +7,20 @@
 
 import ComposableArchitecture
 import FeatureFlags
-import FeatureFlagsAdapters
 import Foundation
 
 enum FeatureFlagsKey: DependencyKey {
 
-    static var liveValue: FeatureFlags {
-        let provider = StatsigFeatureFlagProvider()
-        return FeatureFlags(provider: provider)
+    static var liveValue: any FeatureFlags {
+        @Dependency(\.featureFlagsFactory) var featureFlagsFactory
+        return featureFlagsFactory.makeService()
     }
 
 }
 
 extension DependencyValues {
 
-    public var featureFlags: FeatureFlags {
+    public var featureFlags: any FeatureFlags {
         get { self[FeatureFlagsKey.self] }
         set { self[FeatureFlagsKey.self] = newValue }
     }

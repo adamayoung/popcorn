@@ -23,7 +23,7 @@ public struct PopcornMoviesFactory {
         )
         self.applicationFactory = MoviesApplicationFactory(
             movieRepository: infrastructureFactory.makeMovieRepository(),
-            favouriteMovieRepository: infrastructureFactory.makeFavouriteMovieRepository(),
+            movieWatchlistRepository: infrastructureFactory.makeMovieWatchlistRepository(),
             movieImageRepository: infrastructureFactory.makeMovieImageRepository(),
             popularMovieRepository: infrastructureFactory.makePopularMovieRepository(),
             similarMovieRepository: infrastructureFactory.makeSimilarMovieRepository(),
@@ -39,8 +39,8 @@ public struct PopcornMoviesFactory {
         applicationFactory.makeStreamMovieDetailsUseCase()
     }
 
-    public func makeToggleFavouriteMovieUseCase() -> some ToggleFavouriteMovieUseCase {
-        applicationFactory.makeToggleFavouriteMovieUseCase()
+    public func makeToggleWatchlistMovieUseCase() -> some ToggleWatchlistMovieUseCase {
+        applicationFactory.makeToggleWatchlistMovieUseCase()
     }
 
     public func makeFetchMovieImageCollectionUseCase() -> some FetchMovieImageCollectionUseCase {

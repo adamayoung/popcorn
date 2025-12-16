@@ -19,18 +19,18 @@ final class DefaultStreamMovieDetailsUseCase: StreamMovieDetailsUseCase {
 
     private let movieRepository: any MovieRepository
     private let movieImageRepository: any MovieImageRepository
-    private let favouriteMovieRepository: any FavouriteMovieRepository
+    private let movieWatchlistRepository: any MovieWatchlistRepository
     private let appConfigurationProvider: any AppConfigurationProviding
 
     init(
         movieRepository: some MovieRepository,
         movieImageRepository: some MovieImageRepository,
-        favouriteMovieRepository: any FavouriteMovieRepository,
+        movieWatchlistRepository: any MovieWatchlistRepository,
         appConfigurationProvider: some AppConfigurationProviding
     ) {
         self.movieRepository = movieRepository
         self.movieImageRepository = movieImageRepository
-        self.favouriteMovieRepository = favouriteMovieRepository
+        self.movieWatchlistRepository = movieWatchlistRepository
         self.appConfigurationProvider = appConfigurationProvider
     }
 
@@ -49,12 +49,12 @@ final class DefaultStreamMovieDetailsUseCase: StreamMovieDetailsUseCase {
                     }
 
                     let imageCollection: ImageCollection
-                    let isFavourite: Bool
+                    let isOnWatchlist: Bool
                     let appConfiguration: AppConfiguration
                     do {
-                        (imageCollection, isFavourite, appConfiguration) = try await (
+                        (imageCollection, isOnWatchlist, appConfiguration) = try await (
                             movieImageRepository.imageCollection(forMovie: id),
-                            favouriteMovieRepository.isFavourite(movieID: id),
+                            movieWatchlistRepository.isOnWatchlist(movieID: id),
                             appConfigurationProvider.appConfiguration()
                         )
                     } catch let error {
@@ -65,7 +65,7 @@ final class DefaultStreamMovieDetailsUseCase: StreamMovieDetailsUseCase {
                     let movieDetails = mapper.map(
                         movie,
                         imageCollection: imageCollection,
-                        isFavourite: isFavourite,
+                        isOnWatchlist: isOnWatchlist,
                         imagesConfiguration: appConfiguration.images
                     )
 

@@ -5,15 +5,14 @@
 //  Created by Adam Young on 17/11/2025.
 //
 
+import AppDependencies
 import ComposableArchitecture
-import FeatureFlags
-import FeatureFlagsAdapters
 import Foundation
 
 @Reducer
 struct AppRootFeature {
 
-    @Dependency(\.featureFlags) var featureFlags
+    @Dependency(\.appRootClient) private var appRootClient
 
     @ObservableState
     struct State {
@@ -21,9 +20,14 @@ struct AppRootFeature {
         var explore = ExploreRootFeature.State()
         var games = GamesRootFeature.State()
         var search = SearchRootFeature.State()
+
+        var isExploreEnabled: Bool = false
+        var isGamesEnabled: Bool = false
         var isSearchEnabled: Bool = false
 
+        var hasStarted: Bool = false
         var isReady: Bool = false
+        var error: Error? = nil
     }
 
     enum Tab {
@@ -43,7 +47,9 @@ struct AppRootFeature {
     enum Action: BindableAction {
         case binding(BindingAction<State>)
         case didAppear
-        case featureFlagsLoaded(searchEnabled: Bool)
+        case featureFlagsInitialised
+        case featureFlagsFailedToInitialise(Error)
+        case updateFeatureFlags
         case explore(ExploreRootFeature.Action)
         case games(GamesRootFeature.Action)
         case search(SearchRootFeature.Action)
@@ -55,13 +61,27 @@ struct AppRootFeature {
         Reduce { state, action in
             switch action {
             case .didAppear:
-                return .run { [featureFlags] send in
-                    let searchEnabled = featureFlags.isEnabled("media_search")
-                    await send(.featureFlagsLoaded(searchEnabled: searchEnabled))
+                guard !state.hasStarted else {
+                    return .none
                 }
 
-            case .featureFlagsLoaded(let searchEnabled):
-                state.isSearchEnabled = searchEnabled
+                state.hasStarted = true
+
+                return handleInitialiseFeatureFlags()
+
+            case .featureFlagsInitialised:
+                return .run { send in
+                    await send(.updateFeatureFlags)
+                }
+
+            case .featureFlagsFailedToInitialise(let error):
+                state.error = error
+                return .none
+
+            case .updateFeatureFlags:
+                state.isExploreEnabled = (try? appRootClient.isExploreEnabled()) ?? false
+                state.isGamesEnabled = (try? appRootClient.isGamesEnabled()) ?? false
+                state.isSearchEnabled = (try? appRootClient.isSearchEnabled()) ?? false
                 state.isReady = true
                 return .none
 
@@ -73,6 +93,23 @@ struct AppRootFeature {
         Scope(state: \.explore, action: \.explore) { ExploreRootFeature() }
         Scope(state: \.games, action: \.games) { GamesRootFeature() }
         Scope(state: \.search, action: \.search) { SearchRootFeature() }
+    }
+
+}
+
+extension AppRootFeature {
+
+    private func handleInitialiseFeatureFlags() -> EffectOf<Self> {
+        .run { [appRootClient] send in
+            do {
+                try await appRootClient.startFeatureFlags()
+            } catch let error {
+                await send(.featureFlagsFailedToInitialise(error))
+                return
+            }
+
+            await send(.featureFlagsInitialised)
+        }
     }
 
 }

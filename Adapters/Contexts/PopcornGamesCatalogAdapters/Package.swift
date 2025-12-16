@@ -19,14 +19,16 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(path: "../../../Contexts/PopcornGamesCatalog")
+        .package(path: "../../../Contexts/PopcornGamesCatalog"),
+        .package(path: "../../../Platform/FeatureFlags")
     ],
 
     targets: [
         .target(
             name: "PopcornGamesCatalogAdapters",
             dependencies: [
-                .product(name: "GamesCatalogComposition", package: "PopcornGamesCatalog")
+                .product(name: "GamesCatalogComposition", package: "PopcornGamesCatalog"),
+                "FeatureFlags"
             ]
         )
     ]
