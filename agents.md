@@ -200,3 +200,4 @@ When working on this codebase:
 - Test changes using the Makefile commands
 - Consider feature flag implications for new features
 - After making code changes, always verify linting with: `swift format lint -r -p --strict .`
+- **Never search, read, or explore files in the `DerivedData/` directory** - it contains build artifacts and cached data, not source code
