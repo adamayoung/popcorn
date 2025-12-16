@@ -5,13 +5,11 @@
 //  Created by Adam Young on 21/11/2025.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import DiscoverApplication
 import Foundation
 import MoviesApplication
-import PopcornDiscoverAdapters
-import PopcornMoviesAdapters
-import PopcornTrendingAdapters
 import TrendingApplication
 
 @DependencyClient

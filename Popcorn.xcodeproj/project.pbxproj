@@ -43,6 +43,7 @@
 		664551862ECB7C2100250D87 /* Popcorn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Popcorn.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		664551932ECB7C2200250D87 /* PopcornTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PopcornTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6645519D2ECB7C2200250D87 /* PopcornUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PopcornUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6653A7302EF0D2D200CDE7DF /* AppDependencies */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = AppDependencies; sourceTree = "<group>"; };
 		66E814782EE05BDF004BA237 /* Popcorn.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Popcorn.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -94,7 +95,6 @@
 				Contexts/PopcornGenresAdapters,
 				Contexts/PopcornPlotRemixGameAdapters,
 				Platform/FeatureFlagsAdapters,
-				Platform/TMDbAdapters,
 			);
 			target = 664551852ECB7C2100250D87 /* Popcorn */;
 		};
@@ -233,6 +233,7 @@
 		6645517D2ECB7C2100250D87 = {
 			isa = PBXGroup;
 			children = (
+				6653A7302EF0D2D200CDE7DF /* AppDependencies */,
 				66E814782EE05BDF004BA237 /* Popcorn.entitlements */,
 				66FDEF712ED7261D0029B88A /* Configs */,
 				664551882ECB7C2100250D87 /* App */,

@@ -9,17 +9,17 @@ import Caching
 import ConfigurationDomain
 import Foundation
 
-public final class ConfigurationInfrastructureFactory {
+package final class ConfigurationInfrastructureFactory {
 
     private static let cache: some Caching = CachesFactory.makeInMemoryCache(defaultExpiresIn: 60)
 
     private let configurationRemoteDataSource: any ConfigurationRemoteDataSource
 
-    public init(configurationRemoteDataSource: some ConfigurationRemoteDataSource) {
+    package init(configurationRemoteDataSource: some ConfigurationRemoteDataSource) {
         self.configurationRemoteDataSource = configurationRemoteDataSource
     }
 
-    public func makeConfigurationRepository() -> some ConfigurationRepository {
+    package func makeConfigurationRepository() -> some ConfigurationRepository {
         let localDataSource = makeConfigurationLocalDataSource()
 
         return DefaultConfigurationRepository(

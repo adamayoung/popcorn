@@ -5,10 +5,10 @@
 //  Created by Adam Young on 17/11/2025.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import Foundation
 import PeopleApplication
-import PopcornPeopleAdapters
 
 @DependencyClient
 struct PersonDetailsClient: Sendable {

@@ -5,11 +5,12 @@
 //  Created by Adam Young on 18/11/2025.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import Foundation
-import PopcornTrendingAdapters
 import TrendingApplication
 
+@DependencyClient
 struct TrendingTVSeriesClient: Sendable {
 
     var fetch: @Sendable () async throws -> [TVSeriesPreview]
@@ -19,10 +20,11 @@ struct TrendingTVSeriesClient: Sendable {
 extension TrendingTVSeriesClient: DependencyKey {
 
     static var liveValue: TrendingTVSeriesClient {
-        TrendingTVSeriesClient(
+        @Dependency(\.fetchTrendingTVSeries) var fetchTrendingTVSeries
+
+        return TrendingTVSeriesClient(
             fetch: {
-                let useCase = DependencyValues._current.fetchTrendingTVSeries
-                let tvSeriesPreviews = try await useCase.execute()
+                let tvSeriesPreviews = try await fetchTrendingTVSeries.execute()
                 let mapper = TVSeriesPreviewMapper()
                 return tvSeriesPreviews.map(mapper.map)
             }

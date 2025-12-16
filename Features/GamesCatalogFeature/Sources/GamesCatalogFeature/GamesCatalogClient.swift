@@ -5,11 +5,11 @@
 //  Created by Adam Young on 09/12/2025.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import Foundation
 import GamesCatalogApplication
 import GamesCatalogDomain
-import PopcornGamesCatalogAdapters
 
 @DependencyClient
 struct GamesCatalogClient: Sendable {

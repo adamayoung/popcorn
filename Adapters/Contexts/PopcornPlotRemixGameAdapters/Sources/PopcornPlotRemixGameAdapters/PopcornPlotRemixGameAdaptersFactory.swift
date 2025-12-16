@@ -10,17 +10,29 @@ import DiscoverApplication
 import Foundation
 import GenresApplication
 import MoviesApplication
-import PlotRemixGameApplication
+import PlotRemixGameComposition
 import TMDb
 
-struct PopcornPlotRemixGameAdaptersFactory {
+public final class PopcornPlotRemixGameAdaptersFactory {
 
-    let fetchAppConfigurationUseCase: any FetchAppConfigurationUseCase
-    let fetchDiscoverMoviesUseCase: any FetchDiscoverMoviesUseCase
-    let fetchSimilarMoviesUseCase: any FetchSimilarMoviesUseCase
-    let fetchMovieGenresUseCase: any FetchMovieGenresUseCase
+    private let fetchAppConfigurationUseCase: any FetchAppConfigurationUseCase
+    private let fetchDiscoverMoviesUseCase: any FetchDiscoverMoviesUseCase
+    private let fetchSimilarMoviesUseCase: any FetchSimilarMoviesUseCase
+    private let fetchMovieGenresUseCase: any FetchMovieGenresUseCase
 
-    func makePlotRemixGameFactory() -> PlotRemixGameApplicationFactory {
+    public init(
+        fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase,
+        fetchDiscoverMoviesUseCase: some FetchDiscoverMoviesUseCase,
+        fetchSimilarMoviesUseCase: some FetchSimilarMoviesUseCase,
+        fetchMovieGenresUseCase: some FetchMovieGenresUseCase
+    ) {
+        self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
+        self.fetchDiscoverMoviesUseCase = fetchDiscoverMoviesUseCase
+        self.fetchSimilarMoviesUseCase = fetchSimilarMoviesUseCase
+        self.fetchMovieGenresUseCase = fetchMovieGenresUseCase
+    }
+
+    public func makePlotRemixGameFactory() -> PopcornPlotRemixGameFactory {
         let appConfigurationProvider = AppConfigurationProviderAdapter(
             fetchUseCase: fetchAppConfigurationUseCase
         )
@@ -30,7 +42,7 @@ struct PopcornPlotRemixGameAdaptersFactory {
         )
         let genreProvider = GenreProviderAdapter(fetchMovieGenresUseCase: fetchMovieGenresUseCase)
 
-        return PlotRemixGameComposition.makeGameFactory(
+        return PopcornPlotRemixGameFactory(
             appConfigurationProvider: appConfigurationProvider,
             movieProvider: movieProvider,
             genreProvider: genreProvider,

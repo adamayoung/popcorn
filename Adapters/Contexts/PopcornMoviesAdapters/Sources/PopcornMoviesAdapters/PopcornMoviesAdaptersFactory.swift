@@ -7,22 +7,30 @@
 
 import ConfigurationApplication
 import Foundation
-import MoviesApplication
+import MoviesComposition
 import TMDb
 
-struct PopcornMoviesAdaptersFactory {
+public final class PopcornMoviesAdaptersFactory {
 
-    let movieService: any MovieService
-    let fetchAppConfigurationUseCase: any FetchAppConfigurationUseCase
+    private let movieService: any MovieService
+    private let fetchAppConfigurationUseCase: any FetchAppConfigurationUseCase
 
-    func makeMoviesFactory() -> MoviesApplicationFactory {
+    public init(
+        movieService: some MovieService,
+        fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase
+    ) {
+        self.movieService = movieService
+        self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
+    }
+
+    public func makeMoviesFactory() -> PopcornMoviesFactory {
         let movieRemoteDataSource = TMDbMovieRemoteDataSource(movieService: movieService)
 
         let appConfigurationProvider = AppConfigurationProviderAdapter(
             fetchUseCase: fetchAppConfigurationUseCase
         )
 
-        return MoviesComposition.makeMoviesFactory(
+        return PopcornMoviesFactory(
             movieRemoteDataSource: movieRemoteDataSource,
             appConfigurationProvider: appConfigurationProvider
         )

@@ -19,19 +19,17 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(path: "../../../Contexts/PopcornGamesCatalog"),
-        .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1")
+        .package(path: "../../../Contexts/PopcornGamesCatalog")
     ],
 
     targets: [
         .target(
             name: "PopcornGamesCatalogAdapters",
             dependencies: [
+                .product(name: "GamesCatalogComposition", package: "PopcornGamesCatalog"),
                 .product(name: "GamesCatalogApplication", package: "PopcornGamesCatalog"),
                 .product(name: "GamesCatalogDomain", package: "PopcornGamesCatalog"),
-                .product(name: "GamesCatalogInfrastructure", package: "PopcornGamesCatalog"),
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                .product(name: "GamesCatalogInfrastructure", package: "PopcornGamesCatalog")
             ]
         )
     ]

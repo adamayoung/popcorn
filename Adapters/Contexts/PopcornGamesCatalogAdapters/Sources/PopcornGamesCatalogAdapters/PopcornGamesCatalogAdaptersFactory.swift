@@ -6,12 +6,14 @@
 //
 
 import Foundation
-import GamesCatalogApplication
+import GamesCatalogComposition
 
-struct PopcornGamesCatalogAdaptersFactory {
+public final class PopcornGamesCatalogAdaptersFactory {
 
-    func makeGamesCatalogFactory() -> GamesCatalogApplicationFactory {
-        GamesCatalogComposition.makeGamesCatalogFactory()
+    public init() {}
+
+    public func makeGamesCatalogFactory() -> PopcornGamesCatalogFactory {
+        PopcornGamesCatalogFactory()
     }
 
 }

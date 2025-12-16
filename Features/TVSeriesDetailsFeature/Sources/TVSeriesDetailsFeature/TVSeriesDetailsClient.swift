@@ -5,9 +5,9 @@
 //  Created by Adam Young on 18/11/2025.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import Foundation
-import PopcornTVAdapters
 import TVApplication
 
 @DependencyClient

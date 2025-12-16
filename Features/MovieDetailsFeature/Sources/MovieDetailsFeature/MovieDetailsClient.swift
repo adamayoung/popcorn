@@ -5,11 +5,11 @@
 //  Created by Adam Young on 17/11/2025.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import Foundation
 import MoviesApplication
 import OSLog
-import PopcornMoviesAdapters
 
 @DependencyClient
 struct MovieDetailsClient: Sendable {

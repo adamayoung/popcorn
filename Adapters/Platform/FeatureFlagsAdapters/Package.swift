@@ -20,9 +20,7 @@ let package = Package(
 
     dependencies: [
         .package(path: "../../../Platform/FeatureFlags"),
-        .package(url: "https://github.com/statsig-io/statsig-kit.git", from: "1.55.1"),
-        .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1")
+        .package(url: "https://github.com/statsig-io/statsig-kit.git", from: "1.55.1")
     ],
 
     targets: [
@@ -30,7 +28,6 @@ let package = Package(
             name: "FeatureFlagsAdapters",
             dependencies: [
                 "FeatureFlags",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "Statsig", package: "statsig-kit")
             ]
         )

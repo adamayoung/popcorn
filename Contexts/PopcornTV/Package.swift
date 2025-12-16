@@ -15,6 +15,7 @@ let package = Package(
     ],
 
     products: [
+        .library(name: "TVComposition", targets: ["TVComposition"]),
         .library(name: "TVApplication", targets: ["TVApplication"]),
         .library(name: "TVDomain", targets: ["TVDomain"]),
         .library(name: "TVInfrastructure", targets: ["TVInfrastructure"])
@@ -27,10 +28,18 @@ let package = Package(
 
     targets: [
         .target(
+            name: "TVComposition",
+            dependencies: [
+                "TVApplication",
+                "TVDomain",
+                "TVInfrastructure"
+            ]
+        ),
+
+        .target(
             name: "TVApplication",
             dependencies: [
                 "TVDomain",
-                "TVInfrastructure",
                 "CoreDomain"
             ]
         ),

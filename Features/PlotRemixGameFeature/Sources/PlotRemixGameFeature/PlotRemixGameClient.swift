@@ -9,8 +9,6 @@ import ComposableArchitecture
 import Foundation
 import GamesCatalogApplication
 import PlotRemixGameDomain
-import PopcornGamesCatalogAdapters
-import PopcornPlotRemixGameAdapters
 
 @DependencyClient
 struct PlotRemixGameClient: Sendable {

@@ -5,11 +5,12 @@
 //  Created by Adam Young on 17/11/2025.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import Foundation
-import PopcornTrendingAdapters
 import TrendingApplication
 
+@DependencyClient
 struct TrendingMoviesClient: Sendable {
 
     var fetch: @Sendable () async throws -> [MoviePreview]
@@ -19,10 +20,11 @@ struct TrendingMoviesClient: Sendable {
 extension TrendingMoviesClient: DependencyKey {
 
     static var liveValue: TrendingMoviesClient {
-        TrendingMoviesClient(
+        @Dependency(\.fetchTrendingMovies) var fetchTrendingMovies
+
+        return TrendingMoviesClient(
             fetch: {
-                let useCase = DependencyValues._current.fetchTrendingMovies
-                let moviePreviews = try await useCase.execute()
+                let moviePreviews = try await fetchTrendingMovies.execute()
                 let mapper = MoviePreviewMapper()
                 return moviePreviews.map(mapper.map)
             }

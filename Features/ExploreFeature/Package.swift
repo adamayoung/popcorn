@@ -19,13 +19,11 @@ let package = Package(
     ],
 
     dependencies: [
+        .package(path: "../../AppDependencies"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Contexts/PopcornDiscover"),
         .package(path: "../../Contexts/PopcornTrending"),
         .package(path: "../../Contexts/PopcornMovies"),
-        .package(path: "../../Adapters/Contexts/PopcornDiscoverAdapters"),
-        .package(path: "../../Adapters/Contexts/PopcornTrendingAdapters"),
-        .package(path: "../../Adapters/Contexts/PopcornMoviesAdapters"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1")
     ],
@@ -34,13 +32,14 @@ let package = Package(
         .target(
             name: "ExploreFeature",
             dependencies: [
+                "AppDependencies",
                 "DesignSystem",
                 .product(name: "DiscoverApplication", package: "PopcornDiscover"),
+                .product(name: "DiscoverDomain", package: "PopcornDiscover"),
                 .product(name: "TrendingApplication", package: "PopcornTrending"),
+                .product(name: "TrendingDomain", package: "PopcornTrending"),
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
-                "PopcornDiscoverAdapters",
-                "PopcornTrendingAdapters",
-                "PopcornMoviesAdapters",
+                .product(name: "MoviesDomain", package: "PopcornMovies"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         ),

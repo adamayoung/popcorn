@@ -5,6 +5,7 @@
 //  Created by Adam Young on 11/12/2025.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import Foundation
 import GamesCatalogApplication

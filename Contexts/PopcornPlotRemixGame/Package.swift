@@ -15,6 +15,7 @@ let package = Package(
     ],
 
     products: [
+        .library(name: "PlotRemixGameComposition", targets: ["PlotRemixGameComposition"]),
         .library(name: "PlotRemixGameApplication", targets: ["PlotRemixGameApplication"]),
         .library(name: "PlotRemixGameDomain", targets: ["PlotRemixGameDomain"]),
         .library(name: "PlotRemixGameInfrastructure", targets: ["PlotRemixGameInfrastructure"])
@@ -26,10 +27,18 @@ let package = Package(
 
     targets: [
         .target(
+            name: "PlotRemixGameComposition",
+            dependencies: [
+                "PlotRemixGameApplication",
+                "PlotRemixGameDomain",
+                "PlotRemixGameInfrastructure"
+            ]
+        ),
+
+        .target(
             name: "PlotRemixGameApplication",
             dependencies: [
                 "PlotRemixGameDomain",
-                "PlotRemixGameInfrastructure",
                 "CoreDomain"
             ]
         ),

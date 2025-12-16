@@ -15,6 +15,7 @@ let package = Package(
     ],
 
     products: [
+        .library(name: "GamesCatalogComposition", targets: ["GamesCatalogComposition"]),
         .library(name: "GamesCatalogApplication", targets: ["GamesCatalogApplication"]),
         .library(name: "GamesCatalogDomain", targets: ["GamesCatalogDomain"]),
         .library(name: "GamesCatalogInfrastructure", targets: ["GamesCatalogInfrastructure"])
@@ -27,10 +28,18 @@ let package = Package(
 
     targets: [
         .target(
-            name: "GamesCatalogApplication",
+            name: "GamesCatalogComposition",
             dependencies: [
+                "GamesCatalogApplication",
                 "GamesCatalogDomain",
                 "GamesCatalogInfrastructure"
+            ]
+        ),
+
+        .target(
+            name: "GamesCatalogApplication",
+            dependencies: [
+                "GamesCatalogDomain"
             ]
         ),
         .testTarget(

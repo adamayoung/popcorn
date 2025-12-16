@@ -19,9 +19,9 @@ let package = Package(
     ],
 
     dependencies: [
+        .package(path: "../../AppDependencies"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Contexts/PopcornTV"),
-        .package(path: "../../Adapters/Contexts/PopcornTVAdapters"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1")
     ],
@@ -30,9 +30,10 @@ let package = Package(
         .target(
             name: "TVSeriesDetailsFeature",
             dependencies: [
+                "AppDependencies",
                 "DesignSystem",
                 .product(name: "TVApplication", package: "PopcornTV"),
-                "PopcornTVAdapters",
+                .product(name: "TVDomain", package: "PopcornTV"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         ),

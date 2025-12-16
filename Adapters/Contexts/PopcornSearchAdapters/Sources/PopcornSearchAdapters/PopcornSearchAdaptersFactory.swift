@@ -12,20 +12,33 @@ import PeopleApplication
 import PopcornMoviesAdapters
 import PopcornPeopleAdapters
 import PopcornTVAdapters
-import SearchApplication
+import SearchComposition
 import TMDb
-import TMDbAdapters
 import TVApplication
 
-struct PopcornSearchAdaptersFactory {
+public final class PopcornSearchAdaptersFactory {
 
-    let searchService: any SearchService
-    let fetchAppConfigurationUseCase: any FetchAppConfigurationUseCase
-    let fetchMovieDetailsUseCase: any FetchMovieDetailsUseCase
-    let fetchTVSeriesDetailsUseCase: any FetchTVSeriesDetailsUseCase
-    let fetchPersonDetailsUseCase: any FetchPersonDetailsUseCase
+    private let searchService: any SearchService
+    private let fetchAppConfigurationUseCase: any FetchAppConfigurationUseCase
+    private let fetchMovieDetailsUseCase: any FetchMovieDetailsUseCase
+    private let fetchTVSeriesDetailsUseCase: any FetchTVSeriesDetailsUseCase
+    private let fetchPersonDetailsUseCase: any FetchPersonDetailsUseCase
 
-    func makeSearchFactory() -> SearchApplicationFactory {
+    public init(
+        searchService: some SearchService,
+        fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase,
+        fetchMovieDetailsUseCase: some FetchMovieDetailsUseCase,
+        fetchTVSeriesDetailsUseCase: some FetchTVSeriesDetailsUseCase,
+        fetchPersonDetailsUseCase: some FetchPersonDetailsUseCase
+    ) {
+        self.searchService = searchService
+        self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
+        self.fetchMovieDetailsUseCase = fetchMovieDetailsUseCase
+        self.fetchTVSeriesDetailsUseCase = fetchTVSeriesDetailsUseCase
+        self.fetchPersonDetailsUseCase = fetchPersonDetailsUseCase
+    }
+
+    public func makeSearchFactory() -> PopcornSearchFactory {
         let mediaRemoteDataSource = TMDbMediaRemoteDataSource(searchService: searchService)
 
         let appConfigurationProvider = AppConfigurationProviderAdapter(
@@ -38,7 +51,7 @@ struct PopcornSearchAdaptersFactory {
             fetchPersonUseCase: fetchPersonDetailsUseCase
         )
 
-        return SearchComposition.makeSearchFactory(
+        return PopcornSearchFactory(
             mediaRemoteDataSource: mediaRemoteDataSource,
             appConfigurationProvider: appConfigurationProvider,
             mediaProvider: mediaProvider

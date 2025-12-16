@@ -13,16 +13,32 @@ import MoviesApplication
 import TMDb
 import TVApplication
 
-struct PopcornDiscoverAdaptersFactory {
+public final class PopcornDiscoverAdaptersFactory {
 
-    let discoverService: any DiscoverService
-    let fetchAppConfigurationUseCase: any FetchAppConfigurationUseCase
-    let fetchMovieGenresUseCase: any FetchMovieGenresUseCase
-    let fetchTVSeriesGenresUseCase: any FetchTVSeriesGenresUseCase
-    let fetchMovieImageCollectionUseCase: any FetchMovieImageCollectionUseCase
-    let fetchTVSeriesImageCollectionUseCase: any FetchTVSeriesImageCollectionUseCase
+    private let discoverService: any DiscoverService
+    private let fetchAppConfigurationUseCase: any FetchAppConfigurationUseCase
+    private let fetchMovieGenresUseCase: any FetchMovieGenresUseCase
+    private let fetchTVSeriesGenresUseCase: any FetchTVSeriesGenresUseCase
+    private let fetchMovieImageCollectionUseCase: any FetchMovieImageCollectionUseCase
+    private let fetchTVSeriesImageCollectionUseCase: any FetchTVSeriesImageCollectionUseCase
 
-    func makeDiscoverFactory() -> PopcornDiscoverFactory {
+    public init(
+        discoverService: some DiscoverService,
+        fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase,
+        fetchMovieGenresUseCase: some FetchMovieGenresUseCase,
+        fetchTVSeriesGenresUseCase: some FetchTVSeriesGenresUseCase,
+        fetchMovieImageCollectionUseCase: some FetchMovieImageCollectionUseCase,
+        fetchTVSeriesImageCollectionUseCase: some FetchTVSeriesImageCollectionUseCase
+    ) {
+        self.discoverService = discoverService
+        self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
+        self.fetchMovieGenresUseCase = fetchMovieGenresUseCase
+        self.fetchTVSeriesGenresUseCase = fetchTVSeriesGenresUseCase
+        self.fetchMovieImageCollectionUseCase = fetchMovieImageCollectionUseCase
+        self.fetchTVSeriesImageCollectionUseCase = fetchTVSeriesImageCollectionUseCase
+    }
+
+    public func makeDiscoverFactory() -> PopcornDiscoverFactory {
         let discoverRemoteDataSource = TMDbDiscoverRemoteDataSource(
             discoverService: discoverService)
 

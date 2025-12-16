@@ -5,9 +5,9 @@
 //  Created by Adam Young on 25/11/2025.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import Foundation
-import PopcornSearchAdapters
 import SearchApplication
 
 @DependencyClient

@@ -9,11 +9,15 @@ import ConfigurationComposition
 import Foundation
 import TMDb
 
-struct PopcornConfigurationAdaptersFactory {
+public final class PopcornConfigurationAdaptersFactory {
 
-    let configurationService: any ConfigurationService
+    private let configurationService: any ConfigurationService
 
-    func makeConfigurationFactory() -> PopcornConfigurationFactory {
+    public init(configurationService: some ConfigurationService) {
+        self.configurationService = configurationService
+    }
+
+    public func makeConfigurationFactory() -> PopcornConfigurationFactory {
         let configurationRemoteDataSource = TMDbConfigurationRemoteDataSource(
             configurationService: configurationService
         )

@@ -20,9 +20,6 @@ let package = Package(
 
     dependencies: [
         .package(path: "../../../Contexts/PopcornGenres"),
-        .package(path: "../../Platform/TMDbAdapters"),
-        .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"),
         .package(url: "https://github.com/adamayoung/TMDb.git", from: "13.4.0")
     ],
 
@@ -30,12 +27,11 @@ let package = Package(
         .target(
             name: "PopcornGenresAdapters",
             dependencies: [
+                .product(name: "GenresComposition", package: "PopcornGenres"),
                 .product(name: "GenresApplication", package: "PopcornGenres"),
                 .product(name: "GenresDomain", package: "PopcornGenres"),
                 .product(name: "GenresInfrastructure", package: "PopcornGenres"),
-                "TMDbAdapters",
-                "TMDb",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                "TMDb"
             ]
         )
     ]
