@@ -24,3 +24,6 @@ xcuserdata/
 
 # Config secrets
 Configs/Secrets.xcconfig
+
+# Claude
+.claude/settings.local.json
