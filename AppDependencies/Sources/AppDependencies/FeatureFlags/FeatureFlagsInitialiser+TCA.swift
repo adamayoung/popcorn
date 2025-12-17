@@ -1,5 +1,5 @@
 //
-//  FeatureFlagsIntialiser+TCA.swift
+//  FeatureFlagsInitialiser+TCA.swift
 //  AppDependencies
 //
 //  Created by Adam Young on 16/12/2025.

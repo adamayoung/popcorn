@@ -47,8 +47,8 @@ struct AppRootFeature {
     enum Action: BindableAction {
         case binding(BindingAction<State>)
         case didAppear
-        case featureFlagsInitialised
-        case featureFlagsFailedToInitialise(Error)
+        case setupComplete
+        case setupFailed(Error)
         case updateFeatureFlags
         case explore(ExploreRootFeature.Action)
         case games(GamesRootFeature.Action)
@@ -67,14 +67,14 @@ struct AppRootFeature {
 
                 state.hasStarted = true
 
-                return handleInitialiseFeatureFlags()
+                return handleSetup()
 
-            case .featureFlagsInitialised:
+            case .setupComplete:
                 return .run { send in
                     await send(.updateFeatureFlags)
                 }
 
-            case .featureFlagsFailedToInitialise(let error):
+            case .setupFailed(let error):
                 state.error = error
                 return .none
 
@@ -99,16 +99,18 @@ struct AppRootFeature {
 
 extension AppRootFeature {
 
-    private func handleInitialiseFeatureFlags() -> EffectOf<Self> {
+    private func handleSetup() -> EffectOf<Self> {
         .run { [appRootClient] send in
             do {
-                try await appRootClient.startFeatureFlags()
+                async let observability: Void = appRootClient.setupObservability()
+                async let featureFlags: Void = appRootClient.setupFeatureFlags()
+
+                _ = try await (observability, featureFlags)
             } catch let error {
-                await send(.featureFlagsFailedToInitialise(error))
-                return
+                await send(.setupFailed(error))
             }
 
-            await send(.featureFlagsInitialised)
+            await send(.setupComplete)
         }
     }
 

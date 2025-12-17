@@ -35,6 +35,7 @@ let package = Package(
 
         // Platform Packages
         .package(path: "../Platform/FeatureFlags"),
+        .package(path: "../Platform/Observability"),
 
         // Context Adapters
         .package(path: "../Adapters/Contexts/PopcornConfigurationAdapters"),
@@ -49,7 +50,8 @@ let package = Package(
         .package(path: "../Adapters/Contexts/PopcornTVSeriesAdapters"),
 
         // Platform Adapters
-        .package(path: "../Adapters/Platform/FeatureFlagsAdapters")
+        .package(path: "../Adapters/Platform/FeatureFlagsAdapters"),
+        .package(path: "../Adapters/Platform/ObservabilityAdapters")
     ],
 
     targets: [
@@ -83,6 +85,7 @@ let package = Package(
 
                 // Platform
                 "FeatureFlags",
+                "Observability",
 
                 // Context Adapters
                 "PopcornConfigurationAdapters",
@@ -97,7 +100,8 @@ let package = Package(
                 "PopcornTVSeriesAdapters",
 
                 // Platform Adapters
-                "FeatureFlagsAdapters"
+                "FeatureFlagsAdapters",
+                "ObservabilityAdapters"
             ]
         )
     ]

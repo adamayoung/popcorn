@@ -224,6 +224,8 @@ All use SDWebImageSwiftUI under the hood
 
 ### Build Commands
 
+To verify the app is build, build the Xcode project. DO NOT build individual Swift packages.
+
 ```bash
 make format          # Format code with swift-format
 make lint           # Lint code

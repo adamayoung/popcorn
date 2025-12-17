@@ -54,6 +54,7 @@
 				Caching,
 				DataPersistenceInfrastructure,
 				FeatureFlags,
+				Observability,
 			);
 			target = 664551852ECB7C2100250D87 /* Popcorn */;
 		};
@@ -95,6 +96,7 @@
 				Contexts/PopcornGenresAdapters,
 				Contexts/PopcornPlotRemixGameAdapters,
 				Platform/FeatureFlagsAdapters,
+				Platform/ObservabilityAdapters,
 			);
 			target = 664551852ECB7C2100250D87 /* Popcorn */;
 		};

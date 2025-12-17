@@ -1,31 +1,35 @@
 //
-//  FeatureFlagsConfiguration.swift
-//  FeatureFlags
+//  ObservabilityConfiguration.swift
+//  Observability
 //
 //  Created by Adam Young on 16/12/2025.
 //
 
 import Foundation
 
-public struct FeatureFlagsConfiguration: Sendable {
+public struct ObservabilityConfiguration: Sendable {
 
-    public let apiKey: String
+    public let dsn: String
     public let environment: Environment
     public let userID: String
 
+    public let isDebug: Bool
+
     public init(
-        apiKey: String,
+        dsn: String,
         environment: Environment,
-        userID: String
+        userID: String,
+        isDebug: Bool = false
     ) {
-        self.apiKey = apiKey
+        self.dsn = dsn
         self.environment = environment
         self.userID = userID
+        self.isDebug = isDebug
     }
 
 }
 
-extension FeatureFlagsConfiguration {
+extension ObservabilityConfiguration {
 
     public enum Environment: String, Sendable {
         case development = "development"
