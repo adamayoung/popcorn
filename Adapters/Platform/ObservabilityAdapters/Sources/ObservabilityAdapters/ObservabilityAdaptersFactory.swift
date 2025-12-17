@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import Observability
 import OSLog
+import Observability
 
 public final class ObservabilityAdaptersFactory: Sendable {
 

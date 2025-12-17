@@ -22,7 +22,7 @@ let package = Package(
         .package(path: "../../../Platform/Observability"),
         .package(url: "https://github.com/getsentry/sentry-cocoa.git", from: "8.40.1")
     ],
-    
+
     targets: [
         .target(
             name: "ObservabilityAdapters",

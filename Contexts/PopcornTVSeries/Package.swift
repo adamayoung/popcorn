@@ -23,7 +23,8 @@ let package = Package(
 
     dependencies: [
         .package(path: "../../Core/CoreDomain"),
-        .package(path: "../../Platform/Caching")
+        .package(path: "../../Platform/Caching"),
+        .package(path: "../../Platform/Observability")
     ],
 
     targets: [
@@ -40,7 +41,8 @@ let package = Package(
             name: "TVSeriesApplication",
             dependencies: [
                 "TVSeriesDomain",
-                "CoreDomain"
+                "CoreDomain",
+                "Observability"
             ]
         ),
         .testTarget(
@@ -65,7 +67,8 @@ let package = Package(
             name: "TVSeriesInfrastructure",
             dependencies: [
                 "TVSeriesDomain",
-                "Caching"
+                "Caching",
+                "Observability"
             ]
         ),
         .testTarget(

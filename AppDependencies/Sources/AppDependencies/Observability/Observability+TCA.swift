@@ -11,7 +11,7 @@ import Observability
 
 enum ObservabilityKey: DependencyKey {
 
-    static var liveValue: any Observability {
+    static var liveValue: any Observing {
         @Dependency(\.observabilityFactory) var observabilityFactory
         return observabilityFactory.makeService()
     }
@@ -20,7 +20,7 @@ enum ObservabilityKey: DependencyKey {
 
 extension DependencyValues {
 
-    public var observability: any Observability {
+    public var observability: any Observing {
         get { self[ObservabilityKey.self] }
         set { self[ObservabilityKey.self] = newValue }
     }

@@ -8,6 +8,7 @@
 import CoreDomain
 import DiscoverDomain
 import Foundation
+import Observability
 
 final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
 
@@ -32,9 +33,9 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
         try await self.execute(filter: nil, page: 1)
     }
 
-    func execute(filter: MovieFilter) async throws(FetchDiscoverMoviesError)
-        -> [MoviePreviewDetails]
-    {
+    func execute(
+        filter: MovieFilter
+    ) async throws(FetchDiscoverMoviesError) -> [MoviePreviewDetails] {
         try await execute(filter: filter, page: 1)
     }
 
@@ -46,6 +47,15 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
         filter: MovieFilter?,
         page: Int
     ) async throws(FetchDiscoverMoviesError) -> [MoviePreviewDetails] {
+        let span = SpanContext.startChild(
+            operation: "usecase.execute",
+            description: "FetchDiscoverMoviesUseCase.execute",
+        )
+        span?.setData([
+            "filter": filter?.dictionary ?? "nil",
+            "page": page
+        ])
+
         let moviePreviews: [MoviePreview]
         let genres: [Genre]
         let appConfiguration: AppConfiguration
@@ -56,6 +66,7 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
                 appConfigurationProvider.appConfiguration()
             )
         } catch let error {
+            span?.finish(status: .internalError)
             throw FetchDiscoverMoviesError(error)
         }
 
@@ -64,7 +75,13 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
             genresLookup[genre.id] = genre
         }
 
-        let logoURLSets = try await logos(for: moviePreviews)
+        let logoURLSets: [Int: ImageURLSet]
+        do {
+            logoURLSets = try await logos(for: moviePreviews)
+        } catch let error {
+            span?.finish(status: .internalError)
+            throw error
+        }
 
         let mapper = MoviePreviewDetailsMapper()
         let moviePreviewDetails = moviePreviews.map {
@@ -76,6 +93,7 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
             )
         }
 
+        span?.finish()
         return moviePreviewDetails
     }
 

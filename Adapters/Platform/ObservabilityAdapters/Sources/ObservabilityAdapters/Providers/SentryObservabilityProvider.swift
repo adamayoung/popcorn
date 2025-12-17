@@ -7,8 +7,11 @@
 
 import Foundation
 import OSLog
-import Observability
 import Sentry
+
+import struct Observability.ObservabilityConfiguration
+import protocol Observability.ObservabilityProviding
+import protocol Observability.Transaction
 
 struct SentryObservabilityProvider: ObservabilityProviding {
 
@@ -35,7 +38,10 @@ struct SentryObservabilityProvider: ObservabilityProviding {
             options.sessionReplay.sessionSampleRate = config.sessionReplaySessionSampleRate
             options.sessionReplay.onErrorSampleRate = config.sessionReplayOnErrorSampleRate
 
-            options.debug = config.isDebug
+            options.enableMetricKit = true
+            options.enableMetricKitRawPayload = true
+
+            options.debug = true  //config.isDebug
         }
 
         let user = User()
@@ -48,7 +54,7 @@ struct SentryObservabilityProvider: ObservabilityProviding {
     }
 
     func startTransaction(name: String, operation: String) -> Transaction {
-        let span = SentrySDK.startTransaction(name: name, operation: operation)
+        let span = SentrySDK.startTransaction(name: name, operation: operation, bindToScope: true)
         return SentryTransaction(name: name, operation: operation, span: span)
     }
 

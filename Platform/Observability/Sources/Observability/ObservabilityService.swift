@@ -8,7 +8,7 @@
 import Foundation
 import OSLog
 
-struct ObservabilityService: Observability, ObservabilityInitialising {
+struct ObservabilityService: Observing, ObservabilityInitialising {
 
     private static let logger = Logger(
         subsystem: "Observability",

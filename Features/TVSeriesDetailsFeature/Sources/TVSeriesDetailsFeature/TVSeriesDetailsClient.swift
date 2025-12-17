@@ -8,6 +8,7 @@
 import AppDependencies
 import ComposableArchitecture
 import Foundation
+import Observability
 import TVSeriesApplication
 
 @DependencyClient
@@ -24,9 +25,16 @@ extension TVSeriesDetailsClient: DependencyKey {
 
         return TVSeriesDetailsClient(
             fetch: { id in
-                let tvSeries = try await fetchTVSeriesDetails.execute(id: id)
-                let mapper = TVSeriesMapper()
-                return mapper.map(tvSeries)
+                try await SpanContext.trace(
+                    operation: "client.fetch",
+                    description: "TVSeriesDetailsClient.fetch"
+                ) { span in
+                    span?.setData(key: "tv_series_id", value: id)
+
+                    let tvSeries = try await fetchTVSeriesDetails.execute(id: id)
+                    let mapper = TVSeriesMapper()
+                    return mapper.map(tvSeries)
+                }
             }
         )
     }

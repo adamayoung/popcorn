@@ -6,10 +6,13 @@
 //
 
 import Foundation
-import Observability
 import Sentry
 
-struct SentryTransaction: Transaction {
+import protocol Observability.Span
+import enum Observability.SpanStatus
+import protocol Observability.Transaction
+
+struct SentryTransaction: Observability.Transaction, @unchecked Sendable {
 
     let name: String
     let operation: String
@@ -22,9 +25,13 @@ struct SentryTransaction: Transaction {
         self.span = span
     }
 
-    func startChild(operation: String, description: String?) -> Span {
+    func startChild(operation: String, description: String?) -> any Observability.Span {
         let childSpan = span.startChild(operation: operation, description: description)
-        return SentrySpan(childSpan)
+        // Bind child span to scope so automatic instrumentation (like URLSession) uses it as parent
+        SentrySDK.configureScope { scope in
+            scope.span = childSpan
+        }
+        return SentrySpan(childSpan, parentSpan: span)
     }
 
     func setData(key: String, value: any Sendable) {

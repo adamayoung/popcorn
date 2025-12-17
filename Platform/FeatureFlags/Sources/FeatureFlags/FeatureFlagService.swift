@@ -8,7 +8,7 @@
 import Foundation
 import OSLog
 
-struct FeatureFlagService: FeatureFlags, FeatureFlagInitialising {
+struct FeatureFlagService: FeatureFlagging, FeatureFlagInitialising {
 
     private static let logger = Logger(
         subsystem: "FeatureFlags",

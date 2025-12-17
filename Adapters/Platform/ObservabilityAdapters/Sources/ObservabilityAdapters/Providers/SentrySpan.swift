@@ -9,17 +9,23 @@ import Foundation
 import Observability
 import Sentry
 
-struct SentrySpan: Span {
+struct SentrySpan: Observability.Span, @unchecked Sendable {
 
     private let span: Sentry.Span
+    private let parentSpan: Sentry.Span?
 
-    init(_ span: Sentry.Span) {
+    init(_ span: Sentry.Span, parentSpan: Sentry.Span? = nil) {
         self.span = span
+        self.parentSpan = parentSpan
     }
 
-    func startChild(operation: String, description: String?) -> Span {
+    func startChild(operation: String, description: String?) -> any Observability.Span {
         let childSpan = span.startChild(operation: operation, description: description)
-        return SentrySpan(childSpan)
+        // Bind child span to scope so automatic instrumentation (like URLSession) uses it as parent
+        SentrySDK.configureScope { scope in
+            scope.span = childSpan
+        }
+        return SentrySpan(childSpan, parentSpan: span)
     }
 
     func setData(key: String, value: any Sendable) {
@@ -28,10 +34,20 @@ struct SentrySpan: Span {
 
     func finish() {
         span.finish()
+        // Restore parent span to scope when this span finishes
+        restoreParentSpanToScope()
     }
 
     func finish(status: SpanStatus) {
         span.finish(status: status.sentryStatus)
+        // Restore parent span to scope when this span finishes
+        restoreParentSpanToScope()
+    }
+
+    private func restoreParentSpanToScope() {
+        SentrySDK.configureScope { scope in
+            scope.span = parentSpan
+        }
     }
 
 }

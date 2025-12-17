@@ -10,6 +10,7 @@ import ComposableArchitecture
 import DiscoverApplication
 import Foundation
 import MoviesApplication
+import Observability
 import TrendingApplication
 
 @DependencyClient
@@ -41,31 +42,54 @@ extension ExploreClient: DependencyKey {
 
         return ExploreClient(
             fetchDiscoverMovies: {
-                let moviePreviews = try await fetchDiscoverMovies.execute()
-                let mapper = MoviePreviewMapper()
-                let movies = moviePreviews.map(mapper.map)
-                return movies
+                try await SpanContext.trace(
+                    operation: "client.fetch",
+                    description: "ExploreClient.fetchDiscoverMovies"
+                ) { span in
+                    let moviePreviews = try await fetchDiscoverMovies.execute()
+                    let mapper = MoviePreviewMapper()
+                    return moviePreviews.map(mapper.map)
+                }
             },
             fetchTrendingMovies: {
-                let moviePreviews = try await fetchTrendingMovies.execute()
-                let mapper = MoviePreviewMapper()
-                let movies = moviePreviews.map(mapper.map)
-                return movies
+                try await SpanContext.trace(
+                    operation: "client.fetch",
+                    description: "ExploreClient.fetchTrendingMovies"
+                ) { _ in
+                    let moviePreviews = try await fetchTrendingMovies.execute()
+                    let mapper = MoviePreviewMapper()
+                    return moviePreviews.map(mapper.map)
+                }
             },
             fetchPopularMovies: {
-                let moviePreviews = try await fetchPopularMovies.execute()
-                let mapper = MoviePreviewMapper()
-                return moviePreviews.map(mapper.map)
+                try await SpanContext.trace(
+                    operation: "client.fetch",
+                    description: "ExploreClient.fetchPopularMovies"
+                ) { _ in
+                    let moviePreviews = try await fetchPopularMovies.execute()
+                    let mapper = MoviePreviewMapper()
+                    return moviePreviews.map(mapper.map)
+                }
             },
             fetchTrendingTVSeries: {
-                let tvSeriesPreviews = try await fetchTrendingTVSeries.execute()
-                let mapper = TVSeriesPreviewMapper()
-                return tvSeriesPreviews.map(mapper.map)
+                try await SpanContext.trace(
+                    operation: "client.fetch",
+                    description: "ExploreClient.fetchTrendingTVSeries"
+                ) { _ in
+                    let tvSeriesPreviews = try await fetchTrendingTVSeries.execute()
+                    let mapper = TVSeriesPreviewMapper()
+                    return tvSeriesPreviews.map(mapper.map)
+                }
             },
             fetchTrendingPeople: {
-                let personPreviews = try await fetchTrendingPeople.execute()
-                let mapper = PersonPreviewMapper()
-                return personPreviews.map(mapper.map)
+                try await SpanContext.trace(
+                    operation: "client.fetch",
+                    description: "ExploreClient.fetchTrendingPeople"
+                ) { _ in
+                    let personPreviews = try await fetchTrendingPeople.execute()
+                    let mapper = PersonPreviewMapper()
+                    return personPreviews.map(mapper.map)
+                }
             },
             isDiscoverMoviesEnabled: {
                 featureFlags.isEnabled(.exploreDiscoverMovies)

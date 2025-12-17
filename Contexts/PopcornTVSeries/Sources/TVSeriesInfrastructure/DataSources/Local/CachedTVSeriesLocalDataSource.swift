@@ -7,6 +7,7 @@
 
 import Caching
 import Foundation
+import Observability
 import TVSeriesDomain
 
 actor CachedTVSeriesLocalDataSource: TVSeriesLocalDataSource {
@@ -18,19 +19,62 @@ actor CachedTVSeriesLocalDataSource: TVSeriesLocalDataSource {
     }
 
     func tvSeries(withID id: Int) async -> TVSeries? {
-        await cache.item(forKey: .tvSeries(id: id), ofType: TVSeries.self)
+        await SpanContext.trace(
+            operation: "cache.get",
+            description: "Get TV Series #\(id)"
+        ) { span in
+            span?.setData([
+                "entity_type": "tvSeries",
+                "entity_id": id,
+                "cache.key": "tvSeries:\(id)"
+            ])
+            return await cache.item(forKey: .tvSeries(id: id), ofType: TVSeries.self)
+        }
     }
 
     func setTVSeries(_ tvSeries: TVSeries) async {
-        await cache.setItem(tvSeries, forKey: .tvSeries(id: tvSeries.id))
+        await SpanContext.trace(
+            operation: "cache.set",
+            description: "Set TV Series #\(tvSeries.id)"
+        ) { span in
+            span?.setData([
+                "entity_type": "tvSeries",
+                "entity_id": tvSeries.id,
+                "cache.key": "tvSeries:\(tvSeries.id)"
+            ])
+            await cache.setItem(tvSeries, forKey: .tvSeries(id: tvSeries.id))
+        }
     }
 
     func images(forTVSeries tvSeriesID: Int) async -> ImageCollection? {
-        await cache.item(forKey: .images(tvSeriesID: tvSeriesID), ofType: ImageCollection.self)
+        await SpanContext.trace(
+            operation: "cache.get",
+            description: "Get TV Series Images #\(tvSeriesID)"
+        ) { span in
+            span?.setData([
+                "entity_type": "imageCollection",
+                "entity_id": tvSeriesID,
+                "cache.key": "tvSeriesImages:\(tvSeriesID)"
+            ])
+            return await cache.item(
+                forKey: .images(tvSeriesID: tvSeriesID),
+                ofType: ImageCollection.self
+            )
+        }
     }
 
     func setImages(_ imageCollection: ImageCollection, forTVSeries tvSeriesID: Int) async {
-        await cache.setItem(imageCollection, forKey: .images(tvSeriesID: tvSeriesID))
+        await SpanContext.trace(
+            operation: "cache.set",
+            description: "Set TV Series Images #\(tvSeriesID)"
+        ) { span in
+            span?.setData([
+                "entity_type": "imageCollection",
+                "entity_id": tvSeriesID,
+                "cache.key": "tvSeriesImages:\(tvSeriesID)"
+            ])
+            await cache.setItem(imageCollection, forKey: .images(tvSeriesID: tvSeriesID))
+        }
     }
 
 }

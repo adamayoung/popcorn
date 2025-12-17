@@ -7,11 +7,19 @@
 
 import ComposableArchitecture
 import Foundation
+import OSLog
+import Observability
 
 @Reducer
 public struct ExploreFeature: Sendable {
 
     @Dependency(\.exploreClient) private var exploreClient: ExploreClient
+    @Dependency(\.observability) private var observability
+
+    private static let logger = Logger(
+        subsystem: "ExploreFeature",
+        category: "ExploreFeatureReducer"
+    )
 
     @ObservableState
     public struct State {
@@ -43,7 +51,7 @@ public struct ExploreFeature: Sendable {
         case error(Error)
     }
 
-    public struct ViewSnapshot {
+    public struct ViewSnapshot: Sendable {
         public let discoverMovies: [MoviePreview]
         public let trendingMovies: [MoviePreview]
         public let popularMovies: [MoviePreview]
@@ -107,7 +115,7 @@ public struct ExploreFeature: Sendable {
 extension ExploreFeature {
 
     private func handleFetchAll() -> EffectOf<Self> {
-        .run { [exploreClient] send in
+        .run { [exploreClient, observability] send in
             let isDiscoverMoviesEnabled = (try? exploreClient.isDiscoverMoviesEnabled()) ?? false
             let isTrendingMoviesEnabled = (try? exploreClient.isTrendingMoviesEnabled()) ?? false
             let isPopularMoviesEnabled = (try? exploreClient.isPopularMoviesEnabled()) ?? false
@@ -115,28 +123,44 @@ extension ExploreFeature {
                 (try? exploreClient.isTrendingTVSeriesEnabled()) ?? false
             let isTrendingPeopleEnabled = (try? exploreClient.isTrendingPeopleEnabled()) ?? false
 
-            async let discoverMovies =
-                isDiscoverMoviesEnabled ? exploreClient.fetchDiscoverMovies() : []
-            async let trendingMovies =
-                isTrendingMoviesEnabled ? exploreClient.fetchTrendingMovies() : []
-            async let popularMovies =
-                isPopularMoviesEnabled ? exploreClient.fetchPopularMovies() : []
-            async let trendingTVSeries =
-                isTrendingTVSeriesEnabled ? exploreClient.fetchTrendingTVSeries() : []
-            async let trendingPeople =
-                isTrendingPeopleEnabled ? exploreClient.fetchTrendingPeople() : []
-
             do {
-                let snapshot = try await ViewSnapshot(
-                    discoverMovies: discoverMovies,
-                    trendingMovies: trendingMovies,
-                    popularMovies: popularMovies,
-                    trendingTVSeries: trendingTVSeries,
-                    trendingPeople: trendingPeople
-                )
+                let snapshot = try await observability.trace(
+                    name: "FetchExplore",
+                    operation: "ui.action"
+                ) { transaction in
+                    transaction.setData([
+                        "explore_filters": [
+                            "discover_movies": isDiscoverMoviesEnabled,
+                            "trending_movies": isTrendingMoviesEnabled,
+                            "popular_movies": isPopularMoviesEnabled,
+                            "trending_tv_series": isTrendingTVSeriesEnabled,
+                            "trending_people": isTrendingPeopleEnabled
+                        ]
+                    ])
+
+                    async let discoverMovies =
+                        isDiscoverMoviesEnabled ? exploreClient.fetchDiscoverMovies() : []
+                    async let trendingMovies =
+                        isTrendingMoviesEnabled ? exploreClient.fetchTrendingMovies() : []
+                    async let popularMovies =
+                        isPopularMoviesEnabled ? exploreClient.fetchPopularMovies() : []
+                    async let trendingTVSeries =
+                        isTrendingTVSeriesEnabled ? exploreClient.fetchTrendingTVSeries() : []
+                    async let trendingPeople =
+                        isTrendingPeopleEnabled ? exploreClient.fetchTrendingPeople() : []
+
+                    return try await ViewSnapshot(
+                        discoverMovies: discoverMovies,
+                        trendingMovies: trendingMovies,
+                        popularMovies: popularMovies,
+                        trendingTVSeries: trendingTVSeries,
+                        trendingPeople: trendingPeople
+                    )
+                }
 
                 await send(.loaded(snapshot))
-            } catch let error {
+            } catch {
+                Self.logger.error("Failed fetching Explore: \(error.localizedDescription)")
                 await send(.loadFailed(error))
             }
         }

@@ -8,11 +8,13 @@
 import ComposableArchitecture
 import Foundation
 import OSLog
+import Observability
 
 @Reducer
 public struct TVSeriesDetailsFeature: Sendable {
 
     @Dependency(\.tvSeriesDetailsClient) private var tvSeriesDetailsClient
+    @Dependency(\.observability) private var observability
 
     private static let logger = Logger(
         subsystem: "TVSeriesDetailsFeature",
@@ -99,10 +101,17 @@ public struct TVSeriesDetailsFeature: Sendable {
 extension TVSeriesDetailsFeature {
 
     private func handleFetchTVSeries(_ state: inout State) -> EffectOf<Self> {
-        .run { [state] send in
+        .run { [state, observability, tvSeriesDetailsClient] send in
             do {
-                let tvSeries = try await tvSeriesDetailsClient.fetch(state.tvSeriesID)
-                let snapshot = ViewSnapshot(tvSeries: tvSeries)
+                let snapshot = try await observability.trace(
+                    name: "FetchTVSeriesDetails",
+                    operation: "ui.action"
+                ) { transaction in
+                    transaction.setData(key: "tv_series_id", value: state.tvSeriesID)
+                    let tvSeries = try await tvSeriesDetailsClient.fetch(state.tvSeriesID)
+                    return ViewSnapshot(tvSeries: tvSeries)
+                }
+
                 await send(.loaded(snapshot))
             } catch {
                 Self.logger.error("Failed fetching TV series: \(error.localizedDescription)")

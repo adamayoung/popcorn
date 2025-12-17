@@ -15,7 +15,7 @@ public final class ObservabilityFactory: Sendable {
         self.provider = provider
     }
 
-    public func makeService() -> some Observability & ObservabilityInitialising {
+    public func makeService() -> some Observing & ObservabilityInitialising {
         ObservabilityService(provider: provider)
     }
 

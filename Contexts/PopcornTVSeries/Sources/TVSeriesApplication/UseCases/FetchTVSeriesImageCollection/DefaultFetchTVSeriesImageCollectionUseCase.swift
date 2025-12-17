@@ -7,6 +7,7 @@
 
 import CoreDomain
 import Foundation
+import Observability
 import TVSeriesDomain
 
 final class DefaultFetchTVSeriesImageCollectionUseCase: FetchTVSeriesImageCollectionUseCase {
@@ -22,23 +23,28 @@ final class DefaultFetchTVSeriesImageCollectionUseCase: FetchTVSeriesImageCollec
         self.appConfigurationProvider = appConfigurationProvider
     }
 
-    func execute(tvSeriesID: TVSeries.ID) async throws(FetchTVSeriesImageCollectionError)
-        -> ImageCollectionDetails
-    {
-        let imageCollection: ImageCollection
-        let appConfiguration: AppConfiguration
+    func execute(
+        tvSeriesID: TVSeries.ID
+    ) async throws(FetchTVSeriesImageCollectionError) -> ImageCollectionDetails {
+        let imageCollectionDetails: ImageCollectionDetails
         do {
-            (imageCollection, appConfiguration) = try await (
-                repository.images(forTVSeries: tvSeriesID),
-                appConfigurationProvider.appConfiguration()
-            )
+            imageCollectionDetails = try await SpanContext.trace(
+                operation: "usecase.execute",
+                description: "FetchTVSeriesDetailsUseCase.execute"
+            ) { span in
+                let (imageCollection, appConfiguration) = try await (
+                    repository.images(forTVSeries: tvSeriesID),
+                    appConfigurationProvider.appConfiguration()
+                )
+                let mapper = ImageCollectionDetailsMapper()
+                return mapper.map(
+                    imageCollection,
+                    imagesConfiguration: appConfiguration.images
+                )
+            }
         } catch let error {
             throw FetchTVSeriesImageCollectionError(error)
         }
-
-        let mapper = ImageCollectionDetailsMapper()
-        let imageCollectionDetails = mapper.map(
-            imageCollection, imagesConfiguration: appConfiguration.images)
 
         return imageCollectionDetails
     }

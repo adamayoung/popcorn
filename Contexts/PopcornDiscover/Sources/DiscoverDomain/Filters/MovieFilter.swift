@@ -38,4 +38,25 @@ extension MovieFilter: CustomStringConvertible {
         "MovieFilter(originalLanguage: \(String(describing: originalLanguage)), genres: \(String(describing: genres)), primaryReleaseYear: \(String(describing: primaryReleaseYear)))"
     }
 
+    public var dictionary: [String: String] {
+        [
+            "original_language": originalLanguage ?? "nil",
+            "genres": genres?.map(String.init).joined(separator: ", ") ?? "nil",
+            "primaryReleaseYear": primaryReleaseYear?.description ?? "nil"
+        ]
+    }
+
+}
+
+extension MovieFilter.PrimaryReleaseYearFilter {
+
+    public var description: String {
+        switch self {
+        case .onYear(let year): "onYear(\(year))"
+        case .fromYear(let year): "fromYear(\(year))"
+        case .upToYear(let year): "upToYear(\(year))"
+        case .betweenYears(let start, let end): "betweenYears(start: \(start), end: \(end))"
+        }
+    }
+
 }
