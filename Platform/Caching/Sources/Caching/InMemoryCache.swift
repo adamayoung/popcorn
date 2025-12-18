@@ -24,10 +24,10 @@ actor InMemoryCache: Caching {
         cache.isEmpty
     }
 
-    private let defaultExpiresIn: TimeInterval?
+    private let defaultExpiresIn: TimeInterval
     private var cache: [CacheKey: CacheItem<Any>] = [:]
 
-    init(defaultExpiresIn: TimeInterval? = nil) {
+    init(defaultExpiresIn: TimeInterval = 60 * 60) {
         self.defaultExpiresIn = defaultExpiresIn
     }
 
@@ -39,7 +39,7 @@ actor InMemoryCache: Caching {
         span?.setData(key: "key", value: key.rawValue)
 
         guard let cacheItem = cache[key] else {
-            Self.logger.trace("CACHE MISS: \(key.rawValue)")
+            Self.logger.debug("CACHE MISS: \(key.rawValue)")
             span?.setData(key: "cache-result", value: "MISS")
             span?.finish()
             return nil
@@ -47,13 +47,13 @@ actor InMemoryCache: Caching {
 
         if cacheItem.isExpired {
             await removeItem(forKey: key)
-            Self.logger.trace("CACHE EXPIRED: \(key.rawValue)")
+            Self.logger.debug("CACHE EXPIRED: \(key.rawValue)")
             span?.setData(key: "cache-result", value: "EXPIRED")
             span?.finish()
             return nil
         }
 
-        Self.logger.trace("CACHE HIT: \(key.rawValue)")
+        Self.logger.debug("CACHE HIT: \(key.rawValue)")
         span?.setData(key: "cache-result", value: "HIT")
         span?.finish()
 
@@ -61,20 +61,18 @@ actor InMemoryCache: Caching {
     }
 
     func setItem<Item>(_ item: Item, forKey key: CacheKey) async {
-        await setItem(item, forKey: key, expiresIn: nil)
+        await setItem(item, forKey: key, expiresIn: defaultExpiresIn)
     }
 
-    func setItem<Item>(_ item: Item, forKey key: CacheKey, expiresIn: TimeInterval?) async {
+    func setItem<Item>(_ item: Item, forKey key: CacheKey, expiresIn: TimeInterval) async {
         let span = SpanContext.startChild(
             operation: .cacheSet,
             description: "Set cache item"
         )
         span?.setData(key: "key", value: key.rawValue)
-        if let expiresIn {
-            span?.setData(key: "expires-in", value: expiresIn)
-        }
+        span?.setData(key: "expires-in", value: expiresIn)
 
-        Self.logger.trace("CACHE SET: \(key.rawValue)")
+        Self.logger.debug("CACHE SET: \(key.rawValue)")
         cache[key] = CacheItem(value: item, expiresIn: expiresIn)
         span?.finish()
     }
@@ -86,7 +84,7 @@ actor InMemoryCache: Caching {
         )
         span?.setData(key: "key", value: key.rawValue)
 
-        Self.logger.trace("CACHE REMOVE: \(key.rawValue)")
+        Self.logger.debug("CACHE REMOVE: \(key.rawValue)")
         cache.removeValue(forKey: key)
         span?.finish()
     }
@@ -97,7 +95,7 @@ actor InMemoryCache: Caching {
             description: "Flush cache"
         )
 
-        Self.logger.trace("CACHE FLUSH")
+        Self.logger.debug("CACHE FLUSH")
         cache = [:]
         span?.finish()
     }

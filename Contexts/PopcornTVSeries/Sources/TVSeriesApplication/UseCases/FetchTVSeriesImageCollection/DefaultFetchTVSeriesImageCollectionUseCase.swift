@@ -31,22 +31,28 @@ final class DefaultFetchTVSeriesImageCollectionUseCase: FetchTVSeriesImageCollec
             description: "FetchTVSeriesImageCollectionUseCase.execute"
         )
 
+        let imageCollection: ImageCollection
+        let appConfiguration: AppConfiguration
         do {
-            let (imageCollection, appConfiguration) = try await (
+            (imageCollection, appConfiguration) = try await (
                 repository.images(forTVSeries: tvSeriesID),
                 appConfigurationProvider.appConfiguration()
             )
-            let mapper = ImageCollectionDetailsMapper()
-            let result = mapper.map(
-                imageCollection,
-                imagesConfiguration: appConfiguration.images
-            )
-            span?.finish()
-            return result
         } catch let error {
+            let e = FetchTVSeriesImageCollectionError(error)
+            span?.setData(error: e)
             span?.finish(status: .internalError)
-            throw FetchTVSeriesImageCollectionError(error)
+            throw e
         }
+
+        let mapper = ImageCollectionDetailsMapper()
+        let imageCollectionDetails = mapper.map(
+            imageCollection,
+            imagesConfiguration: appConfiguration.images
+        )
+        span?.finish()
+
+        return imageCollectionDetails
     }
 
 }

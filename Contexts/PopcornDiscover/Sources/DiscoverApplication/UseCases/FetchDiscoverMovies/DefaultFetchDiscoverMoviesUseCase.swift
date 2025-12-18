@@ -66,8 +66,10 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
                 appConfigurationProvider.appConfiguration()
             )
         } catch let error {
+            let e = FetchDiscoverMoviesError(error)
+            span?.setData(error: e)
             span?.finish(status: .internalError)
-            throw FetchDiscoverMoviesError(error)
+            throw e
         }
 
         var genresLookup: [Genre.ID: Genre] = [:]
@@ -79,6 +81,7 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
         do {
             logoURLSets = try await logos(for: moviePreviews)
         } catch let error {
+            span?.setData(error: error)
             span?.finish(status: .internalError)
             throw error
         }

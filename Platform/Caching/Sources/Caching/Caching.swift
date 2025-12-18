@@ -17,7 +17,7 @@ public protocol Caching: Actor {
 
     func setItem<Item>(_ item: Item, forKey key: CacheKey) async
 
-    func setItem<Item>(_ item: Item, forKey key: CacheKey, expiresIn: TimeInterval?) async
+    func setItem<Item>(_ item: Item, forKey key: CacheKey, expiresIn: TimeInterval) async
 
     func removeItem(forKey key: CacheKey) async
 

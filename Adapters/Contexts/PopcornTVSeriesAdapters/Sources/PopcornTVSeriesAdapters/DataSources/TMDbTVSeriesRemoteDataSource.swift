@@ -42,9 +42,13 @@ final class TMDbTVSeriesRemoteDataSource: TVSeriesRemoteDataSource {
             tmdbTVSeries = try await tvSeriesService.details(forTVSeries: id, language: "en")
             tmdbSpan?.finish()
         } catch let error {
+            tmdbSpan?.setData(error: error)
             tmdbSpan?.finish(status: .internalError)
+
+            let e = TVSeriesRemoteDataSourceError(error)
+            span?.setData(error: e)
             span?.finish(status: .internalError)
-            throw TVSeriesRemoteDataSourceError(error)
+            throw e
         }
 
         let mapper = TVSeriesMapper()
@@ -79,9 +83,13 @@ final class TMDbTVSeriesRemoteDataSource: TVSeriesRemoteDataSource {
             )
             tmdbSpan?.finish()
         } catch let error {
+            tmdbSpan?.setData(error: error)
             tmdbSpan?.finish(status: .internalError)
-            span?.finish()
-            throw TVSeriesRemoteDataSourceError(error)
+
+            let e = TVSeriesRemoteDataSourceError(error)
+            span?.setData(error: error)
+            span?.finish(status: .internalError)
+            throw TVSeriesRemoteDataSourceError(e)
         }
 
         let mapper = ImageCollectionMapper()

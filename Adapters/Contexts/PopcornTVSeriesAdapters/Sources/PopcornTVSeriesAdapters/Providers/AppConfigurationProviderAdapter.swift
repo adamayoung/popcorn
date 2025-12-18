@@ -28,9 +28,10 @@ public struct AppConfigurationProviderAdapter: AppConfigurationProviding {
         do {
             appConfiguration = try await fetchUseCase.execute()
         } catch let error {
-            span?.setData(error: error)
+            let e = AppConfigurationProviderError(error)
+            span?.setData(error: e)
             span?.finish(status: .internalError)
-            throw AppConfigurationProviderError(error)
+            throw e
         }
 
         span?.finish()

@@ -19,7 +19,7 @@ struct SentryObservabilityProvider: ObservabilityProviding {
 
     @MainActor
     func start(_ config: ObservabilityConfiguration) async throws {
-        Self.logger.debug("Sentry DSN: \(config.dsn, privacy: .sensitive)")
+        Self.logger.debug("Sentry DSN: \(config.dsn, privacy: .private)")
 
         SentrySDK.start { options in
             options.dsn = config.dsn

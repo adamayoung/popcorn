@@ -144,7 +144,9 @@ extension PlotRemixGameFeature {
                 transaction.finish()
                 await send(.metadataLoaded(metadata))
             } catch let error {
-                Self.logger.error("Failed fetching game metadata: \(error.localizedDescription)")
+                Self.logger.error(
+                    "Failed fetching game metadata: \(error.localizedDescription, privacy: .public)"
+                )
                 transaction.setData(error: error)
                 transaction.finish(status: .internalError)
                 await send(.metadataLoadFailed(error))

@@ -38,16 +38,36 @@ final class DefaultTVSeriesRepository: TVSeriesRepository {
                 span?.finish()
                 return cached
             }
-
-            span?.setData(key: "cache.hit", value: false)
-            let tvSeries = try await remoteDataSource.tvSeries(withID: id)
-            try await localDataSource.setTVSeries(tvSeries)
-            span?.finish()
-            return tvSeries
         } catch let error {
+            let e = TVSeriesRepositoryError(error)
+            span?.setData(error: e)
             span?.finish(status: .internalError)
-            throw TVSeriesRepositoryError(error)
+            throw TVSeriesRepositoryError(e)
         }
+
+        span?.setData(key: "cache.hit", value: false)
+
+        let tvSeries: TVSeriesDomain.TVSeries
+        do {
+            tvSeries = try await remoteDataSource.tvSeries(withID: id)
+        } catch let error {
+            let e = TVSeriesRepositoryError(error)
+            span?.setData(error: e)
+            span?.finish(status: .internalError)
+            throw e
+        }
+
+        do {
+            try await localDataSource.setTVSeries(tvSeries)
+        } catch let error {
+            let e = TVSeriesRepositoryError(error)
+            span?.setData(error: e)
+            span?.finish(status: .internalError)
+            throw e
+        }
+
+        span?.finish()
+        return tvSeries
     }
 
     func images(
@@ -68,16 +88,36 @@ final class DefaultTVSeriesRepository: TVSeriesRepository {
                 span?.finish()
                 return cached
             }
-
-            span?.setData(key: "cache.hit", value: false)
-            let imageCollection = try await remoteDataSource.images(forTVSeries: tvSeriesID)
-            try await localDataSource.setImages(imageCollection, forTVSeries: tvSeriesID)
-            span?.finish()
-            return imageCollection
         } catch let error {
+            let e = TVSeriesRepositoryError(error)
+            span?.setData(error: e)
             span?.finish(status: .internalError)
-            throw TVSeriesRepositoryError(error)
+            throw e
         }
+
+        span?.setData(key: "cache.hit", value: false)
+
+        let imageCollection: TVSeriesDomain.ImageCollection
+        do {
+            imageCollection = try await remoteDataSource.images(forTVSeries: tvSeriesID)
+        } catch let error {
+            let e = TVSeriesRepositoryError(error)
+            span?.setData(error: e)
+            span?.finish(status: .internalError)
+            throw e
+        }
+
+        do {
+            try await localDataSource.setImages(imageCollection, forTVSeries: tvSeriesID)
+        } catch let error {
+            let e = TVSeriesRepositoryError(error)
+            span?.setData(error: e)
+            span?.finish(status: .internalError)
+            throw e
+        }
+
+        span?.finish()
+        return imageCollection
     }
 
 }

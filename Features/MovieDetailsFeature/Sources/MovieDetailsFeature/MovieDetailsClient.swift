@@ -60,7 +60,8 @@ extension MovieDetailsClient: DependencyKey {
                     let task = Task {
                         let mapper = MoviePreviewMapper()
                         for try await moviePreviews in moviePreviewStream {
-                            Self.logger.trace("Streaming \(moviePreviews.count) similar movies")
+                            Self.logger.trace(
+                                "Streaming \(moviePreviews.count, privacy: .public) similar movies")
                             continuation.yield(moviePreviews.map(mapper.map))
                         }
                         continuation.finish()

@@ -41,8 +41,8 @@ extension MovieFilter: CustomStringConvertible {
     public var dictionary: [String: String] {
         [
             "original_language": originalLanguage ?? "nil",
-            "genres": genres?.map(String.init).joined(separator: ", ") ?? "nil",
-            "primaryReleaseYear": primaryReleaseYear?.description ?? "nil"
+            "genre_ids": genres?.map(String.init).joined(separator: ", ") ?? "nil",
+            "primary_release_year": primaryReleaseYear?.description ?? "nil"
         ]
     }
 

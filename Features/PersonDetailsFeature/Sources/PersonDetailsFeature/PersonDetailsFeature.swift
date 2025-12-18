@@ -115,7 +115,7 @@ extension PersonDetailsFeature {
                 transaction.finish()
                 await send(.loaded(snapshot))
             } catch {
-                Self.logger.error("Failed to fetch person: \(error)")
+                Self.logger.error("Failed to fetch person: \(error, privacy: .public)")
                 transaction.setData(error: error)
                 transaction.finish(status: .internalError)
                 await send(.loadFailed(error))

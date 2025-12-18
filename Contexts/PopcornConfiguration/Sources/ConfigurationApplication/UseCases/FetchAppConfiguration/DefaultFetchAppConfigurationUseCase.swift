@@ -28,9 +28,10 @@ final class DefaultFetchAppConfigurationUseCase: FetchAppConfigurationUseCase {
         do {
             appConfiguration = try await repository.configuration()
         } catch let error {
-            span?.setData(error: error)
+            let e = FetchAppConfigurationError(error)
+            span?.setData(error: e)
             span?.finish(status: .internalError)
-            throw FetchAppConfigurationError(error)
+            throw e
         }
 
         span?.finish()

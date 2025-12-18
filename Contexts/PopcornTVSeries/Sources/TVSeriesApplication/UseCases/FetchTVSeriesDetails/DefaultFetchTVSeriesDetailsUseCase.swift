@@ -30,26 +30,31 @@ final class DefaultFetchTVSeriesDetailsUseCase: FetchTVSeriesDetailsUseCase {
         )
         span?.setData(key: "tv_series_id", value: id)
 
+        let tvSeries: TVSeries
+        let imageCollection: ImageCollection
+        let appConfiguration: AppConfiguration
         do {
-            let (tvSeries, imageCollection, appConfiguration) = try await (
+            (tvSeries, imageCollection, appConfiguration) = try await (
                 repository.tvSeries(withID: id),
                 repository.images(forTVSeries: id),
                 appConfigurationProvider.appConfiguration()
             )
-
-            let mapper = TVSeriesDetailsMapper()
-            let result = mapper.map(
-                tvSeries,
-                imageCollection: imageCollection,
-                imagesConfiguration: appConfiguration.images
-            )
-            span?.finish()
-            return result
         } catch let error {
-            span?.setData(error: error)
+            let e = FetchTVSeriesDetailsError(error)
+            span?.setData(error: e)
             span?.finish(status: .internalError)
-            throw FetchTVSeriesDetailsError(error)
+            throw e
         }
+
+        let mapper = TVSeriesDetailsMapper()
+        let tvSeriesDetails = mapper.map(
+            tvSeries,
+            imageCollection: imageCollection,
+            imagesConfiguration: appConfiguration.images
+        )
+
+        span?.finish()
+        return tvSeriesDetails
     }
 
 }
