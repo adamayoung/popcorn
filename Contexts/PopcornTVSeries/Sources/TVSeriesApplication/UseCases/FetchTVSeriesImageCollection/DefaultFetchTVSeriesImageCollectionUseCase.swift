@@ -26,27 +26,27 @@ final class DefaultFetchTVSeriesImageCollectionUseCase: FetchTVSeriesImageCollec
     func execute(
         tvSeriesID: TVSeries.ID
     ) async throws(FetchTVSeriesImageCollectionError) -> ImageCollectionDetails {
-        let imageCollectionDetails: ImageCollectionDetails
+        let span = SpanContext.startChild(
+            operation: .useCaseExecute,
+            description: "FetchTVSeriesImageCollectionUseCase.execute"
+        )
+
         do {
-            imageCollectionDetails = try await SpanContext.trace(
-                operation: "usecase.execute",
-                description: "FetchTVSeriesDetailsUseCase.execute"
-            ) { span in
-                let (imageCollection, appConfiguration) = try await (
-                    repository.images(forTVSeries: tvSeriesID),
-                    appConfigurationProvider.appConfiguration()
-                )
-                let mapper = ImageCollectionDetailsMapper()
-                return mapper.map(
-                    imageCollection,
-                    imagesConfiguration: appConfiguration.images
-                )
-            }
+            let (imageCollection, appConfiguration) = try await (
+                repository.images(forTVSeries: tvSeriesID),
+                appConfigurationProvider.appConfiguration()
+            )
+            let mapper = ImageCollectionDetailsMapper()
+            let result = mapper.map(
+                imageCollection,
+                imagesConfiguration: appConfiguration.images
+            )
+            span?.finish()
+            return result
         } catch let error {
+            span?.finish(status: .internalError)
             throw FetchTVSeriesImageCollectionError(error)
         }
-
-        return imageCollectionDetails
     }
 
 }

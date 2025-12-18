@@ -9,7 +9,7 @@ import Foundation
 
 public protocol Span: Sendable {
 
-    func startChild(operation: String, description: String?) -> Span
+    func startChild(operation: SpanOperation, description: String?) -> Span
 
     func setData(key: String, value: any Sendable)
 
@@ -23,7 +23,7 @@ public protocol Span: Sendable {
 
 extension Span {
 
-    public func startChild(operation: String) -> Span {
+    public func startChild(operation: SpanOperation) -> Span {
         startChild(operation: operation, description: nil)
     }
 

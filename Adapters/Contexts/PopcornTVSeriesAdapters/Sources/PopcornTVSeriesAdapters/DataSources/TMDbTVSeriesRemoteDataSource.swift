@@ -23,56 +23,70 @@ final class TMDbTVSeriesRemoteDataSource: TVSeriesRemoteDataSource {
     func tvSeries(
         withID id: Int
     ) async throws(TVSeriesRemoteDataSourceError) -> TVSeriesDomain.TVSeries {
-        let httpSpan = SpanContext.startChild(
-            operation: "http.client",
-            description: "GET /3/tv/\(id)"
+        let span = SpanContext.startChild(
+            operation: .remoteDataSourceGet,
+            description: "Get TV Series #\(id)"
         )
-        httpSpan?.setData([
-            "http.method": "GET",
-            "http.url": "/3/tv/\(id)",
-            "service": "tmdb",
-            "entity_type": "tvSeries",
-            "entity_id": id,
+        span?.setData(key: "tv_series_id", value: id)
+
+        let tmdbSpan = SpanContext.startChild(
+            operation: .tmdbClient,
+            description: "Get TV Series #\(id)"
+        )
+        tmdbSpan?.setData([
+            "tv_series_id": id,
             "language": "en"
         ])
-
         let tmdbTVSeries: TMDb.TVSeries
         do {
             tmdbTVSeries = try await tvSeriesService.details(forTVSeries: id, language: "en")
-            httpSpan?.finish()
+            tmdbSpan?.finish()
         } catch let error {
-            httpSpan?.finish(status: .internalError)
+            tmdbSpan?.finish(status: .internalError)
+            span?.finish(status: .internalError)
             throw TVSeriesRemoteDataSourceError(error)
         }
 
         let mapper = TVSeriesMapper()
         let tvSeries = mapper.map(tmdbTVSeries)
 
+        span?.finish()
         return tvSeries
     }
 
     func images(
         forTVSeries tvSeriesID: Int
     ) async throws(TVSeriesRemoteDataSourceError) -> TVSeriesDomain.ImageCollection {
-        let httpSpan = SpanContext.startChild(
-            operation: "http.client",
-            description: "GET /3/tv/\(tvSeriesID)/images"
+        let span = SpanContext.startChild(
+            operation: .remoteDataSourceGet,
+            description: "Get TV Series ImageCollection #\(tvSeriesID)"
         )
+        span?.setData(key: "tv_series_id", value: tvSeriesID)
 
+        let tmdbSpan = SpanContext.startChild(
+            operation: .tmdbClient,
+            description: "Get TV Series ImageCollection #\(tvSeriesID)"
+        )
+        tmdbSpan?.setData([
+            "tv_series_id": tvSeriesID,
+            "filters_languages": "en"
+        ])
         let tmdbImageCollection: TMDb.ImageCollection
         do {
             tmdbImageCollection = try await tvSeriesService.images(
                 forTVSeries: tvSeriesID,
                 filter: .init(languages: ["en"])
             )
-            httpSpan?.finish()
+            tmdbSpan?.finish()
         } catch let error {
-            httpSpan?.finish(status: .internalError)
+            tmdbSpan?.finish(status: .internalError)
+            span?.finish()
             throw TVSeriesRemoteDataSourceError(error)
         }
 
         let mapper = ImageCollectionMapper()
         let imageCollection = mapper.map(tmdbImageCollection)
+        span?.finish()
 
         return imageCollection
     }

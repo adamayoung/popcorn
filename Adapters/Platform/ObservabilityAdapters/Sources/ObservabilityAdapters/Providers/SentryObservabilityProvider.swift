@@ -7,11 +7,8 @@
 
 import Foundation
 import OSLog
+import Observability
 import Sentry
-
-import struct Observability.ObservabilityConfiguration
-import protocol Observability.ObservabilityProviding
-import protocol Observability.Transaction
 
 struct SentryObservabilityProvider: ObservabilityProviding {
 
@@ -55,9 +52,18 @@ struct SentryObservabilityProvider: ObservabilityProviding {
         )
     }
 
-    func startTransaction(name: String, operation: String) -> Transaction {
-        let span = SentrySDK.startTransaction(name: name, operation: operation, bindToScope: true)
+    func startTransaction(name: String, operation: SpanOperation) -> Transaction {
+        let span = SentrySDK.startTransaction(
+            name: name,
+            operation: operation.value,
+            bindToScope: true
+        )
         return SentryTransaction(name: name, operation: operation, span: span)
+    }
+
+    func currentSpan() -> Observability.Span? {
+        guard let sentrySpan = SentrySDK.span else { return nil }
+        return SentrySpan(sentrySpan)
     }
 
     func capture(error: any Error) {

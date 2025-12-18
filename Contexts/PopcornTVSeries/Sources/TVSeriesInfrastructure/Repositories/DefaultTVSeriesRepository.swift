@@ -23,63 +23,61 @@ final class DefaultTVSeriesRepository: TVSeriesRepository {
     }
 
     func tvSeries(withID id: Int) async throws(TVSeriesRepositoryError) -> TVSeriesDomain.TVSeries {
-        let tvSeries: TVSeriesDomain.TVSeries
+        let span = SpanContext.startChild(
+            operation: .repositoryGet,
+            description: "Fetch TV Series #\(id)"
+        )
+        span?.setData([
+            "entity_type": "TVSeries",
+            "entity_id": id
+        ])
+
         do {
-            tvSeries = try await SpanContext.trace(
-                operation: "repository.fetch",
-                description: "Fetch TV Series #\(id)"
-            ) { span in
-                span?.setData([
-                    "entity_type": "tvSeries",
-                    "entity_id": id
-                ])
-
-                if let cached = try await localDataSource.tvSeries(withID: id) {
-                    span?.setData(key: "cache.hit", value: true)
-                    return cached
-                }
-
-                span?.setData(key: "cache.hit", value: false)
-                let tvSeries = try await remoteDataSource.tvSeries(withID: id)
-                try await localDataSource.setTVSeries(tvSeries)
-                return tvSeries
+            if let cached = try await localDataSource.tvSeries(withID: id) {
+                span?.setData(key: "cache.hit", value: true)
+                span?.finish()
+                return cached
             }
+
+            span?.setData(key: "cache.hit", value: false)
+            let tvSeries = try await remoteDataSource.tvSeries(withID: id)
+            try await localDataSource.setTVSeries(tvSeries)
+            span?.finish()
+            return tvSeries
         } catch let error {
+            span?.finish(status: .internalError)
             throw TVSeriesRepositoryError(error)
         }
-
-        return tvSeries
     }
 
     func images(
         forTVSeries tvSeriesID: Int
     ) async throws(TVSeriesRepositoryError) -> TVSeriesDomain.ImageCollection {
-        let imageCollection: ImageCollection
+        let span = SpanContext.startChild(
+            operation: .repositoryGet,
+            description: "Fetch TV Series Images #\(tvSeriesID)"
+        )
+        span?.setData([
+            "entity_type": "ImageCollection",
+            "entity_id": tvSeriesID
+        ])
+
         do {
-            imageCollection = try await SpanContext.trace(
-                operation: "repository.fetch",
-                description: "Fetch TV Series Images #\(tvSeriesID)"
-            ) { span in
-                span?.setData([
-                    "entity_type": "imageCollection",
-                    "entity_id": tvSeriesID
-                ])
-
-                if let cached = try await localDataSource.images(forTVSeries: tvSeriesID) {
-                    span?.setData(key: "cache.hit", value: true)
-                    return cached
-                }
-
-                span?.setData(key: "cache.hit", value: false)
-                let imageCollection = try await remoteDataSource.images(forTVSeries: tvSeriesID)
-                try await localDataSource.setImages(imageCollection, forTVSeries: tvSeriesID)
-                return imageCollection
+            if let cached = try await localDataSource.images(forTVSeries: tvSeriesID) {
+                span?.setData(key: "cache.hit", value: true)
+                span?.finish()
+                return cached
             }
+
+            span?.setData(key: "cache.hit", value: false)
+            let imageCollection = try await remoteDataSource.images(forTVSeries: tvSeriesID)
+            try await localDataSource.setImages(imageCollection, forTVSeries: tvSeriesID)
+            span?.finish()
+            return imageCollection
         } catch let error {
+            span?.finish(status: .internalError)
             throw TVSeriesRepositoryError(error)
         }
-
-        return imageCollection
     }
 
 }

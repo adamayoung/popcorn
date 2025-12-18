@@ -25,15 +25,22 @@ extension TVSeriesDetailsClient: DependencyKey {
 
         return TVSeriesDetailsClient(
             fetch: { id in
-                try await SpanContext.trace(
-                    operation: "client.fetch",
+                let span = SpanContext.startChild(
+                    operation: .clientFetch,
                     description: "TVSeriesDetailsClient.fetch"
-                ) { span in
-                    span?.setData(key: "tv_series_id", value: id)
+                )
+                span?.setData(key: "tv_series_id", value: id)
 
+                do {
                     let tvSeries = try await fetchTVSeriesDetails.execute(id: id)
                     let mapper = TVSeriesMapper()
-                    return mapper.map(tvSeries)
+                    let result = mapper.map(tvSeries)
+                    span?.finish()
+                    return result
+                } catch let error {
+                    span?.setData(key: "error", value: error.localizedDescription)
+                    span?.finish(status: .internalError)
+                    throw error
                 }
             }
         )

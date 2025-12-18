@@ -9,30 +9,19 @@ import Foundation
 
 public enum SpanContext {
 
-    @TaskLocal public static var current: (any Span)?
+    /// The observability provider that manages span context.
+    /// Set once during app initialization in ObservabilityService.init, then only read.
+    nonisolated(unsafe) public static var provider: (any ObservabilityProviding)?
 
-    public static func startChild(operation: String, description: String? = nil) -> (any Span)? {
-        current?.startChild(operation: operation, description: description)
+    public static var current: (any Span)? {
+        provider?.currentSpan()
     }
 
-    public static func trace<T: Sendable>(
-        operation: String,
-        description: String? = nil,
-        _ work: @Sendable ((any Span)?) async throws -> T
-    ) async rethrows -> T {
-        guard let child = current?.startChild(operation: operation, description: description) else {
-            return try await work(nil)
-        }
-        do {
-            let result = try await $current.withValue(child) {
-                try await work(child)
-            }
-            child.finish()
-            return result
-        } catch {
-            child.finish(status: .internalError)
-            throw error
-        }
+    public static func startChild(
+        operation: SpanOperation,
+        description: String? = nil
+    ) -> (any Span)? {
+        current?.startChild(operation: operation, description: description)
     }
 
 }

@@ -24,32 +24,32 @@ final class DefaultFetchTVSeriesDetailsUseCase: FetchTVSeriesDetailsUseCase {
     }
 
     func execute(id: TVSeries.ID) async throws(FetchTVSeriesDetailsError) -> TVSeriesDetails {
-        let tvSeriesDetails: TVSeriesDetails
+        let span = SpanContext.startChild(
+            operation: .useCaseExecute,
+            description: "FetchTVSeriesDetailsUseCase.execute"
+        )
+        span?.setData(key: "tv_series_id", value: id)
+
         do {
-            tvSeriesDetails = try await SpanContext.trace(
-                operation: "usecase.execute",
-                description: "FetchTVSeriesDetailsUseCase.execute"
-            ) { span in
-                span?.setData(key: "tv_series_id", value: id)
+            let (tvSeries, imageCollection, appConfiguration) = try await (
+                repository.tvSeries(withID: id),
+                repository.images(forTVSeries: id),
+                appConfigurationProvider.appConfiguration()
+            )
 
-                let (tvSeries, imageCollection, appConfiguration) = try await (
-                    repository.tvSeries(withID: id),
-                    repository.images(forTVSeries: id),
-                    appConfigurationProvider.appConfiguration()
-                )
-
-                let mapper = TVSeriesDetailsMapper()
-                return mapper.map(
-                    tvSeries,
-                    imageCollection: imageCollection,
-                    imagesConfiguration: appConfiguration.images
-                )
-            }
-        } catch {
+            let mapper = TVSeriesDetailsMapper()
+            let result = mapper.map(
+                tvSeries,
+                imageCollection: imageCollection,
+                imagesConfiguration: appConfiguration.images
+            )
+            span?.finish()
+            return result
+        } catch let error {
+            span?.setData(key: "error", value: error.localizedDescription)
+            span?.finish(status: .internalError)
             throw FetchTVSeriesDetailsError(error)
         }
-
-        return tvSeriesDetails
     }
 
 }

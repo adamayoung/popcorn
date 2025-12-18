@@ -19,8 +19,8 @@ struct SentrySpan: Observability.Span, @unchecked Sendable {
         self.parentSpan = parentSpan
     }
 
-    func startChild(operation: String, description: String?) -> any Observability.Span {
-        let childSpan = span.startChild(operation: operation, description: description)
+    func startChild(operation: SpanOperation, description: String?) -> any Observability.Span {
+        let childSpan = span.startChild(operation: operation.value, description: description)
         // Bind child span to scope so automatic instrumentation (like URLSession) uses it as parent
         SentrySDK.configureScope { scope in
             scope.span = childSpan

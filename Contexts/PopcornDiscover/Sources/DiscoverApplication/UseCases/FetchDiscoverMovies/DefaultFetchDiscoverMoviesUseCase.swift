@@ -48,7 +48,7 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
         page: Int
     ) async throws(FetchDiscoverMoviesError) -> [MoviePreviewDetails] {
         let span = SpanContext.startChild(
-            operation: "usecase.execute",
+            operation: .useCaseExecute,
             description: "FetchDiscoverMoviesUseCase.execute",
         )
         span?.setData([

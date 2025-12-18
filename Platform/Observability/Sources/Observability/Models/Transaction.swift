@@ -11,6 +11,6 @@ public protocol Transaction: Span {
 
     var name: String { get }
 
-    var operation: String { get }
+    var operation: SpanOperation { get }
 
 }

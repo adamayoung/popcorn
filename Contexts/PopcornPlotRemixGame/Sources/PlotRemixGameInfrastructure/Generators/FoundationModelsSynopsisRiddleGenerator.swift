@@ -8,8 +8,8 @@
 import Foundation
 import FoundationModels
 import OSLog
-import PlotRemixGameDomain
 import Observability
+import PlotRemixGameDomain
 
 final class FoundationModelsSynopsisRiddleGenerator: SynopsisRiddleGenerating {
 
@@ -40,17 +40,17 @@ final class FoundationModelsSynopsisRiddleGenerator: SynopsisRiddleGenerating {
         let session = LanguageModelSession(instructions: instructions)
 
         let prompt = """
-        Rewrite the following movie synopsis according to your style.
-        
-        Title: \(movie.title)
-        Synopsis:
-        \(movie.overview)
-        """
+            Rewrite the following movie synopsis according to your style.
+
+            Title: \(movie.title)
+            Synopsis:
+            \(movie.overview)
+            """
 
         let response: LanguageModelSession.Response<String>
         do {
             response = try await session.respond(to: prompt)
-        } catch(let error) {
+        } catch (let error) {
             observability.capture(
                 error: error,
                 extras: [

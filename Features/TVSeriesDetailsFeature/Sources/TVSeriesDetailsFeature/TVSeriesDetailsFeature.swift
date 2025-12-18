@@ -102,18 +102,20 @@ extension TVSeriesDetailsFeature {
 
     private func handleFetchTVSeries(_ state: inout State) -> EffectOf<Self> {
         .run { [state, observability, tvSeriesDetailsClient] send in
-            do {
-                let snapshot = try await observability.trace(
-                    name: "FetchTVSeriesDetails",
-                    operation: "ui.action"
-                ) { transaction in
-                    transaction.setData(key: "tv_series_id", value: state.tvSeriesID)
-                    let tvSeries = try await tvSeriesDetailsClient.fetch(state.tvSeriesID)
-                    return ViewSnapshot(tvSeries: tvSeries)
-                }
+            let transaction = observability.startTransaction(
+                name: "FetchTVSeriesDetails",
+                operation: .uiAction
+            )
+            transaction.setData(key: "tv_series_id", value: state.tvSeriesID)
 
+            do {
+                let tvSeries = try await tvSeriesDetailsClient.fetch(state.tvSeriesID)
+                let snapshot = ViewSnapshot(tvSeries: tvSeries)
+                transaction.finish()
                 await send(.loaded(snapshot))
             } catch {
+                transaction.setData(key: "error", value: error.localizedDescription)
+                transaction.finish(status: .internalError)
                 Self.logger.error("Failed fetching TV series: \(error.localizedDescription)")
                 await send(.loadFailed(error))
             }

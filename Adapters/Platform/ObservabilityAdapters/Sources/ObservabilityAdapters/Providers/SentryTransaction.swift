@@ -6,27 +6,24 @@
 //
 
 import Foundation
+import Observability
 import Sentry
-
-import protocol Observability.Span
-import enum Observability.SpanStatus
-import protocol Observability.Transaction
 
 struct SentryTransaction: Observability.Transaction, @unchecked Sendable {
 
     let name: String
-    let operation: String
+    let operation: SpanOperation
 
     private let span: Sentry.Span
 
-    init(name: String, operation: String, span: Sentry.Span) {
+    init(name: String, operation: SpanOperation, span: Sentry.Span) {
         self.name = name
         self.operation = operation
         self.span = span
     }
 
-    func startChild(operation: String, description: String?) -> any Observability.Span {
-        let childSpan = span.startChild(operation: operation, description: description)
+    func startChild(operation: SpanOperation, description: String?) -> any Observability.Span {
+        let childSpan = span.startChild(operation: operation.value, description: description)
         // Bind child span to scope so automatic instrumentation (like URLSession) uses it as parent
         SentrySDK.configureScope { scope in
             scope.span = childSpan

@@ -19,62 +19,68 @@ actor CachedTVSeriesLocalDataSource: TVSeriesLocalDataSource {
     }
 
     func tvSeries(withID id: Int) async -> TVSeries? {
-        await SpanContext.trace(
-            operation: "cache.get",
+        let span = SpanContext.startChild(
+            operation: .localDataSourceGet,
             description: "Get TV Series #\(id)"
-        ) { span in
-            span?.setData([
-                "entity_type": "tvSeries",
-                "entity_id": id,
-                "cache.key": "tvSeries:\(id)"
-            ])
-            return await cache.item(forKey: .tvSeries(id: id), ofType: TVSeries.self)
-        }
+        )
+        span?.setData([
+            "entity_type": "TVSeries",
+            "entity_id": id
+        ])
+
+        let result = await cache.item(forKey: .tvSeries(id: id), ofType: TVSeries.self)
+
+        span?.finish()
+        return result
     }
 
     func setTVSeries(_ tvSeries: TVSeries) async {
-        await SpanContext.trace(
-            operation: "cache.set",
+        let span = SpanContext.startChild(
+            operation: .localDataSourceSet,
             description: "Set TV Series #\(tvSeries.id)"
-        ) { span in
-            span?.setData([
-                "entity_type": "tvSeries",
-                "entity_id": tvSeries.id,
-                "cache.key": "tvSeries:\(tvSeries.id)"
-            ])
-            await cache.setItem(tvSeries, forKey: .tvSeries(id: tvSeries.id))
-        }
+        )
+        span?.setData([
+            "entity_type": "TVSeries",
+            "entity_id": tvSeries.id
+        ])
+
+        await cache.setItem(tvSeries, forKey: .tvSeries(id: tvSeries.id))
+
+        span?.finish()
     }
 
     func images(forTVSeries tvSeriesID: Int) async -> ImageCollection? {
-        await SpanContext.trace(
-            operation: "cache.get",
-            description: "Get TV Series Images #\(tvSeriesID)"
-        ) { span in
-            span?.setData([
-                "entity_type": "imageCollection",
-                "entity_id": tvSeriesID,
-                "cache.key": "tvSeriesImages:\(tvSeriesID)"
-            ])
-            return await cache.item(
-                forKey: .images(tvSeriesID: tvSeriesID),
-                ofType: ImageCollection.self
-            )
-        }
+        let span = SpanContext.startChild(
+            operation: .localDataSourceGet,
+            description: "Get TV Series Image Collection #\(tvSeriesID)"
+        )
+        span?.setData([
+            "entity_type": "imageCollection",
+            "entity_id": tvSeriesID
+        ])
+
+        let result = await cache.item(
+            forKey: .images(tvSeriesID: tvSeriesID),
+            ofType: ImageCollection.self
+        )
+
+        span?.finish()
+        return result
     }
 
     func setImages(_ imageCollection: ImageCollection, forTVSeries tvSeriesID: Int) async {
-        await SpanContext.trace(
-            operation: "cache.set",
-            description: "Set TV Series Images #\(tvSeriesID)"
-        ) { span in
-            span?.setData([
-                "entity_type": "imageCollection",
-                "entity_id": tvSeriesID,
-                "cache.key": "tvSeriesImages:\(tvSeriesID)"
-            ])
-            await cache.setItem(imageCollection, forKey: .images(tvSeriesID: tvSeriesID))
-        }
+        let span = SpanContext.startChild(
+            operation: .localDataSourceSet,
+            description: "Set TV Series Image Collection #\(tvSeriesID)"
+        )
+        span?.setData([
+            "entity_type": "imageCollection",
+            "entity_id": tvSeriesID
+        ])
+
+        await cache.setItem(imageCollection, forKey: .images(tvSeriesID: tvSeriesID))
+
+        span?.finish()
     }
 
 }

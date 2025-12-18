@@ -42,53 +42,88 @@ extension ExploreClient: DependencyKey {
 
         return ExploreClient(
             fetchDiscoverMovies: {
-                try await SpanContext.trace(
-                    operation: "client.fetch",
+                let span = SpanContext.startChild(
+                    operation: .clientFetch,
                     description: "ExploreClient.fetchDiscoverMovies"
-                ) { span in
+                )
+                do {
                     let moviePreviews = try await fetchDiscoverMovies.execute()
                     let mapper = MoviePreviewMapper()
-                    return moviePreviews.map(mapper.map)
+                    let result = moviePreviews.map(mapper.map)
+                    span?.finish()
+                    return result
+                } catch let error {
+                    span?.setData(key: "error", value: error.localizedDescription)
+                    span?.finish(status: .internalError)
+                    throw error
                 }
             },
             fetchTrendingMovies: {
-                try await SpanContext.trace(
-                    operation: "client.fetch",
+                let span = SpanContext.startChild(
+                    operation: .clientFetch,
                     description: "ExploreClient.fetchTrendingMovies"
-                ) { _ in
+                )
+                do {
                     let moviePreviews = try await fetchTrendingMovies.execute()
                     let mapper = MoviePreviewMapper()
-                    return moviePreviews.map(mapper.map)
+                    let result = moviePreviews.map(mapper.map)
+                    span?.finish()
+                    return result
+                } catch let error {
+                    span?.setData(key: "error", value: error.localizedDescription)
+                    span?.finish(status: .internalError)
+                    throw error
                 }
             },
             fetchPopularMovies: {
-                try await SpanContext.trace(
-                    operation: "client.fetch",
+                let span = SpanContext.startChild(
+                    operation: .clientFetch,
                     description: "ExploreClient.fetchPopularMovies"
-                ) { _ in
+                )
+                do {
                     let moviePreviews = try await fetchPopularMovies.execute()
                     let mapper = MoviePreviewMapper()
-                    return moviePreviews.map(mapper.map)
+                    let result = moviePreviews.map(mapper.map)
+                    span?.finish()
+                    return result
+                } catch let error {
+                    span?.setData(key: "error", value: error.localizedDescription)
+                    span?.finish(status: .internalError)
+                    throw error
                 }
             },
             fetchTrendingTVSeries: {
-                try await SpanContext.trace(
-                    operation: "client.fetch",
+                let span = SpanContext.startChild(
+                    operation: .clientFetch,
                     description: "ExploreClient.fetchTrendingTVSeries"
-                ) { _ in
+                )
+                do {
                     let tvSeriesPreviews = try await fetchTrendingTVSeries.execute()
                     let mapper = TVSeriesPreviewMapper()
-                    return tvSeriesPreviews.map(mapper.map)
+                    let result = tvSeriesPreviews.map(mapper.map)
+                    span?.finish()
+                    return result
+                } catch let error {
+                    span?.setData(key: "error", value: error.localizedDescription)
+                    span?.finish(status: .internalError)
+                    throw error
                 }
             },
             fetchTrendingPeople: {
-                try await SpanContext.trace(
-                    operation: "client.fetch",
+                let span = SpanContext.startChild(
+                    operation: .clientFetch,
                     description: "ExploreClient.fetchTrendingPeople"
-                ) { _ in
+                )
+                do {
                     let personPreviews = try await fetchTrendingPeople.execute()
                     let mapper = PersonPreviewMapper()
-                    return personPreviews.map(mapper.map)
+                    let result = personPreviews.map(mapper.map)
+                    span?.finish()
+                    return result
+                } catch let error {
+                    span?.setData(key: "error", value: error.localizedDescription)
+                    span?.finish(status: .internalError)
+                    throw error
                 }
             },
             isDiscoverMoviesEnabled: {

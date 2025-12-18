@@ -123,43 +123,44 @@ extension ExploreFeature {
                 (try? exploreClient.isTrendingTVSeriesEnabled()) ?? false
             let isTrendingPeopleEnabled = (try? exploreClient.isTrendingPeopleEnabled()) ?? false
 
+            let transaction = observability.startTransaction(
+                name: "FetchExplore",
+                operation: .uiAction
+            )
+            transaction.setData([
+                "explore_filters": [
+                    "discover_movies": isDiscoverMoviesEnabled,
+                    "trending_movies": isTrendingMoviesEnabled,
+                    "popular_movies": isPopularMoviesEnabled,
+                    "trending_tv_series": isTrendingTVSeriesEnabled,
+                    "trending_people": isTrendingPeopleEnabled
+                ]
+            ])
+
             do {
-                let snapshot = try await observability.trace(
-                    name: "FetchExplore",
-                    operation: "ui.action"
-                ) { transaction in
-                    transaction.setData([
-                        "explore_filters": [
-                            "discover_movies": isDiscoverMoviesEnabled,
-                            "trending_movies": isTrendingMoviesEnabled,
-                            "popular_movies": isPopularMoviesEnabled,
-                            "trending_tv_series": isTrendingTVSeriesEnabled,
-                            "trending_people": isTrendingPeopleEnabled
-                        ]
-                    ])
+                async let discoverMovies =
+                    isDiscoverMoviesEnabled ? exploreClient.fetchDiscoverMovies() : []
+                async let trendingMovies =
+                    isTrendingMoviesEnabled ? exploreClient.fetchTrendingMovies() : []
+                async let popularMovies =
+                    isPopularMoviesEnabled ? exploreClient.fetchPopularMovies() : []
+                async let trendingTVSeries =
+                    isTrendingTVSeriesEnabled ? exploreClient.fetchTrendingTVSeries() : []
+                async let trendingPeople =
+                    isTrendingPeopleEnabled ? exploreClient.fetchTrendingPeople() : []
 
-                    async let discoverMovies =
-                        isDiscoverMoviesEnabled ? exploreClient.fetchDiscoverMovies() : []
-                    async let trendingMovies =
-                        isTrendingMoviesEnabled ? exploreClient.fetchTrendingMovies() : []
-                    async let popularMovies =
-                        isPopularMoviesEnabled ? exploreClient.fetchPopularMovies() : []
-                    async let trendingTVSeries =
-                        isTrendingTVSeriesEnabled ? exploreClient.fetchTrendingTVSeries() : []
-                    async let trendingPeople =
-                        isTrendingPeopleEnabled ? exploreClient.fetchTrendingPeople() : []
-
-                    return try await ViewSnapshot(
-                        discoverMovies: discoverMovies,
-                        trendingMovies: trendingMovies,
-                        popularMovies: popularMovies,
-                        trendingTVSeries: trendingTVSeries,
-                        trendingPeople: trendingPeople
-                    )
-                }
-
+                let snapshot = try await ViewSnapshot(
+                    discoverMovies: discoverMovies,
+                    trendingMovies: trendingMovies,
+                    popularMovies: popularMovies,
+                    trendingTVSeries: trendingTVSeries,
+                    trendingPeople: trendingPeople
+                )
+                transaction.finish()
                 await send(.loaded(snapshot))
             } catch {
+                transaction.setData(key: "error", value: error.localizedDescription)
+                transaction.finish(status: .internalError)
                 Self.logger.error("Failed fetching Explore: \(error.localizedDescription)")
                 await send(.loadFailed(error))
             }

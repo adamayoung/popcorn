@@ -19,6 +19,7 @@ struct ObservabilityService: Observing, ObservabilityInitialising {
 
     init(provider: some ObservabilityProviding) {
         self.provider = provider
+        SpanContext.provider = provider
     }
 
     func start(_ config: ObservabilityConfiguration) async throws {
@@ -29,7 +30,7 @@ struct ObservabilityService: Observing, ObservabilityInitialising {
         )
     }
 
-    func startTransaction(name: String, operation: String) -> Transaction {
+    func startTransaction(name: String, operation: SpanOperation) -> Transaction {
         provider.startTransaction(name: name, operation: operation)
     }
 
