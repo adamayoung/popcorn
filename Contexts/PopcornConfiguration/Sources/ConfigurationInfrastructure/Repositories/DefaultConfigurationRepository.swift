@@ -8,6 +8,7 @@
 import ConfigurationDomain
 import CoreDomain
 import Foundation
+import Observability
 
 final class DefaultConfigurationRepository: ConfigurationRepository {
 
@@ -23,12 +24,21 @@ final class DefaultConfigurationRepository: ConfigurationRepository {
     }
 
     func configuration() async throws(ConfigurationRepositoryError) -> AppConfiguration {
+        let span = SpanContext.startChild(
+            operation: .repositoryGet,
+            description: "Fetch App Configuration"
+        )
+
         if let cachedAppConfiguration = await localDataSource.configuration() {
+            span?.setData(key: "cache.hit", value: true)
+            span?.finish()
             return cachedAppConfiguration
         }
 
+        span?.setData(key: "cache.hit", value: false)
         let appConfiguration = try await remoteDataSource.configuration()
         await localDataSource.setConfiguration(appConfiguration)
+        span?.finish()
 
         return appConfiguration
     }

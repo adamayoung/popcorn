@@ -11,7 +11,7 @@ import Foundation
 
 enum FeatureFlagsKey: DependencyKey {
 
-    static var liveValue: any FeatureFlags {
+    static var liveValue: any FeatureFlagging {
         @Dependency(\.featureFlagsFactory) var featureFlagsFactory
         return featureFlagsFactory.makeService()
     }
@@ -20,7 +20,7 @@ enum FeatureFlagsKey: DependencyKey {
 
 extension DependencyValues {
 
-    public var featureFlags: any FeatureFlags {
+    public var featureFlags: any FeatureFlagging {
         get { self[FeatureFlagsKey.self] }
         set { self[FeatureFlagsKey.self] = newValue }
     }

@@ -24,6 +24,7 @@ let package = Package(
         .package(path: "../../Contexts/PopcornDiscover"),
         .package(path: "../../Contexts/PopcornTrending"),
         .package(path: "../../Contexts/PopcornMovies"),
+        .package(path: "../../Platform/Observability"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1")
     ],
@@ -34,6 +35,7 @@ let package = Package(
             dependencies: [
                 "AppDependencies",
                 "DesignSystem",
+                "Observability",
                 .product(name: "DiscoverApplication", package: "PopcornDiscover"),
                 .product(name: "TrendingApplication", package: "PopcornTrending"),
                 .product(name: "MoviesApplication", package: "PopcornMovies"),

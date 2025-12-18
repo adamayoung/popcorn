@@ -18,8 +18,17 @@ let package = Package(
         .library(name: "Caching", targets: ["Caching"])
     ],
 
+    dependencies: [
+        .package(path: "../Observability")
+    ],
+
     targets: [
-        .target(name: "Caching"),
+        .target(
+            name: "Caching",
+            dependencies: [
+                "Observability"
+            ]
+        ),
         .testTarget(
             name: "CachingTests",
             dependencies: ["Caching"]

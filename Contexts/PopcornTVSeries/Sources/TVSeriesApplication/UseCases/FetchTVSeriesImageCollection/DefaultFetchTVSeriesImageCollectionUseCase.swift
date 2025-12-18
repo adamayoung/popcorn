@@ -7,6 +7,7 @@
 
 import CoreDomain
 import Foundation
+import Observability
 import TVSeriesDomain
 
 final class DefaultFetchTVSeriesImageCollectionUseCase: FetchTVSeriesImageCollectionUseCase {
@@ -22,9 +23,14 @@ final class DefaultFetchTVSeriesImageCollectionUseCase: FetchTVSeriesImageCollec
         self.appConfigurationProvider = appConfigurationProvider
     }
 
-    func execute(tvSeriesID: TVSeries.ID) async throws(FetchTVSeriesImageCollectionError)
-        -> ImageCollectionDetails
-    {
+    func execute(
+        tvSeriesID: TVSeries.ID
+    ) async throws(FetchTVSeriesImageCollectionError) -> ImageCollectionDetails {
+        let span = SpanContext.startChild(
+            operation: .useCaseExecute,
+            description: "FetchTVSeriesImageCollectionUseCase.execute"
+        )
+
         let imageCollection: ImageCollection
         let appConfiguration: AppConfiguration
         do {
@@ -33,12 +39,18 @@ final class DefaultFetchTVSeriesImageCollectionUseCase: FetchTVSeriesImageCollec
                 appConfigurationProvider.appConfiguration()
             )
         } catch let error {
-            throw FetchTVSeriesImageCollectionError(error)
+            let e = FetchTVSeriesImageCollectionError(error)
+            span?.setData(error: e)
+            span?.finish(status: .internalError)
+            throw e
         }
 
         let mapper = ImageCollectionDetailsMapper()
         let imageCollectionDetails = mapper.map(
-            imageCollection, imagesConfiguration: appConfiguration.images)
+            imageCollection,
+            imagesConfiguration: appConfiguration.images
+        )
+        span?.finish()
 
         return imageCollectionDetails
     }

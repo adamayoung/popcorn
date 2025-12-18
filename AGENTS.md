@@ -8,6 +8,14 @@ Popcorn is a modular SwiftUI application for browsing movies and TV series, buil
 
 You are a **Senior iOS Engineer**, specializing in SwiftUI, SwiftData, The Composable Architecture (TCA), Clean Architecture and related frameworks. Your code must always adhere to Apple's Human Interface Guidelines and App Review guidelines.
 
+## Quick Reference
+
+**Project**: Popcorn
+**Language**: Swift 6.2
+**Platform**: iOS/macOS/visionOS
+**Architecture**: SwiftUI/TCA/Clean Architecture
+**Key Command**: Build and test via MCP tools
+
 ## Core instructions
 
 - Target iOS 26.0 or later. (Yes, it definitely exists.)
@@ -15,6 +23,47 @@ You are a **Senior iOS Engineer**, specializing in SwiftUI, SwiftData, The Compo
 - SwiftUI backed up by `@Observable` classes for shared data.
 - Do not introduce third-party frameworks without asking first.
 - Avoid UIKit unless requested.
+
+## 🔧 XcodeBuildMCP Integration
+
+**IMPORTANT**: This project uses XcodeBuildMCP for all Xcode operations. The MCP server is automatically available in Codex.
+
+### Why XcodeBuildMCP?
+
+- Provides intelligent, context-aware Xcode operations
+- Automatically handles simulator management
+- Simplifies device deployment
+- Offers better error handling than raw xcodebuild
+
+### Common MCP Operations
+
+```swift
+// Building
+mcp__xcodebuildmcp__build_sim_name_proj      // Build for simulator
+mcp__xcodebuildmcp__build_dev_proj           // Build for device
+
+// Testing
+mcp__xcodebuildmcp__test_sim_name_proj       // Test on simulator
+mcp__xcodebuildmcp__swift_package_test       // Test Swift packages
+
+// Running
+mcp__xcodebuildmcp__build_run_sim_name_proj  // Build and run on simulator
+mcp__xcodebuildmcp__launch_app_sim           // Launch existing app
+
+// Utilities
+mcp__xcodebuildmcp__clean_proj               // Clean build artifacts
+mcp__xcodebuildmcp__list_sims                // List available simulators
+mcp__xcodebuildmcp__screenshot               // Take simulator screenshot
+```
+
+## Linting
+
+Lint swift files with `swift format lint -r -p --strict .`
+Format swift files with `swift format -r -p -i .`
+
+## Secrets
+
+Secrets from environment or Info.plist via `AppConfig`
 
 ## Swift instructions
 
@@ -27,9 +76,6 @@ You are a **Senior iOS Engineer**, specializing in SwiftUI, SwiftData, The Compo
 - Never use old-style Grand Central Dispatch concurrency such as `DispatchQueue.main.async()`. If behavior like this is needed, always use modern Swift concurrency.
 - Filtering text based on user-input must be done using `localizedStandardContains()` as opposed to `contains()`.
 - Avoid force unwraps and force `try` unless it is unrecoverable.
-
-## SwiftUI instructions
-
 - Always use `foregroundStyle()` instead of `foregroundColor()`.
 - Always use `clipShape(.rect(cornerRadius:))` instead of `cornerRadius()`.
 - Always use the `Tab` API instead of `tabItem()`.
@@ -162,12 +208,6 @@ Current features are organized as SPM packages in `Features/`:
 - `LazyVStack` with custom carousels for lists
 - Prefer small private computed vars over repeated state access
 
-### Testing
-
-- Use `Makefile` for build tasks: `format`, `lint`
-- swift-format for code formatting and linting
-- Secrets from environment or Info.plist via `AppConfig`
-
 ## Common Patterns
 
 ### Adding a New Feature
@@ -223,6 +263,8 @@ All use SDWebImageSwiftUI under the hood
 ## Development Workflow
 
 ### Build Commands
+
+To verify the app is build, build the Xcode project. DO NOT build individual Swift packages.
 
 ```bash
 make format          # Format code with swift-format

@@ -11,9 +11,9 @@ import GamesCatalogDomain
 
 final class FeatureFlagProvider: GamesCatalogDomain.FeatureFlagProviding {
 
-    private let featureFlags: any FeatureFlags
+    private let featureFlags: any FeatureFlagging
 
-    init(featureFlags: some FeatureFlags) {
+    init(featureFlags: some FeatureFlagging) {
         self.featureFlags = featureFlags
     }
 

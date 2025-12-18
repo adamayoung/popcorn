@@ -18,7 +18,8 @@ extension DependencyValues {
             fetchAppConfigurationUseCase: self.fetchAppConfiguration,
             fetchDiscoverMoviesUseCase: self.fetchDiscoverMovies,
             fetchSimilarMoviesUseCase: self.fetchSimilarMovies,
-            fetchMovieGenresUseCase: self.fetchMovieGenres
+            fetchMovieGenresUseCase: self.fetchMovieGenres,
+            observability: self.observability
         ).makePlotRemixGameFactory()
     }
 

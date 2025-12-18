@@ -23,6 +23,7 @@ let package = Package(
 
     dependencies: [
         .package(path: "../../Core/CoreDomain"),
+        .package(path: "../../Platform/Observability"),
         .package(path: "../../Platform/DataPersistenceInfrastructure")
     ],
 
@@ -40,7 +41,8 @@ let package = Package(
             name: "DiscoverApplication",
             dependencies: [
                 "DiscoverDomain",
-                "CoreDomain"
+                "CoreDomain",
+                "Observability"
             ]
         ),
         .testTarget(
@@ -63,7 +65,8 @@ let package = Package(
             name: "DiscoverInfrastructure",
             dependencies: [
                 "DiscoverDomain",
-                "DataPersistenceInfrastructure"
+                "DataPersistenceInfrastructure",
+                "Observability"
             ]
         ),
         .testTarget(

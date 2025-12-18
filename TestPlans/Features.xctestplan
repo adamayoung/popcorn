@@ -21,13 +21,6 @@
     },
     {
       "target" : {
-        "containerPath" : "container:Popcorn.xcodeproj",
-        "identifier" : "664551922ECB7C2200250D87",
-        "name" : "PopcornTests"
-      }
-    },
-    {
-      "target" : {
         "containerPath" : "container:Features\/PersonDetailsFeature",
         "identifier" : "PersonDetailsFeatureTests",
         "name" : "PersonDetailsFeatureTests"

@@ -30,6 +30,10 @@ let package = Package(
                 "FeatureFlags",
                 .product(name: "Statsig", package: "statsig-kit")
             ]
+        ),
+        .testTarget(
+            name: "FeatureFlagsAdaptersTests",
+            dependencies: ["FeatureFlagsAdapters"]
         )
     ]
 )

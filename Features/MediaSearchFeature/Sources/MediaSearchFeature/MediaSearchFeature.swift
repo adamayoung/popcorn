@@ -5,9 +5,11 @@
 //  Created by Adam Young on 25/11/2025.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import Foundation
 import OSLog
+import Observability
 
 @Reducer
 public struct MediaSearchFeature: Sendable {
@@ -18,6 +20,7 @@ public struct MediaSearchFeature: Sendable {
     )
 
     @Dependency(\.mediaSearchClient) private var mediaSearchClient
+    @Dependency(\.observability) private var observability
 
     @ObservableState
     public struct State: Sendable {
@@ -159,7 +162,7 @@ public struct MediaSearchFeature: Sendable {
                 effect = .none
 
             case .search:
-                effect = handleSearch(state: &state)
+                effect = handleSearchMedia(state: &state)
 
             case .searchResultsLoaded(let snapshot):
                 state.viewState = .searchResults(snapshot)
@@ -218,34 +221,51 @@ extension MediaSearchFeature {
 
     private func handleFetchGenresAndSearchHistory() -> EffectOf<Self> {
         .run { send in
+            let transaction = observability.startTransaction(
+                name: "FetchGenresAndSearchHistory",
+                operation: .uiAction
+            )
+
             async let searchHistoryMedia = mediaSearchClient.fetchMediaSearchHistory()
 
             do {
                 let genresSnapshot = GenresViewSnapshot(genres: [])
                 let searchHistorySnapshot = try await SearchHistoryViewSnapshot(
                     media: searchHistoryMedia)
+                transaction.finish()
                 await send(.genresAndSearchHistoryLoaded(genresSnapshot, searchHistorySnapshot))
             } catch let error {
+                transaction.setData(error: error)
+                transaction.finish(status: .internalError)
                 await send(.genresAndSearchHistoryLoadFailed(error))
             }
         }
     }
 
-    private func handleSearch(state: inout State) -> EffectOf<Self> {
+    private func handleSearchMedia(state: inout State) -> EffectOf<Self> {
         .run { [state] send in
+            let transaction = observability.startTransaction(
+                name: "SearchMedia",
+                operation: .uiAction
+            )
+
             let results: [MediaPreview]
             do {
                 results = try await mediaSearchClient.search(state.query)
             } catch let error {
+                transaction.setData(error: error)
+                transaction.finish(status: .internalError)
                 await send(.searchResultsLoadFailed(error))
                 return
             }
 
             if results.isEmpty {
                 let snapshot = NoSearchResultsViewSnapshot(query: state.query)
+                transaction.finish()
                 await send(.searchWithNoResultsLoaded(snapshot))
             } else {
                 let snapshot = SearchResultsViewSnapshot(query: state.query, results: results)
+                transaction.finish()
                 await send(.searchResultsLoaded(snapshot))
             }
         }

@@ -4,6 +4,7 @@
 # Xcode build products
 build/
 DerivedData/
+DerivedDataMCP/
 
 # Xcode user-specific files
 *.pbxuser
@@ -16,6 +17,8 @@ xcuserdata/
 # Swift Package Manager
 .build/
 .swiftpm/
+**/Package.resolved
+Popcorn.xcodeproj/**/swiftpm/Package.resolved
 
 # Archives & symbols
 *.ipa
@@ -27,3 +30,7 @@ Configs/Secrets.xcconfig
 
 # Claude
 .claude/settings.local.json
+
+# MCP
+.spm
+.sandbox_home

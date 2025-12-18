@@ -9,6 +9,7 @@ import Caching
 import ConfigurationDomain
 import CoreDomain
 import Foundation
+import Observability
 
 actor CachedConfigurationLocalDataSource: ConfigurationLocalDataSource {
 
@@ -19,11 +20,25 @@ actor CachedConfigurationLocalDataSource: ConfigurationLocalDataSource {
     }
 
     func configuration() async -> AppConfiguration? {
-        await cache.item(forKey: .appConfiguration, ofType: AppConfiguration.self)
+        let span = SpanContext.startChild(
+            operation: .localDataSourceGet,
+            description: "Get App Configuration"
+        )
+
+        let result = await cache.item(forKey: .appConfiguration, ofType: AppConfiguration.self)
+        span?.finish()
+
+        return result
     }
 
     func setConfiguration(_ appConfiguration: AppConfiguration) async {
+        let span = SpanContext.startChild(
+            operation: .localDataSourceSet,
+            description: "Set App Configuration"
+        )
+
         await cache.setItem(appConfiguration, forKey: .appConfiguration)
+        span?.finish()
     }
 
 }

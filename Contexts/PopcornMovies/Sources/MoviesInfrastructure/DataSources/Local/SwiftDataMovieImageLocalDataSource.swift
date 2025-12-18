@@ -39,18 +39,21 @@ actor SwiftDataMovieImageLocalDataSource: MovieImageLocalDataSource, SwiftDataFe
         }
 
         guard let entity else {
-            //            Self.logger.trace("SwiftData MISS: ImageCollection(movie-id: \(movieID, privacy: .public))")
+            Self.logger.debug(
+                "SwiftData MISS: ImageCollection(movie-id: \(movieID, privacy: .public))")
             return nil
         }
 
         guard !entity.isExpired(ttl: ttl) else {
-            //            Self.logger.trace("SwiftData EXPIRED: ImageCollection(movie-id: \(movieID, privacy: .public)) — deleting")
+            Self.logger.debug(
+                "SwiftData EXPIRED: ImageCollection(movie-id: \(movieID, privacy: .public)) — deleting"
+            )
             modelContext.delete(entity)
             do { try modelContext.save() } catch let error { throw .unknown(error) }
             return nil
         }
 
-        //        Self.logger.trace("SwiftData HIT: ImageCollection(movie-id: \(movieID, privacy: .public))")
+        Self.logger.debug("SwiftData HIT: ImageCollection(movie-id: \(movieID, privacy: .public))")
 
         let mapper = ImageCollectionMapper()
         return mapper.map(entity)

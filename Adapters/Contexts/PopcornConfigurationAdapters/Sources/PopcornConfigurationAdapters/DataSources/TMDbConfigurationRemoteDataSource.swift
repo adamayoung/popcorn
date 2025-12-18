@@ -9,6 +9,7 @@ import ConfigurationDomain
 import ConfigurationInfrastructure
 import CoreDomain
 import Foundation
+import Observability
 import TMDb
 
 final class TMDbConfigurationRemoteDataSource: ConfigurationRemoteDataSource {
@@ -20,16 +21,25 @@ final class TMDbConfigurationRemoteDataSource: ConfigurationRemoteDataSource {
     }
 
     func configuration() async throws(ConfigurationRepositoryError) -> AppConfiguration {
+        let span = SpanContext.startChild(
+            operation: .remoteDataSourceGet,
+            description: "Get AppConfiguration"
+        )
+
         let tmdbAPIConfiguration: TMDb.APIConfiguration
 
         do {
             tmdbAPIConfiguration = try await configurationService.apiConfiguration()
         } catch let error {
-            throw ConfigurationRepositoryError(error)
+            let e = ConfigurationRepositoryError(error)
+            span?.setData(error: e)
+            span?.finish(status: .internalError)
+            throw e
         }
 
         let mapper = AppConfigurationMapper()
         let appConfiguration = mapper.map(tmdbAPIConfiguration)
+        span?.finish()
 
         return appConfiguration
     }

@@ -5,14 +5,17 @@
 //  Created by Adam Young on 09/12/2025.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import Foundation
 import OSLog
+import Observability
 
 @Reducer
 public struct PlotRemixGameFeature: Sendable {
 
     @Dependency(\.plotRemixGameClient) private var plotRemixGameClient
+    @Dependency(\.observability) private var observability
     @Dependency(\.dismiss) private var dismiss
 
     private static let logger = Logger(
@@ -130,11 +133,22 @@ extension PlotRemixGameFeature {
 
     private func handleFetchGameMetadata(_ state: inout State) -> EffectOf<Self> {
         .run { [state] send in
+            let transaction = observability.startTransaction(
+                name: "FetchGameMetadata",
+                operation: .uiAction
+            )
+            transaction.setData(key: "game_id", value: state.gameID)
+
             do {
                 let metadata = try await plotRemixGameClient.gameMetadata(state.gameID)
+                transaction.finish()
                 await send(.metadataLoaded(metadata))
-            } catch {
-                Self.logger.error("Failed fetching game metadata: \(error.localizedDescription)")
+            } catch let error {
+                Self.logger.error(
+                    "Failed fetching game metadata: \(error.localizedDescription, privacy: .public)"
+                )
+                transaction.setData(error: error)
+                transaction.finish(status: .internalError)
                 await send(.metadataLoadFailed(error))
             }
         }
@@ -146,6 +160,12 @@ extension PlotRemixGameFeature {
                 return
             }
 
+            let transaction = observability.startTransaction(
+                name: "GenerateGame",
+                operation: .uiAction
+            )
+            transaction.setData(key: "game_id", value: state.gameID)
+
             let game: Game
             do {
                 game = try await plotRemixGameClient.generateGame { progress in
@@ -155,15 +175,27 @@ extension PlotRemixGameFeature {
                         await send(.generatingGame(progress))
                     }
                 }
+                transaction.finish()
             } catch is CancellationError {
+                transaction.finish()
                 return
             } catch let error {
-                guard !Task.isCancelled else { return }
+                guard !Task.isCancelled else {
+                    transaction.finish()
+                    return
+                }
+                transaction.setData(error: error)
+                transaction.finish(status: .internalError)
                 await send(.generateGameFailed(error))
                 return
             }
 
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled else {
+                transaction.finish()
+                return
+            }
+
+            transaction.finish()
             await send(.generatedGame(game))
         }
     }

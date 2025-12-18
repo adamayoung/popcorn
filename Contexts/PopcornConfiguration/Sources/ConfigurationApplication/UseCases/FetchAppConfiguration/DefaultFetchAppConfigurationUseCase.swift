@@ -8,6 +8,7 @@
 import ConfigurationDomain
 import CoreDomain
 import Foundation
+import Observability
 
 final class DefaultFetchAppConfigurationUseCase: FetchAppConfigurationUseCase {
 
@@ -18,13 +19,22 @@ final class DefaultFetchAppConfigurationUseCase: FetchAppConfigurationUseCase {
     }
 
     func execute() async throws(FetchAppConfigurationError) -> AppConfiguration {
+        let span = SpanContext.startChild(
+            operation: .useCaseExecute,
+            description: "FetchAppConfigurationUseCase.execute"
+        )
+
         let appConfiguration: AppConfiguration
         do {
             appConfiguration = try await repository.configuration()
         } catch let error {
-            throw FetchAppConfigurationError(error)
+            let e = FetchAppConfigurationError(error)
+            span?.setData(error: e)
+            span?.finish(status: .internalError)
+            throw e
         }
 
+        span?.finish()
         return appConfiguration
     }
 

@@ -10,6 +10,7 @@ import ComposableArchitecture
 import FeatureFlags
 import Foundation
 import OSLog
+import Observability
 
 @DependencyClient
 struct AppRootClient: Sendable {
@@ -19,7 +20,8 @@ struct AppRootClient: Sendable {
         category: "AppRootClient"
     )
 
-    var startFeatureFlags: @Sendable () async throws -> Void
+    var setupObservability: @Sendable () async throws -> Void
+    var setupFeatureFlags: @Sendable () async throws -> Void
 
     var isExploreEnabled: @Sendable () throws -> Bool
     var isGamesEnabled: @Sendable () throws -> Bool
@@ -32,14 +34,53 @@ extension AppRootClient: DependencyKey {
     static var liveValue: AppRootClient {
         @Dependency(\.featureFlags) var featureFlags
         @Dependency(\.featureFlagsInitialiser) var featureFlagsInitialiser
+        @Dependency(\.observability) var observability
+        @Dependency(\.observabilityInitialiser) var observabilityInitialiser
 
+        let userID = AppInstallationIdentifier.userID()
         return AppRootClient(
-            startFeatureFlags: {
-                let userID = AppInstallationIdentifier.userID()
+            setupObservability: {
+                guard let dsn = AppConfig.Sentry.dsn else {
+                    Self.logger.warning("Sentry DSN not configured. Disabling observability.")
+                    return
+                }
+
+                guard let environment = AppConfig.Sentry.environment else {
+                    Self.logger.warning(
+                        "Sentry environment not configured. Disabling observability.")
+                    return
+                }
+
+                let config = ObservabilityConfiguration(
+                    dsn: dsn,
+                    environment: environment,
+                    userID: userID
+                )
+
+                do {
+                    try await observabilityInitialiser.start(config)
+                } catch let error {
+                    Self.logger.error(
+                        "Observability failed to initialise: \(error.localizedDescription, privacy: .public)"
+                    )
+                }
+            },
+            setupFeatureFlags: {
+                guard let apiKey = AppConfig.Statsig.sdkKey else {
+                    Self.logger.warning("Statsig SDK key not configured. Disabling feature flags.")
+                    return
+                }
+
+                guard let environment = AppConfig.Statsig.environment else {
+                    Self.logger.warning(
+                        "Statsig environment not configured. Disabling feature flags.")
+                    return
+                }
+
                 let config = FeatureFlagsConfiguration(
-                    userID: userID,
-                    environment: AppConfig.featureFlagsEnvironment,
-                    apiKey: AppConfig.featureFlagsKey
+                    apiKey: apiKey,
+                    environment: environment,
+                    userID: userID
                 )
 
                 do {
@@ -47,6 +88,7 @@ extension AppRootClient: DependencyKey {
                 } catch let error {
                     Self.logger.error(
                         "Feature flags failed to initialise: \(error.localizedDescription)")
+                    throw error
                 }
             },
             isExploreEnabled: {

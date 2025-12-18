@@ -22,7 +22,8 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(path: "../../Core/CoreDomain")
+        .package(path: "../../Core/CoreDomain"),
+        .package(path: "../../Platform/Observability")
     ],
 
     targets: [
@@ -63,7 +64,8 @@ let package = Package(
         .target(
             name: "PlotRemixGameInfrastructure",
             dependencies: [
-                "PlotRemixGameDomain"
+                "PlotRemixGameDomain",
+                "Observability"
             ]
         ),
         .testTarget(

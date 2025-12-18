@@ -5,14 +5,17 @@
 //  Created by Adam Young on 18/11/2025.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import Foundation
 import OSLog
+import Observability
 
 @Reducer
 public struct TrendingTVSeriesFeature: Sendable {
 
-    @Dependency(\.trendingTVSeries) private var trendingTVSeries: TrendingTVSeriesClient
+    @Dependency(\.trendingTVSeries) private var trendingTVSeries
+    @Dependency(\.observability) private var observability
 
     private static let logger = Logger(
         subsystem: "TrendingTVSeriesFeature",
@@ -31,6 +34,7 @@ public struct TrendingTVSeriesFeature: Sendable {
     public enum Action {
         case loadTrendingTVSeries
         case trendingTVSeriesLoaded([TVSeriesPreview])
+        case loadTrendingTVSeriesFailed(Error)
         case navigate(Navigation)
     }
 
@@ -48,6 +52,8 @@ public struct TrendingTVSeriesFeature: Sendable {
             case .trendingTVSeriesLoaded(let tvSeries):
                 state.tvSeries = tvSeries
                 return .none
+            case .loadTrendingTVSeriesFailed:
+                return .none
             case .navigate:
                 return .none
             }
@@ -60,12 +66,21 @@ extension TrendingTVSeriesFeature {
 
     fileprivate func handleFetchTrendingTVSeries() -> EffectOf<Self> {
         .run { send in
+            let transaction = observability.startTransaction(
+                name: "FetchTrendingTVSeries",
+                operation: .uiAction
+            )
+
             do {
                 let tvSeries = try await trendingTVSeries.fetch()
+                transaction.finish()
                 await send(.trendingTVSeriesLoaded(tvSeries))
-            } catch {
+            } catch let error {
+                transaction.setData(error: error)
+                transaction.finish(status: .internalError)
                 Self.logger.error(
                     "Failed fetching trending TV series: \(error.localizedDescription)")
+                await send(.loadTrendingTVSeriesFailed(error))
             }
         }
     }

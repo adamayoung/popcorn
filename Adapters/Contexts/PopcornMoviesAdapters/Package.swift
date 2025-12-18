@@ -36,6 +36,10 @@ let package = Package(
                 "CoreDomain",
                 "TMDb"
             ]
+        ),
+        .testTarget(
+            name: "PopcornMoviesAdaptersTests",
+            dependencies: ["PopcornMoviesAdapters"]
         )
     ]
 )

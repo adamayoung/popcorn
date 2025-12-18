@@ -5,14 +5,17 @@
 //  Created by Adam Young on 17/11/2025.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import Foundation
 import OSLog
+import Observability
 
 @Reducer
 public struct PersonDetailsFeature: Sendable {
 
-    @Dependency(\.personDetails) var personDetails: PersonDetailsClient
+    @Dependency(\.personDetails) private var personDetails
+    @Dependency(\.observability) private var observability
 
     private static let logger = Logger(
         subsystem: "PersonDetailsFeature",
@@ -100,12 +103,21 @@ extension PersonDetailsFeature {
 
     fileprivate func handleFetchPerson(_ state: inout State) -> EffectOf<Self> {
         .run { [state] send in
+            let transaction = observability.startTransaction(
+                name: "FetchPerson",
+                operation: .uiAction
+            )
+            transaction.setData(key: "person_id", value: state.personID)
+
             do {
                 let person = try await personDetails.fetch(state.personID)
                 let snapshot = ViewSnapshot(person: person)
+                transaction.finish()
                 await send(.loaded(snapshot))
             } catch {
-                Self.logger.error("Failed to fetch person: \(error)")
+                Self.logger.error("Failed to fetch person: \(error, privacy: .public)")
+                transaction.setData(error: error)
+                transaction.finish(status: .internalError)
                 await send(.loadFailed(error))
             }
         }

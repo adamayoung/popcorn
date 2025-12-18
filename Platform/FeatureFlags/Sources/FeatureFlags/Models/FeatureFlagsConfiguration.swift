@@ -9,18 +9,18 @@ import Foundation
 
 public struct FeatureFlagsConfiguration: Sendable {
 
-    public let userID: String
-    public let environment: Environment
     public let apiKey: String
+    public let environment: Environment
+    public let userID: String
 
     public init(
-        userID: String,
+        apiKey: String,
         environment: Environment,
-        apiKey: String
+        userID: String
     ) {
-        self.userID = userID
-        self.environment = environment
         self.apiKey = apiKey
+        self.environment = environment
+        self.userID = userID
     }
 
 }
@@ -28,9 +28,9 @@ public struct FeatureFlagsConfiguration: Sendable {
 extension FeatureFlagsConfiguration {
 
     public enum Environment: String, Sendable {
-        case development
-        case staging
-        case production
+        case development = "development"
+        case staging = "staging"
+        case production = "production"
     }
 
 }

@@ -20,7 +20,7 @@ package final class SearchInfrastructureFactory {
         let config = ModelConfiguration(
             schema: schema,
             url: storeURL,
-            cloudKitDatabase: .private("iCloud.uk.co.adam-young.Movies")
+            cloudKitDatabase: .private("iCloud.uk.co.adam-young.Popcorn")
         )
 
         do {

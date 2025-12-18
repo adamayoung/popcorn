@@ -21,6 +21,7 @@ let package = Package(
     dependencies: [
         .package(path: "../../../Contexts/PopcornConfiguration"),
         .package(path: "../../../Core/CoreDomain"),
+        .package(path: "../../../Platform/Observability"),
         .package(url: "https://github.com/adamayoung/TMDb.git", from: "13.4.0")
     ],
 
@@ -32,8 +33,13 @@ let package = Package(
                 .product(name: "ConfigurationDomain", package: "PopcornConfiguration"),
                 .product(name: "ConfigurationInfrastructure", package: "PopcornConfiguration"),
                 "CoreDomain",
+                "Observability",
                 "TMDb"
             ]
+        ),
+        .testTarget(
+            name: "PopcornConfigurationAdaptersTests",
+            dependencies: ["PopcornConfigurationAdapters"]
         )
     ]
 )
