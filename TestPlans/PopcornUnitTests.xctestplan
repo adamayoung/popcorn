@@ -1,7 +1,7 @@
 {
   "configurations" : [
     {
-      "id" : "5923BB00-6697-4BCB-949C-F6BDD82C0D57",
+      "id" : "F4DD7C9C-AD4C-4782-A597-A4686A9A80A1",
       "name" : "Configuration 1",
       "options" : {
 
@@ -9,9 +9,16 @@
     }
   ],
   "defaultOptions" : {
-
+    "testTimeoutsEnabled" : true
   },
   "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TVSeriesDetailsFeature",
+        "identifier" : "TVSeriesDetailsFeatureTests",
+        "name" : "TVSeriesDetailsFeatureTests"
+      }
+    },
     {
       "target" : {
         "containerPath" : "container:Contexts\/PopcornTrending",
@@ -28,6 +35,13 @@
     },
     {
       "target" : {
+        "containerPath" : "container:Core\/CoreDomain",
+        "identifier" : "CoreDomainTests",
+        "name" : "CoreDomainTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Contexts\/PopcornSearch",
         "identifier" : "SearchInfrastructureTests",
         "name" : "SearchInfrastructureTests"
@@ -38,6 +52,13 @@
         "containerPath" : "container:Contexts\/PopcornSearch",
         "identifier" : "SearchDomainTests",
         "name" : "SearchDomainTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TrendingTVSeriesFeature",
+        "identifier" : "TrendingTVSeriesFeatureTests",
+        "name" : "TrendingTVSeriesFeatureTests"
       }
     },
     {
@@ -63,6 +84,13 @@
     },
     {
       "target" : {
+        "containerPath" : "container:Platform\/FeatureFlags",
+        "identifier" : "FeatureFlagsTests",
+        "name" : "FeatureFlagsTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Contexts\/PopcornTrending",
         "identifier" : "TrendingApplicationTests",
         "name" : "TrendingApplicationTests"
@@ -70,9 +98,79 @@
     },
     {
       "target" : {
+        "containerPath" : "container:Core\/DesignSystem",
+        "identifier" : "DesignSystemTests",
+        "name" : "DesignSystemTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Popcorn.xcodeproj",
+        "identifier" : "664551922ECB7C2200250D87",
+        "name" : "PopcornTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TrendingMoviesFeature",
+        "identifier" : "TrendingMoviesFeatureTests",
+        "name" : "TrendingMoviesFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Adapters\/Contexts\/PopcornGamesCatalogAdapters",
+        "identifier" : "PopcornGamesCatalogAdaptersTests",
+        "name" : "PopcornGamesCatalogAdaptersTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/MovieDetailsFeature",
+        "identifier" : "MovieDetailsFeatureTests",
+        "name" : "MovieDetailsFeatureTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Contexts\/PopcornPeople",
         "identifier" : "PeopleApplicationTests",
         "name" : "PeopleApplicationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Platform\/Observability",
+        "identifier" : "ObservabilityTests",
+        "name" : "ObservabilityTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Adapters\/Platform\/FeatureFlagsAdapters",
+        "identifier" : "FeatureFlagsAdaptersTests",
+        "name" : "FeatureFlagsAdaptersTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/PlotRemixGameFeature",
+        "identifier" : "PlotRemixGameFeatureTests",
+        "name" : "PlotRemixGameFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Adapters\/Contexts\/PopcornPlotRemixGameAdapters",
+        "identifier" : "PopcornPlotRemixGameAdaptersTests",
+        "name" : "PopcornPlotRemixGameAdaptersTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/ExploreFeature",
+        "identifier" : "ExploreFeatureTests",
+        "name" : "ExploreFeatureTests"
       }
     },
     {
@@ -91,6 +189,13 @@
     },
     {
       "target" : {
+        "containerPath" : "container:Adapters\/Contexts\/PopcornPeopleAdapters",
+        "identifier" : "PopcornPeopleAdaptersTests",
+        "name" : "PopcornPeopleAdaptersTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Contexts\/PopcornTrending",
         "identifier" : "TrendingInfrastructureTests",
         "name" : "TrendingInfrastructureTests"
@@ -98,9 +203,23 @@
     },
     {
       "target" : {
+        "containerPath" : "container:Adapters\/Contexts\/PopcornTVSeriesAdapters",
+        "identifier" : "PopcornTVSeriesAdaptersTests",
+        "name" : "PopcornTVSeriesAdaptersTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Contexts\/PopcornGenres",
         "identifier" : "GenresApplicationTests",
         "name" : "GenresApplicationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Adapters\/Platform\/ObservabilityAdapters",
+        "identifier" : "ObservabilityAdaptersTests",
+        "name" : "ObservabilityAdaptersTests"
       }
     },
     {
@@ -119,6 +238,13 @@
     },
     {
       "target" : {
+        "containerPath" : "container:Adapters\/Contexts\/PopcornSearchAdapters",
+        "identifier" : "PopcornSearchAdaptersTests",
+        "name" : "PopcornSearchAdaptersTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Contexts\/PopcornGenres",
         "identifier" : "GenresDomainTests",
         "name" : "GenresDomainTests"
@@ -133,9 +259,23 @@
     },
     {
       "target" : {
+        "containerPath" : "container:Features\/MediaSearchFeature",
+        "identifier" : "MediaSearchFeatureTests",
+        "name" : "MediaSearchFeatureTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Contexts\/PopcornTVSeries",
         "identifier" : "TVSeriesDomainTests",
         "name" : "TVSeriesDomainTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Adapters\/Contexts\/PopcornConfigurationAdapters",
+        "identifier" : "PopcornConfigurationAdaptersTests",
+        "name" : "PopcornConfigurationAdaptersTests"
       }
     },
     {
@@ -175,9 +315,44 @@
     },
     {
       "target" : {
+        "containerPath" : "container:Platform\/DataPersistenceInfrastructure",
+        "identifier" : "DataPersistenceInfrastructureTests",
+        "name" : "DataPersistenceInfrastructureTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Contexts\/PopcornMovies",
         "identifier" : "MoviesApplicationTests",
         "name" : "MoviesApplicationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Adapters\/Contexts\/PopcornGenresAdapters",
+        "identifier" : "PopcornGenresAdaptersTests",
+        "name" : "PopcornGenresAdaptersTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TrendingPeopleFeature",
+        "identifier" : "TrendingPeopleFeatureTests",
+        "name" : "TrendingPeopleFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Platform\/Caching",
+        "identifier" : "CachingTests",
+        "name" : "CachingTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Adapters\/Contexts\/PopcornMoviesAdapters",
+        "identifier" : "PopcornMoviesAdaptersTests",
+        "name" : "PopcornMoviesAdaptersTests"
       }
     },
     {
@@ -206,6 +381,27 @@
         "containerPath" : "container:Contexts\/PopcornPeople",
         "identifier" : "PeopleInfrastructureTests",
         "name" : "PeopleInfrastructureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/GamesCatalogFeature",
+        "identifier" : "GamesCatalogFeatureTests",
+        "name" : "GamesCatalogFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/PersonDetailsFeature",
+        "identifier" : "PersonDetailsFeatureTests",
+        "name" : "PersonDetailsFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Adapters\/Contexts\/PopcornDiscoverAdapters",
+        "identifier" : "PopcornDiscoverAdaptersTests",
+        "name" : "PopcornDiscoverAdaptersTests"
       }
     },
     {

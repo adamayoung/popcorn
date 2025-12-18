@@ -38,6 +38,10 @@ let package = Package(
                 "Observability",
                 "TMDb"
             ]
+        ),
+        .testTarget(
+            name: "PopcornTVSeriesAdaptersTests",
+            dependencies: ["PopcornTVSeriesAdapters"]
         )
     ]
 )

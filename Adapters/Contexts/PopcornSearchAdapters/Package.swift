@@ -46,6 +46,10 @@ let package = Package(
                 "PopcornPeopleAdapters",
                 "TMDb"
             ]
+        ),
+        .testTarget(
+            name: "PopcornSearchAdaptersTests",
+            dependencies: ["PopcornSearchAdapters"]
         )
     ]
 )

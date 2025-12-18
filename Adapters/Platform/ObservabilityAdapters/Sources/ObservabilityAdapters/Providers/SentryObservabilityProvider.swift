@@ -40,7 +40,7 @@ struct SentryObservabilityProvider: ObservabilityProviding {
             options.enableMetricKit = true
             options.enableMetricKitRawPayload = true
 
-            options.debug = true  //config.isDebug
+            options.debug = config.isDebug
         }
 
         let user = User()

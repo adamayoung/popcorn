@@ -4,6 +4,7 @@
 # Xcode build products
 build/
 DerivedData/
+DerivedDataMCP/
 
 # Xcode user-specific files
 *.pbxuser
@@ -27,3 +28,7 @@ Configs/Secrets.xcconfig
 
 # Claude
 .claude/settings.local.json
+
+# MCP
+.spm
+.sandbox_home

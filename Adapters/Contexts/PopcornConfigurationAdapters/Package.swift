@@ -36,6 +36,10 @@ let package = Package(
                 "Observability",
                 "TMDb"
             ]
+        ),
+        .testTarget(
+            name: "PopcornConfigurationAdaptersTests",
+            dependencies: ["PopcornConfigurationAdapters"]
         )
     ]
 )

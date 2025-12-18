@@ -46,6 +46,10 @@ let package = Package(
                 "PopcornGenresAdapters",
                 "TMDb"
             ]
+        ),
+        .testTarget(
+            name: "PopcornPlotRemixGameAdaptersTests",
+            dependencies: ["PopcornPlotRemixGameAdapters"]
         )
     ]
 )

@@ -30,6 +30,10 @@ let package = Package(
                 "Observability",
                 .product(name: "Sentry", package: "sentry-cocoa")
             ]
+        ),
+        .testTarget(
+            name: "ObservabilityAdaptersTests",
+            dependencies: ["ObservabilityAdapters"]
         )
     ]
 )

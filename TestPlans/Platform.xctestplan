@@ -14,13 +14,6 @@
   "testTargets" : [
     {
       "target" : {
-        "containerPath" : "container:Platform\/DataPersistenceInfrastructure",
-        "identifier" : "DataPersistenceInfrastructureTests",
-        "name" : "DataPersistenceInfrastructureTests"
-      }
-    },
-    {
-      "target" : {
         "containerPath" : "container:Platform\/FeatureFlags",
         "identifier" : "FeatureFlagsTests",
         "name" : "FeatureFlagsTests"
@@ -31,6 +24,20 @@
         "containerPath" : "container:Platform\/Caching",
         "identifier" : "CachingTests",
         "name" : "CachingTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Platform\/DataPersistenceInfrastructure",
+        "identifier" : "DataPersistenceInfrastructureTests",
+        "name" : "DataPersistenceInfrastructureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Platform\/Observability",
+        "identifier" : "ObservabilityTests",
+        "name" : "ObservabilityTests"
       }
     }
   ],

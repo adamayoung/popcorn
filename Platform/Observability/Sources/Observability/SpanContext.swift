@@ -9,9 +9,19 @@ import Foundation
 
 public enum SpanContext {
 
+    /// Global provider for production use
+    nonisolated(unsafe) private static var _globalProvider: (any ObservabilityProviding)?
+
+    /// TaskLocal override for test isolation
+    @TaskLocal public static var _localProvider: (any ObservabilityProviding)?
+
     /// The observability provider that manages span context.
-    /// Set once during app initialization in ObservabilityService.init, then only read.
-    nonisolated(unsafe) public static var provider: (any ObservabilityProviding)?
+    /// In production, uses the global provider set via assignment.
+    /// In tests, can be overridden using $_localProvider.withValue() for isolation.
+    public static var provider: (any ObservabilityProviding)? {
+        get { _localProvider ?? _globalProvider }
+        set { _globalProvider = newValue }
+    }
 
     public static var current: (any Span)? {
         provider?.currentSpan()

@@ -30,6 +30,10 @@ let package = Package(
                 .product(name: "GamesCatalogComposition", package: "PopcornGamesCatalog"),
                 "FeatureFlags"
             ]
+        ),
+        .testTarget(
+            name: "PopcornGamesCatalogAdaptersTests",
+            dependencies: ["PopcornGamesCatalogAdapters"]
         )
     ]
 )
