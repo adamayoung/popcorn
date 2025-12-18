@@ -8,9 +8,10 @@
 import CoreDomain
 import Foundation
 import Observability
-@testable import TVSeriesApplication
 import TVSeriesDomain
 import Testing
+
+@testable import TVSeriesApplication
 
 @Suite("DefaultFetchTVSeriesDetailsUseCaseTests")
 struct DefaultFetchTVSeriesDetailsUseCaseTests {
@@ -70,8 +71,10 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
 
         // Assert
         #expect(mockSpan.startChildCallCount == 1)
-        #expect(mockSpan.startChildCalledWith[0].operation.value == SpanOperation.useCaseExecute.value)
-        #expect(mockSpan.startChildCalledWith[0].description == "FetchTVSeriesDetailsUseCase.execute")
+        #expect(
+            mockSpan.startChildCalledWith[0].operation.value == SpanOperation.useCaseExecute.value)
+        #expect(
+            mockSpan.startChildCalledWith[0].description == "FetchTVSeriesDetailsUseCase.execute")
     }
 
     // MARK: - Test 3: Execute Sets TV Series ID on Span
@@ -154,11 +157,13 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
         )
 
         // Act & Assert
-        await #expect(performing: {
-            try await useCase.execute(id: 200)
-        }, throws: { error in
-            error is FetchTVSeriesDetailsError
-        })
+        await #expect(
+            performing: {
+                try await useCase.execute(id: 200)
+            },
+            throws: { error in
+                error is FetchTVSeriesDetailsError
+            })
     }
 
     // MARK: - Test 6: Repository Error Sets Error on Span and Finishes with InternalError
@@ -182,14 +187,15 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
         )
 
         // Act
-        await #expect(performing: {
-            try await SpanContext.$_localProvider.withValue(mockProvider) {
-                try await useCase.execute(id: 300)
-            }
-        }, throws: { _ in true })
+        await #expect(
+            performing: {
+                try await SpanContext.$_localProvider.withValue(mockProvider) {
+                    try await useCase.execute(id: 300)
+                }
+            }, throws: { _ in true })
 
         // Assert
-        #expect(mockSpan.setDataCallCount >= 2) // tv_series_id + error
+        #expect(mockSpan.setDataCallCount >= 2)  // tv_series_id + error
         let errorEntry = mockSpan.setDataCalledWith.first(where: { $0.key == "error" })
         #expect(errorEntry != nil)
         #expect(mockSpan.finishCallCount == 1)
@@ -218,13 +224,15 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
         )
 
         // Act & Assert
-        await #expect(performing: {
-            try await SpanContext.$_localProvider.withValue(mockProvider) {
-                try await useCase.execute(id: 400)
-            }
-        }, throws: { error in
-            error is FetchTVSeriesDetailsError
-        })
+        await #expect(
+            performing: {
+                try await SpanContext.$_localProvider.withValue(mockProvider) {
+                    try await useCase.execute(id: 400)
+                }
+            },
+            throws: { error in
+                error is FetchTVSeriesDetailsError
+            })
         #expect(mockSpan.finishCalledWithStatus[0] == .internalError)
     }
 
@@ -239,7 +247,7 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
         mockRepository.imagesForTVSeriesStub = .success(Self.mockImageCollection(id: 500))
         mockAppConfigProvider.appConfigurationStub = .success(Self.mockAppConfiguration())
 
-        SpanContext.provider = nil // Explicitly nil
+        SpanContext.provider = nil  // Explicitly nil
 
         let useCase = DefaultFetchTVSeriesDetailsUseCase(
             repository: mockRepository,
@@ -270,14 +278,13 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
         ImageCollection(
             id: id,
             posterPaths: [
-                URL(string: "/poster1.jpg")!,
-                URL(string: "/poster2.jpg")!
+                [URL(string: "/poster1.jpg"), URL(string: "/poster2.jpg")].compactMap { $0 }
             ],
             backdropPaths: [
-                URL(string: "/back1.jpg")!
+                [URL(string: "/back1.jpg")].compactMap { $0 }
             ],
             logoPaths: [
-                URL(string: "/logo1.jpg")!
+                [URL(string: "/logo1.jpg")].compactMap { $0 }
             ]
         )
     }

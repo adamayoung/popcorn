@@ -17,6 +17,8 @@ xcuserdata/
 # Swift Package Manager
 .build/
 .swiftpm/
+**/Package.resolved
+Popcorn.xcodeproj/**/swiftpm/Package.resolved
 
 # Archives & symbols
 *.ipa

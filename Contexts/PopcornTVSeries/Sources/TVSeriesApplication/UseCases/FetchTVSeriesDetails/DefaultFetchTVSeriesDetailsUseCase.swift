@@ -46,7 +46,7 @@ final class DefaultFetchTVSeriesDetailsUseCase: FetchTVSeriesDetailsUseCase {
             span?.finish()
             return result
         } catch let error {
-            span?.setData(key: "error", value: error.localizedDescription)
+            span?.setData(error: error)
             span?.finish(status: .internalError)
             throw FetchTVSeriesDetailsError(error)
         }

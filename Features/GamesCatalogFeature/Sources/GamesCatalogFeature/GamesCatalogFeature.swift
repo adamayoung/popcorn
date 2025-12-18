@@ -5,13 +5,16 @@
 //  Created by Adam Young on 09/12/2025.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import Foundation
+import Observability
 
 @Reducer
 public struct GamesCatalogFeature: Sendable {
 
     @Dependency(\.gamesCatalogClient) private var gamesCatalogClient
+    @Dependency(\.observability) private var observability
 
     @ObservableState
     public struct State {
@@ -94,11 +97,19 @@ extension GamesCatalogFeature {
 
     private func handleFetchGames(state: inout State) -> EffectOf<Self> {
         .run { send in
+            let transaction = observability.startTransaction(
+                name: "FetchGames",
+                operation: .uiAction
+            )
+
             do {
                 let games = try await gamesCatalogClient.fetchGames()
                 let snapshot = ViewSnapshot(games: games)
+                transaction.finish()
                 await send(.loaded(snapshot))
             } catch let error {
+                transaction.setData(error: error)
+                transaction.finish(status: .internalError)
                 await send(.loadFailed(error))
             }
         }

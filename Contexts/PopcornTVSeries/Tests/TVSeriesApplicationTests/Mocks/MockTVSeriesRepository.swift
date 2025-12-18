@@ -34,7 +34,9 @@ final class MockTVSeriesRepository: TVSeriesRepository, @unchecked Sendable {
     var imagesForTVSeriesCalledWith: [Int] = []
     var imagesForTVSeriesStub: Result<ImageCollection, TVSeriesRepositoryError>?
 
-    func images(forTVSeries tvSeriesID: Int) async throws(TVSeriesRepositoryError) -> ImageCollection {
+    func images(forTVSeries tvSeriesID: Int) async throws(TVSeriesRepositoryError)
+        -> ImageCollection
+    {
         imagesForTVSeriesCallCount += 1
         imagesForTVSeriesCalledWith.append(tvSeriesID)
 

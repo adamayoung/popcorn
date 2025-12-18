@@ -5,6 +5,7 @@
 //  Created by Adam Young on 21/11/2025.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import Foundation
 import OSLog
@@ -159,7 +160,7 @@ extension ExploreFeature {
                 transaction.finish()
                 await send(.loaded(snapshot))
             } catch {
-                transaction.setData(key: "error", value: error.localizedDescription)
+                transaction.setData(error: error)
                 transaction.finish(status: .internalError)
                 Self.logger.error("Failed fetching Explore: \(error.localizedDescription)")
                 await send(.loadFailed(error))

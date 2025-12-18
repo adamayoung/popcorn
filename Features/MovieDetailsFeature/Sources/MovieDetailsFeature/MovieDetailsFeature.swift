@@ -5,13 +5,16 @@
 //  Created by Adam Young on 17/11/2025.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import Foundation
+import Observability
 
 @Reducer
 public struct MovieDetailsFeature: Sendable {
 
     @Dependency(\.movieDetailsClient) private var movieDetailsClient
+    @Dependency(\.observability) private var observability
 
     @ObservableState
     public struct State: Sendable {
@@ -76,6 +79,8 @@ public struct MovieDetailsFeature: Sendable {
         case loaded(ViewSnapshot)
         case loadFailed(Error)
         case toggleOnWatchlist
+        case toggleOnWatchlistFailed(Error)
+        case toggleOnWatchlistCompleted
         case navigate(Navigation)
     }
 
@@ -92,6 +97,7 @@ public struct MovieDetailsFeature: Sendable {
                 return .run { send in
                     await send(.updateFeatureFlags)
                 }
+
             case .updateFeatureFlags:
                 state.isWatchlistEnabled = (try? movieDetailsClient.isWatchlistEnabled()) ?? false
                 return .none
@@ -118,7 +124,13 @@ public struct MovieDetailsFeature: Sendable {
                     return .none
                 }
 
-                return handleToggleOnWatchlist(&state)
+                return handleToggleMovieOnWatchlist(&state)
+
+            case .toggleOnWatchlistFailed:
+                return .none
+
+            case .toggleOnWatchlistCompleted:
+                return .none
 
             default:
                 return .none
@@ -191,9 +203,23 @@ extension MovieDetailsFeature {
         }
     }
 
-    private func handleToggleOnWatchlist(_ state: inout State) -> EffectOf<Self> {
+    private func handleToggleMovieOnWatchlist(_ state: inout State) -> EffectOf<Self> {
         .run { [state] send in
-            try await movieDetailsClient.toggleOnWatchlist(state.movieID)
+            let transaction = observability.startTransaction(
+                name: "ToggleMovieOnWatchlist",
+                operation: .uiAction
+            )
+            transaction.setData(key: "movie_id", value: state.movieID)
+
+            do {
+                try await movieDetailsClient.toggleOnWatchlist(state.movieID)
+                transaction.finish()
+                await send(.toggleOnWatchlistCompleted)
+            } catch let error {
+                transaction.setData(error: error)
+                transaction.finish(status: .internalError)
+                await send(.toggleOnWatchlistFailed(error))
+            }
         }
     }
 }

@@ -5,14 +5,17 @@
 //  Created by Adam Young on 19/11/2025.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import Foundation
 import OSLog
+import Observability
 
 @Reducer
 public struct TrendingPeopleFeature: Sendable {
 
-    @Dependency(\.trendingPeople) private var trendingPeople: TrendingPeopleClient
+    @Dependency(\.trendingPeople) private var trendingPeople
+    @Dependency(\.observability) private var observability
 
     private static let logger = Logger(
         subsystem: "TrendingPeopleFeature",
@@ -60,10 +63,18 @@ extension TrendingPeopleFeature {
 
     fileprivate func handleFetchTrendingPeople() -> EffectOf<Self> {
         .run { send in
+            let transaction = observability.startTransaction(
+                name: "FetchTrendingPeople",
+                operation: .uiAction
+            )
+
             do {
                 let people = try await trendingPeople.fetch()
+                transaction.finish()
                 await send(.trendingPeopleLoaded(people))
-            } catch {
+            } catch let error {
+                transaction.setData(error: error)
+                transaction.finish(status: .internalError)
                 Self.logger.error("Failed fetching trending people: \(error.localizedDescription)")
             }
         }

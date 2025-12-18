@@ -31,7 +31,7 @@ final class TMDbConfigurationRemoteDataSource: ConfigurationRemoteDataSource {
         do {
             tmdbAPIConfiguration = try await configurationService.apiConfiguration()
         } catch let error {
-            span?.setData(key: "error", value: error.localizedDescription)
+            span?.setData(error: error)
             span?.finish(status: .internalError)
             throw ConfigurationRepositoryError(error)
         }

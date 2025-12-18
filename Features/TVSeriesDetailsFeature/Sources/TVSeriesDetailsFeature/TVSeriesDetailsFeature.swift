@@ -114,7 +114,7 @@ extension TVSeriesDetailsFeature {
                 transaction.finish()
                 await send(.loaded(snapshot))
             } catch {
-                transaction.setData(key: "error", value: error.localizedDescription)
+                transaction.setData(error: error)
                 transaction.finish(status: .internalError)
                 Self.logger.error("Failed fetching TV series: \(error.localizedDescription)")
                 await send(.loadFailed(error))
