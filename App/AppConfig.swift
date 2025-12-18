@@ -12,21 +12,25 @@ import Observability
 enum AppConfig {
 
     enum Sentry {
-        static let dsn: String = {
+        static let dsn: String? = {
             AppConfig.resolveValue(
                 infoPlistKey: "SentryDSN",
                 environmentKey: "SENTRY_DSN"
             )
         }()
 
-        static let environment: ObservabilityConfiguration.Environment = {
-            let raw = AppConfig.resolveValue(
-                infoPlistKey: "SentryEnvironment",
-                environmentKey: "SENTRY_ENVIRONMENT"
-            )
+        static let environment: ObservabilityConfiguration.Environment? = {
+            guard
+                let raw = AppConfig.resolveValue(
+                    infoPlistKey: "SentryEnvironment",
+                    environmentKey: "SENTRY_ENVIRONMENT"
+                )
+            else {
+                return nil
+            }
 
             guard let value = ObservabilityConfiguration.Environment(rawValue: raw) else {
-                fatalError("Invalid SENTRY_ENVIRONMENT: \(raw)")
+                return nil
             }
 
             return value
@@ -34,21 +38,25 @@ enum AppConfig {
     }
 
     enum Statsig {
-        static let sdkKey: String = {
+        static let sdkKey: String? = {
             AppConfig.resolveValue(
                 infoPlistKey: "StatsigSDKKey",
                 environmentKey: "STATSIG_SDK_KEY"
             )
         }()
 
-        static let environment: FeatureFlagsConfiguration.Environment = {
-            let raw = AppConfig.resolveValue(
-                infoPlistKey: "StatsigEnvironment",
-                environmentKey: "STATSIG_ENVIRONMENT"
-            )
+        static let environment: FeatureFlagsConfiguration.Environment? = {
+            guard
+                let raw = AppConfig.resolveValue(
+                    infoPlistKey: "StatsigEnvironment",
+                    environmentKey: "STATSIG_ENVIRONMENT"
+                )
+            else {
+                return nil
+            }
 
             guard let value = FeatureFlagsConfiguration.Environment(rawValue: raw) else {
-                fatalError("Invalid STATSIG_ENVIRONMENT: \(raw)")
+                return nil
             }
 
             return value
@@ -59,7 +67,7 @@ enum AppConfig {
 
 extension AppConfig {
 
-    private static func resolveValue(infoPlistKey: String, environmentKey: String) -> String {
+    private static func resolveValue(infoPlistKey: String, environmentKey: String) -> String? {
         if let env = ProcessInfo.processInfo.environment[environmentKey],
             !env.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
         {
@@ -72,7 +80,7 @@ extension AppConfig {
             return value
         }
 
-        fatalError("Missing \(environmentKey)")
+        return nil
     }
 
 }

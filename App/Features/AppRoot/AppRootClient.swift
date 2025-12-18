@@ -40,9 +40,20 @@ extension AppRootClient: DependencyKey {
         let userID = AppInstallationIdentifier.userID()
         return AppRootClient(
             setupObservability: {
+                guard let dsn = AppConfig.Sentry.dsn else {
+                    Self.logger.warning("Sentry DSN not configured. Disabling observability.")
+                    return
+                }
+
+                guard let environment = AppConfig.Sentry.environment else {
+                    Self.logger.warning(
+                        "Sentry environment not configured. Disabling observability.")
+                    return
+                }
+
                 let config = ObservabilityConfiguration(
-                    dsn: AppConfig.Sentry.dsn,
-                    environment: AppConfig.Sentry.environment,
+                    dsn: dsn,
+                    environment: environment,
                     userID: userID
                 )
 
@@ -50,13 +61,25 @@ extension AppRootClient: DependencyKey {
                     try await observabilityInitialiser.start(config)
                 } catch let error {
                     Self.logger.error(
-                        "Observability failed to initialise: \(error.localizedDescription)")
+                        "Observability failed to initialise: \(error.localizedDescription, privacy: .public)"
+                    )
                 }
             },
             setupFeatureFlags: {
+                guard let apiKey = AppConfig.Statsig.sdkKey else {
+                    Self.logger.warning("Statsig SDK key not configured. Disabling feature flags.")
+                    return
+                }
+
+                guard let environment = AppConfig.Statsig.environment else {
+                    Self.logger.warning(
+                        "Statsig environment not configured. Disabling feature flags.")
+                    return
+                }
+
                 let config = FeatureFlagsConfiguration(
-                    apiKey: AppConfig.Statsig.sdkKey,
-                    environment: AppConfig.Statsig.environment,
+                    apiKey: apiKey,
+                    environment: environment,
                     userID: userID
                 )
 
@@ -65,6 +88,7 @@ extension AppRootClient: DependencyKey {
                 } catch let error {
                     Self.logger.error(
                         "Feature flags failed to initialise: \(error.localizedDescription)")
+                    throw error
                 }
             },
             isExploreEnabled: {

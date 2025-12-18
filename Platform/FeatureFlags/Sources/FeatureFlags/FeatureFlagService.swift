@@ -15,6 +15,10 @@ struct FeatureFlagService: FeatureFlagging, FeatureFlagInitialising {
         category: "FeatureFlagService"
     )
 
+    var isInitialised: Bool {
+        provider.isInitialized
+    }
+
     private let provider: any FeatureFlagProviding
 
     init(provider: some FeatureFlagProviding) {
@@ -30,7 +34,7 @@ struct FeatureFlagService: FeatureFlagging, FeatureFlagInitialising {
             flagStatuses.append("\(featureFlag.rawValue): \(value)")
         }
 
-        Self.logger.info("Feature flags:\n\(flagStatuses.joined(separator: "\n"))")
+        Self.logger.info("Feature flags\n-------------\n\(flagStatuses.joined(separator: "\n"))")
     }
 
     func isEnabled(_ flag: FeatureFlag) -> Bool {

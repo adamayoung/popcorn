@@ -17,6 +17,10 @@ struct StatsigFeatureFlagProvider: FeatureFlagProviding {
         category: "StatsigFeatureFlagProvider"
     )
 
+    var isInitialized: Bool {
+        Statsig.isInitialized()
+    }
+
     func start(_ config: FeatureFlagsConfiguration) async throws {
         try await withCheckedThrowingContinuation {
             (continuation: CheckedContinuation<Void, Error>) in

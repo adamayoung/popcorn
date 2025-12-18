@@ -32,8 +32,8 @@ struct SentryObservabilityProvider: ObservabilityProviding {
 
             options.tracesSampleRate = config.tracesSampleRate
 
-            options.sessionReplay.maskAllText = false
-            options.sessionReplay.maskAllImages = false
+            options.sessionReplay.maskAllText = true
+            options.sessionReplay.maskAllImages = true
             options.sessionReplay.sessionSampleRate = config.sessionReplaySessionSampleRate
             options.sessionReplay.onErrorSampleRate = config.sessionReplayOnErrorSampleRate
 
