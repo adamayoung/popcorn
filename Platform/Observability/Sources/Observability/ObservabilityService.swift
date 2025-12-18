@@ -37,6 +37,10 @@ struct ObservabilityService: Observing, ObservabilityInitialising {
         provider.capture(error: error)
     }
 
+    func capture(error: any Error, extras: [String: any Sendable]) {
+        provider.capture(error: error, extras: extras)
+    }
+
     func capture(message: String) {
         provider.capture(message: message)
     }

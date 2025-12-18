@@ -6,14 +6,21 @@
 //
 
 import Foundation
+import Observability
 import PlotRemixGameDomain
 
 package final class PlotRemixGameInfrastructureFactory {
 
-    package init() {}
+    private let observability: any Observing
+
+    package init(observability: some Observing) {
+        self.observability = observability
+    }
 
     package func makeSynopsisRiddleGenerator() -> some SynopsisRiddleGenerating {
-        FoundationModelsSynopsisRiddleGenerator()
+        FoundationModelsSynopsisRiddleGenerator(
+            observability: observability
+        )
     }
 
 }

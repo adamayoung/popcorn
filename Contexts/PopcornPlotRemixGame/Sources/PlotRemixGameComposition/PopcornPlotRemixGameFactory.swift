@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Observability
 import PlotRemixGameApplication
 import PlotRemixGameDomain
 import PlotRemixGameInfrastructure
@@ -17,9 +18,12 @@ public struct PopcornPlotRemixGameFactory {
     public init(
         appConfigurationProvider: some AppConfigurationProviding,
         movieProvider: some MovieProviding,
-        genreProvider: some GenreProviding
+        genreProvider: some GenreProviding,
+        observability: some Observing
     ) {
-        let infrastructureFactory = PlotRemixGameInfrastructureFactory()
+        let infrastructureFactory = PlotRemixGameInfrastructureFactory(
+            observability: observability
+        )
         let synopsisRiddleGenerator = infrastructureFactory.makeSynopsisRiddleGenerator()
         self.applicationFactory = PlotRemixGameApplicationFactory(
             appConfigurationProvider: appConfigurationProvider,

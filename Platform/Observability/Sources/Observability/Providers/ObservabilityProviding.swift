@@ -15,6 +15,8 @@ public protocol ObservabilityProviding: Sendable {
 
     func capture(error: any Error)
 
+    func capture(error: any Error, extras: [String: any Sendable])
+
     func capture(message: String)
 
     func setUser(id: String?, email: String?, username: String?)

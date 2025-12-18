@@ -35,6 +35,8 @@ struct SentryObservabilityProvider: ObservabilityProviding {
 
             options.tracesSampleRate = config.tracesSampleRate
 
+            options.sessionReplay.maskAllText = false
+            options.sessionReplay.maskAllImages = false
             options.sessionReplay.sessionSampleRate = config.sessionReplaySessionSampleRate
             options.sessionReplay.onErrorSampleRate = config.sessionReplayOnErrorSampleRate
 
@@ -60,6 +62,12 @@ struct SentryObservabilityProvider: ObservabilityProviding {
 
     func capture(error: any Error) {
         SentrySDK.capture(error: error)
+    }
+
+    func capture(error: any Error, extras: [String: any Sendable]) {
+        SentrySDK.capture(error: error) { scope in
+            scope.setExtras(extras)
+        }
     }
 
     func capture(message: String) {

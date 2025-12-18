@@ -10,6 +10,7 @@ import DiscoverApplication
 import Foundation
 import GenresApplication
 import MoviesApplication
+import Observability
 import PlotRemixGameComposition
 import TMDb
 
@@ -19,17 +20,20 @@ public final class PopcornPlotRemixGameAdaptersFactory {
     private let fetchDiscoverMoviesUseCase: any FetchDiscoverMoviesUseCase
     private let fetchSimilarMoviesUseCase: any FetchSimilarMoviesUseCase
     private let fetchMovieGenresUseCase: any FetchMovieGenresUseCase
+    private let observability: any Observing
 
     public init(
         fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase,
         fetchDiscoverMoviesUseCase: some FetchDiscoverMoviesUseCase,
         fetchSimilarMoviesUseCase: some FetchSimilarMoviesUseCase,
-        fetchMovieGenresUseCase: some FetchMovieGenresUseCase
+        fetchMovieGenresUseCase: some FetchMovieGenresUseCase,
+        observability: any Observing
     ) {
         self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
         self.fetchDiscoverMoviesUseCase = fetchDiscoverMoviesUseCase
         self.fetchSimilarMoviesUseCase = fetchSimilarMoviesUseCase
         self.fetchMovieGenresUseCase = fetchMovieGenresUseCase
+        self.observability = observability
     }
 
     public func makePlotRemixGameFactory() -> PopcornPlotRemixGameFactory {
@@ -46,6 +50,7 @@ public final class PopcornPlotRemixGameAdaptersFactory {
             appConfigurationProvider: appConfigurationProvider,
             movieProvider: movieProvider,
             genreProvider: genreProvider,
+            observability: observability
         )
     }
 

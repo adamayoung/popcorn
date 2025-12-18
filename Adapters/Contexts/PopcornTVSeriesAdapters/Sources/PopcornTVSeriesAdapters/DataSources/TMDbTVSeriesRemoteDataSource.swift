@@ -58,14 +58,6 @@ final class TMDbTVSeriesRemoteDataSource: TVSeriesRemoteDataSource {
             operation: "http.client",
             description: "GET /3/tv/\(tvSeriesID)/images"
         )
-        httpSpan?.setData([
-            "http.method": "GET",
-            "http.url": "/3/tv/\(tvSeriesID)/images",
-            "service": "tmdb",
-            "entity_type": "imageCollection",
-            "entity_id": tvSeriesID,
-            "language": "en"
-        ])
 
         let tmdbImageCollection: TMDb.ImageCollection
         do {

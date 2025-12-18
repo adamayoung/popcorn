@@ -9,6 +9,7 @@ import Foundation
 import FoundationModels
 import OSLog
 import PlotRemixGameDomain
+import Observability
 
 final class FoundationModelsSynopsisRiddleGenerator: SynopsisRiddleGenerating {
 
@@ -25,7 +26,11 @@ final class FoundationModelsSynopsisRiddleGenerator: SynopsisRiddleGenerating {
             })
     }()
 
-    init() {}
+    private let observability: any Observing
+
+    init(observability: some Observing) {
+        self.observability = observability
+    }
 
     func riddle(
         for movie: Movie,
@@ -35,17 +40,25 @@ final class FoundationModelsSynopsisRiddleGenerator: SynopsisRiddleGenerating {
         let session = LanguageModelSession(instructions: instructions)
 
         let prompt = """
-                Rewrite the following movie synopsis according to your style.
-                
-                Title: \(movie.title)
-                Synopsis:
-                \(movie.overview)
-            """
+        Rewrite the following movie synopsis according to your style.
+        
+        Title: \(movie.title)
+        Synopsis:
+        \(movie.overview)
+        """
 
         let response: LanguageModelSession.Response<String>
         do {
             response = try await session.respond(to: prompt)
-        } catch {
+        } catch(let error) {
+            observability.capture(
+                error: error,
+                extras: [
+                    "movie_id": movie.id,
+                    "movie_title": movie.title,
+                    "prompt": prompt
+                ]
+            )
             Self.logger.error(
                 "Failed to create riddle for '\(movie.title)': \(error.localizedDescription)")
             throw .generation(error)
