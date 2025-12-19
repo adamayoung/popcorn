@@ -14,13 +14,10 @@ import Observability
 @Reducer
 public struct PersonDetailsFeature: Sendable {
 
+    private static let logger = Logger.personDetails
+
     @Dependency(\.personDetails) private var personDetails
     @Dependency(\.observability) private var observability
-
-    private static let logger = Logger(
-        subsystem: "PersonDetailsFeature",
-        category: "PersonDetailsFeatureReducer"
-    )
 
     @ObservableState
     public struct State: Sendable {
@@ -103,6 +100,9 @@ extension PersonDetailsFeature {
 
     fileprivate func handleFetchPerson(_ state: inout State) -> EffectOf<Self> {
         .run { [state] send in
+            Self.logger.info(
+                "User fetching person [personID: \"\(state.personID, privacy: .private)\"]")
+
             let transaction = observability.startTransaction(
                 name: "FetchPerson",
                 operation: .uiAction
@@ -115,11 +115,14 @@ extension PersonDetailsFeature {
                 transaction.finish()
                 await send(.loaded(snapshot))
             } catch {
-                Self.logger.error("Failed to fetch person: \(error, privacy: .public)")
+                Self.logger.error(
+                    "Failed fetching person details: [personID: \"\(state.personID, privacy: .private)\"] \(error.localizedDescription, privacy: .public)"
+                )
                 transaction.setData(error: error)
                 transaction.finish(status: .internalError)
                 await send(.loadFailed(error))
             }
         }
     }
+
 }

@@ -11,7 +11,7 @@ import SwiftUI
 struct PersonCarousel: View {
 
     var people: [PersonPreview]
-    var transitionNamespace: Namespace.ID
+    var transitionNamespace: Namespace.ID?
     var didSelectPerson: (PersonPreview, String) -> Void
 
     var body: some View {

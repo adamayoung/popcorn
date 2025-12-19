@@ -8,10 +8,13 @@
 import AppDependencies
 import ComposableArchitecture
 import Foundation
+import OSLog
 import Observability
 
 @Reducer
 public struct MovieDetailsFeature: Sendable {
+
+    private static let logger = Logger.movieDetails
 
     @Dependency(\.movieDetailsClient) private var movieDetailsClient
     @Dependency(\.observability) private var observability
@@ -146,6 +149,8 @@ extension MovieDetailsFeature {
 
     private func handleStreamAll(_ state: inout State) -> EffectOf<Self> {
         .run { [state, movieDetailsClient] send in
+            Self.logger.info("User streaming movie")
+
             do {
                 actor Snapshot {
                     var movie: Movie?
@@ -198,6 +203,8 @@ extension MovieDetailsFeature {
                     try await group.waitForAll()
                 }
             } catch let error {
+                Self.logger.error(
+                    "Failed streaming movie: \(error.localizedDescription, privacy: .public)")
                 await send(.loadFailed(error))
             }
         }
@@ -205,6 +212,9 @@ extension MovieDetailsFeature {
 
     private func handleToggleMovieOnWatchlist(_ state: inout State) -> EffectOf<Self> {
         .run { [state] send in
+            Self.logger.info(
+                "User toggling movie on watchlist [movieID: \(state.movieID, privacy: .private)]")
+
             let transaction = observability.startTransaction(
                 name: "ToggleMovieOnWatchlist",
                 operation: .uiAction
@@ -216,6 +226,9 @@ extension MovieDetailsFeature {
                 transaction.finish()
                 await send(.toggleOnWatchlistCompleted)
             } catch let error {
+                Self.logger.error(
+                    "Failed toggling movie on watchlist [movieID: \(state.movieID, privacy: .private)]: \(error.localizedDescription, privacy: .public)"
+                )
                 transaction.setData(error: error)
                 transaction.finish(status: .internalError)
                 await send(.toggleOnWatchlistFailed(error))

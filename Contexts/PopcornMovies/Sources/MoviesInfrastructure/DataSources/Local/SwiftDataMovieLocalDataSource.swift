@@ -14,10 +14,7 @@ import SwiftData
 @ModelActor
 actor SwiftDataMovieLocalDataSource: MovieLocalDataSource, SwiftDataFetchStreaming, Sendable {
 
-    private static let logger = Logger(
-        subsystem: "PopcornMovies",
-        category: "SwiftDataMovieLocalDataSource"
-    )
+    private static let logger = Logger.moviesInfrastructure
 
     private var ttl: TimeInterval = 60 * 60 * 24  // 1 day
 

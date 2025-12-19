@@ -11,11 +11,6 @@ import OSLog
 
 public final class FeatureFlagsAdaptersFactory {
 
-    private static let logger = Logger(
-        subsystem: "FeatureFlagsAdapters",
-        category: "FeatureFlagsAdaptersFactory"
-    )
-
     public init() {}
 
     public func makeFeatureFlagsFactory() -> FeatureFlagsFactory {

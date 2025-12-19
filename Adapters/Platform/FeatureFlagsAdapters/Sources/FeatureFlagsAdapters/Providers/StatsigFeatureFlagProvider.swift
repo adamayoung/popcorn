@@ -12,10 +12,7 @@ import Statsig
 
 struct StatsigFeatureFlagProvider: FeatureFlagProviding {
 
-    private static let logger = Logger(
-        subsystem: "FeatureFlagsAdapters",
-        category: "StatsigFeatureFlagProvider"
-    )
+    private static let logger = Logger.featureFlags
 
     var isInitialized: Bool {
         Statsig.isInitialized()
@@ -35,13 +32,14 @@ struct StatsigFeatureFlagProvider: FeatureFlagProviding {
                 completion: { error in
                     if let error {
                         Self.logger.error(
-                            "Statsig failed to initialise: \(error.localizedDescription)")
+                            "Statsig failed to initialise: \(error.localizedDescription, privacy: .public)"
+                        )
                         continuation.resume(throwing: error)
                         return
                     }
 
-                    Self.logger.trace(
-                        "Statsig initialised: (user: \(config.userID), environment: \(config.environment.rawValue))"
+                    Self.logger.info(
+                        "Statsig initialised: (user: \(config.userID, privacy: .private), environment: \(config.environment.rawValue, privacy: .public))"
                     )
                     continuation.resume()
                 }

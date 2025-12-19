@@ -17,7 +17,7 @@ struct TVSeriesCarousel: View {
 
     var tvSeries: [TVSeriesPreview]
     var type: CarouselType
-    var transitionNamespace: Namespace.ID
+    var transitionNamespace: Namespace.ID?
     var didSelectTVSeries: (TVSeriesPreview, String) -> Void
 
     var body: some View {

@@ -15,11 +15,6 @@ import Observability
 @DependencyClient
 struct AppRootClient: Sendable {
 
-    private static let logger = Logger(
-        subsystem: "Popcorn",
-        category: "AppRootClient"
-    )
-
     var setupObservability: @Sendable () async throws -> Void
     var setupFeatureFlags: @Sendable () async throws -> Void
 
@@ -30,6 +25,8 @@ struct AppRootClient: Sendable {
 }
 
 extension AppRootClient: DependencyKey {
+
+    private static let logger = Logger.appRoot
 
     static var liveValue: AppRootClient {
         @Dependency(\.featureFlags) var featureFlags
@@ -87,7 +84,8 @@ extension AppRootClient: DependencyKey {
                     try await featureFlagsInitialiser.start(config)
                 } catch let error {
                     Self.logger.error(
-                        "Feature flags failed to initialise: \(error.localizedDescription)")
+                        "Feature flags failed to initialise: \(error.localizedDescription, privacy: .public)"
+                    )
                     throw error
                 }
             },

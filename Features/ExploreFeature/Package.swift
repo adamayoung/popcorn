@@ -26,7 +26,11 @@ let package = Package(
         .package(path: "../../Contexts/PopcornMovies"),
         .package(path: "../../Platform/Observability"),
         .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1")
+            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"),
+        .package(
+            url: "https://github.com/pointfreeco/swift-snapshot-testing",
+            from: "1.18.7"
+        )
     ],
 
     targets: [
@@ -44,7 +48,17 @@ let package = Package(
         ),
         .testTarget(
             name: "ExploreFeatureTests",
-            dependencies: ["ExploreFeature"]
+            dependencies: [
+                "ExploreFeature"
+            ]
+        ),
+        .testTarget(
+            name: "ExploreFeatureSnapshotTests",
+            dependencies: [
+                "ExploreFeature",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
+            ]
         )
     ]
 )

@@ -12,11 +12,11 @@ import SwiftUI
 public struct ExploreView: View {
 
     @Bindable var store: StoreOf<ExploreFeature>
-    private let namespace: Namespace.ID
+    private let namespace: Namespace.ID?
 
     public init(
         store: StoreOf<ExploreFeature>,
-        transitionNamespace: Namespace.ID
+        transitionNamespace: Namespace.ID? = nil
     ) {
         self._store = .init(store)
         self.namespace = transitionNamespace

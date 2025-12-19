@@ -10,10 +10,7 @@ import OSLog
 
 struct FeatureFlagService: FeatureFlagging, FeatureFlagInitialising {
 
-    private static let logger = Logger(
-        subsystem: "FeatureFlags",
-        category: "FeatureFlagService"
-    )
+    private static let logger = Logger.featureFlags
 
     var isInitialised: Bool {
         provider.isInitialized
@@ -33,8 +30,11 @@ struct FeatureFlagService: FeatureFlagging, FeatureFlagInitialising {
             let value = isEnabled(featureFlag)
             flagStatuses.append("\(featureFlag.rawValue): \(value)")
         }
+        flagStatuses.sort()
 
-        Self.logger.info("Feature flags\n-------------\n\(flagStatuses.joined(separator: "\n"))")
+        Self.logger.info(
+            "Feature flags\n-------------\n\(flagStatuses.joined(separator: "\n"), privacy: .public)"
+        )
     }
 
     func isEnabled(_ flag: FeatureFlag) -> Bool {

@@ -16,10 +16,7 @@ actor SwiftDataMovieImageLocalDataSource: MovieImageLocalDataSource, SwiftDataFe
     Sendable
 {
 
-    private static let logger = Logger(
-        subsystem: "PopcornMovies",
-        category: "SwiftDataMovieImageLocalDataSource"
-    )
+    private static let logger = Logger.moviesInfrastructure
 
     private var ttl: TimeInterval = 60 * 60 * 24  // 1 day
 

@@ -10,10 +10,7 @@ import OSLog
 
 struct ObservabilityService: Observing, ObservabilityInitialising {
 
-    private static let logger = Logger(
-        subsystem: "Observability",
-        category: "ObservabilityService"
-    )
+    private static let logger = Logger.observability
 
     private let provider: any ObservabilityProviding
 
@@ -26,7 +23,7 @@ struct ObservabilityService: Observing, ObservabilityInitialising {
         try await provider.start(config)
 
         Self.logger.info(
-            "Observability initialised: (environment: \(config.environment.rawValue), debug: \(config.isDebug))"
+            "Observability initialised: (environment: \(config.environment.rawValue, privacy: .public), debug: \(config.isDebug, privacy: .public))"
         )
     }
 

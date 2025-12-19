@@ -8,9 +8,12 @@
 import Caching
 import Foundation
 import MoviesDomain
+import OSLog
 import SwiftData
 
 package final class MoviesInfrastructureFactory {
+
+    private static let logger = Logger.moviesInfrastructure
 
     private static let modelContainer: ModelContainer = {
         let schema = Schema([
@@ -27,6 +30,8 @@ package final class MoviesInfrastructureFactory {
         do {
             return try ModelContainer(for: schema, configurations: [config])
         } catch let error {
+            logger.critical(
+                "Cannot configure ModelContainer: \(error.localizedDescription, privacy: .public)")
             fatalError(
                 "PopcornMovies: Cannot configure ModelContainer: \(error.localizedDescription)")
         }
@@ -47,6 +52,9 @@ package final class MoviesInfrastructureFactory {
         do {
             return try ModelContainer(for: schema, configurations: [config])
         } catch let error {
+            logger.critical(
+                "Cannot configure CloudKit ModelContainer: \(error.localizedDescription, privacy: .public)"
+            )
             fatalError(
                 "PopcornMovies: Cannot configure CloudKit ModelContainer: \(error.localizedDescription)"
             )

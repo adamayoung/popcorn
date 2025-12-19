@@ -13,10 +13,7 @@ import PlotRemixGameDomain
 
 final class FoundationModelsSynopsisRiddleGenerator: SynopsisRiddleGenerating {
 
-    private static let logger = Logger(
-        subsystem: "PopcornPlotRemixGame",
-        category: "FoundationModelsSynopsisRiddleGenerator"
-    )
+    private static let logger = Logger.plotRemixGameInfrastructure
 
     // Cache instruction phrases to avoid repeated computation
     private static let instructionPhrasesByTheme: [GameTheme: String] = {
@@ -60,7 +57,8 @@ final class FoundationModelsSynopsisRiddleGenerator: SynopsisRiddleGenerating {
                 ]
             )
             Self.logger.error(
-                "Failed to create riddle for '\(movie.title)': \(error.localizedDescription)")
+                "Failed to create riddle for '\(movie.title, privacy: .private)': \(error.localizedDescription, privacy: .public)"
+            )
             throw .generation(error)
         }
 
@@ -69,7 +67,8 @@ final class FoundationModelsSynopsisRiddleGenerator: SynopsisRiddleGenerating {
         // Validate response quality
         guard !content.isEmpty, content.count >= 20 else {
             Self.logger.warning(
-                "Received unusually short response for '\(movie.title)': '\(content)'")
+                "Received unusually short response  [movieID: \(movie.id, privacy: .private), content: \"\(content, privacy: .private)\""
+            )
             throw .generation(nil)
         }
 
