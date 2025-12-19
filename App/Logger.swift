@@ -11,7 +11,7 @@ import OSLog
 extension Logger {
 
     static let appRoot = Logger(
-        subsystem: Bundle.main.bundleIdentifier ?? "",
+        subsystem: Bundle.main.bundleIdentifier ?? "com.unknown.Popcorn",
         category: "AppRoot"
     )
 

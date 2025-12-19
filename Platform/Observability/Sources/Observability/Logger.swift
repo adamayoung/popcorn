@@ -11,7 +11,7 @@ import OSLog
 extension Logger {
 
     static let observability = Logger(
-        subsystem: Bundle.main.bundleIdentifier ?? "",
+        subsystem: Bundle.main.bundleIdentifier ?? "com.unknown.Popcorn",
         category: "Observability"
     )
 
