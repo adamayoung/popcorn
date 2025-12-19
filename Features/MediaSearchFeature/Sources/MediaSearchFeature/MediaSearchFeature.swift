@@ -136,7 +136,8 @@ public struct MediaSearchFeature: Sendable {
 
             case .genresAndSearchHistoryLoadFailed(let error):
                 Self.logger.error(
-                    "Failed loading genres and search history: \(error.localizedDescription)")
+                    "Failed loading genres and search history: \(error.localizedDescription, privacy: .public)"
+                )
                 effect = .none
 
             case .queryChanged(let query):
@@ -170,7 +171,8 @@ public struct MediaSearchFeature: Sendable {
                 effect = .none
 
             case .searchResultsLoadFailed(let error):
-                Self.logger.error("Failed searching: \(error.localizedDescription)")
+                Self.logger.error(
+                    "Failed searching: \(error.localizedDescription, privacy: .public)")
                 effect = .none
 
             case .navigate(.movieDetails(let movieID)):
@@ -234,7 +236,9 @@ extension MediaSearchFeature {
                 transaction.finish()
                 await send(.genresAndSearchHistoryLoaded(genresSnapshot, searchHistorySnapshot))
             } catch let error {
-                Self.logger.info("Failed fetching genres and search history")
+                Self.logger.error(
+                    "Failed fetching genres and search history: \(error.localizedDescription, privacy: .public)"
+                )
                 transaction.setData(error: error)
                 transaction.finish(status: .internalError)
                 await send(.genresAndSearchHistoryLoadFailed(error))

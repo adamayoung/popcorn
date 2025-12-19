@@ -32,7 +32,8 @@ struct StatsigFeatureFlagProvider: FeatureFlagProviding {
                 completion: { error in
                     if let error {
                         Self.logger.error(
-                            "Statsig failed to initialise: \(error.localizedDescription)")
+                            "Statsig failed to initialise: \(error.localizedDescription, privacy: .public)"
+                        )
                         continuation.resume(throwing: error)
                         return
                     }

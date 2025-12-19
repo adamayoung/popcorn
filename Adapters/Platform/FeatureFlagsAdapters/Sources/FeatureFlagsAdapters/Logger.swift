@@ -12,7 +12,7 @@ extension Logger {
 
     static let featureFlags = Logger(
         subsystem: Bundle.main.bundleIdentifier ?? "",
-        category: "FeatureFlahsAdapters"
+        category: "FeatureFlagsAdapters"
     )
 
 }

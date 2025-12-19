@@ -50,7 +50,8 @@ final class DefaultGeneratePlotRemixGameUseCase: GeneratePlotRemixGameUseCase {
             throw GeneratePlotRemixGameError(error)
         }
 
-        Self.logger.trace("Generating Plot Remix Game with \(movies.count) movies")
+        Self.logger.debug(
+            "Generating Plot Remix Game with \(movies.count, privacy: .public) movies")
         let signpostID = Self.signposter.makeSignpostID()
         let interval = Self.signposter.beginInterval("Generating Plot Remix Game", id: signpostID)
         let questions: [GameQuestion]
@@ -73,7 +74,7 @@ final class DefaultGeneratePlotRemixGameUseCase: GeneratePlotRemixGameUseCase {
 
                 var results: [GameQuestion] = []
                 for try await (movie, riddle, similarMovies) in taskGroup {
-                    Self.logger.trace("Riddle generated for '\(movie.title)'")
+                    Self.logger.debug("Riddle generated for '\(movie.title, privacy: .private)'")
                     Self.signposter.emitEvent("Riddle generated", id: signpostID)
 
                     let correctAnswer = AnswerOption(

@@ -84,7 +84,8 @@ extension AppRootClient: DependencyKey {
                     try await featureFlagsInitialiser.start(config)
                 } catch let error {
                     Self.logger.error(
-                        "Feature flags failed to initialise: \(error.localizedDescription)")
+                        "Feature flags failed to initialise: \(error.localizedDescription, privacy: .public)"
+                    )
                     throw error
                 }
             },

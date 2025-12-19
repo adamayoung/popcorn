@@ -187,7 +187,7 @@ extension PlotRemixGameFeature {
                     return
                 }
 
-                Self.logger.info(
+                Self.logger.error(
                     "Failed generating game [gameID: \(state.gameID, privacy: .private)]: \(error.localizedDescription, privacy: .public)"
                 )
                 transaction.setData(error: error)

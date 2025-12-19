@@ -12,7 +12,7 @@ extension Logger {
 
     static let plotRemixGameInfrastructure = Logger(
         subsystem: Bundle.main.bundleIdentifier ?? "",
-        category: "PlotRemixGameApplication"
+        category: "PlotRemixGameInfrastructure"
     )
 
 }

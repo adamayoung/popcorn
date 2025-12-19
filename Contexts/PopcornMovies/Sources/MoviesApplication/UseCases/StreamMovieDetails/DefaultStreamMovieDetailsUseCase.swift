@@ -32,7 +32,7 @@ final class DefaultStreamMovieDetailsUseCase: StreamMovieDetailsUseCase {
     }
 
     func stream(id: Int) async -> AsyncThrowingStream<MovieDetails?, Error> {
-        Self.logger.debug("Starting stream for MovieDetails(id: \(id))")
+        Self.logger.debug("Starting stream for MovieDetails [movieID: \(id, privacy: .private)]")
 
         let stream = await movieRepository.movieStream(withID: id)
         return AsyncThrowingStream { continuation in
@@ -79,7 +79,8 @@ final class DefaultStreamMovieDetailsUseCase: StreamMovieDetailsUseCase {
 
             continuation.onTermination = { _ in
                 task.cancel()
-                Self.logger.debug("Cancelled stream for MovieDetails(id: \(id))")
+                Self.logger.debug(
+                    "Cancelled stream for MovieDetails [movieID: \(id, privacy: .private)]")
             }
         }
     }

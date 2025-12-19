@@ -32,7 +32,9 @@ struct FeatureFlagService: FeatureFlagging, FeatureFlagInitialising {
         }
         flagStatuses.sort()
 
-        Self.logger.info("Feature flags\n-------------\n\(flagStatuses.joined(separator: "\n"))")
+        Self.logger.info(
+            "Feature flags\n-------------\n\(flagStatuses.joined(separator: "\n"), privacy: .public)"
+        )
     }
 
     func isEnabled(_ flag: FeatureFlag) -> Bool {

@@ -36,7 +36,7 @@ actor InMemoryCache: Caching {
         span?.setData(key: "key", value: key.rawValue)
 
         guard let cacheItem = cache[key] else {
-            Self.logger.debug("CACHE MISS: \(key.rawValue)")
+            Self.logger.debug("CACHE MISS: \(key.rawValue, privacy: .public)")
             span?.setData(key: "cache-result", value: "MISS")
             span?.finish()
             return nil
@@ -44,13 +44,13 @@ actor InMemoryCache: Caching {
 
         if cacheItem.isExpired {
             await removeItem(forKey: key)
-            Self.logger.debug("CACHE EXPIRED: \(key.rawValue)")
+            Self.logger.debug("CACHE EXPIRED: \(key.rawValue, privacy: .public)")
             span?.setData(key: "cache-result", value: "EXPIRED")
             span?.finish()
             return nil
         }
 
-        Self.logger.debug("CACHE HIT: \(key.rawValue)")
+        Self.logger.debug("CACHE HIT: \(key.rawValue, privacy: .public)")
         span?.setData(key: "cache-result", value: "HIT")
         span?.finish()
 
@@ -69,7 +69,7 @@ actor InMemoryCache: Caching {
         span?.setData(key: "key", value: key.rawValue)
         span?.setData(key: "expires-in", value: expiresIn)
 
-        Self.logger.debug("CACHE SET: \(key.rawValue)")
+        Self.logger.debug("CACHE SET: \(key.rawValue, privacy: .public)")
         cache[key] = CacheItem(value: item, expiresIn: expiresIn)
         span?.finish()
     }
@@ -81,7 +81,7 @@ actor InMemoryCache: Caching {
         )
         span?.setData(key: "key", value: key.rawValue)
 
-        Self.logger.debug("CACHE REMOVE: \(key.rawValue)")
+        Self.logger.debug("CACHE REMOVE: \(key.rawValue, privacy: .public)")
         cache.removeValue(forKey: key)
         span?.finish()
     }
