@@ -16,10 +16,7 @@ actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDa
     Sendable
 {
 
-    private static let logger = Logger(
-        subsystem: "PopcornMovies",
-        category: "SwiftDataPopularMovieLocalDataSource"
-    )
+    private static let logger = Logger.moviesInfrastructure
 
     private var ttl: TimeInterval = 60 * 60 * 24  // 1 day
 
@@ -37,7 +34,7 @@ actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDa
         }
 
         guard !entities.isEmpty else {
-            Self.logger.trace("SwiftData MISS: PopularMovies(page: \(page, privacy: .public))")
+            Self.logger.debug("SwiftData MISS: PopularMovies(page: \(page, privacy: .public))")
             return nil
         }
 
@@ -46,7 +43,7 @@ actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDa
         }
 
         if anyExpired {
-            Self.logger.trace(
+            Self.logger.debug(
                 "SwiftData EXPIRED: PopularMovies(page: \(page, privacy: .public)) — deleting")
 
             let deleteDescriptor = FetchDescriptor<MoviesPopularMovieItemEntity>(
@@ -63,7 +60,7 @@ actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDa
             return nil
         }
 
-        Self.logger.trace("SwiftData HIT: PopularMovies(page: \(page, privacy: .public))")
+        Self.logger.debug("SwiftData HIT: PopularMovies(page: \(page, privacy: .public))")
 
         let mapper = MoviePreviewMapper()
         return entities.compactMap {

@@ -16,10 +16,7 @@ actor SwiftDataMediaLocalDataSource: MediaLocalDataSource,
     SwiftDataFetchStreaming, Sendable
 {
 
-    private static let logger = Logger(
-        subsystem: "PopcornSearch",
-        category: "SwiftDataMediaLocalDataSource"
-    )
+    private static let logger = Logger.searchInfrastructure
 
     func mediaSearchHistory() async throws(MediaLocalDataSourceError) -> [MediaSearchHistoryEntry] {
         let descriptor = FetchDescriptor<SearchMediaSearchHistoryEntryEntity>(

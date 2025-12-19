@@ -17,7 +17,7 @@ struct MovieCarousel: View {
 
     var movies: [MoviePreview]
     var type: CarouselType
-    var transitionNamespace: Namespace.ID
+    var transitionNamespace: Namespace.ID?
     var didSelectMovie: (MoviePreview, String) -> Void
 
     var body: some View {

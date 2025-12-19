@@ -11,10 +11,7 @@ import Observability
 
 actor InMemoryCache: Caching {
 
-    private static let logger = Logger(
-        subsystem: "Caching",
-        category: "InMemoryCache"
-    )
+    private static let logger = Logger.caching
 
     var count: Int {
         cache.count

@@ -14,13 +14,10 @@ import Observability
 @Reducer
 public struct TrendingMoviesFeature: Sendable {
 
+    private static let logger = Logger.trendingMovies
+
     @Dependency(\.trendingMovies) private var trendingMovies
     @Dependency(\.observability) private var observability
-
-    private static let logger = Logger(
-        subsystem: "TrendingMoviesFeature",
-        category: "TrendingMoviesFeatureReducer"
-    )
 
     @ObservableState
     public struct State {
@@ -73,6 +70,8 @@ extension TrendingMoviesFeature {
 
     private func handleFetchTrendingMovies() -> EffectOf<Self> {
         .run { send in
+            Self.logger.info("User fetching trending movies")
+
             let transaction = observability.startTransaction(
                 name: "FetchTrendingMovies",
                 operation: .uiAction
@@ -83,9 +82,9 @@ extension TrendingMoviesFeature {
                 transaction.finish()
                 await send(.trendingMoviesLoaded(movies))
             } catch let error {
+                Self.logger.error("Failed fetching trending movies: \(error, privacy: .public)")
                 transaction.setData(error: error)
                 transaction.finish(status: .internalError)
-                Self.logger.error("Failed fetching trending movies: \(error.localizedDescription)")
             }
         }
     }

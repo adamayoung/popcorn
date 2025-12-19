@@ -16,11 +16,6 @@ actor SwiftDataMovieWatchlistLocalDataSource: MovieWatchlistLocalDataSource,
     SwiftDataFetchStreaming, Sendable
 {
 
-    private static let logger = Logger(
-        subsystem: "PopcornMovies",
-        category: "SwiftDataMovieWatchlistLocalDataSource"
-    )
-
     func movies() async throws(MovieWatchlistLocalDataSourceError) -> Set<WatchlistMovie> {
         let descriptor = FetchDescriptor<MoviesWatchlistMovieEntity>(
             sortBy: [SortDescriptor(\.createdAt, order: .reverse)]

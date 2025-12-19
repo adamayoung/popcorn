@@ -13,10 +13,7 @@ import PlotRemixGameDomain
 
 final class FoundationModelsSynopsisRiddleGenerator: SynopsisRiddleGenerating {
 
-    private static let logger = Logger(
-        subsystem: "PopcornPlotRemixGame",
-        category: "FoundationModelsSynopsisRiddleGenerator"
-    )
+    private static let logger = Logger.plotRemixGameInfrastructure
 
     // Cache instruction phrases to avoid repeated computation
     private static let instructionPhrasesByTheme: [GameTheme: String] = {

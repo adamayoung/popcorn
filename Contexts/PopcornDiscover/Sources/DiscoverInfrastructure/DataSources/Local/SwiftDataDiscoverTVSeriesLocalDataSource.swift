@@ -16,10 +16,7 @@ actor SwiftDataDiscoverTVSeriesLocalDataSource: DiscoverTVSeriesLocalDataSource,
     SwiftDataFetchStreaming, Sendable
 {
 
-    private static let logger = Logger(
-        subsystem: "PopcornDiscover",
-        category: "SwiftDataDiscoverTVSeriesLocalDataSource"
-    )
+    private static let logger = Logger.discoverInfrastructure
 
     private var ttl: TimeInterval = 60 * 60 * 24  // 1 day
 

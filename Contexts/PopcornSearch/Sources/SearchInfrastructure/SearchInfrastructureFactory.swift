@@ -6,10 +6,13 @@
 //
 
 import Foundation
+import OSLog
 import SearchDomain
 import SwiftData
 
 package final class SearchInfrastructureFactory {
+
+    private static let logger = Logger.searchInfrastructure
 
     private static let cloudKitModelContainer: ModelContainer = {
         let schema = Schema([
@@ -26,6 +29,9 @@ package final class SearchInfrastructureFactory {
         do {
             return try ModelContainer(for: schema, configurations: [config])
         } catch let error {
+            logger.critical(
+                "Cannot configure CloudKit ModelContainer: \(error.localizedDescription, privacy: .public)"
+            )
             fatalError(
                 "SearchKit: Cannot configure CloudKit ModelContainer: \(error.localizedDescription)"
             )

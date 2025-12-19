@@ -14,13 +14,10 @@ import Observability
 @Reducer
 public struct ExploreFeature: Sendable {
 
+    private static let logger = Logger.explore
+
     @Dependency(\.exploreClient) private var exploreClient: ExploreClient
     @Dependency(\.observability) private var observability
-
-    private static let logger = Logger(
-        subsystem: "ExploreFeature",
-        category: "ExploreFeatureReducer"
-    )
 
     @ObservableState
     public struct State {
@@ -117,6 +114,8 @@ extension ExploreFeature {
 
     private func handleFetchAll() -> EffectOf<Self> {
         .run { [exploreClient, observability] send in
+            Self.logger.info("User fetching explore content")
+
             let isDiscoverMoviesEnabled = (try? exploreClient.isDiscoverMoviesEnabled()) ?? false
             let isTrendingMoviesEnabled = (try? exploreClient.isTrendingMoviesEnabled()) ?? false
             let isPopularMoviesEnabled = (try? exploreClient.isPopularMoviesEnabled()) ?? false
@@ -162,7 +161,9 @@ extension ExploreFeature {
             } catch {
                 transaction.setData(error: error)
                 transaction.finish(status: .internalError)
-                Self.logger.error("Failed fetching Explore: \(error.localizedDescription)")
+                Self.logger.error(
+                    "Failed fetching explore content: \(error.localizedDescription, privacy: .public)"
+                )
                 await send(.loadFailed(error))
             }
         }

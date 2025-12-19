@@ -14,14 +14,11 @@ import Observability
 @Reducer
 public struct PlotRemixGameFeature: Sendable {
 
+    private static let logger = Logger.plotRemixGame
+
     @Dependency(\.plotRemixGameClient) private var plotRemixGameClient
     @Dependency(\.observability) private var observability
     @Dependency(\.dismiss) private var dismiss
-
-    private static let logger = Logger(
-        subsystem: "PlotRemixGameFeature",
-        category: "PlotRemixGameFeatureReducer"
-    )
 
     @ObservableState
     public struct State: Sendable {
@@ -133,6 +130,9 @@ extension PlotRemixGameFeature {
 
     private func handleFetchGameMetadata(_ state: inout State) -> EffectOf<Self> {
         .run { [state] send in
+            Self.logger.info(
+                "User fetching game metadata [gameID: \(state.gameID, privacy: .private)]")
+
             let transaction = observability.startTransaction(
                 name: "FetchGameMetadata",
                 operation: .uiAction
@@ -145,7 +145,7 @@ extension PlotRemixGameFeature {
                 await send(.metadataLoaded(metadata))
             } catch let error {
                 Self.logger.error(
-                    "Failed fetching game metadata: \(error.localizedDescription, privacy: .public)"
+                    "Failed fetching game metadata [gameID: \(state.gameID, privacy: .private)]: \(error.localizedDescription, privacy: .public)"
                 )
                 transaction.setData(error: error)
                 transaction.finish(status: .internalError)
@@ -159,6 +159,8 @@ extension PlotRemixGameFeature {
             guard state.metadata != nil else {
                 return
             }
+
+            Self.logger.info("User generating game [gameID: \(state.gameID, privacy: .private)]")
 
             let transaction = observability.startTransaction(
                 name: "GenerateGame",
@@ -184,6 +186,10 @@ extension PlotRemixGameFeature {
                     transaction.finish()
                     return
                 }
+
+                Self.logger.info(
+                    "Failed generating game [gameID: \(state.gameID, privacy: .private)]: \(error.localizedDescription, privacy: .public)"
+                )
                 transaction.setData(error: error)
                 transaction.finish(status: .internalError)
                 await send(.generateGameFailed(error))

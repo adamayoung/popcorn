@@ -7,9 +7,12 @@
 
 import DiscoverDomain
 import Foundation
+import OSLog
 import SwiftData
 
 package final class DiscoverInfrastructureFactory {
+
+    private static let logger = Logger.discoverInfrastructure
 
     private static let modelContainer: ModelContainer = {
         let schema = Schema([
@@ -25,6 +28,9 @@ package final class DiscoverInfrastructureFactory {
         do {
             return try ModelContainer(for: schema, configurations: [config])
         } catch let error {
+            logger.critical(
+                "Cannot configure CloudKit ModelContainer: \(error.localizedDescription, privacy: .public)"
+            )
             fatalError(
                 "PopcornDiscover: Cannot configure ModelContainer: \(error.localizedDescription)")
         }

@@ -12,10 +12,7 @@ import OSLog
 
 final class DefaultStreamMovieDetailsUseCase: StreamMovieDetailsUseCase {
 
-    private static let logger = Logger(
-        subsystem: "PopcornMovies",
-        category: "DefaultStreamMovieDetailsUseCase"
-    )
+    private static let logger = Logger.moviesApplication
 
     private let movieRepository: any MovieRepository
     private let movieImageRepository: any MovieImageRepository
@@ -35,7 +32,7 @@ final class DefaultStreamMovieDetailsUseCase: StreamMovieDetailsUseCase {
     }
 
     func stream(id: Int) async -> AsyncThrowingStream<MovieDetails?, Error> {
-        Self.logger.trace("Starting stream for MovieDetails(id: \(id))")
+        Self.logger.debug("Starting stream for MovieDetails(id: \(id))")
 
         let stream = await movieRepository.movieStream(withID: id)
         return AsyncThrowingStream { continuation in
@@ -82,7 +79,7 @@ final class DefaultStreamMovieDetailsUseCase: StreamMovieDetailsUseCase {
 
             continuation.onTermination = { _ in
                 task.cancel()
-                Self.logger.trace("Cancelled stream for MovieDetails(id: \(id))")
+                Self.logger.debug("Cancelled stream for MovieDetails(id: \(id))")
             }
         }
     }

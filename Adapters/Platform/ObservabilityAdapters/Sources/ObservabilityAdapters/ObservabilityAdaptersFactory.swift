@@ -6,15 +6,9 @@
 //
 
 import Foundation
-import OSLog
 import Observability
 
 public final class ObservabilityAdaptersFactory: Sendable {
-
-    private static let logger = Logger(
-        subsystem: "ObservabilityAdapters",
-        category: "ObservabilityAdaptersFactory"
-    )
 
     public init() {}
 

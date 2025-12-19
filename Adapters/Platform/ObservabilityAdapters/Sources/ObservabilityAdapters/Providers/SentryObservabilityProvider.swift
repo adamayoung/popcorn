@@ -12,10 +12,7 @@ import Sentry
 
 struct SentryObservabilityProvider: ObservabilityProviding {
 
-    private static let logger = Logger(
-        subsystem: "ObservabilityAdapters",
-        category: "SentryObservabilityProvider"
-    )
+    private static let logger = Logger.observability
 
     @MainActor
     func start(_ config: ObservabilityConfiguration) async throws {
@@ -26,19 +23,8 @@ struct SentryObservabilityProvider: ObservabilityProviding {
             options.environment = config.environment.rawValue
 
             options.enableAppHangTracking = true
-
-            options.attachScreenshot = true
-            options.attachViewHierarchy = true
-
             options.tracesSampleRate = config.tracesSampleRate
-
-            options.sessionReplay.maskAllText = true
-            options.sessionReplay.maskAllImages = true
-            options.sessionReplay.sessionSampleRate = config.sessionReplaySessionSampleRate
-            options.sessionReplay.onErrorSampleRate = config.sessionReplayOnErrorSampleRate
-
             options.enableMetricKit = true
-            options.enableMetricKitRawPayload = true
 
             options.debug = config.isDebug
         }

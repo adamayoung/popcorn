@@ -8,14 +8,8 @@
 import CoreDomain
 import Foundation
 import MoviesDomain
-import OSLog
 
 final class DefaultStreamSimilarMoviesUseCase: StreamSimilarMoviesUseCase {
-
-    private static let logger = Logger(
-        subsystem: "PopcornMovies",
-        category: "DefaultStreamSimilarMoviesUseCase"
-    )
 
     private let similarMovieRepository: any SimilarMovieRepository
     private let movieImageRepository: any MovieImageRepository
@@ -41,10 +35,6 @@ final class DefaultStreamSimilarMoviesUseCase: StreamSimilarMoviesUseCase {
         movieID: Movie.ID,
         limit: Int?
     ) async -> AsyncThrowingStream<[MoviePreviewDetails], Error> {
-        Self.logger.trace(
-            "Starting stream for SimilarMoviePreviewDetails(movieID: \(movieID), limit: \(limit ?? -1)"
-        )
-
         let stream = await similarMovieRepository.similarStream(toMovie: movieID, limit: limit)
         return AsyncThrowingStream { continuation in
             let task = Task {
@@ -83,9 +73,6 @@ final class DefaultStreamSimilarMoviesUseCase: StreamSimilarMoviesUseCase {
 
             continuation.onTermination = { _ in
                 task.cancel()
-                Self.logger.trace(
-                    "Cancelled stream for SimilarMoviePreviewDetails(movieID: \(movieID), limit: \(limit ?? -1)"
-                )
             }
         }
     }

@@ -10,6 +10,7 @@ import ComposableArchitecture
 import DiscoverApplication
 import Foundation
 import MoviesApplication
+import OSLog
 import Observability
 import TrendingApplication
 

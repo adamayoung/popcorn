@@ -14,10 +14,7 @@ import Observability
 @Reducer
 public struct MediaSearchFeature: Sendable {
 
-    private static let logger = Logger(
-        subsystem: "MediaSearchFeature",
-        category: "MediaSearchFeatureReducer"
-    )
+    private static let logger = Logger.mediaSearch
 
     @Dependency(\.mediaSearchClient) private var mediaSearchClient
     @Dependency(\.observability) private var observability
@@ -221,6 +218,8 @@ extension MediaSearchFeature {
 
     private func handleFetchGenresAndSearchHistory() -> EffectOf<Self> {
         .run { send in
+            Self.logger.info("User fetching genres and search history")
+
             let transaction = observability.startTransaction(
                 name: "FetchGenresAndSearchHistory",
                 operation: .uiAction
@@ -235,6 +234,7 @@ extension MediaSearchFeature {
                 transaction.finish()
                 await send(.genresAndSearchHistoryLoaded(genresSnapshot, searchHistorySnapshot))
             } catch let error {
+                Self.logger.info("Failed fetching genres and search history")
                 transaction.setData(error: error)
                 transaction.finish(status: .internalError)
                 await send(.genresAndSearchHistoryLoadFailed(error))
@@ -244,6 +244,9 @@ extension MediaSearchFeature {
 
     private func handleSearchMedia(state: inout State) -> EffectOf<Self> {
         .run { [state] send in
+            Self.logger.info(
+                "User searching for media [query: \"\(state.query, privacy: .private)\"]")
+
             let transaction = observability.startTransaction(
                 name: "SearchMedia",
                 operation: .uiAction
@@ -253,6 +256,9 @@ extension MediaSearchFeature {
             do {
                 results = try await mediaSearchClient.search(state.query)
             } catch let error {
+                Self.logger.error(
+                    "Failed searching for media [query: \"\(state.query, privacy: .private)\"]: \(error.localizedDescription, privacy: .public)"
+                )
                 transaction.setData(error: error)
                 transaction.finish(status: .internalError)
                 await send(.searchResultsLoadFailed(error))
@@ -273,19 +279,44 @@ extension MediaSearchFeature {
 
     private func handleAddMovieSearchHistoryEntry(movieID: Int) -> EffectOf<Self> {
         .run { _ in
-            try await mediaSearchClient.addMovieSearchHistoryEntry(movieID)
+            Self.logger.info(
+                "Adding movie to search history [movieID: \"\(movieID, privacy: .private)\"]")
+            do {
+                try await mediaSearchClient.addMovieSearchHistoryEntry(movieID)
+            } catch let error {
+                Self.logger.error(
+                    "Failed adding movie to search history [movieID: \"\(movieID, privacy: .private)\"]: \(error.localizedDescription, privacy: .public)"
+                )
+            }
         }
     }
 
     private func handleAddTVSeriesSearchHistoryEntry(tvSeriesID: Int) -> EffectOf<Self> {
         .run { _ in
-            try await mediaSearchClient.addTVSeriesSearchHistoryEntry(tvSeriesID)
+            Self.logger.info(
+                "Adding TV series to search history [tvSeriesID: \"\(tvSeriesID, privacy: .private)\"]"
+            )
+            do {
+                try await mediaSearchClient.addTVSeriesSearchHistoryEntry(tvSeriesID)
+            } catch let error {
+                Self.logger.error(
+                    "Failed adding TV series to search history [tvSeriesID: \"\(tvSeriesID, privacy: .private)\"]: \(error.localizedDescription, privacy: .public)"
+                )
+            }
         }
     }
 
     private func handleAddPersonSearchHistoryEntry(personID: Int) -> EffectOf<Self> {
         .run { _ in
-            try await mediaSearchClient.addPersonSearchHistoryEntry(personID)
+            Self.logger.info(
+                "Adding person to search history [personID: \"\(personID, privacy: .private)\"]")
+            do {
+                try await mediaSearchClient.addPersonSearchHistoryEntry(personID)
+            } catch let error {
+                Self.logger.error(
+                    "Failed adding person to search history [personID: \"\(personID, privacy: .private)\"]: \(error.localizedDescription, privacy: .public)"
+                )
+            }
         }
     }
 

@@ -11,10 +11,7 @@ import PlotRemixGameDomain
 
 final class DefaultGeneratePlotRemixGameUseCase: GeneratePlotRemixGameUseCase {
 
-    private static let logger = Logger(
-        subsystem: "PopcornPlotRemixGame",
-        category: "DefaultGeneratePlotRemixGameUseCase"
-    )
+    private static let logger = Logger.plotRemixGameApplication
     private static let signposter = OSSignposter(logger: logger)
 
     private static let questionCount = 10

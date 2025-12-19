@@ -16,10 +16,7 @@ actor SwiftDataDiscoverMovieLocalDataSource: DiscoverMovieLocalDataSource,
     SwiftDataFetchStreaming, Sendable
 {
 
-    private static let logger = Logger(
-        subsystem: "PopcornDiscover",
-        category: "SwiftDataDiscoverMovieLocalDataSource"
-    )
+    private static let logger = Logger.discoverInfrastructure
 
     private var ttl: TimeInterval = 60 * 60 * 24  // 1 day
 
@@ -41,7 +38,7 @@ actor SwiftDataDiscoverMovieLocalDataSource: DiscoverMovieLocalDataSource,
         }
 
         guard !entities.isEmpty else {
-            Self.logger.trace(
+            Self.logger.debug(
                 "SwiftData MISS: DiscoverMovies(filter: \(filterKey ?? "nil", privacy: .public), page: \(page, privacy: .public))"
             )
             return nil
@@ -52,7 +49,7 @@ actor SwiftDataDiscoverMovieLocalDataSource: DiscoverMovieLocalDataSource,
         }
 
         if anyExpired {
-            Self.logger.trace(
+            Self.logger.debug(
                 "SwiftData EXPIRED: DiscoverMovies(filter: \(filterKey ?? "nil", privacy: .public), page: \(page, privacy: .public)) — deleting"
             )
 
@@ -70,7 +67,7 @@ actor SwiftDataDiscoverMovieLocalDataSource: DiscoverMovieLocalDataSource,
             return nil
         }
 
-        Self.logger.trace(
+        Self.logger.debug(
             "SwiftData HIT: DiscoverMovies(filter: \(filterKey ?? "nil", privacy: .public), page: \(page, privacy: .public))"
         )
 
