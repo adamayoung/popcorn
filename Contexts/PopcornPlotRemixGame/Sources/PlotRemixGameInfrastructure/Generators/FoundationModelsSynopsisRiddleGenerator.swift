@@ -67,7 +67,7 @@ final class FoundationModelsSynopsisRiddleGenerator: SynopsisRiddleGenerating {
         // Validate response quality
         guard !content.isEmpty, content.count >= 20 else {
             Self.logger.warning(
-                "Received unusually short response for '\(movie.title, privacy: .private)': '\(content, privacy: .private)'"
+                "Received unusually short response  [movieID: \(movie.id, privacy: .private), content: \"\(content, privacy: .private)\""
             )
             throw .generation(nil)
         }
