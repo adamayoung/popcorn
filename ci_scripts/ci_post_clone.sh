@@ -6,11 +6,13 @@ set -eo pipefail
 defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
 
 # SwiftLint on Analyze action
-if [ $CI_XCODEBUILD_ACTION = 'analyze' ];
+if [ "$CI_XCODEBUILD_ACTION" = 'analyze' ];
 then
-    brew install swiftlint swiftformat
+    if ! command -v swiftlint >/dev/null 2>&1 || ! command -v swiftformat >/dev/null 2>&1; then
+        HOMEBREW_NO_AUTO_UPDATE=1 brew install swiftlint swiftformat
+    fi
 
-    cd $CI_PRIMARY_REPOSITORY_PATH
+    cd "$CI_PRIMARY_REPOSITORY_PATH"
     swiftlint --strict .
     swiftformat --lint .
 fi
