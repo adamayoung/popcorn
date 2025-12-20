@@ -21,7 +21,8 @@ struct StatsigFeatureFlagProvider: FeatureFlagProviding {
     func start(_ config: FeatureFlagsConfiguration) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             let options = StatsigOptions(
-                environment: StatsigEnvironment(tier: config.environment.statsigTier)
+                environment: StatsigEnvironment(tier: config.environment.statsigTier),
+                enableAutoValueUpdate: true
             )
 
             Statsig.initialize(
@@ -37,10 +38,18 @@ struct StatsigFeatureFlagProvider: FeatureFlagProviding {
                         return
                     }
 
-                    Self.logger
-                        .info(
-                            "Statsig initialised: (user: \(config.userID, privacy: .private), environment: \(config.environment.rawValue, privacy: .public))"
-                        )
+                    if Statsig.isInitialized() {
+                        Self.logger
+                            .info(
+                                "Statsig enabled (user: \(config.userID, privacy: .private), environment: \(config.environment.rawValue, privacy: .public))"
+                            )
+                    } else {
+                        Self.logger
+                            .warning(
+                                "Statsig disabled"
+                            )
+                    }
+
                     continuation.resume()
                 }
             )
