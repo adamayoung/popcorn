@@ -1,8 +1,8 @@
 //
 //  DefaultTVSeriesRepository.swift
-//  PopcornTVSeries
+//  Popcorn
 //
-//  Created by Adam Young on 28/05/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -39,10 +39,10 @@ final class DefaultTVSeriesRepository: TVSeriesRepository {
                 return cached
             }
         } catch let error {
-            let e = TVSeriesRepositoryError(error)
-            span?.setData(error: e)
+            let repositoryError = TVSeriesRepositoryError(error)
+            span?.setData(error: repositoryError)
             span?.finish(status: .internalError)
-            throw TVSeriesRepositoryError(e)
+            throw repositoryError
         }
 
         span?.setData(key: "cache.hit", value: false)
@@ -51,19 +51,19 @@ final class DefaultTVSeriesRepository: TVSeriesRepository {
         do {
             tvSeries = try await remoteDataSource.tvSeries(withID: id)
         } catch let error {
-            let e = TVSeriesRepositoryError(error)
-            span?.setData(error: e)
+            let repositoryError = TVSeriesRepositoryError(error)
+            span?.setData(error: repositoryError)
             span?.finish(status: .internalError)
-            throw e
+            throw repositoryError
         }
 
         do {
             try await localDataSource.setTVSeries(tvSeries)
         } catch let error {
-            let e = TVSeriesRepositoryError(error)
-            span?.setData(error: e)
+            let repositoryError = TVSeriesRepositoryError(error)
+            span?.setData(error: repositoryError)
             span?.finish(status: .internalError)
-            throw e
+            throw repositoryError
         }
 
         span?.finish()
@@ -89,10 +89,10 @@ final class DefaultTVSeriesRepository: TVSeriesRepository {
                 return cached
             }
         } catch let error {
-            let e = TVSeriesRepositoryError(error)
-            span?.setData(error: e)
+            let repositoryError = TVSeriesRepositoryError(error)
+            span?.setData(error: repositoryError)
             span?.finish(status: .internalError)
-            throw e
+            throw repositoryError
         }
 
         span?.setData(key: "cache.hit", value: false)
@@ -101,19 +101,19 @@ final class DefaultTVSeriesRepository: TVSeriesRepository {
         do {
             imageCollection = try await remoteDataSource.images(forTVSeries: tvSeriesID)
         } catch let error {
-            let e = TVSeriesRepositoryError(error)
-            span?.setData(error: e)
+            let repositoryError = TVSeriesRepositoryError(error)
+            span?.setData(error: repositoryError)
             span?.finish(status: .internalError)
-            throw e
+            throw repositoryError
         }
 
         do {
             try await localDataSource.setImages(imageCollection, forTVSeries: tvSeriesID)
         } catch let error {
-            let e = TVSeriesRepositoryError(error)
-            span?.setData(error: e)
+            let repositoryError = TVSeriesRepositoryError(error)
+            span?.setData(error: repositoryError)
             span?.finish(status: .internalError)
-            throw e
+            throw repositoryError
         }
 
         span?.finish()
@@ -122,9 +122,9 @@ final class DefaultTVSeriesRepository: TVSeriesRepository {
 
 }
 
-extension TVSeriesRepositoryError {
+private extension TVSeriesRepositoryError {
 
-    fileprivate init(_ error: Error) {
+    init(_ error: Error) {
         if let error = error as? TVSeriesRemoteDataSourceError {
             self.init(error)
             return
@@ -138,7 +138,7 @@ extension TVSeriesRepositoryError {
         self = .unknown(error)
     }
 
-    fileprivate init(_ error: TVSeriesRemoteDataSourceError) {
+    init(_ error: TVSeriesRemoteDataSourceError) {
         switch error {
         case .notFound: self = .notFound
         case .unauthorised: self = .unauthorised
@@ -146,11 +146,10 @@ extension TVSeriesRepositoryError {
         }
     }
 
-    fileprivate init(_ error: TVSeriesLocalDataSourceError) {
+    init(_ error: TVSeriesLocalDataSourceError) {
         switch error {
         case .persistence(let error): self = .unknown(error)
         case .unknown(let error): self = .unknown(error)
-
         }
     }
 

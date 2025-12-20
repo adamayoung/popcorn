@@ -1,8 +1,8 @@
 //
 //  TVSeriesPreview.swift
-//  MediaSearchFeature
+//  Popcorn
 //
-//  Created by Adam Young on 18/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -30,7 +30,7 @@ extension TVSeriesPreview {
     static var mocks: [TVSeriesPreview] {
         [
             TVSeriesPreview(
-                id: 225171,
+                id: 225_171,
                 name: "Pluribus",
                 posterURL: URL(
                     string: "https://image.tmdb.org/t/p/w780/nrM2xFUfKJJEmZzd5d7kohT2G0C.jpg")
@@ -39,7 +39,7 @@ extension TVSeriesPreview {
                 id: 66732,
                 name: "Stranger Things",
                 posterURL: URL(
-                    string: "https://image.tmdb.org/t/p/w780/cVxVGwHce6xnW8UaVUggaPXbmoE.jpg"),
+                    string: "https://image.tmdb.org/t/p/w780/cVxVGwHce6xnW8UaVUggaPXbmoE.jpg")
             )
         ]
     }

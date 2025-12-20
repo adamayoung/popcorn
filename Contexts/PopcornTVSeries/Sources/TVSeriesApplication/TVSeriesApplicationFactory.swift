@@ -1,8 +1,8 @@
 //
 //  TVSeriesApplicationFactory.swift
-//  PopcornTVSeries
+//  Popcorn
 //
-//  Created by Adam Young on 15/10/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -29,8 +29,7 @@ package final class TVSeriesApplicationFactory {
     }
 
     package func makeFetchTVSeriesImageCollectionUseCase()
-        -> some FetchTVSeriesImageCollectionUseCase
-    {
+    -> some FetchTVSeriesImageCollectionUseCase {
         DefaultFetchTVSeriesImageCollectionUseCase(
             repository: tvSeriesRepository,
             appConfigurationProvider: appConfigurationProvider

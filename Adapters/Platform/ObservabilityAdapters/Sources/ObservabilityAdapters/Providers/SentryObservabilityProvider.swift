@@ -1,13 +1,13 @@
 //
 //  SentryObservabilityProvider.swift
-//  ObservabilityAdapters
+//  Popcorn
 //
-//  Created by Adam Young on 16/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
-import OSLog
 import Observability
+import OSLog
 import Sentry
 
 struct SentryObservabilityProvider: ObservabilityProviding {
@@ -33,9 +33,10 @@ struct SentryObservabilityProvider: ObservabilityProviding {
         user.userId = config.userID
         SentrySDK.setUser(user)
 
-        Self.logger.info(
-            "Sentry initialised: (environment: \(config.environment.rawValue, privacy: .public), debug: \(config.isDebug, privacy: .public))"
-        )
+        Self.logger
+            .info(
+                "Sentry initialised: (environment: \(config.environment.rawValue, privacy: .public), debug: \(config.isDebug, privacy: .public))"
+            )
     }
 
     func startTransaction(name: String, operation: SpanOperation) -> Transaction {
@@ -48,7 +49,10 @@ struct SentryObservabilityProvider: ObservabilityProviding {
     }
 
     func currentSpan() -> Observability.Span? {
-        guard let sentrySpan = SentrySDK.span else { return nil }
+        guard let sentrySpan = SentrySDK.span else {
+            return nil
+        }
+
         return SentrySpan(sentrySpan)
     }
 
@@ -88,26 +92,26 @@ struct SentryObservabilityProvider: ObservabilityProviding {
 
 }
 
-extension ObservabilityConfiguration {
+private extension ObservabilityConfiguration {
 
-    fileprivate var tracesSampleRate: NSNumber {
-        switch self.environment {
+    var tracesSampleRate: NSNumber {
+        switch environment {
         case .development: 1.0
         case .staging: 1.0
         case .production: 0.2
         }
     }
 
-    fileprivate var sessionReplaySessionSampleRate: Float {
-        switch self.environment {
+    var sessionReplaySessionSampleRate: Float {
+        switch environment {
         case .development: 1.0
         case .staging: 1.0
         case .production: 0.2
         }
     }
 
-    fileprivate var sessionReplayOnErrorSampleRate: Float {
-        switch self.environment {
+    var sessionReplayOnErrorSampleRate: Float {
+        switch environment {
         case .development: 1.0
         case .staging: 1.0
         case .production: 0.2

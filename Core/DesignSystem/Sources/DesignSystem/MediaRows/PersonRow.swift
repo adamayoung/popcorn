@@ -1,8 +1,8 @@
 //
 //  PersonRow.swift
-//  DesignSystem
+//  Popcorn
 //
-//  Created by Adam Young on 12/06/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import SwiftUI
@@ -48,7 +48,7 @@ public struct PersonRow: View {
             )
 
             PersonRow(
-                id: 115440,
+                id: 115_440,
                 name: "Sydney Sweeney",
                 profileURL: URL(
                     string: "https://image.tmdb.org/t/p/w185/uDnIdU4KGjQg7liFvb9wnALvg95.jpg"
@@ -56,5 +56,4 @@ public struct PersonRow: View {
             )
         }
     }
-
 }

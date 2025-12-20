@@ -1,8 +1,8 @@
 //
 //  AppConfigurationMapper.swift
-//  PopcornConfigurationAdapters
+//  Popcorn
 //
-//  Created by Adam Young on 29/05/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ConfigurationDomain

@@ -1,15 +1,16 @@
 //
 //  PopcornTests.swift
-//  PopcornTests
+//  Popcorn
 //
-//  Created by Adam Young on 17/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Testing
 
 struct PopcornTests {
 
-    @Test func example() async throws {
+    @Test
+    func example() async throws {
         // Write your test here and use APIs like `#expect(...)` to check expected conditions.
     }
 

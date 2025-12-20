@@ -1,8 +1,8 @@
 //
 //  PeopleApplicationFactory+TCA.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 25/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -14,8 +14,8 @@ extension DependencyValues {
 
     var peopleFactory: PopcornPeopleFactory {
         PopcornPeopleAdaptersFactory(
-            personService: self.personService,
-            fetchAppConfigurationUseCase: self.fetchAppConfiguration
+            personService: personService,
+            fetchAppConfigurationUseCase: fetchAppConfiguration
         ).makePeopleFactory()
     }
 

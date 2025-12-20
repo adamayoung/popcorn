@@ -1,8 +1,8 @@
 //
 //  ObservabilityInitialiser+TCA.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 17/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -18,9 +18,9 @@ enum ObservabilityInitialiserKey: DependencyKey {
 
 }
 
-extension DependencyValues {
+public extension DependencyValues {
 
-    public var observabilityInitialiser: any ObservabilityInitialising {
+    var observabilityInitialiser: any ObservabilityInitialising {
         get { self[ObservabilityInitialiserKey.self] }
         set { self[ObservabilityInitialiserKey.self] = newValue }
     }

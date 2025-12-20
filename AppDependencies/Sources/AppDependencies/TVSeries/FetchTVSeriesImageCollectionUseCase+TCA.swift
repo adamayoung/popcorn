@@ -1,8 +1,8 @@
 //
 //  FetchTVSeriesImageCollectionUseCase+TCA.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 25/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -18,9 +18,9 @@ enum FetchTVSeriesImageCollectionUseCaseKey: DependencyKey {
 
 }
 
-extension DependencyValues {
+public extension DependencyValues {
 
-    public var fetchTVSeriesImageCollection: any FetchTVSeriesImageCollectionUseCase {
+    var fetchTVSeriesImageCollection: any FetchTVSeriesImageCollectionUseCase {
         get { self[FetchTVSeriesImageCollectionUseCaseKey.self] }
         set { self[FetchTVSeriesImageCollectionUseCaseKey.self] = newValue }
     }

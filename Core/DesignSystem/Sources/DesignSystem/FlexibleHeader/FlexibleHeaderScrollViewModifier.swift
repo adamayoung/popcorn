@@ -1,13 +1,14 @@
 //
 //  FlexibleHeaderScrollViewModifier.swift
-//  DesignSystem
+//  Popcorn
 //
-//  Created by Adam Young on 17/06/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import SwiftUI
 
-@Observable private class FlexibleHeaderGeometry {
+@Observable
+private class FlexibleHeaderGeometry {
     var offset: CGFloat = 0
     var viewHeight: CGFloat = 0
 }
@@ -57,18 +58,18 @@ private struct FlexibleHeaderContentModifier: ViewModifier {
 
 }
 
-extension ScrollView {
+public extension ScrollView {
 
     @MainActor
-    public func flexibleHeaderScrollView(onChange: ((ScrollGeometry) -> Void)? = nil) -> some View {
+    func flexibleHeaderScrollView(onChange: ((ScrollGeometry) -> Void)? = nil) -> some View {
         modifier(FlexibleHeaderScrollViewModifier(onChange: onChange))
     }
 
 }
 
-extension View {
+public extension View {
 
-    public func flexibleHeaderContent(height: CGFloat) -> some View {
+    func flexibleHeaderContent(height: CGFloat) -> some View {
         modifier(FlexibleHeaderContentModifier(height: height))
     }
 

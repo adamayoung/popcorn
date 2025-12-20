@@ -1,8 +1,8 @@
 //
 //  GenreProviderAdapter.swift
-//  PopcornDiscoverAdapters
+//  Popcorn
 //
-//  Created by Adam Young on 09/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import DiscoverDomain
@@ -35,8 +35,7 @@ struct GenreProviderAdapter: GenreProviding {
         return genres.map(mapper.map)
     }
 
-    func tvSeriesGenres() async throws(DiscoverDomain.GenreProviderError) -> [DiscoverDomain.Genre]
-    {
+    func tvSeriesGenres() async throws(DiscoverDomain.GenreProviderError) -> [DiscoverDomain.Genre] {
         let genres: [GenresDomain.Genre]
         do {
             genres = try await fetchTVSeriesGenresUseCase.execute()
@@ -50,9 +49,9 @@ struct GenreProviderAdapter: GenreProviding {
 
 }
 
-extension GenreProviderError {
+private extension GenreProviderError {
 
-    fileprivate init(_ error: Error) {
+    init(_ error: Error) {
         if let error = error as? FetchMovieGenresError {
             self.init(error)
             return
@@ -66,7 +65,7 @@ extension GenreProviderError {
         self = .unknown(error)
     }
 
-    fileprivate init(_ error: FetchMovieGenresError) {
+    init(_ error: FetchMovieGenresError) {
         switch error {
         case .unauthorised:
             self = .unauthorised
@@ -75,7 +74,7 @@ extension GenreProviderError {
         }
     }
 
-    fileprivate init(_ error: FetchTVSeriesGenresError) {
+    init(_ error: FetchTVSeriesGenresError) {
         switch error {
         case .unauthorised:
             self = .unauthorised

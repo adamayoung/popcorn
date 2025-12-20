@@ -1,8 +1,8 @@
 //
 //  TVSeriesPreviewDetailsMapper.swift
-//  PopcornSearch
+//  Popcorn
 //
-//  Created by Adam Young on 20/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import CoreDomain
@@ -12,8 +12,7 @@ import SearchDomain
 struct TVSeriesPreviewDetailsMapper {
 
     func map(_ tvSeriesPreview: TVSeriesPreview, imagesConfiguration: ImagesConfiguration)
-        -> TVSeriesPreviewDetails
-    {
+    -> TVSeriesPreviewDetails {
         let posterURLSet = imagesConfiguration.posterURLSet(for: tvSeriesPreview.posterPath)
         let backdropURLSet = imagesConfiguration.posterURLSet(for: tvSeriesPreview.backdropPath)
 

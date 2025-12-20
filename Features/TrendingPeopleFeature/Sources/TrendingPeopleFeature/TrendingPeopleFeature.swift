@@ -1,15 +1,15 @@
 //
 //  TrendingPeopleFeature.swift
-//  TrendingPeopleFeature
+//  Popcorn
 //
-//  Created by Adam Young on 19/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import AppDependencies
 import ComposableArchitecture
 import Foundation
-import OSLog
 import Observability
+import OSLog
 
 @Reducer
 public struct TrendingPeopleFeature: Sendable {
@@ -56,9 +56,9 @@ public struct TrendingPeopleFeature: Sendable {
 
 }
 
-extension TrendingPeopleFeature {
+private extension TrendingPeopleFeature {
 
-    fileprivate func handleFetchTrendingPeople() -> EffectOf<Self> {
+    func handleFetchTrendingPeople() -> EffectOf<Self> {
         .run { send in
             Self.logger.info("User fetching trending people")
 

@@ -1,8 +1,8 @@
 //
 //  TMDbDiscoverTVSeriesFilterMapper.swift
-//  PopcornDiscoverAdapters
+//  Popcorn
 //
-//  Created by Adam Young on 08/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import DiscoverDomain
@@ -12,7 +12,9 @@ import TMDb
 struct TMDbDiscoverTVSeriesFilterMapper {
 
     func compactMap(_ dto: TVSeriesFilter?) -> TMDb.DiscoverTVSeriesFilter? {
-        guard let dto else { return nil }
+        guard let dto else {
+            return nil
+        }
 
         return DiscoverTVSeriesFilter(
             originalLanguage: dto.originalLanguage,

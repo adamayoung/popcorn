@@ -21,11 +21,13 @@ clean:
 
 .PHONY: format
 format:
-	@git ls-files -z '*.swift' | xargs -0 swift format -p -i
+	@swiftlint --fix .
+	@swiftformat .
 
 .PHONY: lint format-check
 lint format-check:
-	@git ls-files -z '*.swift' | xargs -0 swift format lint --strict -p
+	@swiftlint --strict .
+	@swiftformat --lint .
 
 .PHONY: build
 build:

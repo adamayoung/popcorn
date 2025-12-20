@@ -1,8 +1,8 @@
 //
 //  ImageCollectionDetailsMapper.swift
-//  PopcornTVSeries
+//  Popcorn
 //
-//  Created by Adam Young on 24/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import CoreDomain
@@ -12,8 +12,7 @@ import TVSeriesDomain
 struct ImageCollectionDetailsMapper {
 
     func map(_ imageCollection: ImageCollection, imagesConfiguration: ImagesConfiguration)
-        -> ImageCollectionDetails
-    {
+    -> ImageCollectionDetails {
         let posterURLSets = imageCollection.posterPaths.compactMap {
             imagesConfiguration.posterURLSet(for: $0)
         }

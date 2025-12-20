@@ -1,8 +1,8 @@
 //
-//  FetchMediaSearchHistoryUseCaseKey+TCA.swift
-//  AppDependencies
+//  FetchMediaSearchHistoryUseCase+TCA.swift
+//  Popcorn
 //
-//  Created by Adam Young on 04/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -18,9 +18,9 @@ enum FetchMediaSearchHistoryUseCaseKey: DependencyKey {
 
 }
 
-extension DependencyValues {
+public extension DependencyValues {
 
-    public var fetchMediaSearchHistory: any FetchMediaSearchHistoryUseCase {
+    var fetchMediaSearchHistory: any FetchMediaSearchHistoryUseCase {
         get { self[FetchMediaSearchHistoryUseCaseKey.self] }
         set { self[FetchMediaSearchHistoryUseCaseKey.self] = newValue }
     }

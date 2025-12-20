@@ -1,8 +1,8 @@
 //
 //  MovieRow.swift
-//  DesignSystem
+//  Popcorn
 //
-//  Created by Adam Young on 28/05/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import SwiftUI
@@ -47,10 +47,9 @@ public struct MovieRow: View {
             )
 
             MovieRow(
-                id: 575265,
+                id: 575_265,
                 title: "Mission: Impossible - The Final Reckoning"
             )
         }
     }
-
 }

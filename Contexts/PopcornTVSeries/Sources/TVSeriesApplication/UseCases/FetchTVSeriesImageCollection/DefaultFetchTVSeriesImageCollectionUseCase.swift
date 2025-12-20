@@ -1,8 +1,8 @@
 //
 //  DefaultFetchTVSeriesImageCollectionUseCase.swift
-//  PopcornTVSeries
+//  Popcorn
 //
-//  Created by Adam Young on 24/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import CoreDomain
@@ -10,6 +10,7 @@ import Foundation
 import Observability
 import TVSeriesDomain
 
+// swiftlint:disable:next type_name
 final class DefaultFetchTVSeriesImageCollectionUseCase: FetchTVSeriesImageCollectionUseCase {
 
     private let repository: any TVSeriesRepository
@@ -39,10 +40,10 @@ final class DefaultFetchTVSeriesImageCollectionUseCase: FetchTVSeriesImageCollec
                 appConfigurationProvider.appConfiguration()
             )
         } catch let error {
-            let e = FetchTVSeriesImageCollectionError(error)
-            span?.setData(error: e)
+            let imageCollectionError = FetchTVSeriesImageCollectionError(error)
+            span?.setData(error: imageCollectionError)
             span?.finish(status: .internalError)
-            throw e
+            throw imageCollectionError
         }
 
         let mapper = ImageCollectionDetailsMapper()

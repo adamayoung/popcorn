@@ -1,8 +1,8 @@
 //
 //  DefaultStreamSimilarMoviesUseCase.swift
-//  PopcornMovies
+//  Popcorn
 //
-//  Created by Adam Young on 02/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import CoreDomain
@@ -29,7 +29,7 @@ final class DefaultStreamSimilarMoviesUseCase: StreamSimilarMoviesUseCase {
     }
 
     func stream(
-        movieID: Movie.ID,
+        movieID: Movie.ID
     ) async -> AsyncThrowingStream<[MoviePreviewDetails], Error> {
         await stream(movieID: movieID, limit: nil)
     }

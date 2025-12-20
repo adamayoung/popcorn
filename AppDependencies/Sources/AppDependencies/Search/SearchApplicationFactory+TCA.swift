@@ -1,8 +1,8 @@
 //
 //  SearchApplicationFactory+TCA.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 25/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -14,11 +14,11 @@ extension DependencyValues {
 
     var searchFactory: PopcornSearchFactory {
         PopcornSearchAdaptersFactory(
-            searchService: self.searchService,
-            fetchAppConfigurationUseCase: self.fetchAppConfiguration,
-            fetchMovieDetailsUseCase: self.fetchMovieDetails,
-            fetchTVSeriesDetailsUseCase: self.fetchTVSeriesDetails,
-            fetchPersonDetailsUseCase: self.fetchPersonDetails
+            searchService: searchService,
+            fetchAppConfigurationUseCase: fetchAppConfiguration,
+            fetchMovieDetailsUseCase: fetchMovieDetails,
+            fetchTVSeriesDetailsUseCase: fetchTVSeriesDetails,
+            fetchPersonDetailsUseCase: fetchPersonDetails
         ).makeSearchFactory()
     }
 

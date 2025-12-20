@@ -1,15 +1,15 @@
 //
 //  TrendingTVSeriesFeature.swift
-//  TrendingTVSeriesFeature
+//  Popcorn
 //
-//  Created by Adam Young on 18/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import AppDependencies
 import ComposableArchitecture
 import Foundation
-import OSLog
 import Observability
+import OSLog
 
 @Reducer
 public struct TrendingTVSeriesFeature: Sendable {
@@ -59,9 +59,9 @@ public struct TrendingTVSeriesFeature: Sendable {
 
 }
 
-extension TrendingTVSeriesFeature {
+private extension TrendingTVSeriesFeature {
 
-    fileprivate func handleFetchTrendingTVSeries() -> EffectOf<Self> {
+    func handleFetchTrendingTVSeries() -> EffectOf<Self> {
         .run { send in
             Self.logger.info("User fetching trending TV series")
 

@@ -1,8 +1,8 @@
 //
 //  MediaProviderAdapter.swift
-//  PopcornSearchAdapters
+//  Popcorn
 //
-//  Created by Adam Young on 04/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ConfigurationApplication
@@ -81,9 +81,9 @@ public struct MediaProviderAdapter: MediaProviding {
 
 }
 
-extension MediaProviderError {
+private extension MediaProviderError {
 
-    fileprivate init(_ error: FetchMovieDetailsError) {
+    init(_ error: FetchMovieDetailsError) {
         switch error {
         case .notFound:
             self = .notFound
@@ -94,7 +94,7 @@ extension MediaProviderError {
         }
     }
 
-    fileprivate init(_ error: FetchTVSeriesDetailsError) {
+    init(_ error: FetchTVSeriesDetailsError) {
         switch error {
         case .notFound:
             self = .notFound
@@ -105,7 +105,7 @@ extension MediaProviderError {
         }
     }
 
-    fileprivate init(_ error: FetchPersonDetailsError) {
+    init(_ error: FetchPersonDetailsError) {
         switch error {
         case .notFound:
             self = .notFound

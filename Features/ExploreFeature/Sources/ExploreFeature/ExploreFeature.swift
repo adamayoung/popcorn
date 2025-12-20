@@ -1,15 +1,15 @@
 //
 //  ExploreFeature.swift
-//  ExploreFeature
+//  Popcorn
 //
-//  Created by Adam Young on 21/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import AppDependencies
 import ComposableArchitecture
 import Foundation
-import OSLog
 import Observability
+import OSLog
 
 @Reducer
 public struct ExploreFeature: Sendable {

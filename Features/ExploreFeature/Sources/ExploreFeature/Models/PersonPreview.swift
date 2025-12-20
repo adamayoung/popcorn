@@ -1,8 +1,8 @@
 //
 //  PersonPreview.swift
-//  ExploreFeature
+//  Popcorn
 //
-//  Created by Adam Young on 19/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -30,7 +30,7 @@ extension PersonPreview {
     static var mocks: [PersonPreview] {
         [
             PersonPreview(
-                id: 234352,
+                id: 234_352,
                 name: "Margot Robbie",
                 profileURL: URL(
                     string: "https://image.tmdb.org/t/p/h632/euDPyqLnuwaWMHajcU3oZ9uZezR.jpg")

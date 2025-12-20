@@ -1,8 +1,8 @@
 //
 //  TMDbConfigurationRemoteDataSource.swift
-//  PopcornConfigurationAdapters
+//  Popcorn
 //
-//  Created by Adam Young on 29/05/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ConfigurationDomain
@@ -31,10 +31,10 @@ final class TMDbConfigurationRemoteDataSource: ConfigurationRemoteDataSource {
         do {
             tmdbAPIConfiguration = try await configurationService.apiConfiguration()
         } catch let error {
-            let e = ConfigurationRepositoryError(error)
-            span?.setData(error: e)
+            let repositoryError = ConfigurationRepositoryError(error)
+            span?.setData(error: repositoryError)
             span?.finish(status: .internalError)
-            throw e
+            throw repositoryError
         }
 
         let mapper = AppConfigurationMapper()
@@ -46,9 +46,9 @@ final class TMDbConfigurationRemoteDataSource: ConfigurationRemoteDataSource {
 
 }
 
-extension ConfigurationRepositoryError {
+private extension ConfigurationRepositoryError {
 
-    fileprivate init(_ error: Error) {
+    init(_ error: Error) {
         guard let error = error as? TMDbError else {
             self = .unknown(error)
             return
@@ -57,7 +57,7 @@ extension ConfigurationRepositoryError {
         self.init(error)
     }
 
-    fileprivate init(_ error: TMDbError) {
+    init(_ error: TMDbError) {
         switch error {
         case .unauthorised:
             self = .unauthorised

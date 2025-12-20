@@ -1,8 +1,8 @@
 //
 //  DefaultMediaRepository.swift
-//  PopcornSearch
+//  Popcorn
 //
-//  Created by Adam Young on 25/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -44,8 +44,7 @@ final class DefaultMediaRepository: MediaRepository {
     }
 
     func saveMovieSearchHistoryEntry(_ entry: MovieSearchHistoryEntry)
-        async throws(MediaRepositoryError)
-    {
+    async throws(MediaRepositoryError) {
         do {
             try await localDataSource.saveMovieSearchHistoryEntry(entry)
         } catch let error {
@@ -54,8 +53,7 @@ final class DefaultMediaRepository: MediaRepository {
     }
 
     func saveTVSeriesSearchHistoryEntry(_ entry: TVSeriesSearchHistoryEntry)
-        async throws(MediaRepositoryError)
-    {
+    async throws(MediaRepositoryError) {
         do {
             try await localDataSource.saveTVSeriesSearchHistoryEntry(entry)
         } catch let error {
@@ -64,8 +62,7 @@ final class DefaultMediaRepository: MediaRepository {
     }
 
     func savePersonSearchHistoryEntry(_ entry: PersonSearchHistoryEntry)
-        async throws(MediaRepositoryError)
-    {
+    async throws(MediaRepositoryError) {
         do {
             try await localDataSource.savePersonSearchHistoryEntry(entry)
         } catch let error {
@@ -75,9 +72,9 @@ final class DefaultMediaRepository: MediaRepository {
 
 }
 
-extension MediaRepositoryError {
+private extension MediaRepositoryError {
 
-    fileprivate init(_ error: MediaLocalDataSourceError) {
+    init(_ error: MediaLocalDataSourceError) {
         switch error {
         case .persistence(let error):
             self = .unknown(error)
@@ -86,7 +83,7 @@ extension MediaRepositoryError {
         }
     }
 
-    fileprivate init(_ error: MediaRemoteDataSourceError) {
+    init(_ error: MediaRemoteDataSourceError) {
         switch error {
         case .unauthorised:
             self = .unauthorised

@@ -1,8 +1,8 @@
 //
 //  SwiftDataMovieWatchlistLocalDataSource.swift
-//  PopcornMovies
+//  Popcorn
 //
-//  Created by Adam Young on 03/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import DataPersistenceInfrastructure
@@ -13,8 +13,7 @@ import SwiftData
 
 @ModelActor
 actor SwiftDataMovieWatchlistLocalDataSource: MovieWatchlistLocalDataSource,
-    SwiftDataFetchStreaming, Sendable
-{
+SwiftDataFetchStreaming {
 
     func movies() async throws(MovieWatchlistLocalDataSourceError) -> Set<WatchlistMovie> {
         let descriptor = FetchDescriptor<MoviesWatchlistMovieEntity>(

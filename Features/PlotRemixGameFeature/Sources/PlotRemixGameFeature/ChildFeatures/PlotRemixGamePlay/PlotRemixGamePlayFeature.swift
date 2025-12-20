@@ -1,8 +1,8 @@
 //
 //  PlotRemixGamePlayFeature.swift
-//  PlotRemixGameFeature
+//  Popcorn
 //
-//  Created by Adam Young on 11/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -114,22 +114,31 @@ extension PlotRemixGamePlayFeature {
             let game: Game
             do {
                 game = try await plotRemixGamePlayClient.generateGame { progress in
-                    guard !Task.isCancelled else { return }
+                    guard !Task.isCancelled else {
+                        return
+                    }
+
                     Task {
-                        guard !Task.isCancelled else { return }
+                        guard !Task.isCancelled else {
+                            return
+                        }
                         await send(.generating(progress))
                     }
                 }
             } catch is CancellationError {
                 return
             } catch let error {
-                guard !Task.isCancelled else { return }
+                guard !Task.isCancelled else {
+                    return
+                }
                 await send(.generateFailed(error))
                 return
             }
 
             let snapshot = ViewSnapshot(game: game)
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled else {
+                return
+            }
             await send(.generated(snapshot))
         }
     }

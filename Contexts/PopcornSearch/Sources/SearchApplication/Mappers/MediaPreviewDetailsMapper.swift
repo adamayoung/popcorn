@@ -1,8 +1,8 @@
 //
 //  MediaPreviewDetailsMapper.swift
-//  PopcornSearch
+//  Popcorn
 //
-//  Created by Adam Young on 25/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import CoreDomain
@@ -12,8 +12,7 @@ import SearchDomain
 struct MediaPreviewDetailsMapper {
 
     func map(_ mediaPreview: MediaPreview, imagesConfiguration: ImagesConfiguration)
-        -> MediaPreviewDetails
-    {
+    -> MediaPreviewDetails {
         switch mediaPreview {
         case .movie(let moviePreview):
             let mapper = MoviePreviewDetailsMapper()

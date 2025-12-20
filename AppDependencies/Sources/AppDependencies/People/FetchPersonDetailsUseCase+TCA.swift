@@ -1,8 +1,8 @@
 //
 //  FetchPersonDetailsUseCase+TCA.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 19/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -18,9 +18,9 @@ enum FetchPersonDetailsUseCaseKey: DependencyKey {
 
 }
 
-extension DependencyValues {
+public extension DependencyValues {
 
-    public var fetchPersonDetails: any FetchPersonDetailsUseCase {
+    var fetchPersonDetails: any FetchPersonDetailsUseCase {
         get { self[FetchPersonDetailsUseCaseKey.self] }
         set { self[FetchPersonDetailsUseCaseKey.self] = newValue }
     }

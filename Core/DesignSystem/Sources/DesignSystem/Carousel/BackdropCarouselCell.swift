@@ -1,8 +1,8 @@
 //
 //  BackdropCarouselCell.swift
-//  DesignSystem
+//  Popcorn
 //
-//  Created by Adam Young on 09/06/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import SwiftUI
@@ -47,12 +47,11 @@ public struct BackdropCarouselCell<CellLabel: View>: View {
             cellLabel
                 .frame(width: width)
                 .frame(maxHeight: .infinity)
-
         }
         #if os(visionOS)
-            .padding(20)
-            .contentShape(.hoverEffect, .rect(cornerRadius: 30))
-            .hoverEffect()
+        .padding(20)
+        .contentShape(.hoverEffect, .rect(cornerRadius: 30))
+        .hoverEffect()
         #endif
     }
 

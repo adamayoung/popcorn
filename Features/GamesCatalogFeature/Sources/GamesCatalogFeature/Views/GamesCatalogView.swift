@@ -1,8 +1,8 @@
 //
 //  GamesCatalogView.swift
-//  GamesCatalogFeature
+//  Popcorn
 //
-//  Created by Adam Young on 09/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -86,8 +86,8 @@ extension GamesCatalogView {
         .background {
             LinearGradient(
                 colors: [Color.white.opacity(0.3), Color.clear],
-                startPoint: .topLeading,  // Top-Left
-                endPoint: .bottomTrailing  // Bottom-Right
+                startPoint: .topLeading, // Top-Left
+                endPoint: .bottomTrailing // Bottom-Right
             )
         }
         .background(game.color)

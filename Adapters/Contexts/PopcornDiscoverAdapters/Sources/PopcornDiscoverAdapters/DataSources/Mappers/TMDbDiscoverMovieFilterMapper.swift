@@ -1,8 +1,8 @@
 //
 //  TMDbDiscoverMovieFilterMapper.swift
-//  PopcornDiscoverAdapters
+//  Popcorn
 //
-//  Created by Adam Young on 08/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import DiscoverDomain
@@ -12,7 +12,9 @@ import TMDb
 struct TMDbDiscoverMovieFilterMapper {
 
     func compactMap(_ dto: MovieFilter?) -> TMDb.DiscoverMovieFilter? {
-        guard let dto else { return nil }
+        guard let dto else {
+            return nil
+        }
 
         return DiscoverMovieFilter(
             originalLanguage: dto.originalLanguage,
@@ -28,7 +30,9 @@ extension TMDbDiscoverMovieFilterMapper {
     private func compactMap(
         _ dto: MovieFilter.PrimaryReleaseYearFilter?
     ) -> TMDb.DiscoverMovieFilter.PrimaryReleaseYearFilter? {
-        guard let dto else { return nil }
+        guard let dto else {
+            return nil
+        }
 
         switch dto {
         case .onYear(let year): return .on(year)

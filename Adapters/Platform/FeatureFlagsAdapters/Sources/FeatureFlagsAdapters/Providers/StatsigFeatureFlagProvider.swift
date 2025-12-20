@@ -1,8 +1,8 @@
 //
 //  StatsigFeatureFlagProvider.swift
-//  FeatureFlagsAdapters
+//  Popcorn
 //
-//  Created by Adam Young on 26/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import FeatureFlags
@@ -19,8 +19,7 @@ struct StatsigFeatureFlagProvider: FeatureFlagProviding {
     }
 
     func start(_ config: FeatureFlagsConfiguration) async throws {
-        try await withCheckedThrowingContinuation {
-            (continuation: CheckedContinuation<Void, Error>) in
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             let options = StatsigOptions(
                 environment: StatsigEnvironment(tier: config.environment.statsigTier)
             )
@@ -38,9 +37,10 @@ struct StatsigFeatureFlagProvider: FeatureFlagProviding {
                         return
                     }
 
-                    Self.logger.info(
-                        "Statsig initialised: (user: \(config.userID, privacy: .private), environment: \(config.environment.rawValue, privacy: .public))"
-                    )
+                    Self.logger
+                        .info(
+                            "Statsig initialised: (user: \(config.userID, privacy: .private), environment: \(config.environment.rawValue, privacy: .public))"
+                        )
                     continuation.resume()
                 }
             )
@@ -52,9 +52,9 @@ struct StatsigFeatureFlagProvider: FeatureFlagProviding {
     }
 }
 
-extension FeatureFlagsConfiguration.Environment {
+private extension FeatureFlagsConfiguration.Environment {
 
-    fileprivate var statsigTier: StatsigEnvironment.EnvironmentTier {
+    var statsigTier: StatsigEnvironment.EnvironmentTier {
         switch self {
         case .development: .Development
         case .staging: .Staging

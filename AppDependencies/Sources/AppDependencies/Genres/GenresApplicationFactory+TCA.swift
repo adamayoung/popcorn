@@ -1,8 +1,8 @@
 //
 //  GenresApplicationFactory+TCA.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 25/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -14,7 +14,7 @@ extension DependencyValues {
 
     var genresFactory: PopcornGenresFactory {
         PopcornGenresAdaptersFactory(
-            genreService: self.genreService
+            genreService: genreService
         ).makeGenresFactory()
     }
 

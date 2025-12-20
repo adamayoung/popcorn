@@ -1,8 +1,8 @@
 //
 //  MovieDetailsView.swift
-//  MovieDetailsFeature
+//  Popcorn
 //
-//  Created by Adam Young on 17/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -30,6 +30,7 @@ public struct MovieDetailsView: View {
                     movie: snapshot.movie,
                     similarMovies: snapshot.similarMovies
                 )
+
             case .error(let error):
                 Text(verbatim: "\(error.localizedDescription)")
 
@@ -94,9 +95,9 @@ extension MovieDetailsView {
     private func header(movie: Movie) -> some View {
         BackdropImage(url: movie.backdropURL)
             .flexibleHeaderContent(height: 600)
-            #if os(macOS)
-                .backgroundExtensionEffect()
-            #endif
+        #if os(macOS)
+            .backgroundExtensionEffect()
+        #endif
     }
 
     @ViewBuilder

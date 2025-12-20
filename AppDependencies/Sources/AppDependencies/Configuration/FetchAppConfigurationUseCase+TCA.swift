@@ -1,8 +1,8 @@
 //
 //  FetchAppConfigurationUseCase+TCA.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 26/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -20,9 +20,9 @@ enum FetchAppConfigurationUseCaseKey: DependencyKey {
 
 }
 
-extension DependencyValues {
+public extension DependencyValues {
 
-    public var fetchAppConfiguration: any FetchAppConfigurationUseCase {
+    var fetchAppConfiguration: any FetchAppConfigurationUseCase {
         get { self[FetchAppConfigurationUseCaseKey.self] }
         set { self[FetchAppConfigurationUseCaseKey.self] = newValue }
     }

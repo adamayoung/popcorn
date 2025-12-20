@@ -1,13 +1,14 @@
 //
 //  AnimatedMeshBackground.swift
-//  DesignSystem
+//  Popcorn
 //
-//  Created by Adam Young on 12/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import SwiftUI
 import UIKit
 
+// swiftlint:disable identifier_name
 public struct AnimatedMeshBackground: View {
 
     private var baseColor: Color
@@ -103,14 +104,14 @@ public struct AnimatedMeshBackground: View {
         phase: Double,
         speed: Double
     ) -> Float {
-        let u = Float((sin(time * speed + phase) + 1) * 0.5)  // 0...1
+        let u = Float((sin(time * speed + phase) + 1) * 0.5) // 0...1
         return range.min + (range.max - range.min) * u
     }
 }
 
-extension Color {
+private extension Color {
 
-    fileprivate func lighter(by amount: CGFloat = 0.2) -> Color {
+    func lighter(by amount: CGFloat = 0.2) -> Color {
         let uiColor = UIColor(self)
 
         var r: CGFloat = 0
@@ -132,3 +133,5 @@ extension Color {
     }
 
 }
+
+// swiftlint:enable identifier_name

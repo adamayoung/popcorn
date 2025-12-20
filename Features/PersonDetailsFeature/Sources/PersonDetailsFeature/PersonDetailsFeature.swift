@@ -1,15 +1,15 @@
 //
 //  PersonDetailsFeature.swift
-//  PersonDetailsFeature
+//  Popcorn
 //
-//  Created by Adam Young on 17/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import AppDependencies
 import ComposableArchitecture
 import Foundation
-import OSLog
 import Observability
+import OSLog
 
 @Reducer
 public struct PersonDetailsFeature: Sendable {
@@ -96,9 +96,9 @@ public struct PersonDetailsFeature: Sendable {
 
 }
 
-extension PersonDetailsFeature {
+private extension PersonDetailsFeature {
 
-    fileprivate func handleFetchPerson(_ state: inout State) -> EffectOf<Self> {
+    func handleFetchPerson(_ state: inout State) -> EffectOf<Self> {
         .run { [state] send in
             Self.logger.info(
                 "User fetching person [personID: \"\(state.personID, privacy: .private)\"]")

@@ -1,7 +1,7 @@
 ---
-description: Run swift format
+description: Run swiftlint and swiftformat
 ---
 
 # Format code
 
-Run `swift format -r -p -i .` to the project root to check code style and fix issues.
+Run `swiftlint --fix .` and `swiftformat .` from the project root to check code style and fix issues.

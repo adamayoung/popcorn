@@ -1,8 +1,8 @@
 //
 //  PosterCarouselCell.swift
-//  DesignSystem
+//  Popcorn
 //
-//  Created by Adam Young on 09/06/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import SwiftUI
@@ -47,9 +47,9 @@ public struct PosterCarouselCell<CellLabel: View>: View {
             Spacer()
         }
         #if os(visionOS)
-            .padding(20)
-            .contentShape(.hoverEffect, .rect(cornerRadius: 15))
-            .hoverEffect()
+        .padding(20)
+        .contentShape(.hoverEffect, .rect(cornerRadius: 15))
+        .hoverEffect()
         #endif
     }
 

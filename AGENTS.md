@@ -58,8 +58,8 @@ mcp__xcodebuildmcp__screenshot               // Take simulator screenshot
 
 ## Linting
 
-Lint swift files with `swift format lint -r -p --strict .`
-Format swift files with `swift format -r -p -i .`
+Lint swift files with `swiftlint --strict .` and `swiftformat --lint .` from the project root.
+Format swift files with `swiftlint --fix .` and `swiftformat .` from the project root.
 
 ## Secrets
 

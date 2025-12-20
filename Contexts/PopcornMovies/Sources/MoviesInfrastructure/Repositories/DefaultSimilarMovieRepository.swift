@@ -1,8 +1,8 @@
 //
 //  DefaultSimilarMovieRepository.swift
-//  PopcornMovies
+//  Popcorn
 //
-//  Created by Adam Young on 03/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -35,12 +35,10 @@ final class DefaultSimilarMovieRepository: SimilarMovieRepository {
 
         let movies: [MoviePreview]
         do { movies = try await remoteDataSource.similar(toMovie: movieID, page: page) } catch let
-            error
-        { throw SimilarMovieRepositoryError(error) }
+            error { throw SimilarMovieRepositoryError(error) }
 
         do { try await localDataSource.setSimilar(movies, toMovie: movieID, page: page) } catch let
-            error
-        { throw SimilarMovieRepositoryError(error) }
+            error { throw SimilarMovieRepositoryError(error) }
 
         return movies
     }
@@ -69,8 +67,7 @@ final class DefaultSimilarMovieRepository: SimilarMovieRepository {
     func nextSimilarStreamPage(forMovie movieID: Int) async throws(SimilarMovieRepositoryError) {
         let currentPage: Int
         do { currentPage = try await localDataSource.currentSimilarStreamPage() ?? 0 } catch let
-            error
-        { throw SimilarMovieRepositoryError(error) }
+            error { throw SimilarMovieRepositoryError(error) }
 
         let nextPage = currentPage + 1
 

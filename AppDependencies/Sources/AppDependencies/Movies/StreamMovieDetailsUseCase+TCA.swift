@@ -1,8 +1,8 @@
 //
 //  StreamMovieDetailsUseCase+TCA.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 02/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -18,9 +18,9 @@ enum StreamMovieDetailsUseCaseKey: DependencyKey {
 
 }
 
-extension DependencyValues {
+public extension DependencyValues {
 
-    public var streamMovieDetails: any StreamMovieDetailsUseCase {
+    var streamMovieDetails: any StreamMovieDetailsUseCase {
         get { self[StreamMovieDetailsUseCaseKey.self] }
         set { self[StreamMovieDetailsUseCaseKey.self] = newValue }
     }

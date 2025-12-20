@@ -1,8 +1,8 @@
 //
 //  PosterImage.swift
-//  DesignSystem
+//  Popcorn
 //
-//  Created by Adam Young on 18/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import SDWebImageSwiftUI
@@ -31,11 +31,11 @@ public struct PosterImage: View {
     }
 
     public func posterHeight(_ height: CGFloat) -> some View {
-        self.frame(width: height * Self.aspectRatio, height: height)
+        frame(width: height * Self.aspectRatio, height: height)
     }
 
     public func posterWidth(_ width: CGFloat) -> some View {
-        self.frame(width: width, height: width / Self.aspectRatio)
+        frame(width: width, height: width / Self.aspectRatio)
     }
 
 }

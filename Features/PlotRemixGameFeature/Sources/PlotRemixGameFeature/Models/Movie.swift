@@ -1,8 +1,8 @@
 //
 //  Movie.swift
-//  PlotRemixGameFeature
+//  Popcorn
 //
-//  Created by Adam Young on 05/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -33,15 +33,17 @@ public struct Movie: Sendable, Equatable {
 
 extension Movie {
 
+    // swiftlint:disable line_length
     static var mock: Movie {
         Movie(
             id: 118,
             title: "Charlie and the Chocolate Factory",
             overview:
-                "A young boy wins a tour through the most magnificent chocolate factory in the world, led by the world's most unusual candy maker.",
+            "A young boy wins a tour through the most magnificent chocolate factory in the world, led by the world's most unusual candy maker.",
             posterPath: URL(string: "/iKP6wg3c6COUe8gYutoGG7qcPnO.jpg"),
             backdropPath: URL(string: "/atoIgfAk2Ig2HFJLD0VUnjiPWEz.jpg")
         )
     }
+    // swiftlint:enable line_length
 
 }

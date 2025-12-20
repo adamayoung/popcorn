@@ -1,8 +1,8 @@
 //
 //  TrendingPeopleClient.swift
-//  TrendingPeopleFeature
+//  Popcorn
 //
-//  Created by Adam Young on 19/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import AppDependencies
@@ -37,18 +37,18 @@ extension TrendingPeopleClient: DependencyKey {
             fetch: {
                 [
                     PersonPreview(
-                        id: 234352,
+                        id: 234_352,
                         name: "Margot Robbie",
                         profileURL: URL(
                             string:
-                                "https://image.tmdb.org/t/p/h632/euDPyqLnuwaWMHajcU3oZ9uZezR.jpg")
+                            "https://image.tmdb.org/t/p/h632/euDPyqLnuwaWMHajcU3oZ9uZezR.jpg")
                     ),
                     PersonPreview(
                         id: 2283,
                         name: "Stanley Tucci",
                         profileURL: URL(
                             string:
-                                "https://image.tmdb.org/t/p/h632/q4TanMDI5Rgsvw4SfyNbPBh4URr.jpg")
+                            "https://image.tmdb.org/t/p/h632/q4TanMDI5Rgsvw4SfyNbPBh4URr.jpg")
                     )
                 ]
             }

@@ -1,8 +1,8 @@
 //
 //  TVSeriesDetailsView.swift
-//  TVSeriesDetailsFeature
+//  Popcorn
 //
-//  Created by Adam Young on 18/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -71,9 +71,9 @@ extension TVSeriesDetailsView {
     private func header(tvSeries: TVSeries) -> some View {
         BackdropImage(url: tvSeries.backdropURL)
             .flexibleHeaderContent(height: 600)
-            #if os(macOS)
-                .backgroundExtensionEffect()
-            #endif
+        #if os(macOS)
+            .backgroundExtensionEffect()
+        #endif
     }
 
     @ViewBuilder

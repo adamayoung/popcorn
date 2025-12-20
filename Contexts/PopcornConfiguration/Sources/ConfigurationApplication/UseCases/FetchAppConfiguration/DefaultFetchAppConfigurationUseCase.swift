@@ -1,8 +1,8 @@
 //
 //  DefaultFetchAppConfigurationUseCase.swift
-//  PopcornConfiguration
+//  Popcorn
 //
-//  Created by Adam Young on 06/06/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ConfigurationDomain
@@ -28,10 +28,10 @@ final class DefaultFetchAppConfigurationUseCase: FetchAppConfigurationUseCase {
         do {
             appConfiguration = try await repository.configuration()
         } catch let error {
-            let e = FetchAppConfigurationError(error)
-            span?.setData(error: e)
+            let configurationError = FetchAppConfigurationError(error)
+            span?.setData(error: configurationError)
             span?.finish(status: .internalError)
-            throw e
+            throw configurationError
         }
 
         span?.finish()

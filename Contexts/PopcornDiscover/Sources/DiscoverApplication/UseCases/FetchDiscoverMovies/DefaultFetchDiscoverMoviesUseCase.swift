@@ -1,8 +1,8 @@
 //
 //  DefaultFetchDiscoverMoviesUseCase.swift
-//  PopcornDiscover
+//  Popcorn
 //
-//  Created by Adam Young on 08/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import CoreDomain
@@ -30,7 +30,7 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
     }
 
     func execute() async throws(FetchDiscoverMoviesError) -> [MoviePreviewDetails] {
-        try await self.execute(filter: nil, page: 1)
+        try await execute(filter: nil, page: 1)
     }
 
     func execute(
@@ -49,7 +49,7 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
     ) async throws(FetchDiscoverMoviesError) -> [MoviePreviewDetails] {
         let span = SpanContext.startChild(
             operation: .useCaseExecute,
-            description: "FetchDiscoverMoviesUseCase.execute",
+            description: "FetchDiscoverMoviesUseCase.execute"
         )
         span?.setData([
             "filter": filter?.dictionary ?? "nil",
@@ -66,10 +66,10 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
                 appConfigurationProvider.appConfiguration()
             )
         } catch let error {
-            let e = FetchDiscoverMoviesError(error)
-            span?.setData(error: e)
+            let moviesError = FetchDiscoverMoviesError(error)
+            span?.setData(error: moviesError)
             span?.finish(status: .internalError)
-            throw e
+            throw moviesError
         }
 
         var genresLookup: [Genre.ID: Genre] = [:]

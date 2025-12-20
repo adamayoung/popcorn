@@ -1,8 +1,8 @@
 //
 //  AppConfigurationProviderAdapter.swift
-//  PopcornMoviesAdapters
+//  Popcorn
 //
-//  Created by Adam Young on 20/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ConfigurationApplication
@@ -30,9 +30,9 @@ struct AppConfigurationProviderAdapter: AppConfigurationProviding {
 
 }
 
-extension AppConfigurationProviderError {
+private extension AppConfigurationProviderError {
 
-    fileprivate init(_ error: Error) {
+    init(_ error: Error) {
         guard let error = error as? FetchAppConfigurationError else {
             self = .unknown(error)
             return

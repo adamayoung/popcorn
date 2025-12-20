@@ -1,8 +1,8 @@
 //
 //  MediaPreviewMapper.swift
-//  PopcornSearchAdapters
+//  Popcorn
 //
-//  Created by Adam Young on 25/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation

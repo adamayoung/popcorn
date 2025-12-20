@@ -1,8 +1,8 @@
 //
 //  ExploreView.swift
-//  ExploreFeature
+//  Popcorn
 //
-//  Created by Adam Young on 21/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -54,8 +54,7 @@ public struct ExploreView: View {
 
 extension ExploreView {
 
-    @ViewBuilder
-    private var loadingBody: some View {
+    @ViewBuilder private var loadingBody: some View {
         ProgressView()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

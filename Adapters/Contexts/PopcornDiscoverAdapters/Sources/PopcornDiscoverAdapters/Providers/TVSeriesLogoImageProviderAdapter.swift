@@ -1,8 +1,8 @@
 //
 //  TVSeriesLogoImageProviderAdapter.swift
-//  PopcornDiscoverAdapters
+//  Popcorn
 //
-//  Created by Adam Young on 24/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import CoreDomain
@@ -18,8 +18,7 @@ final class TVSeriesLogoImageProviderAdapter: TVSeriesLogoImageProviding {
     }
 
     func imageURLSet(forTVSeries tvSeriesID: Int) async throws(TVSeriesLogoImageProviderError)
-        -> ImageURLSet?
-    {
+    -> ImageURLSet? {
         let imageCollectionDetails: ImageCollectionDetails
         do {
             imageCollectionDetails = try await fetchTVSeriesImageCollectionUseCase.execute(
@@ -33,9 +32,9 @@ final class TVSeriesLogoImageProviderAdapter: TVSeriesLogoImageProviding {
 
 }
 
-extension TVSeriesLogoImageProviderError {
+private extension TVSeriesLogoImageProviderError {
 
-    fileprivate init(_ error: Error) {
+    init(_ error: Error) {
         guard let error = error as? FetchTVSeriesImageCollectionError else {
             self = .unknown(error)
             return

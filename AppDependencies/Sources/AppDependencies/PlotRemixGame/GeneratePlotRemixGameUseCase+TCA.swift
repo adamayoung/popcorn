@@ -1,8 +1,8 @@
 //
 //  GeneratePlotRemixGameUseCase+TCA.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 11/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -18,9 +18,9 @@ enum GeneratePlotRemixGameUseCaseKey: DependencyKey {
 
 }
 
-extension DependencyValues {
+public extension DependencyValues {
 
-    public var generatePlotRemixGame: any GeneratePlotRemixGameUseCase {
+    var generatePlotRemixGame: any GeneratePlotRemixGameUseCase {
         get { self[GeneratePlotRemixGameUseCaseKey.self] }
         set { self[GeneratePlotRemixGameUseCaseKey.self] = newValue }
     }

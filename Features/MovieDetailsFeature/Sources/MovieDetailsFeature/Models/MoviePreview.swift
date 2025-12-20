@@ -1,8 +1,8 @@
 //
 //  MoviePreview.swift
-//  MovieDetailsFeature
+//  Popcorn
 //
-//  Created by Adam Young on 17/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -36,14 +36,14 @@ extension MoviePreview {
     static var mocks: [MoviePreview] {
         [
             MoviePreview(
-                id: 798645,
+                id: 798_645,
                 title: "The Running Man",
                 posterURL: URL(
                     string: "https://image.tmdb.org/t/p/w780/dKL78O9zxczVgjtNcQ9UkbYLzqX.jpg"),
                 backdropURL: URL(
                     string: "https://image.tmdb.org/t/p/w1280/docDyCJrhPoFXAckB1aOiIv9Mz0.jpg"),
                 logoURL: URL(
-                    string: "https://image.tmdb.org/t/p/w500/qVFenxaKbLr76dSJN5qRMM82X2u.png"),
+                    string: "https://image.tmdb.org/t/p/w500/qVFenxaKbLr76dSJN5qRMM82X2u.png")
             ),
             MoviePreview(
                 id: 1_197_137,
@@ -53,7 +53,7 @@ extension MoviePreview {
                 backdropURL: URL(
                     string: "https://image.tmdb.org/t/p/w1280/6zKjoOOb3OZnZuiHtQZn4Kd69Gq.jpg"),
                 logoURL: URL(
-                    string: "https://image.tmdb.org/t/p/w500/edPw35KtvaP8mJNtujFNsbPCmJV.png"),
+                    string: "https://image.tmdb.org/t/p/w500/edPw35KtvaP8mJNtujFNsbPCmJV.png")
             )
         ]
     }

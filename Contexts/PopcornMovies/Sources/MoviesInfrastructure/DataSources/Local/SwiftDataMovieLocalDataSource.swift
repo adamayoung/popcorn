@@ -1,8 +1,8 @@
 //
 //  SwiftDataMovieLocalDataSource.swift
-//  PopcornMovies
+//  Popcorn
 //
-//  Created by Adam Young on 26/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import DataPersistenceInfrastructure
@@ -12,11 +12,11 @@ import OSLog
 import SwiftData
 
 @ModelActor
-actor SwiftDataMovieLocalDataSource: MovieLocalDataSource, SwiftDataFetchStreaming, Sendable {
+actor SwiftDataMovieLocalDataSource: MovieLocalDataSource, SwiftDataFetchStreaming {
 
     private static let logger = Logger.moviesInfrastructure
 
-    private var ttl: TimeInterval = 60 * 60 * 24  // 1 day
+    private var ttl: TimeInterval = 60 * 60 * 24 // 1 day
 
     func movie(withID id: Int) async throws(MovieLocalDataSourceError) -> Movie? {
         let entity: MoviesMovieEntity?

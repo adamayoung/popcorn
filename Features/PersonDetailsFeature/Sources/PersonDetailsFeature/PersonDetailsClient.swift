@@ -1,8 +1,8 @@
 //
 //  PersonDetailsClient.swift
-//  PersonDetailsFeature
+//  Popcorn
 //
-//  Created by Adam Young on 17/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import AppDependencies
@@ -40,7 +40,7 @@ extension PersonDetailsClient: DependencyKey {
                     id: 2283,
                     name: "Stanley Tucci",
                     biography:
-                        "Stanley Tucci Stanley Tucci Stanley Tucci Stanley Tucci Stanley Tucci",
+                    "Stanley Tucci Stanley Tucci Stanley Tucci Stanley Tucci Stanley Tucci",
                     knownForDepartment: "Acting",
                     gender: .male,
                     profileURL: URL(

@@ -1,8 +1,8 @@
 //
 //  AddMediaSearchHistoryEntryUseCase+TCA.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 04/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -18,9 +18,9 @@ enum AddMediaSearchHistoryEntryUseCaseKey: DependencyKey {
 
 }
 
-extension DependencyValues {
+public extension DependencyValues {
 
-    public var addMediaSearchHistoryEntry: any AddMediaSearchHistoryEntryUseCase {
+    var addMediaSearchHistoryEntry: any AddMediaSearchHistoryEntryUseCase {
         get { self[AddMediaSearchHistoryEntryUseCaseKey.self] }
         set { self[AddMediaSearchHistoryEntryUseCaseKey.self] = newValue }
     }

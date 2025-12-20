@@ -1,8 +1,8 @@
 //
 //  TMDbMediaRemoteDataSource.swift
-//  PopcornSearchAdapters
+//  Popcorn
 //
-//  Created by Adam Young on 25/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -18,8 +18,7 @@ final class TMDbMediaRemoteDataSource: MediaRemoteDataSource {
         self.searchService = searchService
     }
 
-    func search(query: String, page: Int) async throws(MediaRemoteDataSourceError) -> [MediaPreview]
-    {
+    func search(query: String, page: Int) async throws(MediaRemoteDataSourceError) -> [MediaPreview] {
         let tmdbMedia: [Media]
         do {
             tmdbMedia = try await searchService.searchAll(
@@ -38,9 +37,9 @@ final class TMDbMediaRemoteDataSource: MediaRemoteDataSource {
 
 }
 
-extension MediaRemoteDataSourceError {
+private extension MediaRemoteDataSourceError {
 
-    fileprivate init(_ error: Error) {
+    init(_ error: Error) {
         guard let error = error as? TMDbError else {
             self = .unknown(error)
             return
@@ -49,7 +48,7 @@ extension MediaRemoteDataSourceError {
         self.init(error)
     }
 
-    fileprivate init(_ error: TMDbError) {
+    init(_ error: TMDbError) {
         switch error {
         case .unauthorised:
             self = .unauthorised

@@ -1,8 +1,8 @@
 //
 //  MovieFilter.swift
-//  PopcornPlotRemixGame
+//  Popcorn
 //
-//  Created by Adam Young on 08/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -33,9 +33,9 @@ extension MovieFilter: CustomStringConvertible {
 
 }
 
-extension MovieFilter {
+public extension MovieFilter {
 
-    public init(config: GameConfig) {
+    init(config: GameConfig) {
         let genreIDs: [Int]? = {
             guard let genreID = config.genreID else {
                 return nil

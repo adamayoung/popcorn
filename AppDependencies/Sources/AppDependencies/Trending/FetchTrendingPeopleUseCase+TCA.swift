@@ -1,8 +1,8 @@
 //
 //  FetchTrendingPeopleUseCase+TCA.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 18/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -18,9 +18,9 @@ enum FetchTrendingPeopleUseCaseKey: DependencyKey {
 
 }
 
-extension DependencyValues {
+public extension DependencyValues {
 
-    public var fetchTrendingPeople: any FetchTrendingPeopleUseCase {
+    var fetchTrendingPeople: any FetchTrendingPeopleUseCase {
         get { self[FetchTrendingPeopleUseCaseKey.self] }
         set { self[FetchTrendingPeopleUseCaseKey.self] = newValue }
     }

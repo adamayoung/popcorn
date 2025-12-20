@@ -1,15 +1,15 @@
 //
 //  DefaultFetchTVSeriesDetailsUseCaseTests.swift
-//  PopcornTVSeries
+//  Popcorn
 //
-//  Created by Adam Young on 18/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import CoreDomain
 import Foundation
 import Observability
-import TVSeriesDomain
 import Testing
+import TVSeriesDomain
 
 @testable import TVSeriesApplication
 
@@ -18,7 +18,8 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
 
     // MARK: - Test 1: Execute Successfully Returns TVSeriesDetails
 
-    @Test func executeSuccessfullyReturnsTVSeriesDetails() async throws {
+    @Test
+    func executeSuccessfullyReturnsTVSeriesDetails() async throws {
         // Arrange
         let mockRepository = MockTVSeriesRepository()
         let mockAppConfigProvider = MockAppConfigurationProvider()
@@ -45,7 +46,8 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
 
     // MARK: - Test 2: Execute Creates Span with Correct Operation
 
-    @Test func executeCreatesSpanWithCorrectOperation() async throws {
+    @Test
+    func executeCreatesSpanWithCorrectOperation() async throws {
         // Arrange
         let mockRepository = MockTVSeriesRepository()
         let mockAppConfigProvider = MockAppConfigurationProvider()
@@ -79,7 +81,8 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
 
     // MARK: - Test 3: Execute Sets TV Series ID on Span
 
-    @Test func executeSetsTVSeriesIDOnSpan() async throws {
+    @Test
+    func executeSetsTVSeriesIDOnSpan() async throws {
         // Arrange
         let mockRepository = MockTVSeriesRepository()
         let mockAppConfigProvider = MockAppConfigurationProvider()
@@ -112,7 +115,8 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
 
     // MARK: - Test 4: Execute Finishes Span on Success
 
-    @Test func executeFinishesSpanOnSuccess() async throws {
+    @Test
+    func executeFinishesSpanOnSuccess() async throws {
         // Arrange
         let mockRepository = MockTVSeriesRepository()
         let mockAppConfigProvider = MockAppConfigurationProvider()
@@ -143,7 +147,8 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
 
     // MARK: - Test 5: Repository Error Throws FetchTVSeriesDetailsError
 
-    @Test func repositoryErrorThrowsFetchTVSeriesDetailsError() async throws {
+    @Test
+    func repositoryErrorThrowsFetchTVSeriesDetailsError() async throws {
         // Arrange
         let mockRepository = MockTVSeriesRepository()
         let mockAppConfigProvider = MockAppConfigurationProvider()
@@ -163,12 +168,14 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
             },
             throws: { error in
                 error is FetchTVSeriesDetailsError
-            })
+            }
+        )
     }
 
     // MARK: - Test 6: Repository Error Sets Error on Span and Finishes with InternalError
 
-    @Test func repositoryErrorSetsErrorOnSpanAndFinishesWithInternalError() async throws {
+    @Test
+    func repositoryErrorSetsErrorOnSpanAndFinishesWithInternalError() async throws {
         // Arrange
         let mockRepository = MockTVSeriesRepository()
         let mockAppConfigProvider = MockAppConfigurationProvider()
@@ -192,10 +199,11 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
                 try await SpanContext.$_localProvider.withValue(mockProvider) {
                     try await useCase.execute(id: 300)
                 }
-            }, throws: { _ in true })
+            }, throws: { _ in true }
+        )
 
         // Assert
-        #expect(mockSpan.setDataCallCount >= 2)  // tv_series_id + error
+        #expect(mockSpan.setDataCallCount >= 2) // tv_series_id + error
         let errorEntry = mockSpan.setDataCalledWith.first(where: { $0.key == "error" })
         #expect(errorEntry != nil)
         #expect(mockSpan.finishCallCount == 1)
@@ -204,7 +212,8 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
 
     // MARK: - Test 7: AppConfiguration Error Throws FetchTVSeriesDetailsError
 
-    @Test func appConfigurationErrorThrowsFetchTVSeriesDetailsError() async throws {
+    @Test
+    func appConfigurationErrorThrowsFetchTVSeriesDetailsError() async throws {
         // Arrange
         let mockRepository = MockTVSeriesRepository()
         let mockAppConfigProvider = MockAppConfigurationProvider()
@@ -232,13 +241,15 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
             },
             throws: { error in
                 error is FetchTVSeriesDetailsError
-            })
+            }
+        )
         #expect(mockSpan.finishCalledWithStatus[0] == .internalError)
     }
 
     // MARK: - Test 8: Works Without Span (Nil SpanContext.provider)
 
-    @Test func worksWithoutSpan() async throws {
+    @Test
+    func worksWithoutSpan() async throws {
         // Arrange
         let mockRepository = MockTVSeriesRepository()
         let mockAppConfigProvider = MockAppConfigurationProvider()
@@ -247,7 +258,7 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
         mockRepository.imagesForTVSeriesStub = .success(Self.mockImageCollection(id: 500))
         mockAppConfigProvider.appConfigurationStub = .success(Self.mockAppConfiguration())
 
-        SpanContext.provider = nil  // Explicitly nil
+        SpanContext.provider = nil // Explicitly nil
 
         let useCase = DefaultFetchTVSeriesDetailsUseCase(
             repository: mockRepository,
@@ -278,13 +289,13 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
         ImageCollection(
             id: id,
             posterPaths: [
-                [URL(string: "/poster1.jpg"), URL(string: "/poster2.jpg")].compactMap { $0 }
+                [URL(string: "/poster1.jpg"), URL(string: "/poster2.jpg")].compactMap(\.self)
             ],
             backdropPaths: [
-                [URL(string: "/back1.jpg")].compactMap { $0 }
+                [URL(string: "/back1.jpg")].compactMap(\.self)
             ],
             logoPaths: [
-                [URL(string: "/logo1.jpg")].compactMap { $0 }
+                [URL(string: "/logo1.jpg")].compactMap(\.self)
             ]
         )
     }

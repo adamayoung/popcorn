@@ -1,8 +1,8 @@
 //
 //  DiscoverFactory+TCA.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 09/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -14,12 +14,12 @@ extension DependencyValues {
 
     var discoverFactory: PopcornDiscoverFactory {
         PopcornDiscoverAdaptersFactory(
-            discoverService: self.discoverService,
-            fetchAppConfigurationUseCase: self.fetchAppConfiguration,
-            fetchMovieGenresUseCase: self.fetchMovieGenres,
-            fetchTVSeriesGenresUseCase: self.fetchTVSeriesGenres,
-            fetchMovieImageCollectionUseCase: self.fetchMovieImageCollection,
-            fetchTVSeriesImageCollectionUseCase: self.fetchTVSeriesImageCollection
+            discoverService: discoverService,
+            fetchAppConfigurationUseCase: fetchAppConfiguration,
+            fetchMovieGenresUseCase: fetchMovieGenres,
+            fetchTVSeriesGenresUseCase: fetchTVSeriesGenres,
+            fetchMovieImageCollectionUseCase: fetchMovieImageCollection,
+            fetchTVSeriesImageCollectionUseCase: fetchTVSeriesImageCollection
         ).makeDiscoverFactory()
     }
 

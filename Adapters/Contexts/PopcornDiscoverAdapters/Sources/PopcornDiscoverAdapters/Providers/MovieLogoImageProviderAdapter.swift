@@ -1,8 +1,8 @@
 //
 //  MovieLogoImageProviderAdapter.swift
-//  PopcornDiscoverAdapters
+//  Popcorn
 //
-//  Created by Adam Young on 24/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import CoreDomain
@@ -18,8 +18,7 @@ final class MovieLogoImageProviderAdapter: MovieLogoImageProviding {
     }
 
     func imageURLSet(forMovie movieID: Int) async throws(MovieLogoImageProviderError)
-        -> ImageURLSet?
-    {
+    -> ImageURLSet? {
         let imageCollectionDetails: ImageCollectionDetails
         do {
             imageCollectionDetails = try await fetchImageCollectionUseCase.execute(movieID: movieID)
@@ -32,9 +31,9 @@ final class MovieLogoImageProviderAdapter: MovieLogoImageProviding {
 
 }
 
-extension MovieLogoImageProviderError {
+private extension MovieLogoImageProviderError {
 
-    fileprivate init(_ error: Error) {
+    init(_ error: Error) {
         guard let error = error as? FetchMovieImageCollectionError else {
             self = .unknown(error)
             return

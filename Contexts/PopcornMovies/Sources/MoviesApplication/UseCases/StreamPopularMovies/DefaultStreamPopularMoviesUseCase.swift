@@ -1,8 +1,8 @@
 //
 //  DefaultStreamPopularMoviesUseCase.swift
-//  PopcornMovies
+//  Popcorn
 //
-//  Created by Adam Young on 02/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import CoreDomain
@@ -75,9 +75,7 @@ final class DefaultStreamPopularMoviesUseCase: StreamPopularMoviesUseCase {
         }
     }
 
-    func refresh() async throws(StreamPopularMoviesError) {
-
-    }
+    func refresh() async throws(StreamPopularMoviesError) {}
 
 }
 

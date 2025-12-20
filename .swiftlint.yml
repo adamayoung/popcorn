@@ -1,0 +1,36 @@
+excluded:
+  - "**/.build/**"
+
+opt_in_rules:
+  - attributes
+  - closure_spacing
+  - conditional_returns_on_newline
+  - empty_count
+  - first_where
+  - operator_usage_whitespace
+  - sorted_imports
+
+attributes:
+  always_on_same_line:
+    - "@Dependency"
+    - "@Environment"
+    - "@State"
+    - "@Binding"
+    - "@ObservedObject"
+    - "@StateObject"
+    - "@Published"
+    - "@testable"
+  attributes_with_arguments_always_on_line_above: false
+
+identifier_name:
+  excluded:
+    - 'ok'
+    - 'id'
+
+line_length:
+  ignores_urls: true
+  ignores_comments: true
+  ignores_interpolated_strings: true
+
+cyclomatic_complexity:
+  ignores_case_statements: true

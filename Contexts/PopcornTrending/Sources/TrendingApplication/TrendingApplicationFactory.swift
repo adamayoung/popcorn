@@ -1,8 +1,8 @@
 //
 //  TrendingApplicationFactory.swift
-//  PopcornTrending
+//  Popcorn
 //
-//  Created by Adam Young on 15/10/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation

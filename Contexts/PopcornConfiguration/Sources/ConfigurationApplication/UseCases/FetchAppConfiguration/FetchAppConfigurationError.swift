@@ -1,8 +1,8 @@
 //
 //  FetchAppConfigurationError.swift
-//  PopcornConfiguration
+//  Popcorn
 //
-//  Created by Adam Young on 06/06/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ConfigurationDomain
