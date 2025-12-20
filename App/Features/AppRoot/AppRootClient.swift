@@ -7,7 +7,7 @@
 
 import AppDependencies
 import ComposableArchitecture
-import FeatureFlags
+import FeatureAccess
 import Foundation
 import Observability
 import OSLog

@@ -1,11 +1,11 @@
 //
 //  PopcornGamesCatalogAdaptersFactory.swift
-//  Popcorn
+//  PopcornGamesCatalogAdapters
 //
 //  Copyright © 2025 Adam Young.
 //
 
-import FeatureFlags
+import FeatureAccess
 import Foundation
 import GamesCatalogComposition
 

@@ -1,6 +1,6 @@
 //
 //  BackdropImage.swift
-//  Popcorn
+//  DesignSystem
 //
 //  Copyright © 2025 Adam Young.
 //

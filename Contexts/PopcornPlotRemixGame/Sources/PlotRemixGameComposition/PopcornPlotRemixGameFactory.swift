@@ -1,6 +1,6 @@
 //
 //  PopcornPlotRemixGameFactory.swift
-//  Popcorn
+//  PopcornPlotRemixGame
 //
 //  Copyright © 2025 Adam Young.
 //

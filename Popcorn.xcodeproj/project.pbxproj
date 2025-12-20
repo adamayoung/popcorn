@@ -17,8 +17,8 @@
 		668F58912ECDD5CA00B47B07 /* TVSeriesDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 668F58902ECDD5CA00B47B07 /* TVSeriesDetailsFeature */; };
 		66D8F4112EE8BE8F00B8AE7A /* GamesCatalogFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66D8F4102EE8BE8F00B8AE7A /* GamesCatalogFeature */; };
 		66D8F4142EE8C93900B8AE7A /* PlotRemixGameFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66D8F4132EE8C93900B8AE7A /* PlotRemixGameFeature */; };
-		66FDEF692ED714190029B88A /* FeatureFlags in Frameworks */ = {isa = PBXBuildFile; productRef = 66FDEF682ED714190029B88A /* FeatureFlags */; };
-		66FDEF6C2ED71D320029B88A /* FeatureFlagsAdapters in Frameworks */ = {isa = PBXBuildFile; productRef = 66FDEF6B2ED71D320029B88A /* FeatureFlagsAdapters */; };
+		66FDEF692ED714190029B88A /* FeatureAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 66FDEF682ED714190029B88A /* FeatureAccess */; };
+		66FDEF6C2ED71D320029B88A /* FeatureAccessAdapters in Frameworks */ = {isa = PBXBuildFile; productRef = 66FDEF6B2ED71D320029B88A /* FeatureAccessAdapters */; };
 		900E28EA2ED0781900ED5DFC /* ExploreFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 900E28E92ED0781900ED5DFC /* ExploreFeature */; };
 /* End PBXBuildFile section */
 
@@ -53,7 +53,6 @@
 			membershipExceptions = (
 				Caching,
 				DataPersistenceInfrastructure,
-				FeatureFlags,
 				Observability,
 			);
 			target = 664551852ECB7C2100250D87 /* Popcorn */;
@@ -95,7 +94,6 @@
 				Contexts/PopcornGamesCatalogAdapters,
 				Contexts/PopcornGenresAdapters,
 				Contexts/PopcornPlotRemixGameAdapters,
-				Platform/FeatureFlagsAdapters,
 				Platform/ObservabilityAdapters,
 			);
 			target = 664551852ECB7C2100250D87 /* Popcorn */;
@@ -206,8 +204,8 @@
 				66D8F4112EE8BE8F00B8AE7A /* GamesCatalogFeature in Frameworks */,
 				666AEE272ECDEEEC0038814E /* TrendingPeopleFeature in Frameworks */,
 				668F587E2ECCB82A00B47B07 /* MovieDetailsFeature in Frameworks */,
-				66FDEF6C2ED71D320029B88A /* FeatureFlagsAdapters in Frameworks */,
-				66FDEF692ED714190029B88A /* FeatureFlags in Frameworks */,
+				66FDEF6C2ED71D320029B88A /* FeatureAccessAdapters in Frameworks */,
+				66FDEF692ED714190029B88A /* FeatureAccess in Frameworks */,
 				6645B6452ED60A1800B3AC7C /* MediaSearchFeature in Frameworks */,
 				668F588C2ECDB2D500B47B07 /* TrendingTVSeriesFeature in Frameworks */,
 				664551B22ECB7C6C00250D87 /* ComposableArchitecture in Frameworks */,
@@ -305,8 +303,8 @@
 				666AEE482ECE0A1B0038814E /* PersonDetailsFeature */,
 				900E28E92ED0781900ED5DFC /* ExploreFeature */,
 				6645B6442ED60A1800B3AC7C /* MediaSearchFeature */,
-				66FDEF682ED714190029B88A /* FeatureFlags */,
-				66FDEF6B2ED71D320029B88A /* FeatureFlagsAdapters */,
+				66FDEF682ED714190029B88A /* FeatureAccess */,
+				66FDEF6B2ED71D320029B88A /* FeatureAccessAdapters */,
 				66D8F4102EE8BE8F00B8AE7A /* GamesCatalogFeature */,
 				66D8F4132EE8C93900B8AE7A /* PlotRemixGameFeature */,
 			);
@@ -925,13 +923,13 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = PlotRemixGameFeature;
 		};
-		66FDEF682ED714190029B88A /* FeatureFlags */ = {
+		66FDEF682ED714190029B88A /* FeatureAccess */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = FeatureFlags;
+			productName = FeatureAccess;
 		};
-		66FDEF6B2ED71D320029B88A /* FeatureFlagsAdapters */ = {
+		66FDEF6B2ED71D320029B88A /* FeatureAccessAdapters */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = FeatureFlagsAdapters;
+			productName = FeatureAccessAdapters;
 		};
 		900E28E92ED0781900ED5DFC /* ExploreFeature */ = {
 			isa = XCSwiftPackageProductDependency;

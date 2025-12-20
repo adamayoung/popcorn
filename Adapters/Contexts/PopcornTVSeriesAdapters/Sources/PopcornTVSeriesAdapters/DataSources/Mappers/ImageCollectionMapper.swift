@@ -1,6 +1,6 @@
 //
 //  ImageCollectionMapper.swift
-//  Popcorn
+//  PopcornTVSeriesAdapters
 //
 //  Copyright © 2025 Adam Young.
 //

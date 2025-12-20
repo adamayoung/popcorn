@@ -1,6 +1,6 @@
 //
 //  TrendingPeopleFeature.swift
-//  Popcorn
+//  TrendingPeopleFeature
 //
 //  Copyright © 2025 Adam Young.
 //

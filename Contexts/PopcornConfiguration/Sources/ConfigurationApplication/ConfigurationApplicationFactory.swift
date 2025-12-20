@@ -1,6 +1,6 @@
 //
 //  ConfigurationApplicationFactory.swift
-//  Popcorn
+//  PopcornConfiguration
 //
 //  Copyright © 2025 Adam Young.
 //

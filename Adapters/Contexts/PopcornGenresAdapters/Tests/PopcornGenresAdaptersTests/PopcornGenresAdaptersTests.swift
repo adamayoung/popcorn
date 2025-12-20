@@ -1,6 +1,6 @@
 //
 //  PopcornGenresAdaptersTests.swift
-//  Popcorn
+//  PopcornGenresAdapters
 //
 //  Copyright © 2025 Adam Young.
 //

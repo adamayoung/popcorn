@@ -314,7 +314,6 @@ DesignSystem Carousels (back to view)
 
 ## Resources
 
-- Build configuration: `Makefile`
 - Test plans: `TestPlans/`
 - CI scripts: `ci_scripts/`
 
@@ -329,6 +328,6 @@ When working on this codebase:
 - Respect the dependency injection patterns via TCA
 - Keep mappers at architectural boundaries
 - Consider feature flag implications for new features
-- After making code changes, always verify linting with: `swift format lint -r -p --strict .`
+- After making code changes, always verify linting
 - **Never search, read, or explore files in the `DerivedData/`, `.swiftpm` or `.build` directories** - they contain build artifacts and cached data, not source code
 - Never make code changes without asking, unless been told beforehand

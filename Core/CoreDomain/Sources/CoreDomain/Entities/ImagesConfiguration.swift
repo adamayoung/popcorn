@@ -1,6 +1,6 @@
 //
 //  ImagesConfiguration.swift
-//  Popcorn
+//  CoreDomain
 //
 //  Copyright © 2025 Adam Young.
 //

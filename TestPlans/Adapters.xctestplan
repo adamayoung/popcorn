@@ -49,9 +49,9 @@
     },
     {
       "target" : {
-        "containerPath" : "container:Adapters\/Platform\/FeatureFlagsAdapters",
-        "identifier" : "FeatureFlagsAdaptersTests",
-        "name" : "FeatureFlagsAdaptersTests"
+        "containerPath" : "container:Adapters\/Platform\/FeatureAccessAdapters",
+        "identifier" : "FeatureAccessAdaptersTests",
+        "name" : "FeatureAccessAdaptersTests"
       }
     },
     {

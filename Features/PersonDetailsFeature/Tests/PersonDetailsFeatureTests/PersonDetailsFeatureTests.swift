@@ -1,6 +1,6 @@
 //
 //  PersonDetailsFeatureTests.swift
-//  Popcorn
+//  PersonDetailsFeature
 //
 //  Copyright © 2025 Adam Young.
 //

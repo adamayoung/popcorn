@@ -1,6 +1,6 @@
 //
 //  ImageCollection.swift
-//  Popcorn
+//  PopcornMovies
 //
 //  Copyright © 2025 Adam Young.
 //

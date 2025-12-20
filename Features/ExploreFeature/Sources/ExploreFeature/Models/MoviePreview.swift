@@ -1,6 +1,6 @@
 //
 //  MoviePreview.swift
-//  Popcorn
+//  ExploreFeature
 //
 //  Copyright © 2025 Adam Young.
 //
