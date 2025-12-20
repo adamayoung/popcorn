@@ -1,6 +1,6 @@
 //
 //  TMDbPersonRemoteDataSource.swift
-//  Popcorn
+//  PopcornPeopleAdapters
 //
 //  Copyright © 2025 Adam Young.
 //

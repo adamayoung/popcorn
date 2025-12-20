@@ -1,6 +1,6 @@
 //
 //  TVSeriesDetails.swift
-//  Popcorn
+//  PopcornTVSeries
 //
 //  Copyright © 2025 Adam Young.
 //

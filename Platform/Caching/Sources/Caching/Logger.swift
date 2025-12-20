@@ -1,6 +1,6 @@
 //
 //  Logger.swift
-//  Popcorn
+//  Caching
 //
 //  Copyright © 2025 Adam Young.
 //

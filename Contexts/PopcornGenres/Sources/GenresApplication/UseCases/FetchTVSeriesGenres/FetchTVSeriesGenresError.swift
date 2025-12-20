@@ -1,6 +1,6 @@
 //
 //  FetchTVSeriesGenresError.swift
-//  Popcorn
+//  PopcornGenres
 //
 //  Copyright © 2025 Adam Young.
 //

@@ -1,6 +1,6 @@
 //
 //  MoviePreviewMapper.swift
-//  Popcorn
+//  TrendingMoviesFeature
 //
 //  Copyright © 2025 Adam Young.
 //

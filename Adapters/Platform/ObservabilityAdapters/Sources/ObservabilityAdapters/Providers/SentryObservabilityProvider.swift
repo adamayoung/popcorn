@@ -1,6 +1,6 @@
 //
 //  SentryObservabilityProvider.swift
-//  Popcorn
+//  ObservabilityAdapters
 //
 //  Copyright © 2025 Adam Young.
 //
@@ -16,27 +16,37 @@ struct SentryObservabilityProvider: ObservabilityProviding {
 
     @MainActor
     func start(_ config: ObservabilityConfiguration) async throws {
-        Self.logger.debug("Sentry DSN: \(config.dsn, privacy: .private)")
+        let isDebug = config.environment == .production ? false : true
 
         SentrySDK.start { options in
             options.dsn = config.dsn
             options.environment = config.environment.rawValue
 
-            options.enableAppHangTracking = true
+            options.enableAutoPerformanceTracing = true
             options.tracesSampleRate = config.tracesSampleRate
+
+            options.enableAppHangTracking = true
+
             options.enableMetricKit = true
 
-            options.debug = config.isDebug
+            options.debug = isDebug
         }
 
         let user = User()
         user.userId = config.userID
         SentrySDK.setUser(user)
 
-        Self.logger
-            .info(
-                "Sentry initialised: (environment: \(config.environment.rawValue, privacy: .public), debug: \(config.isDebug, privacy: .public))"
-            )
+        if SentrySDK.isEnabled {
+            Self.logger
+                .info(
+                    "Sentry enabled (DSN: \(config.dsn, privacy: .private), environment: \(config.environment.rawValue, privacy: .public), debug: \(isDebug, privacy: .public))"
+                )
+        } else {
+            Self.logger
+                .warning(
+                    "Sentry disabled"
+                )
+        }
     }
 
     func startTransaction(name: String, operation: SpanOperation) -> Transaction {

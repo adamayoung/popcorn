@@ -1,6 +1,6 @@
 //
 //  FetchTrendingMoviesUseCase.swift
-//  Popcorn
+//  PopcornTrending
 //
 //  Copyright © 2025 Adam Young.
 //

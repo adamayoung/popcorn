@@ -1,6 +1,6 @@
 //
 //  CachedPersonLocalDataSource.swift
-//  Popcorn
+//  PopcornPeople
 //
 //  Copyright © 2025 Adam Young.
 //

@@ -1,6 +1,6 @@
 //
 //  ObservabilityService.swift
-//  Popcorn
+//  Observability
 //
 //  Copyright © 2025 Adam Young.
 //
@@ -21,10 +21,6 @@ struct ObservabilityService: Observing, ObservabilityInitialising {
 
     func start(_ config: ObservabilityConfiguration) async throws {
         try await provider.start(config)
-
-        Self.logger.info(
-            "Observability initialised: (environment: \(config.environment.rawValue, privacy: .public), debug: \(config.isDebug, privacy: .public))"
-        )
     }
 
     func startTransaction(name: String, operation: SpanOperation) -> Transaction {

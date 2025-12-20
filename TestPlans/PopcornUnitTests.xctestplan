@@ -84,9 +84,9 @@
     },
     {
       "target" : {
-        "containerPath" : "container:Platform\/FeatureFlags",
-        "identifier" : "FeatureFlagsTests",
-        "name" : "FeatureFlagsTests"
+        "containerPath" : "container:Platform\/FeatureAccess",
+        "identifier" : "FeatureAccessTests",
+        "name" : "FeatureAccessTests"
       }
     },
     {
@@ -147,9 +147,9 @@
     },
     {
       "target" : {
-        "containerPath" : "container:Adapters\/Platform\/FeatureFlagsAdapters",
-        "identifier" : "FeatureFlagsAdaptersTests",
-        "name" : "FeatureFlagsAdaptersTests"
+        "containerPath" : "container:Adapters\/Platform\/FeatureAccessAdapters",
+        "identifier" : "FeatureAccessAdaptersTests",
+        "name" : "FeatureAccessAdaptersTests"
       }
     },
     {

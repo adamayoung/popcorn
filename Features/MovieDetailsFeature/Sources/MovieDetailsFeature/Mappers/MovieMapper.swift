@@ -1,6 +1,6 @@
 //
 //  MovieMapper.swift
-//  Popcorn
+//  MovieDetailsFeature
 //
 //  Copyright © 2025 Adam Young.
 //

@@ -1,6 +1,6 @@
 //
 //  GamesCatalogView.swift
-//  Popcorn
+//  GamesCatalogFeature
 //
 //  Copyright © 2025 Adam Young.
 //

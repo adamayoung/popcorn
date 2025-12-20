@@ -1,6 +1,6 @@
 //
 //  DiscoverMovieItemEntity.swift
-//  Popcorn
+//  PopcornDiscover
 //
 //  Copyright © 2025 Adam Young.
 //

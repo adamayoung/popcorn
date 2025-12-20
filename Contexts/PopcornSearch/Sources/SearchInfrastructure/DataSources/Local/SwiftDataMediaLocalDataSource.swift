@@ -1,6 +1,6 @@
 //
 //  SwiftDataMediaLocalDataSource.swift
-//  Popcorn
+//  PopcornSearch
 //
 //  Copyright © 2025 Adam Young.
 //
@@ -12,8 +12,7 @@ import SearchDomain
 import SwiftData
 
 @ModelActor
-actor SwiftDataMediaLocalDataSource: MediaLocalDataSource,
-SwiftDataFetchStreaming {
+actor SwiftDataMediaLocalDataSource: MediaLocalDataSource, SwiftDataFetchStreaming {
 
     private static let logger = Logger.searchInfrastructure
 
@@ -55,8 +54,7 @@ SwiftDataFetchStreaming {
         return entries
     }
 
-    func tvSeriesSearchHistory() async throws(MediaLocalDataSourceError)
-    -> [TVSeriesSearchHistoryEntry] {
+    func tvSeriesSearchHistory() async throws(MediaLocalDataSourceError) -> [TVSeriesSearchHistoryEntry] {
         let mediaType = SearchMediaSearchHistoryEntryEntity.MediaType.tvSeries.rawValue
         let descriptor = FetchDescriptor<SearchMediaSearchHistoryEntryEntity>(
             predicate: #Predicate { $0.mediaType?.rawValue == mediaType },
@@ -96,8 +94,7 @@ SwiftDataFetchStreaming {
         return entries
     }
 
-    func saveMovieSearchHistoryEntry(_ entry: MovieSearchHistoryEntry)
-    async throws(MediaLocalDataSourceError) {
+    func saveMovieSearchHistoryEntry(_ entry: MovieSearchHistoryEntry) async throws(MediaLocalDataSourceError) {
         try await removeSearchHistoryEntry(withMediaID: entry.id)
 
         let entity = SearchMediaSearchHistoryEntryEntity(
@@ -110,8 +107,7 @@ SwiftDataFetchStreaming {
         do { try modelContext.save() } catch let error { throw .persistence(error) }
     }
 
-    func saveTVSeriesSearchHistoryEntry(_ entry: TVSeriesSearchHistoryEntry)
-    async throws(MediaLocalDataSourceError) {
+    func saveTVSeriesSearchHistoryEntry(_ entry: TVSeriesSearchHistoryEntry) async throws(MediaLocalDataSourceError) {
         try await removeSearchHistoryEntry(withMediaID: entry.id)
 
         let entity = SearchMediaSearchHistoryEntryEntity(
@@ -124,8 +120,7 @@ SwiftDataFetchStreaming {
         do { try modelContext.save() } catch let error { throw .persistence(error) }
     }
 
-    func savePersonSearchHistoryEntry(_ entry: PersonSearchHistoryEntry)
-    async throws(MediaLocalDataSourceError) {
+    func savePersonSearchHistoryEntry(_ entry: PersonSearchHistoryEntry) async throws(MediaLocalDataSourceError) {
         try await removeSearchHistoryEntry(withMediaID: entry.id)
 
         let entity = SearchMediaSearchHistoryEntryEntity(
@@ -142,8 +137,7 @@ SwiftDataFetchStreaming {
 
 extension SwiftDataMediaLocalDataSource {
 
-    private func removeSearchHistoryEntry(withMediaID id: Int)
-    async throws(MediaLocalDataSourceError) {
+    private func removeSearchHistoryEntry(withMediaID id: Int) async throws(MediaLocalDataSourceError) {
         let descriptor = FetchDescriptor<SearchMediaSearchHistoryEntryEntity>(
             predicate: #Predicate { $0.mediaID == id }
         )

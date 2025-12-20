@@ -1,6 +1,6 @@
 //
 //  TrendingTVSeriesView.swift
-//  Popcorn
+//  TrendingTVSeriesFeature
 //
 //  Copyright © 2025 Adam Young.
 //

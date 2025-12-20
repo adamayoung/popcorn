@@ -1,6 +1,6 @@
 //
 //  ObservabilityConfiguration.swift
-//  Popcorn
+//  Observability
 //
 //  Copyright © 2025 Adam Young.
 //
@@ -13,18 +13,14 @@ public struct ObservabilityConfiguration: Sendable {
     public let environment: Environment
     public let userID: String
 
-    public let isDebug: Bool
-
     public init(
         dsn: String,
         environment: Environment,
-        userID: String,
-        isDebug: Bool = false
+        userID: String
     ) {
         self.dsn = dsn
         self.environment = environment
         self.userID = userID
-        self.isDebug = isDebug
     }
 
 }

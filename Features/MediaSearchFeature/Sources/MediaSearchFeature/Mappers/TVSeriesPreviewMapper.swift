@@ -1,6 +1,6 @@
 //
 //  TVSeriesPreviewMapper.swift
-//  Popcorn
+//  MediaSearchFeature
 //
 //  Copyright © 2025 Adam Young.
 //

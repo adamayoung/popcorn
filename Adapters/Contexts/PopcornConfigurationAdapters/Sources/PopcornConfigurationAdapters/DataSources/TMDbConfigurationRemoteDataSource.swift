@@ -1,6 +1,6 @@
 //
 //  TMDbConfigurationRemoteDataSource.swift
-//  Popcorn
+//  PopcornConfigurationAdapters
 //
 //  Copyright © 2025 Adam Young.
 //

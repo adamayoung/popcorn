@@ -1,6 +1,6 @@
 //
 //  TMDbClient+TCA.swift
-//  Popcorn
+//  AppDependencies
 //
 //  Copyright © 2025 Adam Young.
 //
