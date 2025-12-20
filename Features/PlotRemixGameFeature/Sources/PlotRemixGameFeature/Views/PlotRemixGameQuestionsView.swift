@@ -1,8 +1,8 @@
 //
 //  PlotRemixGameQuestionsView.swift
-//  PlotRemixGameFeature
+//  Popcorn
 //
-//  Created by Adam Young on 12/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import SwiftUI
@@ -22,7 +22,8 @@ struct PlotRemixGameQuestionsView: View {
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
     }
 }
+
 //
-//#Preview {
+// #Preview {
 //    PlotRemixGameQuestionsView()
-//}
+// }

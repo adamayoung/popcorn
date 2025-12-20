@@ -2,7 +2,7 @@
 //  VisionScene.swift
 //  Popcorn
 //
-//  Created by Adam Young on 05/06/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 #if os(visionOS)
@@ -23,8 +23,7 @@
                     .preferredColorScheme(.dark)
                     .onAppear {
                         if let windowScene = UIApplication.shared.connectedScenes.first
-                            as? UIWindowScene
-                        {
+                            as? UIWindowScene {
                             let geometryPreferences = UIWindowScene.GeometryPreferences.Vision(
                                 resizingRestrictions: .uniform
                             )

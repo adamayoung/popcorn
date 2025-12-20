@@ -1,8 +1,8 @@
 //
 //  Game.swift
-//  PopcornPlotRemixGame
+//  Popcorn
 //
-//  Created by Adam Young on 05/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -25,9 +25,9 @@ public struct Game: Sendable {
 
 }
 
-extension Game {
+public extension Game {
 
-    public struct Settings: Sendable {
+    struct Settings: Sendable {
         public let theme: GameTheme
         public let genre: Genre
         public let primaryReleaseYear: PrimaryReleaseYearFilter

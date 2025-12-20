@@ -19,7 +19,8 @@ let package = Package(
     dependencies: [
         // TCA
         .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"),
+            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
+        ),
 
         // Context Packages
         .package(path: "../Contexts/PopcornConfiguration"),

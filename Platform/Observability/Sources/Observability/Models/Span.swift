@@ -1,8 +1,8 @@
 //
 //  Span.swift
-//  Observability
+//  Popcorn
 //
-//  Created by Adam Young on 17/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -23,23 +23,23 @@ public protocol Span: Sendable {
 
 }
 
-extension Span {
+public extension Span {
 
-    public func startChild(operation: SpanOperation) -> Span {
+    func startChild(operation: SpanOperation) -> Span {
         startChild(operation: operation, description: nil)
     }
 
-    public func setData(_ data: [String: any Sendable]) {
+    func setData(_ data: [String: any Sendable]) {
         for (key, value) in data {
             setData(key: key, value: value)
         }
     }
 
-    public func setData(error: any Error) {
+    func setData(error: any Error) {
         setData(key: "error", value: error.localizedDescription)
     }
 
-    public func finish() {
+    func finish() {
         finish(status: .ok)
     }
 

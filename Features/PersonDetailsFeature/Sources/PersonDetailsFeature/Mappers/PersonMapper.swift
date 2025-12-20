@@ -1,8 +1,8 @@
 //
 //  PersonMapper.swift
-//  PersonDetailsFeature
+//  Popcorn
 //
-//  Created by Adam Young on 20/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -11,14 +11,12 @@ import PeopleApplication
 struct PersonMapper {
 
     func map(_ personDetails: PersonDetails) -> Person {
-        let gender: Gender = {
-            switch personDetails.gender {
-            case .female: return .female
-            case .male: return .male
-            case .other: return .other
-            case .unknown: return .unknown
-            }
-        }()
+        let gender: Gender = switch personDetails.gender {
+        case .female: .female
+        case .male: .male
+        case .other: .other
+        case .unknown: .unknown
+        }
 
         return Person(
             id: personDetails.id,

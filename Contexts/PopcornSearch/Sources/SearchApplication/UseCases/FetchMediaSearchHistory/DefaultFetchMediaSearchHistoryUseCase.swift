@@ -1,8 +1,8 @@
 //
 //  DefaultFetchMediaSearchHistoryUseCase.swift
-//  PopcornSearch
+//  Popcorn
 //
-//  Created by Adam Young on 04/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import CoreDomain
@@ -69,6 +69,7 @@ extension DefaultFetchMediaSearchHistoryUseCase {
                             let tvSeriesPreview = try await self.mediaProvider.tvSeries(
                                 withID: entry.id)
                             return (entry.timestamp, MediaPreview.tvSeries(tvSeriesPreview))
+
                         case .person:
                             let personPreview = try await self.mediaProvider.person(
                                 withID: entry.id)
@@ -82,7 +83,7 @@ extension DefaultFetchMediaSearchHistoryUseCase {
                 }
 
                 results.sort { $0.0 > $1.0 }
-                return results.map { $0.1 }
+                return results.map(\.1)
             }
         } catch let error {
             throw FetchMediaSearchHistoryError(error)

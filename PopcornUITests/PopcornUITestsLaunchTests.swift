@@ -1,15 +1,15 @@
 //
 //  PopcornUITestsLaunchTests.swift
-//  PopcornUITests
+//  Popcorn
 //
-//  Created by Adam Young on 17/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import XCTest
 
 final class PopcornUITestsLaunchTests: XCTestCase {
 
-    override class var runsForEachTargetApplicationUIConfiguration: Bool {
+    override static var runsForEachTargetApplicationUIConfiguration: Bool {
         true
     }
 

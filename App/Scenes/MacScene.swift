@@ -2,7 +2,7 @@
 //  MacScene.swift
 //  Popcorn
 //
-//  Created by Adam Young on 05/06/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 #if os(macOS)

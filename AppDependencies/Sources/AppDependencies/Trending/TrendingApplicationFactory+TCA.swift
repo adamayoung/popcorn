@@ -1,8 +1,8 @@
 //
 //  TrendingApplicationFactory+TCA.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 25/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -14,10 +14,10 @@ extension DependencyValues {
 
     var trendingFactory: PopcornTrendingFactory {
         PopcornTrendingAdaptersFactory(
-            trendingService: self.trendingService,
-            fetchAppConfigurationUseCase: self.fetchAppConfiguration,
-            fetchMovieImageCollectionUseCase: self.fetchMovieImageCollection,
-            fetchTVSeriesImageCollectionUseCase: self.fetchTVSeriesImageCollection,
+            trendingService: trendingService,
+            fetchAppConfigurationUseCase: fetchAppConfiguration,
+            fetchMovieImageCollectionUseCase: fetchMovieImageCollection,
+            fetchTVSeriesImageCollectionUseCase: fetchTVSeriesImageCollection
         ).makeTrendingFactory()
     }
 

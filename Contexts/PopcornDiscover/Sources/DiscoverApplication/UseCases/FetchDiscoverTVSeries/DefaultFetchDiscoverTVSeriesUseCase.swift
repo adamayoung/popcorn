@@ -1,8 +1,8 @@
 //
 //  DefaultFetchDiscoverTVSeriesUseCase.swift
-//  PopcornDiscover
+//  Popcorn
 //
-//  Created by Adam Young on 08/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import CoreDomain
@@ -29,12 +29,11 @@ final class DefaultFetchDiscoverTVSeriesUseCase: FetchDiscoverTVSeriesUseCase {
     }
 
     func execute() async throws(FetchDiscoverTVSeriesError) -> [TVSeriesPreviewDetails] {
-        try await self.execute(filter: nil, page: 1)
+        try await execute(filter: nil, page: 1)
     }
 
     func execute(filter: TVSeriesFilter) async throws(FetchDiscoverTVSeriesError)
-        -> [TVSeriesPreviewDetails]
-    {
+    -> [TVSeriesPreviewDetails] {
         try await execute(filter: filter, page: 1)
     }
 

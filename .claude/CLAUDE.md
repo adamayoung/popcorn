@@ -18,8 +18,8 @@ This directory contains all Claude Code setup for this iOS project.
 
 **Linting:**
 
-- `/lint` - Run swift format lint
-- `/format` - Run swift format
+- `/lint` - Run `swiftlint --strict .` and `swiftformat --lint .`
+- `/format` - Run `swiftlint --fix .` and `swiftformat .`
 
 **Device:**
 

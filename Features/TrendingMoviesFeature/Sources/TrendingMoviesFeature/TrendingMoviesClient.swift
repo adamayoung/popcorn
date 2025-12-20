@@ -1,8 +1,8 @@
 //
 //  TrendingMoviesClient.swift
-//  TrendingMoviesFeature
+//  Popcorn
 //
-//  Created by Adam Young on 17/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import AppDependencies
@@ -42,14 +42,14 @@ extension TrendingMoviesClient: DependencyKey {
                         title: "The Running Man",
                         posterURL: URL(
                             string:
-                                "https://image.tmdb.org/t/p/w780/dKL78O9zxczVgjtNcQ9UkbYLzqX.jpg")
+                            "https://image.tmdb.org/t/p/w780/dKL78O9zxczVgjtNcQ9UkbYLzqX.jpg")
                     ),
                     MoviePreview(
                         id: 2,
                         title: "Black Phone 2",
                         posterURL: URL(
                             string:
-                                "https://image.tmdb.org/t/p/w780/xUWUODKPIilQoFUzjHM6wKJkP3Y.jpg")
+                            "https://image.tmdb.org/t/p/w780/xUWUODKPIilQoFUzjHM6wKJkP3Y.jpg")
                     )
                 ]
             }

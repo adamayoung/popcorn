@@ -1,8 +1,8 @@
 //
 //  MediaSearchView.swift
-//  MediaSearchFeature
+//  Popcorn
 //
-//  Created by Adam Young on 25/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -46,7 +46,7 @@ public struct MediaSearchView: View {
             prompt: Text("MOVIES_TV_OR_PEOPLE", bundle: .module)
         )
         .searchFocused($focusedField, equals: .search)
-        .bind($store.focusedField.sending(\.focusChanged), to: self.$focusedField)
+        .bind($store.focusedField.sending(\.focusChanged), to: $focusedField)
         .task { store.send(.fetchGenresAndSearchHistory) }
         .navigationTitle(Text("SEARCH", bundle: .module))
     }

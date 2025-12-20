@@ -1,8 +1,8 @@
 //
 //  FetchPopularMoviesUseCase+TCA.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 21/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -18,9 +18,9 @@ enum FetchPopularMoviesUseCaseKey: DependencyKey {
 
 }
 
-extension DependencyValues {
+public extension DependencyValues {
 
-    public var fetchPopularMovies: any FetchPopularMoviesUseCase {
+    var fetchPopularMovies: any FetchPopularMoviesUseCase {
         get { self[FetchPopularMoviesUseCaseKey.self] }
         set { self[FetchPopularMoviesUseCaseKey.self] = newValue }
     }

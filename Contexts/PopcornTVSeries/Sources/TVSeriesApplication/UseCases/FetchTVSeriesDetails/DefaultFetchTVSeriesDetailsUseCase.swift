@@ -1,8 +1,8 @@
 //
 //  DefaultFetchTVSeriesDetailsUseCase.swift
-//  PopcornTVSeries
+//  Popcorn
 //
-//  Created by Adam Young on 03/06/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import CoreDomain
@@ -40,10 +40,10 @@ final class DefaultFetchTVSeriesDetailsUseCase: FetchTVSeriesDetailsUseCase {
                 appConfigurationProvider.appConfiguration()
             )
         } catch let error {
-            let e = FetchTVSeriesDetailsError(error)
-            span?.setData(error: e)
+            let detailsError = FetchTVSeriesDetailsError(error)
+            span?.setData(error: detailsError)
             span?.finish(status: .internalError)
-            throw e
+            throw detailsError
         }
 
         let mapper = TVSeriesDetailsMapper()

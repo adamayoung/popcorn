@@ -8,6 +8,9 @@ defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
 # SwiftLint on Analyze action
 if [ $CI_XCODEBUILD_ACTION = 'analyze' ];
 then
+    brew install swiftlint swiftformat
+
     cd $CI_PRIMARY_REPOSITORY_PATH
-    swift format lint -r -p --strict .
+    swiftlint --strict .
+    swiftformat --lint .
 fi

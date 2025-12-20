@@ -1,15 +1,15 @@
 //
 //  MediaSearchFeature.swift
-//  MediaSearchFeature
+//  Popcorn
 //
-//  Created by Adam Young on 25/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import AppDependencies
 import ComposableArchitecture
 import Foundation
-import OSLog
 import Observability
+import OSLog
 
 @Reducer
 public struct MediaSearchFeature: Sendable {
@@ -126,6 +126,7 @@ public struct MediaSearchFeature: Sendable {
 
                 state.viewState = .loading
                 effect = handleFetchGenresAndSearchHistory()
+
             case .genresAndSearchHistoryLoaded(let genresSnapshot, let searchHistorySnapshot):
                 state.genresSnapshot = genresSnapshot
                 state.searchHistorySnapshot = searchHistorySnapshot
@@ -195,12 +196,11 @@ public struct MediaSearchFeature: Sendable {
 extension MediaSearchFeature {
 
     private func updateViewState(state: inout State) {
-        let hasResultsOrOutcome: Bool
-        switch state.viewState {
+        let hasResultsOrOutcome = switch state.viewState {
         case .searchResults, .noSearchResults:
-            hasResultsOrOutcome = true
+            true
         default:
-            hasResultsOrOutcome = false
+            false
         }
 
         if state.query.isEmpty {
@@ -212,7 +212,7 @@ extension MediaSearchFeature {
             return
         }
 
-        if state.focusedField == .search && hasResultsOrOutcome == false {
+        if state.focusedField == .search, hasResultsOrOutcome == false {
             state.viewState = .searchHistory(state.searchHistorySnapshot)
             return
         }

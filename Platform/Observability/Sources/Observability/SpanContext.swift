@@ -1,8 +1,8 @@
 //
 //  SpanContext.swift
-//  Observability
+//  Popcorn
 //
-//  Created by Adam Young on 17/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -10,7 +10,7 @@ import Foundation
 public enum SpanContext {
 
     /// Global provider for production use.
-    nonisolated(unsafe) private static var globalProvider: (any ObservabilityProviding)?
+    private nonisolated(unsafe) static var globalProvider: (any ObservabilityProviding)?
 
     /// TaskLocal override for test isolation.
     @TaskLocal public static var localProvider: (any ObservabilityProviding)?

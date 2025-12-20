@@ -1,8 +1,8 @@
 //
-//  GeneratePlotRemixGameUseCase.swift
-//  PopcornPlotRemixGame
+//  DefaultGeneratePlotRemixGameUseCase.swift
+//  Popcorn
 //
-//  Created by Adam Young on 05/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -22,7 +22,7 @@ final class DefaultGeneratePlotRemixGameUseCase: GeneratePlotRemixGameUseCase {
     private let genreProvider: any GenreProviding
     private let synopsisRiddleGenerator: any SynopsisRiddleGenerating
 
-    public init(
+    init(
         appConfigurationProvider: some AppConfigurationProviding,
         movieProvider: some MovieProviding,
         genreProvider: some GenreProviding,
@@ -34,6 +34,7 @@ final class DefaultGeneratePlotRemixGameUseCase: GeneratePlotRemixGameUseCase {
         self.synopsisRiddleGenerator = synopsisRiddleGenerator
     }
 
+    // swiftlint:disable function_body_length
     func execute(
         config: GameConfig,
         progress: @Sendable @escaping (Float) -> Void
@@ -78,7 +79,8 @@ final class DefaultGeneratePlotRemixGameUseCase: GeneratePlotRemixGameUseCase {
                     Self.signposter.emitEvent("Riddle generated", id: signpostID)
 
                     let correctAnswer = AnswerOption(
-                        id: movie.id, title: movie.title, isCorrect: true)
+                        id: movie.id, title: movie.title, isCorrect: true
+                    )
                     let incorrectAnswers = similarMovies.map { movie in
                         AnswerOption(id: movie.id, title: movie.title, isCorrect: false)
                     }
@@ -89,7 +91,8 @@ final class DefaultGeneratePlotRemixGameUseCase: GeneratePlotRemixGameUseCase {
                     results.append(question)
 
                     let progressValue = min(
-                        Float(results.count + 1) / Float(Self.questionCount), 1.0)
+                        Float(results.count + 1) / Float(Self.questionCount), 1.0
+                    )
                     progress(progressValue)
                 }
 
@@ -98,7 +101,8 @@ final class DefaultGeneratePlotRemixGameUseCase: GeneratePlotRemixGameUseCase {
         } catch let error {
             Self.signposter.endInterval(
                 "Generating Plot Remix Game", interval,
-                "\(error.localizedDescription, privacy: .public)")
+                "\(error.localizedDescription, privacy: .public)"
+            )
             throw .riddleGeneration(error)
         }
         Self.signposter.endInterval("Generating Plot Remix Game", interval)
@@ -115,5 +119,6 @@ final class DefaultGeneratePlotRemixGameUseCase: GeneratePlotRemixGameUseCase {
 
         return game
     }
+    // swiftlint:enable function_body_length
 
 }

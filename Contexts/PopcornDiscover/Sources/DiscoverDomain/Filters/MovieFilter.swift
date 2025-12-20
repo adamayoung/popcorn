@@ -1,8 +1,8 @@
 //
 //  MovieFilter.swift
-//  PopcornDiscover
+//  Popcorn
 //
-//  Created by Adam Young on 08/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -48,9 +48,9 @@ extension MovieFilter: CustomStringConvertible {
 
 }
 
-extension MovieFilter.PrimaryReleaseYearFilter {
+public extension MovieFilter.PrimaryReleaseYearFilter {
 
-    public var description: String {
+    var description: String {
         switch self {
         case .onYear(let year): "onYear(\(year))"
         case .fromYear(let year): "fromYear(\(year))"

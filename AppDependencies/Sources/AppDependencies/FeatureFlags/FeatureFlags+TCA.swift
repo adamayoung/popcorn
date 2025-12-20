@@ -1,8 +1,8 @@
 //
 //  FeatureFlags+TCA.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 26/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -18,9 +18,9 @@ enum FeatureFlagsKey: DependencyKey {
 
 }
 
-extension DependencyValues {
+public extension DependencyValues {
 
-    public var featureFlags: any FeatureFlagging {
+    var featureFlags: any FeatureFlagging {
         get { self[FeatureFlagsKey.self] }
         set { self[FeatureFlagsKey.self] = newValue }
     }

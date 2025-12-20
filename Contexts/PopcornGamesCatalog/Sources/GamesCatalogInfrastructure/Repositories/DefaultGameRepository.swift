@@ -1,8 +1,8 @@
 //
 //  DefaultGameRepository.swift
-//  PopcornGamesCatalog
+//  Popcorn
 //
-//  Created by Adam Young on 09/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -19,19 +19,19 @@ final class DefaultGameRepository: GameRepository {
     func games() async throws(GameRepositoryError) -> [GameMetadata] {
         Self.availableGames.values
             .filter { game in
-                if game.id == 1 && !isPlotRemixEnabled {
+                if game.id == 1, !isPlotRemixEnabled {
                     return false
                 }
 
-                if game.id == 2 && !isPosterPixelationGameEnabled {
+                if game.id == 2, !isPosterPixelationGameEnabled {
                     return false
                 }
 
-                if game.id == 3 && !isEmojiPlotDecoderEnabled {
+                if game.id == 3, !isEmojiPlotDecoderEnabled {
                     return false
                 }
 
-                if game.id == 4 && !isTimelineTangleGameEnabled {
+                if game.id == 4, !isTimelineTangleGameEnabled {
                     return false
                 }
 
@@ -74,12 +74,13 @@ extension DefaultGameRepository {
 
 extension DefaultGameRepository {
 
+    // swiftlint:disable line_length
     private static let availableGames: [GameMetadata.ID: GameMetadata] = [
         1: GameMetadata(
             id: 1,
             name: "Plot Remix",
             description:
-                "Get the movie overview - but rewritten in a completely wild, unexpected style. Decode the twisted summary and guess the film before your brain melts.",
+            "Get the movie overview - but rewritten in a completely wild, unexpected style. Decode the twisted summary and guess the film before your brain melts.",
             iconSystemName: "movieclapper",
             color: .blue
         ),
@@ -87,7 +88,7 @@ extension DefaultGameRepository {
             id: 2,
             name: "Poster Pixelation",
             description:
-                "A famous movie poster starts off as a blurry mess. Reveal it piece by piece and call the title before your eyes finally catch up.",
+            "A famous movie poster starts off as a blurry mess. Reveal it piece by piece and call the title before your eyes finally catch up.",
             iconSystemName: "photo.stack",
             color: .green
         ),
@@ -95,7 +96,7 @@ extension DefaultGameRepository {
             id: 3,
             name: "Emoji Plot Decoder",
             description:
-                "Get a movie plot told only through a handful of emojis. Decode the chaos and guess the film before your brain turns into its own puzzle.",
+            "Get a movie plot told only through a handful of emojis. Decode the chaos and guess the film before your brain turns into its own puzzle.",
             iconSystemName: "face.smiling",
             color: .red
         ),
@@ -103,10 +104,11 @@ extension DefaultGameRepository {
             id: 4,
             name: "Timeline Tangle",
             description:
-                "Movies drop in totally scrambled order. Drag them into the correct timeline before your sense of film history short-circuits.",
+            "Movies drop in totally scrambled order. Drag them into the correct timeline before your sense of film history short-circuits.",
             iconSystemName: "calendar",
             color: .yellow
         )
     ]
+    // swiftlint:enable line_length
 
 }

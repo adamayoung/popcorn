@@ -1,15 +1,15 @@
 //
 //  PlotRemixGameFeature.swift
-//  PlotRemixGameFeature
+//  Popcorn
 //
-//  Created by Adam Young on 09/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import AppDependencies
 import ComposableArchitecture
 import Foundation
-import OSLog
 import Observability
+import OSLog
 
 @Reducer
 public struct PlotRemixGameFeature: Sendable {
@@ -171,9 +171,13 @@ extension PlotRemixGameFeature {
             let game: Game
             do {
                 game = try await plotRemixGameClient.generateGame { progress in
-                    guard !Task.isCancelled else { return }
+                    guard !Task.isCancelled else {
+                        return
+                    }
                     Task {
-                        guard !Task.isCancelled else { return }
+                        guard !Task.isCancelled else {
+                            return
+                        }
                         await send(.generatingGame(progress))
                     }
                 }

@@ -1,8 +1,8 @@
 //
 //  TMDbPersonRemoteDataSource.swift
-//  PopcornPeopleAdapters
+//  Popcorn
 //
-//  Created by Adam Young on 18/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import CoreDomain
@@ -35,9 +35,9 @@ final class TMDbPersonRemoteDataSource: PersonRemoteDataSource {
 
 }
 
-extension PersonRepositoryError {
+private extension PersonRepositoryError {
 
-    fileprivate init(_ error: Error) {
+    init(_ error: Error) {
         guard let error = error as? TMDbError else {
             self = .unknown(error)
             return
@@ -46,7 +46,7 @@ extension PersonRepositoryError {
         self.init(error)
     }
 
-    fileprivate init(_ error: TMDbError) {
+    init(_ error: TMDbError) {
         switch error {
         case .notFound:
             self = .notFound

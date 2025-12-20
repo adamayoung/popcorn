@@ -1,8 +1,8 @@
 //
 //  PlotRemixGamePlayFeatureView.swift
-//  PlotRemixGameFeature
+//  Popcorn
 //
-//  Created by Adam Young on 11/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -45,7 +45,8 @@ public struct PlotRemixGamePlayFeatureView: View {
                         systemImage: "exclamationmark.triangle.fill",
                         description: Text(
                             "THERE_WAS_A_PROBLEM_WHILE_GENERATING_THE_GAME_TRY_AGAIN",
-                            bundle: .module)
+                            bundle: .module
+                        )
                     )
 
                 default:
@@ -96,8 +97,8 @@ extension PlotRemixGamePlayFeatureView {
                         ForEach(question.options) { option in
                             AnswerButton(
                                 title: "\(option.title) \(option.isCorrect ? "✅" : "")",
-                                action: {
-                                })
+                                action: {}
+                            )
                         }
                     }
                 }

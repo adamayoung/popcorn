@@ -1,8 +1,8 @@
 //
-//  DiscoverMovieRemoteDataSource.swift
-//  PopcornDiscover
+//  DiscoverRemoteDataSource.swift
+//  Popcorn
 //
-//  Created by Adam Young on 08/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation

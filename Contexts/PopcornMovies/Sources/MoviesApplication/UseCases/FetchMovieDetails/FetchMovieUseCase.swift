@@ -1,8 +1,8 @@
 //
-//  FetchMovieDetailsUseCase.swift
-//  PopcornMovies
+//  FetchMovieUseCase.swift
+//  Popcorn
 //
-//  Created by Adam Young on 03/06/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation

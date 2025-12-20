@@ -1,8 +1,8 @@
 //
 //  ToggleWatchlistMovieUseCase+TCA.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 03/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -18,9 +18,9 @@ enum ToggleWatchlistMovieUseCaseKey: DependencyKey {
 
 }
 
-extension DependencyValues {
+public extension DependencyValues {
 
-    public var toggleWatchlistMovie: any ToggleWatchlistMovieUseCase {
+    var toggleWatchlistMovie: any ToggleWatchlistMovieUseCase {
         get { self[ToggleWatchlistMovieUseCaseKey.self] }
         set { self[ToggleWatchlistMovieUseCaseKey.self] = newValue }
     }

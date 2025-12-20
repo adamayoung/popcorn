@@ -1,8 +1,8 @@
 //
 //  PlotRemixGameStartView.swift
-//  PlotRemixGameFeature
+//  Popcorn
 //
-//  Created by Adam Young on 12/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import DesignSystem
@@ -11,7 +11,7 @@ import SwiftUI
 struct PlotRemixGameStartView: View {
 
     var metadata: GameMetadata
-    var progress: Float? = nil
+    var progress: Float?
     var startGameAction: () -> Void
 
     var body: some View {
@@ -33,7 +33,6 @@ struct PlotRemixGameStartView: View {
                 if let progress {
                     loadingView(progress: progress)
                 } else {
-
                     Button {
                         startGameAction()
                     } label: {
@@ -119,10 +118,10 @@ struct PlotRemixGameStartView: View {
         )
 
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background {
-            AnimatedMeshBackground(baseColor: metadata.color)
-                .ignoresSafeArea()
-        }
+            .background {
+                AnimatedMeshBackground(baseColor: metadata.color)
+                    .ignoresSafeArea()
+            }
     }
     .preferredColorScheme(.dark)
 }
@@ -138,10 +137,10 @@ struct PlotRemixGameStartView: View {
         )
 
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background {
-            AnimatedMeshBackground(baseColor: metadata.color)
-                .ignoresSafeArea()
-        }
+            .background {
+                AnimatedMeshBackground(baseColor: metadata.color)
+                    .ignoresSafeArea()
+            }
     }
     .preferredColorScheme(.dark)
 }

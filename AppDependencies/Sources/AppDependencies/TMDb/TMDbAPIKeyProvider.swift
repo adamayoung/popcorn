@@ -1,8 +1,8 @@
 //
 //  TMDbAPIKeyProvider.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 05/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -14,14 +14,12 @@ enum TMDbAPIKeyProvider {
         bundle: Bundle = .main
     ) -> String {
         if let env = environment["TMDB_API_KEY"],
-            !env.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        {
+           !env.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return env
         }
 
         if let value = bundle.object(forInfoDictionaryKey: "TMDbAPIKey") as? String,
-            !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        {
+           !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return value
         }
 

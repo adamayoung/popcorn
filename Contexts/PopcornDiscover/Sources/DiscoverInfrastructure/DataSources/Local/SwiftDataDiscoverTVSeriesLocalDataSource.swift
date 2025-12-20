@@ -1,8 +1,8 @@
 //
 //  SwiftDataDiscoverTVSeriesLocalDataSource.swift
-//  PopcornDiscover
+//  Popcorn
 //
-//  Created by Adam Young on 09/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import DataPersistenceInfrastructure
@@ -13,12 +13,11 @@ import SwiftData
 
 @ModelActor
 actor SwiftDataDiscoverTVSeriesLocalDataSource: DiscoverTVSeriesLocalDataSource,
-    SwiftDataFetchStreaming, Sendable
-{
+SwiftDataFetchStreaming {
 
     private static let logger = Logger.discoverInfrastructure
 
-    private var ttl: TimeInterval = 60 * 60 * 24  // 1 day
+    private var ttl: TimeInterval = 60 * 60 * 24 // 1 day
 
     func tvSeries(
         filter: TVSeriesFilter?,
@@ -38,9 +37,10 @@ actor SwiftDataDiscoverTVSeriesLocalDataSource: DiscoverTVSeriesLocalDataSource,
         }
 
         guard !entities.isEmpty else {
-            Self.logger.trace(
-                "SwiftData MISS: DiscoverTVSeries(filter: \(filterKey ?? "nil", privacy: .public), page: \(page, privacy: .public))"
-            )
+            Self.logger
+                .trace(
+                    "SwiftData MISS: DiscoverTVSeries(filter: \(filterKey ?? "nil", privacy: .public), page: \(page, privacy: .public))"
+                )
             return nil
         }
 

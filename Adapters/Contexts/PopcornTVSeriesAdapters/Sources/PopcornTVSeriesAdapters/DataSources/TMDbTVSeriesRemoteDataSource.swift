@@ -1,8 +1,8 @@
 //
 //  TMDbTVSeriesRemoteDataSource.swift
-//  PopcornTVSeriesAdapters
+//  Popcorn
 //
-//  Created by Adam Young on 18/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import CoreDomain
@@ -45,10 +45,10 @@ final class TMDbTVSeriesRemoteDataSource: TVSeriesRemoteDataSource {
             tmdbSpan?.setData(error: error)
             tmdbSpan?.finish(status: .internalError)
 
-            let e = TVSeriesRemoteDataSourceError(error)
-            span?.setData(error: e)
+            let dataSourceError = TVSeriesRemoteDataSourceError(error)
+            span?.setData(error: dataSourceError)
             span?.finish(status: .internalError)
-            throw e
+            throw dataSourceError
         }
 
         let mapper = TVSeriesMapper()
@@ -86,10 +86,10 @@ final class TMDbTVSeriesRemoteDataSource: TVSeriesRemoteDataSource {
             tmdbSpan?.setData(error: error)
             tmdbSpan?.finish(status: .internalError)
 
-            let e = TVSeriesRemoteDataSourceError(error)
-            span?.setData(error: error)
+            let dataSourceError = TVSeriesRemoteDataSourceError(error)
+            span?.setData(error: dataSourceError)
             span?.finish(status: .internalError)
-            throw TVSeriesRemoteDataSourceError(e)
+            throw dataSourceError
         }
 
         let mapper = ImageCollectionMapper()
@@ -101,9 +101,9 @@ final class TMDbTVSeriesRemoteDataSource: TVSeriesRemoteDataSource {
 
 }
 
-extension TVSeriesRemoteDataSourceError {
+private extension TVSeriesRemoteDataSourceError {
 
-    fileprivate init(_ error: Error) {
+    init(_ error: Error) {
         guard let error = error as? TMDbError else {
             self = .unknown(error)
             return
@@ -112,7 +112,7 @@ extension TVSeriesRemoteDataSourceError {
         self.init(error)
     }
 
-    fileprivate init(_ error: TMDbError) {
+    init(_ error: TMDbError) {
         switch error {
         case .notFound:
             self = .notFound

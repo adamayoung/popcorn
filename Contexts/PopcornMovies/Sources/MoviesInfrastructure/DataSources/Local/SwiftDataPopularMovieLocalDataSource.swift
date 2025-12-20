@@ -1,8 +1,8 @@
 //
 //  SwiftDataPopularMovieLocalDataSource.swift
-//  PopcornMovies
+//  Popcorn
 //
-//  Created by Adam Young on 03/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import DataPersistenceInfrastructure
@@ -12,13 +12,11 @@ import OSLog
 import SwiftData
 
 @ModelActor
-actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDataFetchStreaming,
-    Sendable
-{
+actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDataFetchStreaming {
 
     private static let logger = Logger.moviesInfrastructure
 
-    private var ttl: TimeInterval = 60 * 60 * 24  // 1 day
+    private var ttl: TimeInterval = 60 * 60 * 24 // 1 day
 
     func popular(page: Int) async throws(PopularMovieLocalDataSourceError) -> [MoviePreview]? {
         let descriptor = FetchDescriptor<MoviesPopularMovieItemEntity>(

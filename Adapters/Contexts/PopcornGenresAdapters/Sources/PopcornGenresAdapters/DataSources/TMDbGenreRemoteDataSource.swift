@@ -1,8 +1,8 @@
 //
 //  TMDbGenreRemoteDataSource.swift
-//  PopcornGenresAdapters
+//  Popcorn
 //
-//  Created by Adam Young on 09/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -48,9 +48,9 @@ final class TMDbGenreRemoteDataSource: GenreRemoteDataSource {
 
 }
 
-extension GenreRemoteDataSourceError {
+private extension GenreRemoteDataSourceError {
 
-    fileprivate init(_ error: Error) {
+    init(_ error: Error) {
         guard let error = error as? TMDbError else {
             self = .unknown(error)
             return
@@ -59,7 +59,7 @@ extension GenreRemoteDataSourceError {
         self.init(error)
     }
 
-    fileprivate init(_ error: TMDbError) {
+    init(_ error: TMDbError) {
         switch error {
         case .unauthorised:
             self = .unauthorised

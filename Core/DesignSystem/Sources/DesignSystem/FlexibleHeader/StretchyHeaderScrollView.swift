@@ -1,8 +1,8 @@
 //
 //  StretchyHeaderScrollView.swift
-//  DesignSystem
+//  Popcorn
 //
-//  Created by Adam Young on 21/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import SwiftUI
@@ -41,6 +41,7 @@ public struct StretchyHeaderScrollView<Header: View, HeaderOverlay: View, Conten
 
 }
 
+// swiftlint:disable line_length
 #Preview {
     NavigationStack {
         StretchyHeaderScrollView(
@@ -57,7 +58,7 @@ public struct StretchyHeaderScrollView<Header: View, HeaderOverlay: View, Conten
             content: {
                 Text(
                     verbatim:
-                        "When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces, and one strange little girl."
+                    "When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces, and one strange little girl."
                 )
                 .multilineTextAlignment(.leading)
                 .fixedSize(horizontal: false, vertical: true)
@@ -65,3 +66,5 @@ public struct StretchyHeaderScrollView<Header: View, HeaderOverlay: View, Conten
         )
     }
 }
+
+// swiftlint:enable line_length

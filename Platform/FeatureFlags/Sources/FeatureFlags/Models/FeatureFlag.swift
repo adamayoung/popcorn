@@ -1,15 +1,15 @@
 //
 //  FeatureFlag.swift
-//  FeatureFlags
+//  Popcorn
 //
-//  Created by Adam Young on 16/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
 
 public enum FeatureFlag: String, Sendable, CaseIterable {
     // Navigation
-    case explore = "explore"
+    case explore
     case mediaSearch = "media_search"
 
     // Explore Screen
@@ -20,12 +20,12 @@ public enum FeatureFlag: String, Sendable, CaseIterable {
     case exploreTrendingPeople = "explore_trending_people"
 
     // Games
-    case games = "games"
+    case games
     case plotRemixGame = "plot_remix_game"
     case emojiPlotDecoderGame = "emoji_plot_decoder_game"
     case posterPixelationGame = "poster_pixelation_game"
     case timelineTangleGame = "timeline_tangle_game"
 
     // App Wide
-    case watchlist = "watchlist"
+    case watchlist
 }

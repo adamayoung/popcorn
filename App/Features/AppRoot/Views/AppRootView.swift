@@ -2,7 +2,7 @@
 //  AppRootView.swift
 //  Popcorn
 //
-//  Created by Adam Young on 17/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -80,11 +80,11 @@ struct AppRootView: View {
             }
         }
         #if !os(macOS)
-            .tabViewStyle(.sidebarAdaptable)
-            .tabViewCustomization($customization)
+        .tabViewStyle(.sidebarAdaptable)
+        .tabViewCustomization($customization)
         #else
-            .tabViewStyle(.sidebarAdaptable)
-            .tabViewCustomization($customization)
+        .tabViewStyle(.sidebarAdaptable)
+        .tabViewCustomization($customization)
         #endif
         .minimizeTabBar()
     }
@@ -95,17 +95,17 @@ struct AppRootView: View {
             systemImage: "exclamationmark.triangle.fill",
             description: Text("APP_FAILED_TO_START_TRY_AGAIN")
         )
-
     }
 
 }
 
-extension View {
+private extension View {
 
-    @ViewBuilder fileprivate func minimizeTabBar() -> some View {
+    @ViewBuilder
+    func minimizeTabBar() -> some View {
         #if os(iOS)
             if #available(iOS 26.0, *) {
-                self.tabBarMinimizeBehavior(.onScrollDown)
+                tabBarMinimizeBehavior(.onScrollDown)
             } else {
                 self
             }

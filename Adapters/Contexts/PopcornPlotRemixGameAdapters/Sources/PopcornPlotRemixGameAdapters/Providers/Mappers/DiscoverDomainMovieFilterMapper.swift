@@ -1,8 +1,8 @@
 //
 //  DiscoverDomainMovieFilterMapper.swift
-//  PopcornPlotRemixGameAdapters
+//  Popcorn
 //
-//  Created by Adam Young on 12/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import DiscoverDomain
@@ -22,7 +22,9 @@ struct DiscoverDomainMovieFilterMapper {
     private func map(
         _ filter: PlotRemixGameDomain.PrimaryReleaseYearFilter?
     ) -> DiscoverDomain.MovieFilter.PrimaryReleaseYearFilter? {
-        guard let filter else { return nil }
+        guard let filter else {
+            return nil
+        }
 
         switch filter {
         case .onYear(let year): return .onYear(year)

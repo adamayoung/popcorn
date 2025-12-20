@@ -1,8 +1,8 @@
 //
 //  ObservabilityAdaptersFactory.swift
-//  ObservabilityAdapters
+//  Popcorn
 //
-//  Created by Adam Young on 16/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation

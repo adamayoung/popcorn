@@ -1,8 +1,8 @@
 //
 //  Caching.swift
-//  Caching
+//  Popcorn
 //
-//  Created by Adam Young on 25/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -15,9 +15,9 @@ public protocol Caching: Actor {
 
     func item<Item>(forKey key: CacheKey, ofType type: Item.Type) async -> Item?
 
-    func setItem<Item>(_ item: Item, forKey key: CacheKey) async
+    func setItem(_ item: some Any, forKey key: CacheKey) async
 
-    func setItem<Item>(_ item: Item, forKey key: CacheKey, expiresIn: TimeInterval) async
+    func setItem(_ item: some Any, forKey key: CacheKey, expiresIn: TimeInterval) async
 
     func removeItem(forKey key: CacheKey) async
 

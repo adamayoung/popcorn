@@ -1,16 +1,16 @@
 //
 //  PopcornTrendingAdaptersFactory.swift
-//  PopcornTrendingAdapters
+//  Popcorn
 //
-//  Created by Adam Young on 25/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ConfigurationApplication
 import Foundation
 import MoviesApplication
 import TMDb
-import TVSeriesApplication
 import TrendingComposition
+import TVSeriesApplication
 
 public final class PopcornTrendingAdaptersFactory {
 

@@ -1,8 +1,8 @@
 //
 //  TVSeriesApplicationFactory+TCA.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 25/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -14,8 +14,8 @@ extension DependencyValues {
 
     var tvSeriesFactory: PopcornTVSeriesFactory {
         PopcornTVSeriesAdaptersFactory(
-            tvSeriesService: self.tvSeriesService,
-            fetchAppConfigurationUseCase: self.fetchAppConfiguration
+            tvSeriesService: tvSeriesService,
+            fetchAppConfigurationUseCase: fetchAppConfiguration
         ).makeTVSeriesFactory()
     }
 

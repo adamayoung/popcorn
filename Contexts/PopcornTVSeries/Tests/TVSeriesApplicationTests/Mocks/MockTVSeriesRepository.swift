@@ -1,8 +1,8 @@
 //
 //  MockTVSeriesRepository.swift
-//  PopcornTVSeries
+//  Popcorn
 //
-//  Created by Adam Young on 18/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -35,8 +35,7 @@ final class MockTVSeriesRepository: TVSeriesRepository, @unchecked Sendable {
     var imagesForTVSeriesStub: Result<ImageCollection, TVSeriesRepositoryError>?
 
     func images(forTVSeries tvSeriesID: Int) async throws(TVSeriesRepositoryError)
-        -> ImageCollection
-    {
+    -> ImageCollection {
         imagesForTVSeriesCallCount += 1
         imagesForTVSeriesCalledWith.append(tvSeriesID)
 

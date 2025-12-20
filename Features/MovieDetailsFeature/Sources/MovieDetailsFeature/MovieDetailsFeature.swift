@@ -1,15 +1,15 @@
 //
 //  MovieDetailsFeature.swift
-//  MovieDetailsFeature
+//  Popcorn
 //
-//  Created by Adam Young on 17/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import AppDependencies
 import ComposableArchitecture
 import Foundation
-import OSLog
 import Observability
+import OSLog
 
 @Reducer
 public struct MovieDetailsFeature: Sendable {
@@ -147,6 +147,7 @@ extension MovieDetailsFeature {
 
     private enum CancelID { case stream }
 
+    // swiftlint:disable function_body_length
     private func handleStreamAll(_ state: inout State) -> EffectOf<Self> {
         .run { [state, movieDetailsClient] send in
             Self.logger.info("User streaming movie")
@@ -209,6 +210,8 @@ extension MovieDetailsFeature {
             }
         }
     }
+
+    // swiftlint:enable function_body_length
 
     private func handleToggleMovieOnWatchlist(_ state: inout State) -> EffectOf<Self> {
         .run { [state] send in

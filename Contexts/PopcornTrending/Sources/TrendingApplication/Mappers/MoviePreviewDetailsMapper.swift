@@ -1,8 +1,8 @@
 //
 //  MoviePreviewDetailsMapper.swift
-//  PopcornTrending
+//  Popcorn
 //
-//  Created by Adam Young on 20/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import CoreDomain
@@ -12,8 +12,7 @@ import TrendingDomain
 struct MoviePreviewDetailsMapper {
 
     func map(_ moviePreview: MoviePreview, imagesConfiguration: ImagesConfiguration)
-        -> MoviePreviewDetails
-    {
+    -> MoviePreviewDetails {
         let posterURLSet = imagesConfiguration.posterURLSet(for: moviePreview.posterPath)
         let backdropURLSet = imagesConfiguration.posterURLSet(for: moviePreview.backdropPath)
 

@@ -1,8 +1,8 @@
 //
 //  GameMetadata.swift
-//  PlotRemixGameFeature
+//  Popcorn
 //
-//  Created by Adam Young on 11/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import SwiftUI
@@ -33,15 +33,17 @@ public struct GameMetadata: Identifiable, Sendable {
 
 extension GameMetadata {
 
+    // swiftlint:disable line_length
     static var mock: GameMetadata {
         GameMetadata(
             id: 1,
             name: "Plot Remix",
             description:
-                "Get the movie overview - but rewritten in a completely wild, unexpected style. Decode the twisted summary and guess the film before your brain melts.",
+            "Get the movie overview - but rewritten in a completely wild, unexpected style. Decode the twisted summary and guess the film before your brain melts.",
             iconSystemName: "movieclapper",
             color: .blue
         )
     }
+    // swiftlint:enable line_length
 
 }

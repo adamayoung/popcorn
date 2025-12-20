@@ -1,8 +1,8 @@
 //
 //  TVSeriesRow.swift
-//  DesignSystem
+//  Popcorn
 //
-//  Created by Adam Young on 12/06/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import SwiftUI
@@ -40,7 +40,7 @@ public struct TVSeriesRow: View {
     NavigationStack {
         List {
             TVSeriesRow(
-                id: 247718,
+                id: 247_718,
                 name: "MobLand",
                 posterURL: URL(
                     string: "https://image.tmdb.org/t/p/w500/abeH7n5pcuQcwYcTxG6DTZvXLP1.jpg"
@@ -48,7 +48,7 @@ public struct TVSeriesRow: View {
             )
 
             TVSeriesRow(
-                id: 100088,
+                id: 100_088,
                 name: "The Last of Us",
                 posterURL: URL(
                     string: "https://image.tmdb.org/t/p/w500/dmo6TYuuJgaYinXBPjrgG9mB5od.jpg"
@@ -56,5 +56,4 @@ public struct TVSeriesRow: View {
             )
         }
     }
-
 }

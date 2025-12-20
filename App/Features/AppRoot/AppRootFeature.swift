@@ -2,7 +2,7 @@
 //  AppRootFeature.swift
 //  Popcorn
 //
-//  Created by Adam Young on 17/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import AppDependencies
@@ -27,7 +27,7 @@ struct AppRootFeature {
 
         var hasStarted: Bool = false
         var isReady: Bool = false
-        var error: Error? = nil
+        var error: Error?
     }
 
     enum Tab {

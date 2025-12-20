@@ -1,8 +1,8 @@
 //
 //  PersonPreviewDetailsMapper.swift
-//  PopcornTrending
+//  Popcorn
 //
-//  Created by Adam Young on 20/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import CoreDomain
@@ -12,8 +12,7 @@ import TrendingDomain
 struct PersonPreviewDetailsMapper {
 
     func map(_ personPreview: PersonPreview, imagesConfiguration: ImagesConfiguration)
-        -> PersonPreviewDetails
-    {
+    -> PersonPreviewDetails {
         let profileURLSet = imagesConfiguration.posterURLSet(for: personPreview.profilePath)
 
         return PersonPreviewDetails(

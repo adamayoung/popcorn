@@ -1,8 +1,8 @@
 //
 //  FeatureFlagsInitialiser+TCA.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 16/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -18,9 +18,9 @@ enum FeatureFlagsInitialiserKey: DependencyKey {
 
 }
 
-extension DependencyValues {
+public extension DependencyValues {
 
-    public var featureFlagsInitialiser: any FeatureFlagInitialising {
+    var featureFlagsInitialiser: any FeatureFlagInitialising {
         get { self[FeatureFlagsInitialiserKey.self] }
         set { self[FeatureFlagsInitialiserKey.self] = newValue }
     }

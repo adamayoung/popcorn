@@ -1,8 +1,8 @@
 //
 //  ProfileCarouselCell.swift
-//  DesignSystem
+//  Popcorn
 //
-//  Created by Adam Young on 09/06/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import SwiftUI
@@ -44,7 +44,6 @@ public struct ProfileCarouselCell<CellLabel: View>: View {
             cellLabel
                 .frame(width: width)
                 .frame(maxHeight: .infinity)
-
         }
     }
 

@@ -1,8 +1,8 @@
 //
 //  PlotRemixGameView.swift
-//  PlotRemixGameFeature
+//  Popcorn
 //
-//  Created by Adam Young on 09/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -65,7 +65,6 @@ public struct PlotRemixGameView: View {
                 }
             }
         }
-
     }
 
 }

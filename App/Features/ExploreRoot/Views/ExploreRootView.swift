@@ -2,7 +2,7 @@
 //  ExploreRootView.swift
 //  Popcorn
 //
-//  Created by Adam Young on 21/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -46,7 +46,7 @@ struct ExploreRootView: View {
                 transitionNamespace: namespace
             )
             #if os(iOS)
-                .navigationTransition(.zoom(sourceID: transitionID, in: namespace))
+            .navigationTransition(.zoom(sourceID: transitionID, in: namespace))
             #endif
         } else {
             MovieDetailsView(
@@ -64,7 +64,7 @@ struct ExploreRootView: View {
                 transitionNamespace: namespace
             )
             #if os(iOS)
-                .navigationTransition(.zoom(sourceID: transitionID, in: namespace))
+            .navigationTransition(.zoom(sourceID: transitionID, in: namespace))
             #endif
         } else {
             TVSeriesDetailsView(
@@ -82,7 +82,7 @@ struct ExploreRootView: View {
                 transitionNamespace: namespace
             )
             #if os(iOS)
-                .navigationTransition(.zoom(sourceID: transitionID, in: namespace))
+            .navigationTransition(.zoom(sourceID: transitionID, in: namespace))
             #endif
         } else {
             PersonDetailsView(

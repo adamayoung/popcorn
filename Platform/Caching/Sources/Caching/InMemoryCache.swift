@@ -1,13 +1,13 @@
 //
 //  InMemoryCache.swift
-//  Caching
+//  Popcorn
 //
-//  Created by Adam Young on 25/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
-import OSLog
 import Observability
+import OSLog
 
 actor InMemoryCache: Caching {
 
@@ -57,11 +57,11 @@ actor InMemoryCache: Caching {
         return cacheItem.value as? Item
     }
 
-    func setItem<Item>(_ item: Item, forKey key: CacheKey) async {
+    func setItem(_ item: some Any, forKey key: CacheKey) async {
         await setItem(item, forKey: key, expiresIn: defaultExpiresIn)
     }
 
-    func setItem<Item>(_ item: Item, forKey key: CacheKey, expiresIn: TimeInterval) async {
+    func setItem(_ item: some Any, forKey key: CacheKey, expiresIn: TimeInterval) async {
         let span = SpanContext.startChild(
             operation: .cacheSet,
             description: "Set cache item"

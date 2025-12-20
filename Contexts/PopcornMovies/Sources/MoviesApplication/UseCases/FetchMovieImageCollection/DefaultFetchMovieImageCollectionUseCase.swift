@@ -1,8 +1,8 @@
 //
 //  DefaultFetchMovieImageCollectionUseCase.swift
-//  PopcornMovies
+//  Popcorn
 //
-//  Created by Adam Young on 24/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import CoreDomain
@@ -23,8 +23,7 @@ final class DefaultFetchMovieImageCollectionUseCase: FetchMovieImageCollectionUs
     }
 
     func execute(movieID: Movie.ID) async throws(FetchMovieImageCollectionError)
-        -> ImageCollectionDetails
-    {
+    -> ImageCollectionDetails {
         let imageCollection: ImageCollection
         let appConfiguration: AppConfiguration
         do {
@@ -38,7 +37,8 @@ final class DefaultFetchMovieImageCollectionUseCase: FetchMovieImageCollectionUs
 
         let mapper = ImageCollectionDetailsMapper()
         let imageCollectionDetails = mapper.map(
-            imageCollection, imagesConfiguration: appConfiguration.images)
+            imageCollection, imagesConfiguration: appConfiguration.images
+        )
 
         return imageCollectionDetails
     }

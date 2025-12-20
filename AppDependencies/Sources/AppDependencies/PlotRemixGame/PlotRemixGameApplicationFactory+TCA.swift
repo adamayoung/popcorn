@@ -1,8 +1,8 @@
 //
 //  PlotRemixGameApplicationFactory+TCA.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 11/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -15,11 +15,11 @@ extension DependencyValues {
 
     var plotRemixGameFactory: PopcornPlotRemixGameFactory {
         PopcornPlotRemixGameAdaptersFactory(
-            fetchAppConfigurationUseCase: self.fetchAppConfiguration,
-            fetchDiscoverMoviesUseCase: self.fetchDiscoverMovies,
-            fetchSimilarMoviesUseCase: self.fetchSimilarMovies,
-            fetchMovieGenresUseCase: self.fetchMovieGenres,
-            observability: self.observability
+            fetchAppConfigurationUseCase: fetchAppConfiguration,
+            fetchDiscoverMoviesUseCase: fetchDiscoverMovies,
+            fetchSimilarMoviesUseCase: fetchSimilarMovies,
+            fetchMovieGenresUseCase: fetchMovieGenres,
+            observability: observability
         ).makePlotRemixGameFactory()
     }
 

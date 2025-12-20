@@ -1,8 +1,8 @@
 //
 //  DefaultMovieImageRepository.swift
-//  PopcornMovies
+//  Popcorn
 //
-//  Created by Adam Young on 03/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation
@@ -26,8 +26,7 @@ final class DefaultMovieImageRepository: MovieImageRepository {
     ) async throws(MovieImageRepositoryError) -> ImageCollection {
         do {
             if let cachedImageCollection = try await localDataSource.imageCollection(
-                forMovie: movieID)
-            {
+                forMovie: movieID) {
                 return cachedImageCollection
             }
         } catch let error {

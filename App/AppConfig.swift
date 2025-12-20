@@ -1,8 +1,8 @@
 //
-//  AppSecrets.swift
+//  AppConfig.swift
 //  Popcorn
 //
-//  Created by Adam Young on 26/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import FeatureFlags
@@ -12,12 +12,10 @@ import Observability
 enum AppConfig {
 
     enum Sentry {
-        static let dsn: String? = {
-            AppConfig.resolveValue(
-                infoPlistKey: "SentryDSN",
-                environmentKey: "SENTRY_DSN"
-            )
-        }()
+        static let dsn: String? = AppConfig.resolveValue(
+            infoPlistKey: "SentryDSN",
+            environmentKey: "SENTRY_DSN"
+        )
 
         static let environment: ObservabilityConfiguration.Environment? = {
             guard
@@ -38,12 +36,10 @@ enum AppConfig {
     }
 
     enum Statsig {
-        static let sdkKey: String? = {
-            AppConfig.resolveValue(
-                infoPlistKey: "StatsigSDKKey",
-                environmentKey: "STATSIG_SDK_KEY"
-            )
-        }()
+        static let sdkKey: String? = AppConfig.resolveValue(
+            infoPlistKey: "StatsigSDKKey",
+            environmentKey: "STATSIG_SDK_KEY"
+        )
 
         static let environment: FeatureFlagsConfiguration.Environment? = {
             guard
@@ -69,14 +65,12 @@ extension AppConfig {
 
     private static func resolveValue(infoPlistKey: String, environmentKey: String) -> String? {
         if let env = ProcessInfo.processInfo.environment[environmentKey],
-            !env.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        {
+           !env.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return env
         }
 
         if let value = Bundle.main.object(forInfoDictionaryKey: infoPlistKey) as? String,
-            !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        {
+           !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             return value
         }
 

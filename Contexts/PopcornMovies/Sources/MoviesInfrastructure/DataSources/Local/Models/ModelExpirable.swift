@@ -1,8 +1,8 @@
 //
 //  ModelExpirable.swift
-//  PopcornMovies
+//  Popcorn
 //
-//  Created by Adam Young on 26/11/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation

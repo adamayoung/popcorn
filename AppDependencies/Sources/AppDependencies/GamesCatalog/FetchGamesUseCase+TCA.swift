@@ -1,8 +1,8 @@
 //
 //  FetchGamesUseCase+TCA.swift
-//  AppDependencies
+//  Popcorn
 //
-//  Created by Adam Young on 09/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import ComposableArchitecture
@@ -18,9 +18,9 @@ enum FetchGamesUseCaseKey: DependencyKey {
 
 }
 
-extension DependencyValues {
+public extension DependencyValues {
 
-    public var fetchGames: any FetchGamesUseCase {
+    var fetchGames: any FetchGamesUseCase {
         get { self[FetchGamesUseCaseKey.self] }
         set { self[FetchGamesUseCaseKey.self] = newValue }
     }

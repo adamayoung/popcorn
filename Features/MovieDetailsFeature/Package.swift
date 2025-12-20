@@ -24,7 +24,8 @@ let package = Package(
         .package(path: "../../Contexts/PopcornMovies"),
         .package(path: "../../Platform/Observability"),
         .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1")
+            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
+        )
     ],
 
     targets: [

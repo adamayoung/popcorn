@@ -2,15 +2,15 @@
 //  AppRootClient.swift
 //  Popcorn
 //
-//  Created by Adam Young on 16/12/2025.
+//  Copyright © 2025 Adam Young.
 //
 
 import AppDependencies
 import ComposableArchitecture
 import FeatureFlags
 import Foundation
-import OSLog
 import Observability
+import OSLog
 
 @DependencyClient
 struct AppRootClient: Sendable {
