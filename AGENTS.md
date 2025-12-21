@@ -76,8 +76,12 @@ DesignSystem Carousels (back to view)
 
 ### Code Quality
 
-- `/lint`
-- `/format`
+- `/lint` - Run SwiftLint and SwiftFormat
+- `/format` - Format code
+
+### Git & PR
+
+- `/pr` - Create a pull request
 
 ## Documentation
 

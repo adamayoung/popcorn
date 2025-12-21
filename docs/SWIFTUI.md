@@ -127,7 +127,7 @@ struct CardStyle: ViewModifier {
         content
             .padding()
             .background(Color(.systemBackground))
-            .cornerRadius(12)
+            .clipShape(.rect(cornerRadius: 12))
             .shadow(radius: 4)
     }
 }

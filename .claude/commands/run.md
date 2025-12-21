@@ -5,7 +5,7 @@ description: Build and run the app
 # Build and run in simulator
 
 I'll build and launch your app using:
-`mcp__xcodebuildmcp__build_run_sim_name_proj`
+`mcp__XcodeBuildMCP__build_run_sim`
 
 I will pick the latest iPhone Pro simulator.
 

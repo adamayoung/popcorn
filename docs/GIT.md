@@ -9,13 +9,17 @@
 
 ## Commit Messages
 
-Follow conventional commits:
+Follow gitmoji conventions (see [gitmoji.dev](https://gitmoji.dev)):
 
-- feat: New feature
-- fix: Bug fix
-- refactor: Code restructuring
-- docs: Documentation
-- test: Test changes
+- ✨ New feature
+- 🐛 Bug fix
+- ♻️ Code restructuring/refactoring
+- 📚 Documentation
+- ✅ Test changes
+- 🎨 Code style/formatting
+- 🚀 Performance improvements
+- 🔒 Security fixes
+- 🤖 Automated changes (formatting, code generation)
 
 ## Pre-commit Checklist
 
@@ -40,8 +44,10 @@ Follow conventional commits:
 
 ## Creating PRs
 
-- Create a title that best suits the PR based on changes on the branch when compared with main branch
-- Give a summary of the PR
+- Create a title with appropriate gitmoji that best suits the PR based on changes on the branch when compared with main branch
+- Reference [gitmoji.dev](https://gitmoji.dev) for the correct emoji
+- Give a comprehensive summary of the PR with bullet points
+- Include sections: Summary, Changes, Benefits (as appropriate)
 
 ## GitHub
 
