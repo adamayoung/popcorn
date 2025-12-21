@@ -19,6 +19,11 @@ clean:
 	rm -rf $(RESULT_BUNDLE)
 	$(XCODEBUILD) clean -scheme $(SCHEME)
 
+.PHONY: clean-spm
+clean-spm:
+	find . -type d -name ".build" -prune -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name ".spm" -prune -exec rm -rf {} + 2>/dev/null || true
+
 .PHONY: format
 format:
 	@swiftlint --fix .
