@@ -1,5 +1,9 @@
 excluded:
   - "**/.build/**"
+  - "**/.swiftpm/**"
+  - "**/DerivedData/**"
+  - "**/*.xcodeproj/**"
+  - "**/*.xcworkspace/**"
 
 opt_in_rules:
   - attributes
