@@ -14,7 +14,7 @@ Popcorn is a modular SwiftUI application for browsing movies and TV series, buil
 - **macOS**: 26.0+
 - **watchOS**: 26.0+
 - **tvOS**: 26.0+
-- **visionOS**: 2.0+
+- **visionOS**: 26.0+
 
 Always use APIs available in these platform versions. When searching documentation or writing code, assume these versions exist.
 
@@ -78,6 +78,7 @@ DesignSystem Carousels (back to view)
 
 - `/lint` - Run SwiftLint and SwiftFormat
 - `/format` - Format code
+- `/review` - Perform code review on current branch
 
 ### Git & PR
 
@@ -85,13 +86,17 @@ DesignSystem Carousels (back to view)
 
 ## Documentation
 
-- **[SWIFT.md](./docs/SWIFT.md)**: Swift instructions and conventions
-- **[SWIFTUI.md](./docs/SWIFTUI.md)**: SwiftUI instructions and conventions
-- **[SWIFTDATA.md](./docs/SWIFTDATA.md)**: SwiftData instructions and conventions
-- **[TCA.md](./docs/TCA.md)**: TCA instructions and conventions
-- **[CLEANARCHITECTURE.md](./docs/CLEANARCHITECTURE.md)**: Clean architecture instructions and conventions
-- **[GIT.md](./docs/GIT.md)**: Git instructions and conventions
-- **[MCP.md](./docs/MCP.md)**: MCP instructions and conventions
+### Quick Reference
+
+Need help with specific topics? Use these guides:
+
+- **Swift syntax or modern APIs?** → [SWIFT.md](./docs/SWIFT.md)
+- **SwiftUI patterns, modifiers, or anti-patterns?** → [SWIFTUI.md](./docs/SWIFTUI.md)
+- **SwiftData with CloudKit?** → [SWIFTDATA.md](./docs/SWIFTDATA.md)
+- **TCA reducers, dependencies, or navigation?** → [TCA.md](./docs/TCA.md)
+- **Layer boundaries or DDD principles?** → [CLEANARCHITECTURE.md](./docs/CLEANARCHITECTURE.md)
+- **Commit messages, branches, or PRs?** → [GIT.md](./docs/GIT.md)
+- **MCP tool names or commands?** → [MCP.md](./docs/MCP.md)
 
 ## Secrets
 
