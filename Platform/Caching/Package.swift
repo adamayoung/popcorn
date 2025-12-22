@@ -15,7 +15,8 @@ let package = Package(
     ],
 
     products: [
-        .library(name: "Caching", targets: ["Caching"])
+        .library(name: "Caching", targets: ["Caching"]),
+        .library(name: "CachingTestHelpers", targets: ["CachingTestHelpers"])
     ],
 
     dependencies: [
@@ -28,6 +29,10 @@ let package = Package(
             dependencies: [
                 "Observability"
             ]
+        ),
+        .target(
+            name: "CachingTestHelpers",
+            dependencies: ["Caching"]
         ),
         .testTarget(
             name: "CachingTests",

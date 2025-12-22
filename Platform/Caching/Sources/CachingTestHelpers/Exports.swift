@@ -1,8 +1,8 @@
 //
 //  Exports.swift
-//  Observability
+//  Caching
 //
 //  Copyright © 2025 Adam Young.
 //
 
-@_exported import Observability
+@_exported import Caching

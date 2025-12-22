@@ -60,29 +60,27 @@ Mappers (domain ↔ view models)
 DesignSystem Carousels (back to view)
 ```
 
-## Essential Commands
+## Build Tools
 
-### Build & Run
+**Always use XcodeBuildMCP tools** instead of raw `xcodebuild` or `swift` commands:
 
-- `/build` - Build the project
-- `/run` - Build and run in simulator
-- `/clean` - Clean build artifacts
+- **Building**: `mcp__XcodeBuildMCP__build_sim`, `mcp__XcodeBuildMCP__build_macos`
+- **Testing**: `mcp__XcodeBuildMCP__test_sim`, `mcp__XcodeBuildMCP__test_macos`
+- **Cleaning**: `mcp__XcodeBuildMCP__clean`
+- **Swift Packages**: `mcp__XcodeBuildMCP__swift_package_build`, `mcp__XcodeBuildMCP__swift_package_test`
 
-### Testing
+**iOS Simulator Selection**: Always use the latest 'Pro' version of available iOS simulators (e.g., iPhone 17 Pro, iPhone 18 Pro).
 
-- `/test` - Run tests
-- `/test-all` - Run all tests
-- `/test-single [name]` - Run specific test
+See [MCP.md](./docs/MCP.md) for the complete list of available tools.
 
-### Code Quality
+## Testing with Observability
 
-- `/lint` - Run SwiftLint and SwiftFormat
-- `/format` - Format code
-- `/review` - Perform code review on current branch
+When writing tests that need Observability mocks:
 
-### Git & PR
-
-- `/pr` - Create a pull request
+- **Import**: `ObservabilityTestHelpers` instead of creating local mocks
+- **Provider mocks**: Use `MockObservabilityProvider`
+- **Span mocks**: Use `MockSpan` and `MockTransaction`
+- **Verification**: Access `startChildCallCount`, `setDataCalledWith`, `finishCalledWithStatus`, etc.
 
 ## Documentation
 
@@ -113,6 +111,6 @@ When working on this codebase:
 - Respect the dependency injection patterns via TCA
 - Keep mappers at architectural boundaries
 - Consider feature flag implications for new features
-- After making code changes, always verify linting
+- After making code changes, always run `swiftlint --fix .` and `swiftformat .` from the project root
 - **Never search, read, or explore files in the `DerivedData/`, `.swiftpm` or `.build` directories** - they contain build artifacts and cached data, not source code
 - Never make code changes without asking, unless been told beforehand or the code change is small

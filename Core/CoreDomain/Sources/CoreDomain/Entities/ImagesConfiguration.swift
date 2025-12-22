@@ -9,7 +9,38 @@ import Foundation
 
 public struct ImagesConfiguration: Sendable {
 
-    public typealias URLHandler = @Sendable (URL?, Int) -> URL?
+    private enum ImageWidth {
+        enum Poster {
+            static let thumbnail = 185
+            static let card = 342
+            static let detail = 780
+            static let full = Int.max
+        }
+
+        enum Backdrop {
+            static let thumbnail = 300
+            static let card = 300
+            static let detail = 1280
+            static let full = Int.max
+        }
+
+        enum Logo {
+            static let thumbnail = 185
+            static let card = 300
+            static let detail = 500
+            static let full = Int.max
+        }
+
+        enum Profile {
+            static let thumbnail = 185
+            static let card = 300
+            static let detail = 500
+            static let full = Int.max
+        }
+
+    }
+
+    public typealias URLHandler = @Sendable (_ path: URL?, _ idealWidth: Int) -> URL?
 
     private let posterURLHandler: URLHandler
     private let backdropURLHandler: URLHandler
@@ -31,10 +62,10 @@ public struct ImagesConfiguration: Sendable {
     public func posterURLSet(for path: URL?) -> ImageURLSet? {
         guard
             let path,
-            let thumbnail = posterURLHandler(path, 185),
-            let card = posterURLHandler(path, 342),
-            let detail = posterURLHandler(path, 780),
-            let full = posterURLHandler(path, .max)
+            let thumbnail = posterURLHandler(path, ImageWidth.Poster.thumbnail),
+            let card = posterURLHandler(path, ImageWidth.Poster.card),
+            let detail = posterURLHandler(path, ImageWidth.Poster.detail),
+            let full = posterURLHandler(path, ImageWidth.Poster.full)
         else {
             return nil
         }
@@ -51,10 +82,10 @@ public struct ImagesConfiguration: Sendable {
     public func backdropURLSet(for path: URL?) -> ImageURLSet? {
         guard
             let path,
-            let thumbnail = backdropURLHandler(path, 300),
-            let card = backdropURLHandler(path, 300),
-            let detail = backdropURLHandler(path, 1280),
-            let full = backdropURLHandler(path, .max)
+            let thumbnail = backdropURLHandler(path, ImageWidth.Backdrop.thumbnail),
+            let card = backdropURLHandler(path, ImageWidth.Backdrop.card),
+            let detail = backdropURLHandler(path, ImageWidth.Backdrop.detail),
+            let full = backdropURLHandler(path, ImageWidth.Backdrop.full)
         else {
             return nil
         }
@@ -71,10 +102,10 @@ public struct ImagesConfiguration: Sendable {
     public func logoURLSet(for path: URL?) -> ImageURLSet? {
         guard
             let path,
-            let thumbnail = logoURLHandler(path, 185),
-            let card = logoURLHandler(path, 300),
-            let detail = logoURLHandler(path, 500),
-            let full = logoURLHandler(path, .max)
+            let thumbnail = logoURLHandler(path, ImageWidth.Logo.thumbnail),
+            let card = logoURLHandler(path, ImageWidth.Logo.card),
+            let detail = logoURLHandler(path, ImageWidth.Logo.detail),
+            let full = logoURLHandler(path, ImageWidth.Logo.full)
         else {
             return nil
         }
@@ -91,10 +122,10 @@ public struct ImagesConfiguration: Sendable {
     public func profileURL(for path: URL?) -> ImageURLSet? {
         guard
             let path,
-            let thumbnail = profileURLHandler(path, 185),
-            let card = profileURLHandler(path, 300),
-            let detail = profileURLHandler(path, 500),
-            let full = profileURLHandler(path, .max)
+            let thumbnail = profileURLHandler(path, ImageWidth.Profile.thumbnail),
+            let card = profileURLHandler(path, ImageWidth.Profile.card),
+            let detail = profileURLHandler(path, ImageWidth.Profile.detail),
+            let full = profileURLHandler(path, ImageWidth.Profile.full)
         else {
             return nil
         }

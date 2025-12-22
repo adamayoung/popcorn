@@ -1,5 +1,5 @@
 //
-//  MockObservability.swift
+//  MockObservabilityProvider.swift
 //  Observability
 //
 //  Copyright © 2025 Adam Young.
@@ -8,24 +8,67 @@
 import Foundation
 import Observability
 
-public final class MockObservability: Observing, @unchecked Sendable {
+public final class MockObservabilityProvider: ObservabilityProviding, @unchecked Sendable {
 
-    public typealias CapturedError = MockObservabilityProvider.CapturedError
-    public typealias CapturedUser = MockObservabilityProvider.CapturedUser
-    public typealias CapturedBreadcrumb = MockObservabilityProvider.CapturedBreadcrumb
+    public struct CapturedError: Sendable {
+        public let error: Error
+        public let extras: [String: any Sendable]?
 
+        public init(error: Error, extras: [String: any Sendable]? = nil) {
+            self.error = error
+            self.extras = extras
+        }
+    }
+
+    public struct CapturedUser: Sendable {
+        public let id: String?
+        public let email: String?
+        public let username: String?
+
+        public init(id: String?, email: String?, username: String?) {
+            self.id = id
+            self.email = email
+            self.username = username
+        }
+    }
+
+    public struct CapturedBreadcrumb: Sendable {
+        public let category: String
+        public let message: String
+
+        public init(category: String, message: String) {
+            self.category = category
+            self.message = message
+        }
+    }
+
+    public private(set) var startCalled: Bool = false
+    public private(set) var startConfig: ObservabilityConfiguration?
     public private(set) var transactions: [MockTransaction] = []
     public private(set) var capturedErrors: [CapturedError] = []
     public private(set) var capturedMessages: [String] = []
     public private(set) var capturedUsers: [CapturedUser] = []
     public private(set) var breadcrumbs: [CapturedBreadcrumb] = []
 
+    private var _currentSpan: Span?
+    public var currentSpanStub: Span?
+
     public init() {}
+
+    public func start(_ config: ObservabilityConfiguration) async throws {
+        startCalled = true
+        startConfig = config
+    }
 
     public func startTransaction(name: String, operation: SpanOperation) -> Transaction {
         let transaction = MockTransaction(name: name, operation: operation)
         transactions.append(transaction)
+        _currentSpan = transaction
         return transaction
+    }
+
+    public func currentSpan() -> Span? {
+        currentSpanStub ?? _currentSpan
     }
 
     public func capture(error: any Error) {
@@ -49,11 +92,15 @@ public final class MockObservability: Observing, @unchecked Sendable {
     }
 
     public func reset() {
+        startCalled = false
+        startConfig = nil
         transactions.removeAll()
         capturedErrors.removeAll()
         capturedMessages.removeAll()
         capturedUsers.removeAll()
         breadcrumbs.removeAll()
+        _currentSpan = nil
+        currentSpanStub = nil
     }
 
 }

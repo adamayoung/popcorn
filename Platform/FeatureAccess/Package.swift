@@ -15,7 +15,8 @@ let package = Package(
     ],
 
     products: [
-        .library(name: "FeatureAccess", targets: ["FeatureAccess"])
+        .library(name: "FeatureAccess", targets: ["FeatureAccess"]),
+        .library(name: "FeatureAccessTestHelpers", targets: ["FeatureAccessTestHelpers"])
     ],
 
     dependencies: [],
@@ -23,6 +24,10 @@ let package = Package(
     targets: [
         .target(
             name: "FeatureAccess"
+        ),
+        .target(
+            name: "FeatureAccessTestHelpers",
+            dependencies: ["FeatureAccess"]
         ),
         .testTarget(
             name: "FeatureAccessTests",

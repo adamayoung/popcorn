@@ -18,11 +18,11 @@ struct FoundationModelsSynopsisRiddleGeneratorTests {
     // swiftlint:enable type_name
 
     private let generator: FoundationModelsSynopsisRiddleGenerator
-    private let observability: MockObservability
+    private let mockObservability: MockObservability
 
     init() {
-        self.observability = MockObservability()
-        self.generator = FoundationModelsSynopsisRiddleGenerator(observability: observability)
+        self.mockObservability = MockObservability()
+        self.generator = FoundationModelsSynopsisRiddleGenerator(observability: mockObservability)
     }
 
     @Test

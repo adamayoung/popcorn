@@ -32,7 +32,7 @@ Follow gitmoji conventions (see [gitmoji.dev](https://gitmoji.dev)):
 
 1. Create feature branch from main
 2. Make changes, commit often
-3. Run /lint before creating PR
+3. Run `/format` and `/lint` before creating PR
 4. Create PR with descriptive title and summary
 5. Link related issues
 6. Request review from [specify]

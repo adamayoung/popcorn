@@ -38,3 +38,7 @@ line_length:
 
 cyclomatic_complexity:
   ignores_case_statements: true
+
+nesting:
+  type_level: 2
+  function_level: 2

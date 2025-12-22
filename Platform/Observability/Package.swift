@@ -15,11 +15,16 @@ let package = Package(
     ],
 
     products: [
-        .library(name: "Observability", targets: ["Observability"])
+        .library(name: "Observability", targets: ["Observability"]),
+        .library(name: "ObservabilityTestHelpers", targets: ["ObservabilityTestHelpers"])
     ],
 
     targets: [
         .target(name: "Observability"),
+        .target(
+            name: "ObservabilityTestHelpers",
+            dependencies: ["Observability"]
+        ),
         .testTarget(
             name: "ObservabilityTests",
             dependencies: ["Observability"]
