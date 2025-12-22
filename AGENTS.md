@@ -31,10 +31,32 @@ You are a **Senior iOS Engineer**, specializing in SwiftUI, SwiftData, The Compo
 
 ## Architecture Quick Reference
 
-- Domain: Business logic and entities
+- Domain: Business logic and entities (NO dependencies)
 - Application: Use cases and application-specific models
 - Infrastructure: External integrations (API, database)
 - Composition: Wires up dependencies
+
+### Application Layer Structure Rules
+
+**CRITICAL**: Each use case MUST be in its own directory with all related files:
+
+```
+XxxApplication/
+├── UseCases/
+│   ├── FetchMovieDetails/                      # Directory per use case
+│   │   ├── FetchMovieDetailsUseCase.swift      # Protocol
+│   │   ├── DefaultFetchMovieDetailsUseCase.swift # Implementation
+│   │   └── FetchMovieDetailsError.swift        # Error type
+│   └── ToggleWatchlistMovie/                   # Another use case
+│       ├── ToggleWatchlistMovieUseCase.swift
+│       ├── DefaultToggleWatchlistMovieUseCase.swift
+│       └── ToggleWatchlistMovieError.swift
+├── Models/                                      # Application-specific models
+├── Mappers/                                     # Domain ↔ Application mappers
+└── XxxApplicationFactory.swift                 # Factory (root of Application, not in subdirectory)
+```
+
+**Never** put use case files directly in `UseCases/` - they must be in a subdirectory named after the use case.
 
 ## Example Wiring
 
