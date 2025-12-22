@@ -11,8 +11,10 @@ import TVSeriesDomain
 
 struct ImageCollectionDetailsMapper {
 
-    func map(_ imageCollection: ImageCollection, imagesConfiguration: ImagesConfiguration)
-    -> ImageCollectionDetails {
+    func map(
+        _ imageCollection: ImageCollection,
+        imagesConfiguration: ImagesConfiguration
+    ) -> ImageCollectionDetails {
         let posterURLSets = imageCollection.posterPaths.compactMap {
             imagesConfiguration.posterURLSet(for: $0)
         }

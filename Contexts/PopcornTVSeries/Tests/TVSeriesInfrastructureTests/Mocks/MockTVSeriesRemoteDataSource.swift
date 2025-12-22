@@ -1,0 +1,55 @@
+//
+//  MockTVSeriesRemoteDataSource.swift
+//  PopcornTVSeries
+//
+//  Copyright © 2025 Adam Young.
+//
+
+import Foundation
+import TVSeriesDomain
+
+final class MockTVSeriesRemoteDataSource: TVSeriesRemoteDataSource, @unchecked Sendable {
+
+    var tvSeriesWithIDCallCount = 0
+    var tvSeriesWithIDCalledWith: [Int] = []
+    var tvSeriesWithIDStub: Result<TVSeries, TVSeriesRemoteDataSourceError>?
+
+    func tvSeries(withID id: Int) async throws(TVSeriesRemoteDataSourceError) -> TVSeries {
+        tvSeriesWithIDCallCount += 1
+        tvSeriesWithIDCalledWith.append(id)
+
+        guard let stub = tvSeriesWithIDStub else {
+            throw .unknown()
+        }
+
+        switch stub {
+        case .success(let tvSeries):
+            return tvSeries
+        case .failure(let error):
+            throw error
+        }
+    }
+
+    var imagesForTVSeriesCallCount = 0
+    var imagesForTVSeriesCalledWith: [Int] = []
+    var imagesForTVSeriesStub: Result<ImageCollection, TVSeriesRemoteDataSourceError>?
+
+    func images(
+        forTVSeries tvSeriesID: Int
+    ) async throws(TVSeriesRemoteDataSourceError) -> ImageCollection {
+        imagesForTVSeriesCallCount += 1
+        imagesForTVSeriesCalledWith.append(tvSeriesID)
+
+        guard let stub = imagesForTVSeriesStub else {
+            throw .unknown()
+        }
+
+        switch stub {
+        case .success(let imageCollection):
+            return imageCollection
+        case .failure(let error):
+            throw error
+        }
+    }
+
+}

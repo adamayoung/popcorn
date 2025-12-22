@@ -72,7 +72,8 @@ let package = Package(
             name: "PlotRemixGameInfrastructureTests",
             dependencies: [
                 "PlotRemixGameInfrastructure",
-                "PlotRemixGameDomain"
+                "PlotRemixGameDomain",
+                .product(name: "ObservabilityTestHelpers", package: "Observability")
             ]
         )
     ]

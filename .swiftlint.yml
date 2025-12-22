@@ -11,6 +11,7 @@ opt_in_rules:
   - conditional_returns_on_newline
   - empty_count
   - first_where
+  - force_unwrapping
   - operator_usage_whitespace
   - sorted_imports
 
@@ -38,3 +39,7 @@ line_length:
 
 cyclomatic_complexity:
   ignores_case_statements: true
+
+nesting:
+  type_level: 2
+  function_level: 2

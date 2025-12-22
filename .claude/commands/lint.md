@@ -4,4 +4,5 @@ description: Run swiftlint and swiftformat
 
 # Lint code
 
-Run `swiftlint --strict .` and `swiftformat --lint .` from the project root to check code style.
+- Delete all .build and .spm directorys in all Swift Package directories
+- Run `swiftlint --strict .` and `swiftformat --lint .` from the project root to check code style.

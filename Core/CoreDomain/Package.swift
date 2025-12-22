@@ -15,13 +15,19 @@ let package = Package(
     ],
 
     products: [
-        .library(name: "CoreDomain", targets: ["CoreDomain"])
+        .library(name: "CoreDomain", targets: ["CoreDomain"]),
+        .library(name: "CoreDomainTestHelpers", targets: ["CoreDomainTestHelpers"])
     ],
 
     targets: [
         .target(name: "CoreDomain"),
         .testTarget(
             name: "CoreDomainTests",
+            dependencies: ["CoreDomain"]
+        ),
+
+        .target(
+            name: "CoreDomainTestHelpers",
             dependencies: ["CoreDomain"]
         )
     ]
