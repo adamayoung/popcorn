@@ -8,17 +8,31 @@
 import SDWebImageSwiftUI
 import SwiftUI
 
+/// A view that displays a movie or TV series poster image.
+///
+/// Use this component to display poster images throughout the app, such as in
+/// rows, grids, carousels, or detail views. The image maintains the standard
+/// poster aspect ratio of 2:3 (500x750).
+///
+/// The image is loaded asynchronously with a 2-second fade transition and includes
+/// a subtle background for when the image is loading or unavailable.
 public struct PosterImage: View {
 
+    /// The standard poster aspect ratio (2:3).
     private static let aspectRatio: CGFloat = 500.0 / 750.0
 
+    /// The URL of the poster image to display.
     private var url: URL?
 
+    /// Creates a new poster image view.
+    ///
+    /// - Parameter url: The URL of the poster image to display.
     public init(url: URL?) {
         self.url = url
     }
 
     public var body: some View {
+        // Uses GeometryReader to fill available space while maintaining aspect ratio
         GeometryReader { proxy in
             WebImage(url: url)
                 .resizable()
@@ -30,10 +44,18 @@ public struct PosterImage: View {
         }
     }
 
+    /// Sets the poster image height and automatically calculates the width to maintain aspect ratio.
+    ///
+    /// - Parameter height: The desired height for the poster image.
+    /// - Returns: A view with the specified height and calculated width.
     public func posterHeight(_ height: CGFloat) -> some View {
         frame(width: height * Self.aspectRatio, height: height)
     }
 
+    /// Sets the poster image width and automatically calculates the height to maintain aspect ratio.
+    ///
+    /// - Parameter width: The desired width for the poster image.
+    /// - Returns: A view with the specified width and calculated height.
     public func posterWidth(_ width: CGFloat) -> some View {
         frame(width: width, height: width / Self.aspectRatio)
     }

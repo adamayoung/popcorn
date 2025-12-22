@@ -7,12 +7,30 @@
 
 import SwiftUI
 
+/// A row component that displays a person with their profile image and name.
+///
+/// Use this component in lists or scroll views to display person information,
+/// such as cast members, crew, or search results.
+///
+/// The row displays a circular profile image on the left with the person's name
+/// to the right in a horizontal layout.
 public struct PersonRow: View {
 
+    /// The unique identifier of the person.
     public var id: Int
+
+    /// The name of the person to display.
     public var name: String
+
+    /// The URL of the person's profile image, if available.
     public var profileURL: URL?
 
+    /// Creates a new person row.
+    ///
+    /// - Parameters:
+    ///   - id: The unique identifier of the person.
+    ///   - name: The name of the person to display.
+    ///   - profileURL: The URL of the person's profile image. Defaults to `nil`.
     public init(
         id: Int,
         name: String,

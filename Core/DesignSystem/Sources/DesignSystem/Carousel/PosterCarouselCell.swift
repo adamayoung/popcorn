@@ -7,19 +7,42 @@
 
 import SwiftUI
 
+/// A carousel cell that displays a poster image with an optional label below.
+///
+/// Use this component within a carousel to display movies or TV series with their
+/// poster images. The cell includes support for matched geometry transitions for
+/// smooth navigation animations.
+///
+/// The cell displays a poster image with rounded corners followed by a customizable
+/// label below. On visionOS, the cell includes hover effects for enhanced interaction.
 public struct PosterCarouselCell<CellLabel: View>: View {
 
+    /// The URL of the poster image to display.
     private var imageURL: URL?
+
+    /// The custom label view to display below the poster image.
     private var cellLabel: CellLabel
+
+    /// The transition identifier for matched geometry animations, if applicable.
     private var transitionID: String?
+
+    /// The namespace for matched geometry transitions, if applicable.
     private var transitionNamespace: Namespace.ID?
 
+    /// Platform-specific width for the poster image (currently 150 on all platforms).
     #if os(macOS) || os(visionOS)
         private let width: CGFloat = 150
     #else
         private let width: CGFloat = 150
     #endif
 
+    /// Creates a new poster carousel cell.
+    ///
+    /// - Parameters:
+    ///   - imageURL: The URL of the poster image to display.
+    ///   - transitionID: The identifier for matched geometry transitions. Defaults to `nil`.
+    ///   - transitionNamespace: The namespace for matched geometry transitions. Defaults to `nil`.
+    ///   - cellLabel: A view builder that creates the label to display below the image.
     public init(
         imageURL: URL?,
         transitionID: String? = nil,
@@ -33,6 +56,7 @@ public struct PosterCarouselCell<CellLabel: View>: View {
     }
 
     public var body: some View {
+        // Vertical layout: poster image on top, label below, with spacer for alignment
         VStack {
             if let transitionID, let transitionNamespace {
                 posterImage
