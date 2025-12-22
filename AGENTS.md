@@ -73,7 +73,12 @@ DesignSystem Carousels (back to view)
 
 See [MCP.md](./docs/MCP.md) for the complete list of available tools.
 
-## Testing with Observability
+## Testing
+
+- **Always** use Swift Testing
+- **Never** force unwrap in tests. Always use `try #require(..)`
+
+### Testing with Observability
 
 When writing tests that need Observability mocks:
 

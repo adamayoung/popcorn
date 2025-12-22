@@ -41,7 +41,10 @@ let package = Package(
         ),
         .testTarget(
             name: "PopcornTVSeriesAdaptersTests",
-            dependencies: ["PopcornTVSeriesAdapters"]
+            dependencies: [
+                "PopcornTVSeriesAdapters",
+                .product(name: "ObservabilityTestHelpers", package: "Observability")
+            ]
         )
     ]
 )
