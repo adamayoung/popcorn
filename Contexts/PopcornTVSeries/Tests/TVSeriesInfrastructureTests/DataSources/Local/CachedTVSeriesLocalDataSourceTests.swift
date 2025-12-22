@@ -35,10 +35,10 @@ struct CachedTVSeriesLocalDataSourceTests {
 
         let dataSource = CachedTVSeriesLocalDataSource(cache: mockCache)
 
-        _ = try await dataSource.tvSeries(withID: id)
-        try await dataSource.setTVSeries(tvSeries)
-        _ = try await dataSource.images(forTVSeries: id)
-        try await dataSource.setImages(imageCollection, forTVSeries: id)
+        _ = await dataSource.tvSeries(withID: id)
+        await dataSource.setTVSeries(tvSeries)
+        _ = await dataSource.images(forTVSeries: id)
+        await dataSource.setImages(imageCollection, forTVSeries: id)
 
         #expect(await mockCache.itemCallCount == 2)
         #expect(await mockCache.setItemCallCount == 2)
