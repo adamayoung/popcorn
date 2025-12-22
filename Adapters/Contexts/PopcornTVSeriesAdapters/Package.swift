@@ -43,6 +43,7 @@ let package = Package(
             name: "PopcornTVSeriesAdaptersTests",
             dependencies: [
                 "PopcornTVSeriesAdapters",
+                .product(name: "CoreDomainTestHelpers", package: "CoreDomain"),
                 .product(name: "ObservabilityTestHelpers", package: "Observability")
             ]
         )
