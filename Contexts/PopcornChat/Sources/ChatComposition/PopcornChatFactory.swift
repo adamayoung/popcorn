@@ -55,7 +55,7 @@ public struct PopcornChatFactory {
     /// Creates a use case for creating TV series chat sessions
     ///
     /// - Returns: A use case for creating TV series chat sessions
-    /// 
+    ///
     public func makeCreateTVSeriesChatSessionUseCase() -> any CreateTVSeriesChatSessionUseCase {
         applicationFactory.makeCreateTVSeriesChatSessionUseCase()
     }

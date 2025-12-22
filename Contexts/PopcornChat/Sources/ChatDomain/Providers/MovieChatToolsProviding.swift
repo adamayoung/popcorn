@@ -9,7 +9,7 @@ import Foundation
 
 ///
 /// Protocol for providing chat tools related to a specific movie
-/// 
+///
 public protocol MovieChatToolsProviding: Sendable {
 
     ///
