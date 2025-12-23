@@ -25,7 +25,8 @@ attributes:
     - "@StateObject"
     - "@Published"
     - "@testable"
-  attributes_with_arguments_always_on_line_above: false
+    - "@Attribute"
+  attributes_with_arguments_always_on_line_above: true
 
 identifier_name:
   excluded:
