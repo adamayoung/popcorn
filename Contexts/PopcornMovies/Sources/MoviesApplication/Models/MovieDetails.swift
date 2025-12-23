@@ -12,6 +12,7 @@ public struct MovieDetails: Identifiable, Equatable, Sendable {
 
     public let id: Int
     public let title: String
+    // TODO: Make non-optional
     public let overview: String?
     public let releaseDate: Date?
     public let posterURLSet: ImageURLSet?

@@ -134,6 +134,9 @@ When working on this codebase:
 - Always read existing implementations before suggesting changes
 - Follow the established DDD and TCA patterns
 - Maintain the separation between layers (Domain, Application, Infrastructure)
+- **CRITICAL**: Context modules must NEVER depend on other context modules directly
+  - ❌ WRONG: Adding PopcornTVSeries as a dependency in PopcornMovies/Package.swift
+  - ✅ CORRECT: Define provider protocols in the Domain layer, inject implementations via Composition
 - Use existing design system components rather than creating new ones
 - Respect the dependency injection patterns via TCA
 - Keep mappers at architectural boundaries

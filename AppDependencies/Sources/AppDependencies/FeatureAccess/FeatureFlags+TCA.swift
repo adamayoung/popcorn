@@ -12,8 +12,8 @@ import Foundation
 enum FeatureFlagsKey: DependencyKey {
 
     static var liveValue: any FeatureFlagging {
-        @Dependency(\.featureFlagsFactory) var featureFlagsFactory
-        return featureFlagsFactory.makeService()
+        @Dependency(\.featureAccessFactory) var featureAccessFactory
+        return featureAccessFactory.makeService()
     }
 
 }

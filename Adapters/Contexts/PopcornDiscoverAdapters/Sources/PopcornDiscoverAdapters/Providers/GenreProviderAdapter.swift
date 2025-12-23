@@ -10,7 +10,7 @@ import Foundation
 import GenresApplication
 import GenresDomain
 
-struct GenreProviderAdapter: GenreProviding {
+final class GenreProviderAdapter: GenreProviding {
 
     private let fetchMovieGenresUseCase: any FetchMovieGenresUseCase
     private let fetchTVSeriesGenresUseCase: any FetchTVSeriesGenresUseCase

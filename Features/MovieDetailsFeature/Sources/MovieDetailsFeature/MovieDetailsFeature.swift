@@ -89,6 +89,7 @@ public struct MovieDetailsFeature: Sendable {
 
     public enum Navigation: Equatable, Hashable {
         case movieDetails(id: Int)
+        case movieIntelligence(id: Int)
     }
 
     public init() {}

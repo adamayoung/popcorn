@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		661ADD4F2EFAB62D00A4055D /* MovieIntelligenceFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 661ADD4E2EFAB62D00A4055D /* MovieIntelligenceFeature */; };
 		664551B22ECB7C6C00250D87 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 664551B12ECB7C6C00250D87 /* ComposableArchitecture */; };
 		6645B6452ED60A1800B3AC7C /* MediaSearchFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 6645B6442ED60A1800B3AC7C /* MediaSearchFeature */; };
 		666AEE272ECDEEEC0038814E /* TrendingPeopleFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 666AEE262ECDEEEC0038814E /* TrendingPeopleFeature */; };
@@ -93,6 +94,7 @@
 				Contexts/PopcornDiscoverAdapters,
 				Contexts/PopcornGamesCatalogAdapters,
 				Contexts/PopcornGenresAdapters,
+				Contexts/PopcornIntelligenceAdapters,
 				Contexts/PopcornPlotRemixGameAdapters,
 				Platform/ObservabilityAdapters,
 			);
@@ -204,6 +206,7 @@
 				66D8F4112EE8BE8F00B8AE7A /* GamesCatalogFeature in Frameworks */,
 				666AEE272ECDEEEC0038814E /* TrendingPeopleFeature in Frameworks */,
 				668F587E2ECCB82A00B47B07 /* MovieDetailsFeature in Frameworks */,
+				661ADD4F2EFAB62D00A4055D /* MovieIntelligenceFeature in Frameworks */,
 				66FDEF6C2ED71D320029B88A /* FeatureAccessAdapters in Frameworks */,
 				66FDEF692ED714190029B88A /* FeatureAccess in Frameworks */,
 				6645B6452ED60A1800B3AC7C /* MediaSearchFeature in Frameworks */,
@@ -307,6 +310,7 @@
 				66FDEF6B2ED71D320029B88A /* FeatureAccessAdapters */,
 				66D8F4102EE8BE8F00B8AE7A /* GamesCatalogFeature */,
 				66D8F4132EE8C93900B8AE7A /* PlotRemixGameFeature */,
+				661ADD4E2EFAB62D00A4055D /* MovieIntelligenceFeature */,
 			);
 			productName = MoviesTCA;
 			productReference = 664551862ECB7C2100250D87 /* Popcorn.app */;
@@ -882,6 +886,10 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		661ADD4E2EFAB62D00A4055D /* MovieIntelligenceFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MovieIntelligenceFeature;
+		};
 		664551B12ECB7C6C00250D87 /* ComposableArchitecture */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 664551B02ECB7C6C00250D87 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;

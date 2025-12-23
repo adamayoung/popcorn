@@ -25,7 +25,7 @@ let package = Package(
         .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Platform/DataPersistenceInfrastructure"),
         .package(path: "../../Platform/Caching"),
-        .package(path: "../PopcornChat")
+        .package(path: "../PopcornIntelligence")
     ],
 
     targets: [
@@ -35,7 +35,7 @@ let package = Package(
                 "MoviesApplication",
                 "MoviesDomain",
                 "MoviesInfrastructure",
-                .product(name: "ChatDomain", package: "PopcornChat")
+                .product(name: "IntelligenceDomain", package: "PopcornIntelligence")
             ]
         ),
 
