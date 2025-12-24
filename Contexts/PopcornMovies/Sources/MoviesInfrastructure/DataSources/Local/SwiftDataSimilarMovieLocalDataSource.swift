@@ -115,7 +115,7 @@ actor SwiftDataSimilarMovieLocalDataSource: SimilarMovieLocalDataSource, SwiftDa
         page: Int
     ) async throws(SimilarMovieLocalDataSourceError) {
         let deleteDescriptor = FetchDescriptor<MoviesSimilarMovieItemEntity>(
-            predicate: #Predicate { $0.page >= page && $0.movieID == movieID }
+            predicate: #Predicate { $0.movieID == movieID && $0.page >= page }
         )
         do {
             let entitiesToDelete = try modelContext.fetch(deleteDescriptor)

@@ -53,7 +53,7 @@ public protocol MovieRecommendationLocalDataSource: Sendable, Actor {
     ///   - movieID: The unique identifier of the reference movie.
     ///
     /// - Returns: The current page number, or `nil` if no pages have been loaded.
-    /// 
+    ///
     /// - Throws: ``MovieRecommendationLocalDataSourceError`` if a persistence error occurs.
     ///
     func currentRecommendationsStreamPage(

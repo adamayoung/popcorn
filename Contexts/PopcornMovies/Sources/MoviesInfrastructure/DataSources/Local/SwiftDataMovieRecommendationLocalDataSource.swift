@@ -52,7 +52,7 @@ actor SwiftDataMovieRecommendationLocalDataSource: MovieRecommendationLocalDataS
                 "SwiftData EXPIRED: MovieRecommendations(movieID: \(movieID, privacy: .public), page: \(page, privacy: .public)) — deleting"
             )
             let deleteDescriptor = FetchDescriptor<MoviesRecommendationMovieItemEntity>(
-                predicate: #Predicate { $0.page >= page && $0.movieID == movieID }
+                predicate: #Predicate { $0.movieID == movieID && $0.page >= page }
             )
             do {
                 let entitiesToDelete = try modelContext.fetch(deleteDescriptor)
@@ -80,7 +80,7 @@ actor SwiftDataMovieRecommendationLocalDataSource: MovieRecommendationLocalDataS
         page: Int
     ) async throws(MovieRecommendationLocalDataSourceError) {
         let deleteDescriptor = FetchDescriptor<MoviesRecommendationMovieItemEntity>(
-            predicate: #Predicate { $0.page >= page && $0.movieID == movieID }
+            predicate: #Predicate { $0.movieID == movieID && $0.page >= page }
         )
         do {
             let entitiesToDelete = try modelContext.fetch(deleteDescriptor)
