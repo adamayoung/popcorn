@@ -27,6 +27,7 @@ public struct PopcornMoviesFactory {
             movieImageRepository: infrastructureFactory.makeMovieImageRepository(),
             popularMovieRepository: infrastructureFactory.makePopularMovieRepository(),
             similarMovieRepository: infrastructureFactory.makeSimilarMovieRepository(),
+            movieRecommendationRepository: infrastructureFactory.makeMovieRecommendationRepository(),
             appConfigurationProvider: appConfigurationProvider
         )
     }
@@ -61,6 +62,10 @@ public struct PopcornMoviesFactory {
 
     public func makeStreamSimilarMoviesUseCase() -> some StreamSimilarMoviesUseCase {
         applicationFactory.makeStreamSimilarMoviesUseCase()
+    }
+
+    public func makeFetchMovieRecommendationsUseCase() -> some FetchMovieRecommendationsUseCase {
+        applicationFactory.makeFetchMovieRecommendationsUseCase()
     }
 
 }
