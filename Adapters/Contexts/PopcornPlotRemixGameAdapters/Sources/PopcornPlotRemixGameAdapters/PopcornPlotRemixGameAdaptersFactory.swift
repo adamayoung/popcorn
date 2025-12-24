@@ -18,20 +18,20 @@ public final class PopcornPlotRemixGameAdaptersFactory {
 
     private let fetchAppConfigurationUseCase: any FetchAppConfigurationUseCase
     private let fetchDiscoverMoviesUseCase: any FetchDiscoverMoviesUseCase
-    private let fetchSimilarMoviesUseCase: any FetchSimilarMoviesUseCase
+    private let fetchMovieRecommendationsUseCase: any FetchMovieRecommendationsUseCase
     private let fetchMovieGenresUseCase: any FetchMovieGenresUseCase
     private let observability: any Observing
 
     public init(
         fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase,
         fetchDiscoverMoviesUseCase: some FetchDiscoverMoviesUseCase,
-        fetchSimilarMoviesUseCase: some FetchSimilarMoviesUseCase,
+        fetchMovieRecommendationsUseCase: some FetchMovieRecommendationsUseCase,
         fetchMovieGenresUseCase: some FetchMovieGenresUseCase,
         observability: any Observing
     ) {
         self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
         self.fetchDiscoverMoviesUseCase = fetchDiscoverMoviesUseCase
-        self.fetchSimilarMoviesUseCase = fetchSimilarMoviesUseCase
+        self.fetchMovieRecommendationsUseCase = fetchMovieRecommendationsUseCase
         self.fetchMovieGenresUseCase = fetchMovieGenresUseCase
         self.observability = observability
     }
@@ -42,7 +42,7 @@ public final class PopcornPlotRemixGameAdaptersFactory {
         )
         let movieProvider = MovieProviderAdapter(
             fetchDiscoverMoviesUseCase: fetchDiscoverMoviesUseCase,
-            fetchSimilarMoviesUseCase: fetchSimilarMoviesUseCase
+            fetchMovieRecommendationsUseCase: fetchMovieRecommendationsUseCase
         )
         let genreProvider = GenreProviderAdapter(fetchMovieGenresUseCase: fetchMovieGenresUseCase)
 

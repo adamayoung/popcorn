@@ -45,7 +45,8 @@ public protocol MovieRecommendationRepository: Sendable {
     ) async -> AsyncThrowingStream<[MoviePreview]?, Error>
 
     ///
-    /// Creates a stream that continuously emits updates of recommended movies for a specific movie, with a result limit.
+    /// Creates a stream that continuously emits updates of recommended movies for a specific movie, with a result
+    /// limit.
     ///
     /// This stream is useful for observing changes to recommendations over time,
     /// such as cache updates or background synchronization. The stream automatically

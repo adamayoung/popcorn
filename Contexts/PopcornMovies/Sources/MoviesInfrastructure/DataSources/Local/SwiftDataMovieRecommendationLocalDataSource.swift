@@ -11,8 +11,10 @@ import MoviesDomain
 import OSLog
 import SwiftData
 
+// swiftlint:disable type_name
 @ModelActor
 actor SwiftDataMovieRecommendationLocalDataSource: MovieRecommendationLocalDataSource, SwiftDataFetchStreaming {
+    // swiftlint:enable type_name
 
     private static let logger = Logger.moviesInfrastructure
 
