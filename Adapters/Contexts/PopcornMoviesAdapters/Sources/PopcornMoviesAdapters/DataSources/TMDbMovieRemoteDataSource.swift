@@ -83,6 +83,24 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
         return movies
     }
 
+    func recommendations(
+        forMovie movieID: Int,
+        page: Int
+    ) async throws(MovieRemoteDataSourceError) -> [MoviePreview] {
+        let tmdbMovies: [TMDb.MovieListItem]
+        do {
+            tmdbMovies = try await movieService.recommendations(
+                forMovie: movieID, page: page, language: "en"
+            ).results
+        } catch let error {
+            throw MovieRemoteDataSourceError(error)
+        }
+
+        let mapper = MoviePreviewMapper()
+        let movies = tmdbMovies.map(mapper.map)
+        return movies
+    }
+
 }
 
 private extension MovieRemoteDataSourceError {

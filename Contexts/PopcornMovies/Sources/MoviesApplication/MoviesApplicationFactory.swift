@@ -15,6 +15,7 @@ package final class MoviesApplicationFactory {
     private let movieImageRepository: any MovieImageRepository
     private let popularMovieRepository: any PopularMovieRepository
     private let similarMovieRepository: any SimilarMovieRepository
+    private let movieRecommendationRepository: any MovieRecommendationRepository
     private let appConfigurationProvider: any AppConfigurationProviding
 
     package init(
@@ -23,6 +24,7 @@ package final class MoviesApplicationFactory {
         movieImageRepository: some MovieImageRepository,
         popularMovieRepository: some PopularMovieRepository,
         similarMovieRepository: some SimilarMovieRepository,
+        movieRecommendationRepository: some MovieRecommendationRepository,
         appConfigurationProvider: some AppConfigurationProviding
     ) {
         self.movieRepository = movieRepository
@@ -30,6 +32,7 @@ package final class MoviesApplicationFactory {
         self.movieImageRepository = movieImageRepository
         self.popularMovieRepository = popularMovieRepository
         self.similarMovieRepository = similarMovieRepository
+        self.movieRecommendationRepository = movieRecommendationRepository
         self.appConfigurationProvider = appConfigurationProvider
     }
 
@@ -92,6 +95,22 @@ package final class MoviesApplicationFactory {
     package func makeStreamSimilarMoviesUseCase() -> some StreamSimilarMoviesUseCase {
         DefaultStreamSimilarMoviesUseCase(
             similarMovieRepository: similarMovieRepository,
+            movieImageRepository: movieImageRepository,
+            appConfigurationProvider: appConfigurationProvider
+        )
+    }
+
+    package func makeFetchMovieRecommendationsUseCase() -> some FetchMovieRecommendationsUseCase {
+        DefaultFetchMovieRecommendationsUseCase(
+            movieRecommendationRepository: movieRecommendationRepository,
+            movieImageRepository: movieImageRepository,
+            appConfigurationProvider: appConfigurationProvider
+        )
+    }
+
+    package func makeStreamMovieRecommendationsUseCase() -> some StreamMovieRecommendationsUseCase {
+        DefaultStreamMovieRecommendationsUseCase(
+            movieRecommendationRepository: movieRecommendationRepository,
             movieImageRepository: movieImageRepository,
             appConfigurationProvider: appConfigurationProvider
         )

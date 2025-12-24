@@ -17,7 +17,7 @@ extension DependencyValues {
         PopcornPlotRemixGameAdaptersFactory(
             fetchAppConfigurationUseCase: fetchAppConfiguration,
             fetchDiscoverMoviesUseCase: fetchDiscoverMovies,
-            fetchSimilarMoviesUseCase: fetchSimilarMovies,
+            fetchMovieRecommendationsUseCase: fetchMovieRecommendations,
             fetchMovieGenresUseCase: fetchMovieGenres,
             observability: observability
         ).makePlotRemixGameFactory()

@@ -22,6 +22,11 @@ public protocol MovieRemoteDataSource: Sendable {
         page: Int
     ) async throws(MovieRemoteDataSourceError) -> [MoviePreview]
 
+    func recommendations(
+        forMovie movieID: Int,
+        page: Int
+    ) async throws(MovieRemoteDataSourceError) -> [MoviePreview]
+
 }
 
 public enum MovieRemoteDataSourceError: Error {

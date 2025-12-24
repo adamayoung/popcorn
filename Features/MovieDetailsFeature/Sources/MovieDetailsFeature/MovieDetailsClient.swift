@@ -14,7 +14,7 @@ import MoviesApplication
 struct MovieDetailsClient: Sendable {
 
     var streamMovie: @Sendable (Int) async throws -> AsyncThrowingStream<Movie?, Error>
-    var streamSimilar: @Sendable (Int) async throws -> AsyncThrowingStream<[MoviePreview], Error>
+    var streamRecommended: @Sendable (Int) async throws -> AsyncThrowingStream<[MoviePreview], Error>
     var toggleOnWatchlist: @Sendable (Int) async throws -> Void
 
     var isWatchlistEnabled: @Sendable () throws -> Bool
@@ -25,7 +25,7 @@ extension MovieDetailsClient: DependencyKey {
 
     static var liveValue: MovieDetailsClient {
         @Dependency(\.streamMovieDetails) var streamMovieDetails
-        @Dependency(\.streamSimilarMovies) var streamSimilarMovies
+        @Dependency(\.streamMovieRecommendations) var streamMovieRecommendations
         @Dependency(\.toggleWatchlistMovie) var toggleWatchlistMovie
         @Dependency(\.featureFlags) var featureFlags
 
@@ -48,8 +48,8 @@ extension MovieDetailsClient: DependencyKey {
                     continuation.onTermination = { _ in task.cancel() }
                 }
             },
-            streamSimilar: { id in
-                let moviePreviewStream = await streamSimilarMovies.stream(movieID: id, limit: 5)
+            streamRecommended: { id in
+                let moviePreviewStream = await streamMovieRecommendations.stream(movieID: id, limit: 5)
                 return AsyncThrowingStream<[MoviePreview], Error> { continuation in
                     let task = Task {
                         let mapper = MoviePreviewMapper()
@@ -78,7 +78,7 @@ extension MovieDetailsClient: DependencyKey {
                     continuation.finish()
                 }
             },
-            streamSimilar: { _ in
+            streamRecommended: { _ in
                 AsyncThrowingStream<[MoviePreview], Error> { continuation in
                     continuation.yield(MoviePreview.mocks)
                     continuation.finish()
