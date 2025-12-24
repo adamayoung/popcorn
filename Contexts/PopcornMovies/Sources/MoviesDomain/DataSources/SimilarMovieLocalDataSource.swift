@@ -19,7 +19,7 @@ public protocol SimilarMovieLocalDataSource: Sendable, Actor {
         limit: Int?
     ) async -> AsyncThrowingStream<[MoviePreview]?, Error>
 
-    func currentSimilarStreamPage() async throws(SimilarMovieLocalDataSourceError) -> Int?
+    func currentSimilarStreamPage(forMovie movieID: Int) async throws(SimilarMovieLocalDataSourceError) -> Int?
 
     func setSimilar(
         _ moviePreviews: [MoviePreview],

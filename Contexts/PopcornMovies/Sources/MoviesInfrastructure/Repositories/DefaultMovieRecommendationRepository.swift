@@ -73,7 +73,7 @@ final class DefaultMovieRecommendationRepository: MovieRecommendationRepository 
     func nextRecommendationsStreamPage(forMovie movieID: Int) async throws(MovieRecommendationRepositoryError) {
         let currentPage: Int
         do {
-            currentPage = try await localDataSource.currentRecommendationsStreamPage() ?? 0
+            currentPage = try await localDataSource.currentRecommendationsStreamPage(forMovie: movieID) ?? 0
         } catch let error {
             throw MovieRecommendationRepositoryError(error)
         }

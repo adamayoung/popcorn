@@ -90,8 +90,11 @@ actor SwiftDataSimilarMovieLocalDataSource: SimilarMovieLocalDataSource, SwiftDa
         return stream
     }
 
-    func currentSimilarStreamPage() async throws(SimilarMovieLocalDataSourceError) -> Int? {
+    func currentSimilarStreamPage(
+        forMovie movieID: Int
+    ) async throws(SimilarMovieLocalDataSourceError) -> Int? {
         var descriptor = FetchDescriptor<MoviesSimilarMovieItemEntity>(
+            predicate: #Predicate { $0.movieID == movieID },
             sortBy: [SortDescriptor(\.page, order: .reverse)]
         )
         descriptor.fetchLimit = 1

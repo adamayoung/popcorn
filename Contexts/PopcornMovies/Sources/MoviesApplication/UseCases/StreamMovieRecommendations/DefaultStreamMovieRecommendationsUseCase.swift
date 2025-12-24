@@ -39,7 +39,7 @@ final class DefaultStreamMovieRecommendationsUseCase: StreamMovieRecommendations
         limit: Int?
     ) async -> AsyncThrowingStream<[MoviePreviewDetails], Error> {
         Self.logger.debug(
-            "Start streaming movie recommendations [forMovieID: \(movieID, privacy: .private)")
+            "Start streaming movie recommendations [forMovieID: \(movieID, privacy: .private)]")
         let stream = await movieRecommendationRepository.recommendationsStream(forMovie: movieID, limit: limit)
         return AsyncThrowingStream { continuation in
             let task = Task {

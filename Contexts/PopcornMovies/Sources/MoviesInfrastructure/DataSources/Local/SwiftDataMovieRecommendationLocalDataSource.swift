@@ -151,8 +151,11 @@ actor SwiftDataMovieRecommendationLocalDataSource: MovieRecommendationLocalDataS
         return stream
     }
 
-    func currentRecommendationsStreamPage() async throws(MovieRecommendationLocalDataSourceError) -> Int? {
+    func currentRecommendationsStreamPage(
+        forMovie movieID: Int
+    ) async throws(MovieRecommendationLocalDataSourceError) -> Int? {
         var descriptor = FetchDescriptor<MoviesRecommendationMovieItemEntity>(
+            predicate: #Predicate { $0.movieID == movieID },
             sortBy: [SortDescriptor(\.page, order: .reverse)]
         )
         descriptor.fetchLimit = 1

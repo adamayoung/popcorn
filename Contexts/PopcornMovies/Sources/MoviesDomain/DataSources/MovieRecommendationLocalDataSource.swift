@@ -49,10 +49,16 @@ public protocol MovieRecommendationLocalDataSource: Sendable, Actor {
     ///
     /// Returns the current page number for the recommendations stream.
     ///
+    /// - Parameters:
+    ///   - movieID: The unique identifier of the reference movie.
+    ///
     /// - Returns: The current page number, or `nil` if no pages have been loaded.
+    /// 
     /// - Throws: ``MovieRecommendationLocalDataSourceError`` if a persistence error occurs.
     ///
-    func currentRecommendationsStreamPage() async throws(MovieRecommendationLocalDataSourceError) -> Int?
+    func currentRecommendationsStreamPage(
+        forMovie movieID: Int
+    ) async throws(MovieRecommendationLocalDataSourceError) -> Int?
 
     ///
     /// Caches recommendations for a specific movie and page.
