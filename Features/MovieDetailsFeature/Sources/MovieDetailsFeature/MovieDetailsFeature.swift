@@ -63,14 +63,14 @@ public struct MovieDetailsFeature: Sendable {
 
     public struct ViewSnapshot: Sendable {
         public let movie: Movie
-        public let similarMovies: [MoviePreview]
+        public let recommendedMovies: [MoviePreview]
 
         public init(
             movie: Movie,
-            similarMovies: [MoviePreview]
+            recommendedMovies: [MoviePreview]
         ) {
             self.movie = movie
-            self.similarMovies = similarMovies
+            self.recommendedMovies = recommendedMovies
         }
     }
 
@@ -156,24 +156,24 @@ extension MovieDetailsFeature {
             do {
                 actor Snapshot {
                     var movie: Movie?
-                    var similarMovies: [MoviePreview]?
+                    var recommendedMovies: [MoviePreview]?
 
                     func update(
                         movie: Movie? = nil,
-                        similarMovies: [MoviePreview]? = nil,
+                        recommendedMovies: [MoviePreview]? = nil,
                         send: Send<MovieDetailsFeature.Action>
                     ) async {
                         if let movie { self.movie = movie }
-                        if let similarMovies { self.similarMovies = similarMovies }
+                        if let recommendedMovies { self.recommendedMovies = recommendedMovies }
 
                         guard
                             let movie = self.movie,
-                            let similarMovies = self.similarMovies
+                            let recommendedMovies = self.recommendedMovies
                         else {
                             return
                         }
 
-                        let viewSnapshot = ViewSnapshot(movie: movie, similarMovies: similarMovies)
+                        let viewSnapshot = ViewSnapshot(movie: movie, recommendedMovies: recommendedMovies)
 
                         await send(.loaded(viewSnapshot))
                     }
@@ -193,10 +193,10 @@ extension MovieDetailsFeature {
                     }
 
                     group.addTask {
-                        let stream = try await movieDetailsClient.streamSimilar(state.movieID)
+                        let stream = try await movieDetailsClient.streamRecommended(state.movieID)
                         for try await value in stream {
                             await snapshot.update(
-                                similarMovies: value,
+                                recommendedMovies: value,
                                 send: send
                             )
                         }

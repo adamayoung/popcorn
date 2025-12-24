@@ -15,14 +15,14 @@ import PlotRemixGameDomain
 public struct MovieProviderAdapter: MovieProviding {
 
     private let fetchDiscoverMoviesUseCase: any FetchDiscoverMoviesUseCase
-    private let fetchSimilarMoviesUseCase: any FetchSimilarMoviesUseCase
+    private let fetchMovieRecommendationsUseCase: any FetchMovieRecommendationsUseCase
 
     public init(
         fetchDiscoverMoviesUseCase: some FetchDiscoverMoviesUseCase,
-        fetchSimilarMoviesUseCase: some FetchSimilarMoviesUseCase
+        fetchMovieRecommendationsUseCase: some FetchMovieRecommendationsUseCase
     ) {
         self.fetchDiscoverMoviesUseCase = fetchDiscoverMoviesUseCase
-        self.fetchSimilarMoviesUseCase = fetchSimilarMoviesUseCase
+        self.fetchMovieRecommendationsUseCase = fetchMovieRecommendationsUseCase
     }
 
     public func randomMovies(
@@ -60,7 +60,7 @@ public struct MovieProviderAdapter: MovieProviding {
     ) async throws(MovieProviderError) -> [PlotRemixGameDomain.Movie] {
         let moviePreviewDetails: [MoviesApplication.MoviePreviewDetails]
         do {
-            moviePreviewDetails = try await fetchSimilarMoviesUseCase.execute(movieID: movieID)
+            moviePreviewDetails = try await fetchMovieRecommendationsUseCase.execute(movieID: movieID)
         } catch let error {
             throw MovieProviderError(error)
         }
@@ -89,7 +89,7 @@ extension MovieProviderError {
         }
     }
 
-    init(_ error: FetchSimilarMoviesError) {
+    init(_ error: FetchMovieRecommendationsError) {
         switch error {
         case .notFound: self = .unknown()
         case .unauthorised: self = .unauthorised

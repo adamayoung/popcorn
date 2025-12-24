@@ -66,7 +66,7 @@ final class DefaultSimilarMovieRepository: SimilarMovieRepository {
 
     func nextSimilarStreamPage(forMovie movieID: Int) async throws(SimilarMovieRepositoryError) {
         let currentPage: Int
-        do { currentPage = try await localDataSource.currentSimilarStreamPage() ?? 0 } catch let
+        do { currentPage = try await localDataSource.currentSimilarStreamPage(forMovie: movieID) ?? 0 } catch let
             error { throw SimilarMovieRepositoryError(error) }
 
         let nextPage = currentPage + 1

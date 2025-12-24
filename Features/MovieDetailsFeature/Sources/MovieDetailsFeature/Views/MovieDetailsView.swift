@@ -28,7 +28,7 @@ public struct MovieDetailsView: View {
             case .ready(let snapshot):
                 content(
                     movie: snapshot.movie,
-                    similarMovies: snapshot.similarMovies
+                    recommendedMovies: snapshot.recommendedMovies
                 )
 
             case .error(let error):
@@ -89,12 +89,12 @@ extension MovieDetailsView {
     @ViewBuilder
     private func content(
         movie: Movie,
-        similarMovies: [MoviePreview]
+        recommendedMovies: [MoviePreview]
     ) -> some View {
         StretchyHeaderScrollView(
             header: { header(movie: movie) },
             headerOverlay: { headerOverlay(movie: movie) },
-            content: { body(movie: movie, similarMovies: similarMovies) }
+            content: { body(movie: movie, recommendedMovies: recommendedMovies) }
         )
         .navigationTitle(movie.title)
         #if os(iOS)
@@ -121,7 +121,7 @@ extension MovieDetailsView {
     @ViewBuilder
     private func body(
         movie: Movie,
-        similarMovies: [MoviePreview]
+        recommendedMovies: [MoviePreview]
     ) -> some View {
         VStack(alignment: .leading) {
             Text(verbatim: movie.overview)
@@ -129,8 +129,8 @@ extension MovieDetailsView {
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal)
 
-            if !similarMovies.isEmpty {
-                MovieCarousel(movies: similarMovies) { moviePreview in
+            if !recommendedMovies.isEmpty {
+                MovieCarousel(movies: recommendedMovies) { moviePreview in
                     store.send(.navigate(.movieDetails(id: moviePreview.id)))
                 }
             }
@@ -151,7 +151,7 @@ extension MovieDetailsView {
                     viewState: .ready(
                         .init(
                             movie: Movie.mock,
-                            similarMovies: MoviePreview.mocks
+                            recommendedMovies: MoviePreview.mocks
                         )
                     )
                 ),
