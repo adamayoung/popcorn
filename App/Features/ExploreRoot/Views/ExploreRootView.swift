@@ -12,6 +12,7 @@ import MovieIntelligenceFeature
 import PersonDetailsFeature
 import SwiftUI
 import TVSeriesDetailsFeature
+import TVSeriesIntelligenceFeature
 
 struct ExploreRootView: View {
 
@@ -46,6 +47,14 @@ struct ExploreRootView: View {
             )
         ) { store in
             MovieChatView(store: store)
+        }
+        .fullScreenCover(
+            store: store.scope(
+                state: \.$tvSeriesIntelligence,
+                action: \.tvSeriesIntelligence
+            )
+        ) { store in
+            TVSeriesChatView(store: store)
         }
     }
 

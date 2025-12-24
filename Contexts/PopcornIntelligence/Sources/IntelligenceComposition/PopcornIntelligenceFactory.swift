@@ -19,23 +19,28 @@ public struct PopcornIntelligenceFactory {
     private let applicationFactory: IntelligenceApplicationFactory
 
     public init(
-        movieProvider: some MovieProviding
-//        tvSeriesProvider: some TVSeriesProviding,
+        movieProvider: some MovieProviding,
+        tvSeriesProvider: some TVSeriesProviding
 //        observability: some Observing
     ) {
         let infrastructureFactory = IntelligenceInfrastructureFactory(
-            movieProvider: movieProvider
-//            tvSeriesProvider: tvSeriesProvider,
+            movieProvider: movieProvider,
+            tvSeriesProvider: tvSeriesProvider
 //            observability: observability
         )
 
         self.applicationFactory = IntelligenceApplicationFactory(
-            movieSessionRepository: infrastructureFactory.makeMovieLLMSessionRepository()
+            movieSessionRepository: infrastructureFactory.makeMovieLLMSessionRepository(),
+            tvSeriesSessionRepository: infrastructureFactory.makeTVSeriesLLMSessionRepository()
         )
     }
 
     public func makeCreateMovieIntelligenceSessionUseCase() -> any CreateMovieIntelligenceSessionUseCase {
         applicationFactory.makeCreateMovieIntelligenceSessionUseCase()
+    }
+
+    public func makeCreateTVSeriesIntelligenceSessionUseCase() -> any CreateTVSeriesIntelligenceSessionUseCase {
+        applicationFactory.makeCreateTVSeriesIntelligenceSessionUseCase()
     }
 
 }

@@ -22,8 +22,12 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
     /// The TV series' name.
     public let name: String
 
+    public let tagline: String?
+
     /// A brief description or summary of the TV series.
-    public let overview: String?
+    public let overview: String
+
+    public let numberOfSeasons: Int
 
     /// URL path to the TV series' poster image.
     public let posterPath: URL?
@@ -44,13 +48,17 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
     public init(
         id: Int,
         name: String,
-        overview: String? = nil,
+        tagline: String? = nil,
+        overview: String,
+        numberOfSeasons: Int,
         posterPath: URL? = nil,
         backdropPath: URL? = nil
     ) {
         self.id = id
         self.name = name
+        self.tagline = tagline
         self.overview = overview
+        self.numberOfSeasons = numberOfSeasons
         self.posterPath = posterPath
         self.backdropPath = backdropPath
     }

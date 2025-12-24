@@ -7,7 +7,7 @@
 
 import Foundation
 
-public protocol TVSeriesLLMSessionRepository {
+public protocol TVSeriesLLMSessionRepository: Sendable {
 
     func session(
         forTVSeries tvSeriesID: Int
@@ -17,6 +17,7 @@ public protocol TVSeriesLLMSessionRepository {
 
 public enum TVSeriesLLMSessionRepositoryError: Error {
 
+    case tvSeriesNotFound
     case toolsNotFound
     case unknown(Error? = nil)
 

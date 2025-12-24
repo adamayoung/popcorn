@@ -22,7 +22,10 @@ struct TVSeriesDetailsMapper {
         return TVSeriesDetails(
             id: tvSeries.id,
             name: tvSeries.name,
+            tagline: tvSeries.tagline,
             overview: tvSeries.overview,
+            numberOfSeasons: tvSeries.numberOfSeasons,
+            firstAirDate: tvSeries.firstAirDate,
             posterURLSet: posterURLSet,
             backdropURLSet: backdropURLSet,
             logoURLSet: logoURLSet

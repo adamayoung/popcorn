@@ -37,6 +37,10 @@ let package = Package(
                 .product(name: "IntelligenceApplication", package: "PopcornIntelligence"),
                 "Observability",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+            ],
+            resources: [
+                .process("Assets.xcassets"),
+                .process("Localizable.xcstrings")
             ]
         ),
         .testTarget(

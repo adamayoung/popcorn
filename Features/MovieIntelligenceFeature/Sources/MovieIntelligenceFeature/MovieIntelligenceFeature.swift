@@ -1,12 +1,13 @@
 //
 //  MovieIntelligenceFeature.swift
-//  Popcorn
+//  MovieIntelligenceFeature
 //
 //  Copyright © 2025 Adam Young.
 //
 
 import AppDependencies
 import ComposableArchitecture
+import DesignSystem
 import Foundation
 import IntelligenceDomain
 import Observability
@@ -25,17 +26,20 @@ public struct MovieIntelligenceFeature: Sendable {
     public struct State: Sendable {
         let movieID: Int
         var session: LLMSession?
+        var isThinking: Bool
         var error: Error?
         var messages: [Message]
 
         public init(
             movieID: Int,
             session: LLMSession? = nil,
+            isThinking: Bool = false,
             error: Error? = nil,
             messages: [Message] = []
         ) {
             self.movieID = movieID
             self.session = session
+            self.isThinking = isThinking
             self.error = error
             self.messages = messages
         }
@@ -68,17 +72,20 @@ public struct MovieIntelligenceFeature: Sendable {
                 return .none
 
             case .sendPrompt(let prompt):
-                let message = Message(author: .user, content: prompt)
+                state.isThinking = true
+                let message = Message(role: .user, textContent: prompt)
                 state.messages.append(message)
 
                 return handleSendPrompt(&state, prompt: prompt)
 
             case .responseReceived(let response):
-                let message = Message(author: .bot, content: response)
+                let message = Message(role: .assistant, textContent: response)
                 state.messages.append(message)
+                state.isThinking = false
                 return .none
 
             case .sendPromptFailed(let error):
+                state.isThinking = false
                 state.error = error
                 return .none
 

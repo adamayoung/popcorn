@@ -9,6 +9,12 @@ import Foundation
 import FoundationModels
 import IntelligenceDomain
 
+///
+/// LLM tool that fetches movie details from the movie provider
+///
+/// This tool enables the LLM to retrieve detailed information about movies
+/// including title, overview, and release date.
+///
 final class MovieDetailsTool: Tool {
 
     private let movieProvider: any MovieProviding

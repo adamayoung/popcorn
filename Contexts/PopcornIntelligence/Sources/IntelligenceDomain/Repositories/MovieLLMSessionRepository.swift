@@ -17,6 +17,7 @@ public protocol MovieLLMSessionRepository: Sendable {
 
 public enum MovieLLMSessionRepositoryError: Error {
 
+    case movieNotFound
     case toolsNotFound
     case unknown(Error? = nil)
 

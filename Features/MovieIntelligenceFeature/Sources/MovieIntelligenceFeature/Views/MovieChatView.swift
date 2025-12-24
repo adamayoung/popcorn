@@ -1,6 +1,6 @@
 //
 //  MovieChatView.swift
-//  Popcorn
+//  MovieIntelligenceFeature
 //
 //  Copyright © 2025 Adam Young.
 //
@@ -19,29 +19,13 @@ public struct MovieChatView: View {
 
     public var body: some View {
         NavigationStack {
-            ScrollViewReader { proxy in
-                List(store.messages) { message in
-                    MessageRow(message: message)
-                        .id(message)
-                        .listRowSeparator(.hidden)
-                }
-                .scrollDismissesKeyboard(.interactively)
-                .task(id: store.messages) {
-                    withAnimation {
-                        proxy.scrollTo(store.messages.last, anchor: .bottom)
-                    }
-                }
-                .listStyle(.plain)
-                .safeAreaInset(edge: .bottom) {
-                    ZStack {
-                        MessageTextField(
-                            isDisabled: false,
-                            onSend: sendMessage
-                        )
-                        .padding()
-                    }
-                }
-            }
+            ChatView(
+                messages: store.messages,
+                send: { prompt in
+                    store.send(.sendPrompt(prompt))
+                },
+                isThinking: store.isThinking
+            )
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(role: .close) {
@@ -55,10 +39,6 @@ public struct MovieChatView: View {
         }
     }
 
-    private func sendMessage(text: String) {
-        store.send(.sendPrompt(text))
-    }
-
 }
 
 #Preview("Messages") {
@@ -67,10 +47,7 @@ public struct MovieChatView: View {
             store: Store(
                 initialState: MovieIntelligenceFeature.State(
                     movieID: 550,
-                    messages: [
-                        Message(author: .user, content: "Tell me about this movie."),
-                        Message(author: .bot, content: "This movie is titled 'Fight Club'.")
-                    ]
+                    messages: Message.mocks
                 ),
                 reducer: {
                     EmptyReducer()

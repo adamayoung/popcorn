@@ -15,7 +15,10 @@ struct TVSeriesMapper {
         TVSeriesDomain.TVSeries(
             id: dto.id,
             name: dto.name,
-            overview: dto.overview,
+            tagline: dto.tagline,
+            overview: dto.overview ?? "",
+            numberOfSeasons: dto.numberOfSeasons ?? 0,
+            firstAirDate: dto.firstAirDate ?? .now,
             posterPath: dto.posterPath,
             backdropPath: dto.backdropPath
         )

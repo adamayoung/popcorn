@@ -14,7 +14,8 @@ extension DependencyValues {
 
     var intelligenceFactory: PopcornIntelligenceFactory {
         PopcornIntelligenceAdaptersFactory(
-            fetchMovieDetailsUseCase: fetchMovieDetails
+            fetchMovieDetailsUseCase: fetchMovieDetails,
+            fetchTVSeriesDetailsUseCase: fetchTVSeriesDetails
         ).makeIntelligenceFactory()
     }
 

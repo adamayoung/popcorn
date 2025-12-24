@@ -68,6 +68,11 @@ public struct TVSeriesDetailsFeature: Sendable {
         case fetch
         case loaded(ViewSnapshot)
         case loadFailed(Error)
+        case navigate(Navigation)
+    }
+
+    public enum Navigation: Equatable, Hashable {
+        case tvSeriesIntelligence(id: Int)
     }
 
     public init() {}
@@ -88,6 +93,9 @@ public struct TVSeriesDetailsFeature: Sendable {
 
             case .loadFailed(let error):
                 state.viewState = .error(error)
+                return .none
+
+            default:
                 return .none
             }
         }

@@ -6,7 +6,11 @@
 //
 
 import SwiftUI
-import UIKit
+#if canImport(UIKit)
+    import UIKit
+#elseif canImport(AppKit)
+    import AppKit
+#endif
 
 // swiftlint:disable identifier_name
 public struct AnimatedMeshBackground: View {
@@ -112,14 +116,18 @@ public struct AnimatedMeshBackground: View {
 private extension Color {
 
     func lighter(by amount: CGFloat = 0.2) -> Color {
-        let uiColor = UIColor(self)
+        #if canImport(UIKit)
+            let platformColor = UIColor(self)
+        #elseif canImport(AppKit)
+            let platformColor = NSColor(self)
+        #endif
 
         var r: CGFloat = 0
         var g: CGFloat = 0
         var b: CGFloat = 0
         var a: CGFloat = 0
 
-        guard uiColor.getRed(&r, green: &g, blue: &b, alpha: &a) else {
+        guard platformColor.getRed(&r, green: &g, blue: &b, alpha: &a) else {
             return self
         }
 

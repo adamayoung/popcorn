@@ -111,6 +111,15 @@ When writing tests that need Observability mocks:
 
 ## Documentation
 
+### Swift DocC Guidelines
+
+**CRITICAL**: Only add DocC-style documentation comments (`///`) to **public** APIs:
+
+- ✅ Document: `public` classes, structs, enums, protocols, methods, properties, and functions
+- ❌ Do NOT document: `internal`, `private`, `fileprivate`, or `package` access levels
+
+Internal implementation classes like `DefaultXxxUseCase` or `FoundationModelsXxxRepository` should NOT have DocC comments—they are implementation details, not public API.
+
 ### Quick Reference
 
 Need help with specific topics? Use these guides:
