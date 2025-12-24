@@ -49,6 +49,51 @@ final class DefaultMovieRecommendationRepository: MovieRecommendationRepository 
         return movies
     }
 
+    func recommendationsStream(
+        forMovie movieID: Int
+    ) async -> AsyncThrowingStream<[MoviePreview]?, Error> {
+        await recommendationsStream(forMovie: movieID, limit: nil)
+    }
+
+    func recommendationsStream(
+        forMovie movieID: Int,
+        limit: Int?
+    ) async -> AsyncThrowingStream<[MoviePreview]?, Error> {
+        let stream = await localDataSource.recommendationsStream(forMovie: movieID, limit: limit)
+
+        Task {
+            let page = 1
+            let movies = try await remoteDataSource.recommendations(forMovie: movieID, page: page)
+            try await localDataSource.setRecommendations(movies, forMovie: movieID, page: page)
+        }
+
+        return stream
+    }
+
+    func nextRecommendationsStreamPage(forMovie movieID: Int) async throws(MovieRecommendationRepositoryError) {
+        let currentPage: Int
+        do {
+            currentPage = try await localDataSource.currentRecommendationsStreamPage() ?? 0
+        } catch let error {
+            throw MovieRecommendationRepositoryError(error)
+        }
+
+        let nextPage = currentPage + 1
+
+        let movies: [MoviePreview]
+        do {
+            movies = try await remoteDataSource.recommendations(forMovie: movieID, page: nextPage)
+        } catch let error {
+            throw MovieRecommendationRepositoryError(error)
+        }
+
+        do {
+            try await localDataSource.setRecommendations(movies, forMovie: movieID, page: nextPage)
+        } catch let error {
+            throw MovieRecommendationRepositoryError(error)
+        }
+    }
+
 }
 
 extension MovieRecommendationRepositoryError {

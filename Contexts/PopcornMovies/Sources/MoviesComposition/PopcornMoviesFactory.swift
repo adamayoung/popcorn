@@ -68,4 +68,8 @@ public struct PopcornMoviesFactory {
         applicationFactory.makeFetchMovieRecommendationsUseCase()
     }
 
+    public func makeStreamMovieRecommendationsUseCase() -> some StreamMovieRecommendationsUseCase {
+        applicationFactory.makeStreamMovieRecommendationsUseCase()
+    }
+
 }

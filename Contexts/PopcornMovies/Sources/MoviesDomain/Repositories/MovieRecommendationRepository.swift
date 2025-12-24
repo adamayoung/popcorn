@@ -30,6 +30,49 @@ public protocol MovieRecommendationRepository: Sendable {
         page: Int
     ) async throws(MovieRecommendationRepositoryError) -> [MoviePreview]
 
+    ///
+    /// Creates a stream that continuously emits updates of recommended movies for a specific movie.
+    ///
+    /// This stream is useful for observing changes to recommendations over time,
+    /// such as cache updates or background synchronization. The stream automatically
+    /// manages pagination and can be advanced using ``nextRecommendationsStreamPage(forMovie:)``.
+    ///
+    /// - Parameter movieID: The unique identifier of the reference movie.
+    /// - Returns: An async throwing stream that emits arrays of ``MoviePreview`` instances or `nil` if not available.
+    ///
+    func recommendationsStream(
+        forMovie movieID: Int
+    ) async -> AsyncThrowingStream<[MoviePreview]?, Error>
+
+    ///
+    /// Creates a stream that continuously emits updates of recommended movies for a specific movie, with a result limit.
+    ///
+    /// This stream is useful for observing changes to recommendations over time,
+    /// such as cache updates or background synchronization. The stream automatically
+    /// manages pagination and can be advanced using ``nextRecommendationsStreamPage(forMovie:)``.
+    ///
+    /// - Parameters:
+    ///   - movieID: The unique identifier of the reference movie.
+    ///   - limit: The maximum number of movies to return, or `nil` for no limit.
+    /// - Returns: An async throwing stream that emits arrays of ``MoviePreview`` instances or `nil` if not available.
+    ///
+    func recommendationsStream(
+        forMovie movieID: Int,
+        limit: Int?
+    ) async -> AsyncThrowingStream<[MoviePreview]?, Error>
+
+    ///
+    /// Advances the recommendations stream to the next page for a specific movie.
+    ///
+    /// This method should be called to load more movies when using ``recommendationsStream(forMovie:)``
+    /// or ``recommendationsStream(forMovie:limit:)``. It triggers the stream to emit the next page
+    /// of recommended movies.
+    ///
+    /// - Parameter movieID: The unique identifier of the reference movie.
+    /// - Throws: ``MovieRecommendationRepositoryError`` if the next page cannot be fetched.
+    ///
+    func nextRecommendationsStreamPage(forMovie movieID: Int) async throws(MovieRecommendationRepositoryError)
+
 }
 
 ///

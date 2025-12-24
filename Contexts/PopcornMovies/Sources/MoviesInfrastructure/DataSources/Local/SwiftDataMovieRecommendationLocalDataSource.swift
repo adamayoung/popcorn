@@ -12,7 +12,7 @@ import OSLog
 import SwiftData
 
 @ModelActor
-actor SwiftDataMovieRecommendationLocalDataSource: MovieRecommendationLocalDataSource {
+actor SwiftDataMovieRecommendationLocalDataSource: MovieRecommendationLocalDataSource, SwiftDataFetchStreaming {
 
     private static let logger = Logger.moviesInfrastructure
 
@@ -124,6 +124,45 @@ actor SwiftDataMovieRecommendationLocalDataSource: MovieRecommendationLocalDataS
         } catch let error {
             throw .persistence(error)
         }
+    }
+
+    func recommendationsStream(
+        forMovie movieID: Int,
+        limit: Int? = nil
+    ) -> AsyncThrowingStream<[MoviePreview]?, Error> {
+        var descriptor = FetchDescriptor<MoviesRecommendationMovieItemEntity>(
+            predicate: #Predicate { $0.movieID == movieID },
+            sortBy: [SortDescriptor(\.page), SortDescriptor(\.sortIndex)]
+        )
+        descriptor.fetchLimit = limit
+        let stream = stream(for: descriptor) { entities -> [MoviePreview]? in
+            guard !entities.isEmpty else {
+                return nil
+            }
+
+            let mapper = MoviePreviewMapper()
+            return entities.compactMap {
+                mapper.compactMap($0.movie)
+            }
+        }
+
+        return stream
+    }
+
+    func currentRecommendationsStreamPage() async throws(MovieRecommendationLocalDataSourceError) -> Int? {
+        var descriptor = FetchDescriptor<MoviesRecommendationMovieItemEntity>(
+            sortBy: [SortDescriptor(\.page, order: .reverse)]
+        )
+        descriptor.fetchLimit = 1
+
+        let entity: MoviesRecommendationMovieItemEntity?
+        do {
+            entity = try modelContext.fetch(descriptor).first
+        } catch let error {
+            throw .persistence(error)
+        }
+
+        return entity?.page
     }
 
 }

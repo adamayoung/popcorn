@@ -108,4 +108,12 @@ package final class MoviesApplicationFactory {
         )
     }
 
+    package func makeStreamMovieRecommendationsUseCase() -> some StreamMovieRecommendationsUseCase {
+        DefaultStreamMovieRecommendationsUseCase(
+            movieRecommendationRepository: movieRecommendationRepository,
+            movieImageRepository: movieImageRepository,
+            appConfigurationProvider: appConfigurationProvider
+        )
+    }
+
 }
