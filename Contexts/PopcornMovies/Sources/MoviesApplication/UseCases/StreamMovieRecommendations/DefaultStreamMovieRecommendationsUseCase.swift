@@ -98,7 +98,7 @@ extension DefaultStreamMovieRecommendationsUseCase {
 
     private func imageCollections(
         for moviePreviews: [MoviePreview]
-    ) async throws(FetchMovieRecommendationsError) -> [Int: ImageCollection] {
+    ) async throws(StreamMovieRecommendationsError) -> [Int: ImageCollection] {
         let imageCollections: [Int: ImageCollection]
         do {
             imageCollections = try await withThrowingTaskGroup { taskGroup in
@@ -119,7 +119,7 @@ extension DefaultStreamMovieRecommendationsUseCase {
                 return results
             }
         } catch let error {
-            throw FetchMovieRecommendationsError(error)
+            throw StreamMovieRecommendationsError(error)
         }
 
         return imageCollections
