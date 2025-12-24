@@ -78,14 +78,12 @@
 				ExploreFeature,
 				MediaSearchFeature,
 				MovieDetailsFeature,
-				MovieIntelligenceFeature/Package.resolved,
 				PersonDetailsFeature,
 				PlotRemixGameFeature,
 				TrendingMoviesFeature,
 				TrendingPeopleFeature,
 				TrendingTVSeriesFeature,
 				TVSeriesDetailsFeature,
-				TVSeriesIntelligenceFeature/Package.resolved,
 			);
 			target = 664551852ECB7C2100250D87 /* Popcorn */;
 		};
