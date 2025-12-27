@@ -8,9 +8,11 @@
 import ComposableArchitecture
 import ExploreFeature
 import MovieDetailsFeature
+import MovieIntelligenceFeature
 import PersonDetailsFeature
 import SwiftUI
 import TVSeriesDetailsFeature
+import TVSeriesIntelligenceFeature
 
 struct ExploreRootView: View {
 
@@ -35,6 +37,22 @@ struct ExploreRootView: View {
             case .personDetails(let store):
                 personDetails(store: store)
             }
+        }
+        .fullScreenCover(
+            item: $store.scope(
+                state: \.movieIntelligence,
+                action: \.movieIntelligence
+            )
+        ) { store in
+            MovieChatView(store: store)
+        }
+        .fullScreenCover(
+            item: $store.scope(
+                state: \.tvSeriesIntelligence,
+                action: \.tvSeriesIntelligence
+            )
+        ) { store in
+            TVSeriesChatView(store: store)
         }
     }
 

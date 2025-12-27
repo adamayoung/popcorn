@@ -18,6 +18,7 @@ struct MovieDetailsClient: Sendable {
     var toggleOnWatchlist: @Sendable (Int) async throws -> Void
 
     var isWatchlistEnabled: @Sendable () throws -> Bool
+    var isIntelligenceEnabled: @Sendable () throws -> Bool
 
 }
 
@@ -66,6 +67,9 @@ extension MovieDetailsClient: DependencyKey {
             },
             isWatchlistEnabled: {
                 featureFlags.isEnabled(.watchlist)
+            },
+            isIntelligenceEnabled: {
+                featureFlags.isEnabled(.movieIntelligence)
             }
         )
     }
@@ -85,9 +89,8 @@ extension MovieDetailsClient: DependencyKey {
                 }
             },
             toggleOnWatchlist: { _ in },
-            isWatchlistEnabled: {
-                true
-            }
+            isWatchlistEnabled: { true },
+            isIntelligenceEnabled: { true }
         )
     }
 

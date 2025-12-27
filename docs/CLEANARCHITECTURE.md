@@ -42,6 +42,9 @@ Rules:
 - Application depends on Domain (uses entities, repositories)
 - Infrastructure depends on Domain (implements repositories)
 - Composition wires everything together
+- **CRITICAL**: Context modules must NEVER have direct dependencies on other context modules
+  - ❌ WRONG: PopcornMovies depends on PopcornTVSeries
+  - ✅ CORRECT: PopcornMovies defines a provider protocol, implementation provided via Composition
 
 ## Data Flow Example
 

@@ -33,12 +33,27 @@ public struct TVSeriesDetailsView: View {
                 EmptyView()
             }
         }
+        .toolbar {
+            if case .ready(let snapshot) = store.viewState, store.isIntelligenceEnabled {
+                ToolbarItem(placement: .primaryAction) {
+                    Button(
+                        "Intelligence",
+                        systemImage: "apple.intelligence"
+                    ) {
+                        store.send(.navigate(.tvSeriesIntelligence(id: snapshot.tvSeries.id)))
+                    }
+                }
+            }
+        }
         .contentTransition(.opacity)
         .animation(.easeInOut(duration: 1), value: store.isReady)
         .overlay {
             if store.isLoading {
                 loadingBody
             }
+        }
+        .onAppear {
+            store.send(.didAppear)
         }
         .task {
             await store.send(.fetch).finish()

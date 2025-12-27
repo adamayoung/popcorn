@@ -19,10 +19,12 @@ struct TVSeriesMapperTests {
     func map_convertsTMDbTVSeriesToDomainModel() throws {
         let posterPath = try #require(URL(string: "https://tmdb.example/poster.jpg"))
         let backdropPath = try #require(URL(string: "https://tmdb.example/backdrop.jpg"))
+        let firstAirDate = Date(timeIntervalSince1970: 1_200_528_000)
         let tmdbTVSeries = TMDb.TVSeries(
             id: 501,
             name: "Blue Planet",
             overview: "Ocean wildlife",
+            firstAirDate: firstAirDate,
             posterPath: posterPath,
             backdropPath: backdropPath
         )
@@ -34,6 +36,7 @@ struct TVSeriesMapperTests {
             id: 501,
             name: "Blue Planet",
             overview: "Ocean wildlife",
+            firstAirDate: firstAirDate,
             posterPath: posterPath,
             backdropPath: backdropPath
         ))

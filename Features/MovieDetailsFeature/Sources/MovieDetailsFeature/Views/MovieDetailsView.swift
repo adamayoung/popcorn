@@ -50,6 +50,17 @@ public struct MovieDetailsView: View {
                     .sensoryFeedback(.selection, trigger: snapshot.movie.isOnWatchlist)
                 }
             }
+
+            if case .ready(let snapshot) = store.viewState, store.isIntelligenceEnabled {
+                ToolbarItem(placement: .primaryAction) {
+                    Button(
+                        "Intelligence",
+                        systemImage: "apple.intelligence"
+                    ) {
+                        store.send(.navigate(.movieIntelligence(id: snapshot.movie.id)))
+                    }
+                }
+            }
         }
         .contentTransition(.opacity)
         .animation(.easeInOut(duration: 1), value: store.isReady)

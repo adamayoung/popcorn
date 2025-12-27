@@ -12,7 +12,7 @@ public struct MovieDetails: Identifiable, Equatable, Sendable {
 
     public let id: Int
     public let title: String
-    public let overview: String?
+    public let overview: String
     public let releaseDate: Date?
     public let posterURLSet: ImageURLSet?
     public let backdropURLSet: ImageURLSet?
@@ -22,7 +22,7 @@ public struct MovieDetails: Identifiable, Equatable, Sendable {
     public init(
         id: Int,
         title: String,
-        overview: String? = nil,
+        overview: String,
         releaseDate: Date? = nil,
         posterURLSet: ImageURLSet? = nil,
         backdropURLSet: ImageURLSet? = nil,

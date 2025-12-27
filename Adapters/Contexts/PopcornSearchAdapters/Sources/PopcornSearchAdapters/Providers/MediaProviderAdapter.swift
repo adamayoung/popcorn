@@ -39,7 +39,7 @@ public struct MediaProviderAdapter: MediaProviding {
         return MoviePreview(
             id: movie.id,
             title: movie.title,
-            overview: movie.overview ?? "",
+            overview: movie.overview,
             posterPath: movie.posterURLSet?.path,
             backdropPath: movie.backdropURLSet?.path
         )
@@ -56,7 +56,7 @@ public struct MediaProviderAdapter: MediaProviding {
         return TVSeriesPreview(
             id: tvSeries.id,
             name: tvSeries.name,
-            overview: tvSeries.overview ?? "",
+            overview: tvSeries.overview,
             posterPath: tvSeries.posterURLSet?.path,
             backdropPath: tvSeries.backdropURLSet?.path
         )

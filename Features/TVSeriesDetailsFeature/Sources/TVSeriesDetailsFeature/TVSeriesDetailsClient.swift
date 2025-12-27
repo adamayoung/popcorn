@@ -16,12 +16,15 @@ struct TVSeriesDetailsClient: Sendable {
 
     var fetch: @Sendable (Int) async throws -> TVSeries
 
+    var isIntelligenceEnabled: @Sendable () throws -> Bool
+
 }
 
 extension TVSeriesDetailsClient: DependencyKey {
 
     static var liveValue: TVSeriesDetailsClient {
         @Dependency(\.fetchTVSeriesDetails) var fetchTVSeriesDetails
+        @Dependency(\.featureFlags) var featureFlags
 
         return TVSeriesDetailsClient(
             fetch: { id in
@@ -42,6 +45,9 @@ extension TVSeriesDetailsClient: DependencyKey {
                     span?.finish(status: .internalError)
                     throw error
                 }
+            },
+            isIntelligenceEnabled: {
+                featureFlags.isEnabled(.tvSeriesIntelligence)
             }
         )
     }
@@ -51,6 +57,9 @@ extension TVSeriesDetailsClient: DependencyKey {
             fetch: { _ in
                 try await Task.sleep(for: .seconds(2))
                 return TVSeries.mock
+            },
+            isIntelligenceEnabled: {
+                true
             }
         )
     }

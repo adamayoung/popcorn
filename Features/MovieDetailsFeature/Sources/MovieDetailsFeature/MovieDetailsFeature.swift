@@ -26,6 +26,7 @@ public struct MovieDetailsFeature: Sendable {
         var viewState: ViewState
 
         var isWatchlistEnabled: Bool
+        var isIntelligenceEnabled: Bool
 
         public var isLoading: Bool {
             switch viewState {
@@ -45,12 +46,14 @@ public struct MovieDetailsFeature: Sendable {
             movieID: Int,
             transitionID: String? = nil,
             viewState: ViewState = .initial,
-            isWatchlistEnabled: Bool = false
+            isWatchlistEnabled: Bool = false,
+            isIntelligenceEnabled: Bool = false
         ) {
             self.movieID = movieID
             self.transitionID = transitionID
             self.viewState = viewState
             self.isWatchlistEnabled = isWatchlistEnabled
+            self.isIntelligenceEnabled = isIntelligenceEnabled
         }
     }
 
@@ -89,6 +92,7 @@ public struct MovieDetailsFeature: Sendable {
 
     public enum Navigation: Equatable, Hashable {
         case movieDetails(id: Int)
+        case movieIntelligence(id: Int)
     }
 
     public init() {}
@@ -103,6 +107,7 @@ public struct MovieDetailsFeature: Sendable {
 
             case .updateFeatureFlags:
                 state.isWatchlistEnabled = (try? movieDetailsClient.isWatchlistEnabled()) ?? false
+                state.isIntelligenceEnabled = (try? movieDetailsClient.isIntelligenceEnabled()) ?? false
                 return .none
 
             case .stream:

@@ -26,10 +26,12 @@ struct TMDbTVSeriesRemoteDataSourceTests {
         let id = 42
         let posterPath = try #require(URL(string: "https://tmdb.example/poster.jpg"))
         let backdropPath = try #require(URL(string: "https://tmdb.example/backdrop.jpg"))
+        let firstAirDate = Date(timeIntervalSince1970: 1_200_528_000)
         let tmdbTVSeries = TMDb.TVSeries(
             id: id,
             name: "Signal",
             overview: "A detective drama",
+            firstAirDate: firstAirDate,
             posterPath: posterPath,
             backdropPath: backdropPath
         )
@@ -44,6 +46,7 @@ struct TMDbTVSeriesRemoteDataSourceTests {
             id: id,
             name: "Signal",
             overview: "A detective drama",
+            firstAirDate: firstAirDate,
             posterPath: posterPath,
             backdropPath: backdropPath
         ))

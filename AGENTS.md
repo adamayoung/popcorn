@@ -111,6 +111,15 @@ When writing tests that need Observability mocks:
 
 ## Documentation
 
+### Swift DocC Guidelines
+
+**CRITICAL**: Only add DocC-style documentation comments (`///`) to **public** APIs:
+
+- ✅ Document: `public` classes, structs, enums, protocols, methods, properties, and functions
+- ❌ Do NOT document: `internal`, `private`, `fileprivate`, or `package` access levels
+
+Internal implementation classes like `DefaultXxxUseCase` or `FoundationModelsXxxRepository` should NOT have DocC comments—they are implementation details, not public API.
+
 ### Quick Reference
 
 Need help with specific topics? Use these guides:
@@ -134,6 +143,9 @@ When working on this codebase:
 - Always read existing implementations before suggesting changes
 - Follow the established DDD and TCA patterns
 - Maintain the separation between layers (Domain, Application, Infrastructure)
+- **CRITICAL**: Context modules must NEVER depend on other context modules directly
+  - ❌ WRONG: Adding PopcornTVSeries as a dependency in PopcornMovies/Package.swift
+  - ✅ CORRECT: Define provider protocols in the Domain layer, inject implementations via Composition
 - Use existing design system components rather than creating new ones
 - Respect the dependency injection patterns via TCA
 - Keep mappers at architectural boundaries

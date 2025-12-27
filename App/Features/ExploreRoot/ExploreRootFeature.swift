@@ -9,8 +9,10 @@ import ComposableArchitecture
 import ExploreFeature
 import Foundation
 import MovieDetailsFeature
+import MovieIntelligenceFeature
 import PersonDetailsFeature
 import TVSeriesDetailsFeature
+import TVSeriesIntelligenceFeature
 
 @Reducer
 struct ExploreRootFeature {
@@ -19,6 +21,9 @@ struct ExploreRootFeature {
     struct State {
         var path = StackState<Path.State>()
         var explore = ExploreFeature.State()
+
+        @Presents var movieIntelligence: MovieIntelligenceFeature.State?
+        @Presents var tvSeriesIntelligence: TVSeriesIntelligenceFeature.State?
     }
 
     @Reducer
@@ -31,6 +36,8 @@ struct ExploreRootFeature {
     enum Action {
         case explore(ExploreFeature.Action)
         case movieDetails(MovieDetailsFeature.Action)
+        case movieIntelligence(PresentationAction<MovieIntelligenceFeature.Action>)
+        case tvSeriesIntelligence(PresentationAction<TVSeriesIntelligenceFeature.Action>)
         case path(StackActionOf<Path>)
     }
 
@@ -60,14 +67,26 @@ struct ExploreRootFeature {
                     )
                 )
                 return .none
+            case .path(.element(_, .movieDetails(.navigate(.movieIntelligence(let id))))):
+                state.movieIntelligence = MovieIntelligenceFeature.State(movieID: id)
+                return .none
             case .path(.element(_, .movieDetails(.navigate(.movieDetails(let id))))):
                 state.path.append(.movieDetails(MovieDetailsFeature.State(movieID: id)))
+                return .none
+            case .path(.element(_, .tvSeriesDetails(.navigate(.tvSeriesIntelligence(let id))))):
+                state.tvSeriesIntelligence = TVSeriesIntelligenceFeature.State(tvSeriesID: id)
                 return .none
             default:
                 return .none
             }
         }
         .forEach(\.path, action: \.path)
+        .ifLet(\.$movieIntelligence, action: \.movieIntelligence) {
+            MovieIntelligenceFeature()
+        }
+        .ifLet(\.$tvSeriesIntelligence, action: \.tvSeriesIntelligence) {
+            TVSeriesIntelligenceFeature()
+        }
     }
 
 }

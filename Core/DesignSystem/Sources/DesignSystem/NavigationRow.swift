@@ -34,7 +34,6 @@ public struct NavigationRow<Content: View>: View {
             .padding(.vertical, 8)
             .contentShape(Rectangle())
             .background(
-                // Interactive highlight that matches NavigationLink
                 isPressed
                     ? Color(.systemFill)
                     : Color.clear
