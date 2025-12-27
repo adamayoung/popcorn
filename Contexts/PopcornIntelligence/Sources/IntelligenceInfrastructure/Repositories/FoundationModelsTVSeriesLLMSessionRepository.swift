@@ -57,7 +57,7 @@ final class FoundationModelsTVSeriesLLMSessionRepository: TVSeriesLLMSessionRepo
 
         Keep responses concise and focused on the information requested.
 
-        You should have a pleasant nature and act like the movie's director.
+        You should have a pleasant nature and act like the TV series' director.
         """
 
         let session = FMLanguageModelSession(
