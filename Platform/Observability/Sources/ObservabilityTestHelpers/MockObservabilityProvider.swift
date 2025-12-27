@@ -44,31 +44,16 @@ public final class MockObservabilityProvider: ObservabilityProviding, @unchecked
 
     public private(set) var startCalled: Bool = false
     public private(set) var startConfig: ObservabilityConfiguration?
-    public private(set) var transactions: [MockTransaction] = []
     public private(set) var capturedErrors: [CapturedError] = []
     public private(set) var capturedMessages: [String] = []
     public private(set) var capturedUsers: [CapturedUser] = []
     public private(set) var breadcrumbs: [CapturedBreadcrumb] = []
-
-    private var _currentSpan: Span?
-    public var currentSpanStub: Span?
 
     public init() {}
 
     public func start(_ config: ObservabilityConfiguration) async throws {
         startCalled = true
         startConfig = config
-    }
-
-    public func startTransaction(name: String, operation: SpanOperation) -> Transaction {
-        let transaction = MockTransaction(name: name, operation: operation)
-        transactions.append(transaction)
-        _currentSpan = transaction
-        return transaction
-    }
-
-    public func currentSpan() -> Span? {
-        currentSpanStub ?? _currentSpan
     }
 
     public func capture(error: any Error) {
@@ -94,13 +79,10 @@ public final class MockObservabilityProvider: ObservabilityProviding, @unchecked
     public func reset() {
         startCalled = false
         startConfig = nil
-        transactions.removeAll()
         capturedErrors.removeAll()
         capturedMessages.removeAll()
         capturedUsers.removeAll()
         breadcrumbs.removeAll()
-        _currentSpan = nil
-        currentSpanStub = nil
     }
 
 }

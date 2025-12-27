@@ -14,19 +14,12 @@ public final class MockObservability: Observing, @unchecked Sendable {
     public typealias CapturedUser = MockObservabilityProvider.CapturedUser
     public typealias CapturedBreadcrumb = MockObservabilityProvider.CapturedBreadcrumb
 
-    public private(set) var transactions: [MockTransaction] = []
     public private(set) var capturedErrors: [CapturedError] = []
     public private(set) var capturedMessages: [String] = []
     public private(set) var capturedUsers: [CapturedUser] = []
     public private(set) var breadcrumbs: [CapturedBreadcrumb] = []
 
     public init() {}
-
-    public func startTransaction(name: String, operation: SpanOperation) -> Transaction {
-        let transaction = MockTransaction(name: name, operation: operation)
-        transactions.append(transaction)
-        return transaction
-    }
 
     public func capture(error: any Error) {
         capturedErrors.append(CapturedError(error: error))
@@ -49,7 +42,6 @@ public final class MockObservability: Observing, @unchecked Sendable {
     }
 
     public func reset() {
-        transactions.removeAll()
         capturedErrors.removeAll()
         capturedMessages.removeAll()
         capturedUsers.removeAll()

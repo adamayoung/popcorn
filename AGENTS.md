@@ -106,8 +106,8 @@ When writing tests that need Observability mocks:
 
 - **Import**: `ObservabilityTestHelpers` instead of creating local mocks
 - **Provider mocks**: Use `MockObservabilityProvider`
-- **Span mocks**: Use `MockSpan` and `MockTransaction`
-- **Verification**: Access `startChildCallCount`, `setDataCalledWith`, `finishCalledWithStatus`, etc.
+- **Service mocks**: Use `MockObservability`
+- **Verification**: Access `capturedErrors`, `capturedMessages`, `capturedUsers`, `breadcrumbs`, etc.
 
 ## Documentation
 
