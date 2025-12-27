@@ -8,7 +8,6 @@
 import AppDependencies
 import ComposableArchitecture
 import Foundation
-import Observability
 import OSLog
 
 @Reducer
@@ -17,7 +16,6 @@ public struct MovieDetailsFeature: Sendable {
     private static let logger = Logger.movieDetails
 
     @Dependency(\.movieDetailsClient) private var movieDetailsClient
-    @Dependency(\.observability) private var observability
 
     @ObservableState
     public struct State: Sendable {
@@ -219,26 +217,17 @@ extension MovieDetailsFeature {
     // swiftlint:enable function_body_length
 
     private func handleToggleMovieOnWatchlist(_ state: inout State) -> EffectOf<Self> {
-        .run { [state] send in
+        .run { [state, movieDetailsClient] send in
             Self.logger.info(
                 "User toggling movie on watchlist [movieID: \(state.movieID, privacy: .private)]")
 
-            let transaction = observability.startTransaction(
-                name: "ToggleMovieOnWatchlist",
-                operation: .uiAction
-            )
-            transaction.setData(key: "movie_id", value: state.movieID)
-
             do {
                 try await movieDetailsClient.toggleOnWatchlist(state.movieID)
-                transaction.finish()
                 await send(.toggleOnWatchlistCompleted)
             } catch let error {
                 Self.logger.error(
                     "Failed toggling movie on watchlist [movieID: \(state.movieID, privacy: .private)]: \(error.localizedDescription, privacy: .public)"
                 )
-                transaction.setData(error: error)
-                transaction.finish(status: .internalError)
                 await send(.toggleOnWatchlistFailed(error))
             }
         }

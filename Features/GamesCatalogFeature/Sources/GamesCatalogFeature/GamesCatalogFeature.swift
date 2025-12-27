@@ -8,7 +8,6 @@
 import AppDependencies
 import ComposableArchitecture
 import Foundation
-import Observability
 import OSLog
 
 @Reducer
@@ -17,7 +16,6 @@ public struct GamesCatalogFeature: Sendable {
     private static let logger = Logger.gamesCatalog
 
     @Dependency(\.gamesCatalogClient) private var gamesCatalogClient
-    @Dependency(\.observability) private var observability
 
     @ObservableState
     public struct State {
@@ -99,23 +97,15 @@ public struct GamesCatalogFeature: Sendable {
 extension GamesCatalogFeature {
 
     private func handleFetchGames(state: inout State) -> EffectOf<Self> {
-        .run { send in
+        .run { [gamesCatalogClient] send in
             Self.logger.info("User fetching games")
-
-            let transaction = observability.startTransaction(
-                name: "FetchGames",
-                operation: .uiAction
-            )
 
             do {
                 let games = try await gamesCatalogClient.fetchGames()
                 let snapshot = ViewSnapshot(games: games)
-                transaction.finish()
                 await send(.loaded(snapshot))
             } catch let error {
                 Self.logger.error("Failed fetching games: \(error, privacy: .public)")
-                transaction.setData(error: error)
-                transaction.finish(status: .internalError)
                 await send(.loadFailed(error))
             }
         }

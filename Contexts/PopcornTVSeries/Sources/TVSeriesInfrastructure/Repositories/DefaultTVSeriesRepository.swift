@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Observability
 import TVSeriesDomain
 
 final class DefaultTVSeriesRepository: TVSeriesRepository {
@@ -26,96 +25,56 @@ final class DefaultTVSeriesRepository: TVSeriesRepository {
         withID id: Int,
         cachePolicy: CachePolicy = .cacheFirst
     ) async throws(TVSeriesRepositoryError) -> TVSeriesDomain.TVSeries {
-        let span = SpanContext.startChild(
-            operation: .repositoryGet,
-            description: "Fetch TV Series #\(id)"
-        )
-        span?.setData([
-            "entity_type": "TVSeries",
-            "entity_id": id,
-            "cache.policy": String(describing: cachePolicy)
-        ])
-
         switch cachePolicy {
         case .cacheFirst:
             do {
                 if let cached = try await localDataSource.tvSeries(withID: id) {
-                    span?.setData(key: "cache.hit", value: true)
-                    span?.finish()
                     return cached
                 }
             } catch let error {
-                let repositoryError = TVSeriesRepositoryError(error)
-                span?.setData(error: repositoryError)
-                span?.finish(status: .internalError)
-                throw repositoryError
+                throw TVSeriesRepositoryError(error)
             }
-
-            span?.setData(key: "cache.hit", value: false)
 
             let tvSeries: TVSeriesDomain.TVSeries
             do {
                 tvSeries = try await remoteDataSource.tvSeries(withID: id)
             } catch let error {
-                let repositoryError = TVSeriesRepositoryError(error)
-                span?.setData(error: repositoryError)
-                span?.finish(status: .internalError)
-                throw repositoryError
+                throw TVSeriesRepositoryError(error)
             }
 
             do {
                 try await localDataSource.setTVSeries(tvSeries)
             } catch let error {
-                let repositoryError = TVSeriesRepositoryError(error)
-                span?.setData(error: repositoryError)
-                span?.finish(status: .internalError)
-                throw repositoryError
+                throw TVSeriesRepositoryError(error)
             }
 
-            span?.finish()
             return tvSeries
 
         case .networkOnly:
-            span?.setData(key: "cache.hit", value: false)
-
             let tvSeries: TVSeriesDomain.TVSeries
             do {
                 tvSeries = try await remoteDataSource.tvSeries(withID: id)
             } catch let error {
-                let repositoryError = TVSeriesRepositoryError(error)
-                span?.setData(error: repositoryError)
-                span?.finish(status: .internalError)
-                throw repositoryError
+                throw TVSeriesRepositoryError(error)
             }
 
             do {
                 try await localDataSource.setTVSeries(tvSeries)
             } catch let error {
-                let repositoryError = TVSeriesRepositoryError(error)
-                span?.setData(error: repositoryError)
-                span?.finish(status: .internalError)
-                throw repositoryError
+                throw TVSeriesRepositoryError(error)
             }
 
-            span?.finish()
             return tvSeries
 
         case .cacheOnly:
             do {
                 if let cached = try await localDataSource.tvSeries(withID: id) {
-                    span?.setData(key: "cache.hit", value: true)
-                    span?.finish()
                     return cached
                 }
             } catch let error {
-                let repositoryError = TVSeriesRepositoryError(error)
-                span?.setData(error: repositoryError)
-                span?.finish(status: .internalError)
-                throw repositoryError
+                throw TVSeriesRepositoryError(error)
             }
 
-            span?.setData(key: "cache.hit", value: false)
-            span?.finish(status: .internalError)
             throw .cacheUnavailable
         }
     }
@@ -124,96 +83,56 @@ final class DefaultTVSeriesRepository: TVSeriesRepository {
         forTVSeries tvSeriesID: Int,
         cachePolicy: CachePolicy = .cacheFirst
     ) async throws(TVSeriesRepositoryError) -> TVSeriesDomain.ImageCollection {
-        let span = SpanContext.startChild(
-            operation: .repositoryGet,
-            description: "Fetch TV Series Images #\(tvSeriesID)"
-        )
-        span?.setData([
-            "entity_type": "ImageCollection",
-            "entity_id": tvSeriesID,
-            "cache.policy": String(describing: cachePolicy)
-        ])
-
         switch cachePolicy {
         case .cacheFirst:
             do {
                 if let cached = try await localDataSource.images(forTVSeries: tvSeriesID) {
-                    span?.setData(key: "cache.hit", value: true)
-                    span?.finish()
                     return cached
                 }
             } catch let error {
-                let repositoryError = TVSeriesRepositoryError(error)
-                span?.setData(error: repositoryError)
-                span?.finish(status: .internalError)
-                throw repositoryError
+                throw TVSeriesRepositoryError(error)
             }
-
-            span?.setData(key: "cache.hit", value: false)
 
             let imageCollection: TVSeriesDomain.ImageCollection
             do {
                 imageCollection = try await remoteDataSource.images(forTVSeries: tvSeriesID)
             } catch let error {
-                let repositoryError = TVSeriesRepositoryError(error)
-                span?.setData(error: repositoryError)
-                span?.finish(status: .internalError)
-                throw repositoryError
+                throw TVSeriesRepositoryError(error)
             }
 
             do {
                 try await localDataSource.setImages(imageCollection, forTVSeries: tvSeriesID)
             } catch let error {
-                let repositoryError = TVSeriesRepositoryError(error)
-                span?.setData(error: repositoryError)
-                span?.finish(status: .internalError)
-                throw repositoryError
+                throw TVSeriesRepositoryError(error)
             }
 
-            span?.finish()
             return imageCollection
 
         case .networkOnly:
-            span?.setData(key: "cache.hit", value: false)
-
             let imageCollection: TVSeriesDomain.ImageCollection
             do {
                 imageCollection = try await remoteDataSource.images(forTVSeries: tvSeriesID)
             } catch let error {
-                let repositoryError = TVSeriesRepositoryError(error)
-                span?.setData(error: repositoryError)
-                span?.finish(status: .internalError)
-                throw repositoryError
+                throw TVSeriesRepositoryError(error)
             }
 
             do {
                 try await localDataSource.setImages(imageCollection, forTVSeries: tvSeriesID)
             } catch let error {
-                let repositoryError = TVSeriesRepositoryError(error)
-                span?.setData(error: repositoryError)
-                span?.finish(status: .internalError)
-                throw repositoryError
+                throw TVSeriesRepositoryError(error)
             }
 
-            span?.finish()
             return imageCollection
 
         case .cacheOnly:
             do {
                 if let cached = try await localDataSource.images(forTVSeries: tvSeriesID) {
-                    span?.setData(key: "cache.hit", value: true)
-                    span?.finish()
                     return cached
                 }
             } catch let error {
-                let repositoryError = TVSeriesRepositoryError(error)
-                span?.setData(error: repositoryError)
-                span?.finish(status: .internalError)
-                throw repositoryError
+                throw TVSeriesRepositoryError(error)
             }
 
-            span?.setData(key: "cache.hit", value: false)
-            span?.finish(status: .internalError)
             throw .cacheUnavailable
         }
     }

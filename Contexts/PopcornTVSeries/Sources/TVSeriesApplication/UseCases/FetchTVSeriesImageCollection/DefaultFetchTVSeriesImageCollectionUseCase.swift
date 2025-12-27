@@ -7,7 +7,6 @@
 
 import CoreDomain
 import Foundation
-import Observability
 import TVSeriesDomain
 
 // swiftlint:disable:next type_name
@@ -27,11 +26,6 @@ final class DefaultFetchTVSeriesImageCollectionUseCase: FetchTVSeriesImageCollec
     func execute(
         tvSeriesID: TVSeries.ID
     ) async throws(FetchTVSeriesImageCollectionError) -> ImageCollectionDetails {
-        let span = SpanContext.startChild(
-            operation: .useCaseExecute,
-            description: "FetchTVSeriesImageCollectionUseCase.execute"
-        )
-
         let imageCollection: ImageCollection
         let appConfiguration: AppConfiguration
         do {
@@ -40,10 +34,7 @@ final class DefaultFetchTVSeriesImageCollectionUseCase: FetchTVSeriesImageCollec
                 appConfigurationProvider.appConfiguration()
             )
         } catch let error {
-            let imageCollectionError = FetchTVSeriesImageCollectionError(error)
-            span?.setData(error: imageCollectionError)
-            span?.finish(status: .internalError)
-            throw imageCollectionError
+            throw FetchTVSeriesImageCollectionError(error)
         }
 
         let mapper = ImageCollectionDetailsMapper()
@@ -51,7 +42,6 @@ final class DefaultFetchTVSeriesImageCollectionUseCase: FetchTVSeriesImageCollec
             imageCollection,
             imagesConfiguration: appConfiguration.images
         )
-        span?.finish()
 
         return imageCollectionDetails
     }

@@ -42,28 +42,8 @@ struct SentryObservabilityProvider: ObservabilityProviding {
                     "Sentry enabled (DSN: \(config.dsn, privacy: .private), environment: \(config.environment.rawValue, privacy: .public), debug: \(isDebug, privacy: .public))"
                 )
         } else {
-            Self.logger
-                .warning(
-                    "Sentry disabled"
-                )
+            Self.logger.warning("Sentry disabled")
         }
-    }
-
-    func startTransaction(name: String, operation: SpanOperation) -> Transaction {
-        let span = SentrySDK.startTransaction(
-            name: name,
-            operation: operation.value,
-            bindToScope: true
-        )
-        return SentryTransaction(name: name, operation: operation, span: span)
-    }
-
-    func currentSpan() -> Observability.Span? {
-        guard let sentrySpan = SentrySDK.span else {
-            return nil
-        }
-
-        return SentrySpan(sentrySpan)
     }
 
     func capture(error: any Error) {

@@ -80,9 +80,9 @@ public protocol SimilarMovieRepository: Sendable {
 ///
 /// Errors that can occur when accessing similar movies data through a repository.
 ///
-extension SimilarMovieRepository {
+public extension SimilarMovieRepository {
 
-    public func similar(
+    func similar(
         toMovie movieID: Int,
         page: Int
     ) async throws(SimilarMovieRepositoryError) -> [MoviePreview] {

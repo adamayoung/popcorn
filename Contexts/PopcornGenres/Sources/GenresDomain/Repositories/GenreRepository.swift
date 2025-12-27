@@ -39,13 +39,13 @@ public protocol GenreRepository: Sendable {
 ///
 /// Errors that can occur when accessing genre data through a repository.
 ///
-extension GenreRepository {
+public extension GenreRepository {
 
-    public func movieGenres() async throws(GenreRepositoryError) -> [Genre] {
+    func movieGenres() async throws(GenreRepositoryError) -> [Genre] {
         try await movieGenres(cachePolicy: .cacheFirst)
     }
 
-    public func tvSeriesGenres() async throws(GenreRepositoryError) -> [Genre] {
+    func tvSeriesGenres() async throws(GenreRepositoryError) -> [Genre] {
         try await tvSeriesGenres(cachePolicy: .cacheFirst)
     }
 

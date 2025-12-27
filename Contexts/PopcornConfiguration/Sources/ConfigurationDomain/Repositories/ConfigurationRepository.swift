@@ -16,9 +16,9 @@ public protocol ConfigurationRepository: Sendable {
 
 }
 
-extension ConfigurationRepository {
+public extension ConfigurationRepository {
 
-    public func configuration() async throws(ConfigurationRepositoryError) -> AppConfiguration {
+    func configuration() async throws(ConfigurationRepositoryError) -> AppConfiguration {
         try await configuration(cachePolicy: .cacheFirst)
     }
 

@@ -34,9 +34,9 @@ public protocol DiscoverMovieRepository: Sendable {
 
 }
 
-extension DiscoverMovieRepository {
+public extension DiscoverMovieRepository {
 
-    public func movies(
+    func movies(
         filter: MovieFilter?,
         page: Int
     ) async throws(DiscoverMovieRepositoryError) -> [MoviePreview] {

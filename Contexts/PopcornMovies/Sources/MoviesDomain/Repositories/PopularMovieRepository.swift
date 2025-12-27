@@ -56,9 +56,9 @@ public protocol PopularMovieRepository: Sendable {
 ///
 /// Errors that can occur when accessing popular movies data through a repository.
 ///
-extension PopularMovieRepository {
+public extension PopularMovieRepository {
 
-    public func popular(page: Int) async throws(PopularMovieRepositoryError) -> [MoviePreview] {
+    func popular(page: Int) async throws(PopularMovieRepositoryError) -> [MoviePreview] {
         try await popular(page: page, cachePolicy: .cacheFirst)
     }
 

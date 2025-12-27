@@ -8,7 +8,6 @@
 import AppDependencies
 import ComposableArchitecture
 import Foundation
-import Observability
 import OSLog
 
 /// A feature that manages the exploration of various media content including movies, TV series, and people.
@@ -21,7 +20,6 @@ public struct ExploreFeature: Sendable {
     private static let logger = Logger.explore
 
     @Dependency(\.exploreClient) private var exploreClient: ExploreClient
-    @Dependency(\.observability) private var observability
 
     /// The state managed by the explore feature.
     ///
@@ -146,7 +144,7 @@ public struct ExploreFeature: Sendable {
 extension ExploreFeature {
 
     private func handleFetchAll() -> EffectOf<Self> {
-        .run { [exploreClient, observability] send in
+        .run { [exploreClient] send in
             Self.logger.info("User fetching explore content")
 
             let isDiscoverMoviesEnabled = (try? exploreClient.isDiscoverMoviesEnabled()) ?? false
@@ -155,20 +153,6 @@ extension ExploreFeature {
             let isTrendingTVSeriesEnabled =
                 (try? exploreClient.isTrendingTVSeriesEnabled()) ?? false
             let isTrendingPeopleEnabled = (try? exploreClient.isTrendingPeopleEnabled()) ?? false
-
-            let transaction = observability.startTransaction(
-                name: "FetchExplore",
-                operation: .uiAction
-            )
-            transaction.setData([
-                "explore_filters": [
-                    "discover_movies": isDiscoverMoviesEnabled,
-                    "trending_movies": isTrendingMoviesEnabled,
-                    "popular_movies": isPopularMoviesEnabled,
-                    "trending_tv_series": isTrendingTVSeriesEnabled,
-                    "trending_people": isTrendingPeopleEnabled
-                ]
-            ])
 
             do {
                 async let discoverMovies =
@@ -189,11 +173,8 @@ extension ExploreFeature {
                     trendingTVSeries: trendingTVSeries,
                     trendingPeople: trendingPeople
                 )
-                transaction.finish()
                 await send(.loaded(snapshot))
             } catch {
-                transaction.setData(error: error)
-                transaction.finish(status: .internalError)
                 Self.logger.error(
                     "Failed fetching explore content: \(error.localizedDescription, privacy: .public)"
                 )

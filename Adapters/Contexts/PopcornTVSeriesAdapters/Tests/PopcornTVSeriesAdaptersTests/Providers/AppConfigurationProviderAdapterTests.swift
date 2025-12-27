@@ -9,7 +9,6 @@ import ConfigurationApplication
 import CoreDomain
 import CoreDomainTestHelpers
 import Foundation
-import ObservabilityTestHelpers
 import Testing
 import TVSeriesDomain
 
@@ -66,29 +65,20 @@ struct AppConfigurationProviderAdapterTests {
         )
     }
 
-    @Test("appConfiguration sets span error and finishes with internal error on failure")
-    func appConfiguration_setsSpanErrorAndFinishesWithInternalErrorOnFailure() async {
-        let mockSpan = MockSpan()
-        let mockObservabilityProvider = MockObservabilityProvider()
-
+    @Test("appConfiguration throws unknown error from use case")
+    func appConfiguration_throwsUnknownErrorFromUseCase() async {
         mockUseCase.executeStub = .failure(.unknown(TestError()))
-        mockObservabilityProvider.currentSpanStub = mockSpan
-        mockSpan.childSpanStub = mockSpan
 
         let adapter = AppConfigurationProviderAdapter(fetchUseCase: mockUseCase)
 
         await #expect(
             performing: {
-                try await SpanContext.$localProvider.withValue(mockObservabilityProvider) {
-                    try await adapter.appConfiguration()
-                }
+                try await adapter.appConfiguration()
             },
-            throws: { _ in true }
+            throws: { error in
+                error is AppConfigurationProviderError
+            }
         )
-
-        #expect(mockSpan.setDataCallCount > 0)
-        #expect(mockSpan.finishCallCount == 1)
-        #expect(mockSpan.finishCalledWithStatus[0] == .internalError)
     }
 
 }

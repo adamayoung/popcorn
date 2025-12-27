@@ -16,15 +16,10 @@ struct ObservabilityService: Observing, ObservabilityInitialising {
 
     init(provider: some ObservabilityProviding) {
         self.provider = provider
-        SpanContext.provider = provider
     }
 
     func start(_ config: ObservabilityConfiguration) async throws {
         try await provider.start(config)
-    }
-
-    func startTransaction(name: String, operation: SpanOperation) -> Transaction {
-        provider.startTransaction(name: name, operation: operation)
     }
 
     func capture(error: any Error) {

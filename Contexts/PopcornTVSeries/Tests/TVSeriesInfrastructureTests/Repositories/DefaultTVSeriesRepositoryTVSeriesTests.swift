@@ -7,25 +7,20 @@
 
 import CoreDomainTestHelpers
 import Foundation
-import ObservabilityTestHelpers
 import Testing
 import TVSeriesDomain
 
 @testable import TVSeriesInfrastructure
-
-// swiftlint:disable type_body_length
 
 @Suite("DefaultTVSeriesRepository TV Series Tests")
 struct DefaultTVSeriesRepositoryTVSeriesTests {
 
     let mockRemoteDataSource: MockTVSeriesRemoteDataSource
     let mockLocalDataSource: MockTVSeriesLocalDataSource
-    let mockObservabilityProvider: MockObservabilityProvider
 
     init() {
         self.mockRemoteDataSource = MockTVSeriesRemoteDataSource()
         self.mockLocalDataSource = MockTVSeriesLocalDataSource()
-        self.mockObservabilityProvider = MockObservabilityProvider()
     }
 
     // MARK: - tvSeries(withID:) Tests
@@ -48,28 +43,6 @@ struct DefaultTVSeriesRepositoryTVSeriesTests {
         #expect(mockRemoteDataSource.tvSeriesWithIDCallCount == 0)
     }
 
-    @Test("tvSeries with ID should set cache hit true on span")
-    func tvSeriesWithID_shouldSetCacheHitTrueOnSpan() async throws {
-        let id = 456
-        let expectedTVSeries = TVSeries.mock(id: id)
-        let mockSpan = MockSpan()
-        mockLocalDataSource.tvSeriesWithIDStub = .success(expectedTVSeries)
-        mockObservabilityProvider.currentSpanStub = mockSpan
-        mockSpan.childSpanStub = mockSpan
-
-        let repository = DefaultTVSeriesRepository(
-            remoteDataSource: mockRemoteDataSource,
-            localDataSource: mockLocalDataSource
-        )
-
-        _ = try await SpanContext.$localProvider.withValue(mockObservabilityProvider) {
-            try await repository.tvSeries(withID: id)
-        }
-
-        let cacheHitEntry = mockSpan.setDataCalledWith.first(where: { $0.key == "cache.hit" })
-        #expect(cacheHitEntry?.value == "true")
-    }
-
     @Test("tvSeries with ID should fetch from remote on cache miss")
     func tvSeriesWithID_shouldFetchFromRemoteOnCacheMiss() async throws {
         let id = 789
@@ -89,29 +62,6 @@ struct DefaultTVSeriesRepositoryTVSeriesTests {
         #expect(mockRemoteDataSource.tvSeriesWithIDCallCount == 1)
     }
 
-    @Test("tvSeries with ID should set cache hit false on span")
-    func tvSeriesWithID_shouldSetCacheHitFalseOnSpan() async throws {
-        let id = 101
-        let expectedTVSeries = TVSeries.mock(id: id)
-        let mockSpan = MockSpan()
-        mockLocalDataSource.tvSeriesWithIDStub = .success(nil)
-        mockRemoteDataSource.tvSeriesWithIDStub = .success(expectedTVSeries)
-        mockObservabilityProvider.currentSpanStub = mockSpan
-        mockSpan.childSpanStub = mockSpan
-
-        let repository = DefaultTVSeriesRepository(
-            remoteDataSource: mockRemoteDataSource,
-            localDataSource: mockLocalDataSource
-        )
-
-        _ = try await SpanContext.$localProvider.withValue(mockObservabilityProvider) {
-            try await repository.tvSeries(withID: id)
-        }
-
-        let cacheHitEntry = mockSpan.setDataCalledWith.first(where: { $0.key == "cache.hit" })
-        #expect(cacheHitEntry?.value == "false")
-    }
-
     @Test("tvSeries with ID should cache remote result")
     func tvSeriesWithID_shouldCacheRemoteResult() async throws {
         let id = 202
@@ -129,76 +79,6 @@ struct DefaultTVSeriesRepositoryTVSeriesTests {
         #expect(await mockLocalDataSource.setTVSeriesCallCount == 1)
         let cachedTVSeries = await mockLocalDataSource.setTVSeriesCalledWith[0]
         #expect(cachedTVSeries.id == expectedTVSeries.id)
-    }
-
-    @Test("tvSeries with ID should create span with correct operation")
-    func tvSeriesWithID_shouldCreateSpanWithCorrectOperation() async throws {
-        let id = 303
-        let expectedTVSeries = TVSeries.mock(id: id)
-        let mockSpan = MockSpan()
-        mockLocalDataSource.tvSeriesWithIDStub = .success(expectedTVSeries)
-        mockObservabilityProvider.currentSpanStub = mockSpan
-        mockSpan.childSpanStub = mockSpan
-
-        let repository = DefaultTVSeriesRepository(
-            remoteDataSource: mockRemoteDataSource,
-            localDataSource: mockLocalDataSource
-        )
-
-        _ = try await SpanContext.$localProvider.withValue(mockObservabilityProvider) {
-            try await repository.tvSeries(withID: id)
-        }
-
-        #expect(mockSpan.startChildCallCount == 1)
-        #expect(
-            mockSpan.startChildCalledWith[0].operation.value == SpanOperation.repositoryGet.value)
-        #expect(mockSpan.startChildCalledWith[0].description == "Fetch TV Series #\(id)")
-    }
-
-    @Test("tvSeries with ID should set entity data on span")
-    func tvSeriesWithID_shouldSetEntityDataOnSpan() async throws {
-        let id = 404
-        let expectedTVSeries = TVSeries.mock(id: id)
-        let mockSpan = MockSpan()
-        mockLocalDataSource.tvSeriesWithIDStub = .success(expectedTVSeries)
-        mockObservabilityProvider.currentSpanStub = mockSpan
-        mockSpan.childSpanStub = mockSpan
-
-        let repository = DefaultTVSeriesRepository(
-            remoteDataSource: mockRemoteDataSource,
-            localDataSource: mockLocalDataSource
-        )
-
-        _ = try await SpanContext.$localProvider.withValue(mockObservabilityProvider) {
-            try await repository.tvSeries(withID: id)
-        }
-
-        let entityTypeEntry = mockSpan.setDataCalledWith.first(where: { $0.key == "entity_type" })
-        let entityIDEntry = mockSpan.setDataCalledWith.first(where: { $0.key == "entity_id" })
-        #expect(entityTypeEntry?.value == "TVSeries")
-        #expect(entityIDEntry?.value == "\(id)")
-    }
-
-    @Test("tvSeries with ID should finish span with ok status on success")
-    func tvSeriesWithID_shouldFinishSpanWithOkStatusOnSuccess() async throws {
-        let id = 505
-        let expectedTVSeries = TVSeries.mock(id: id)
-        let mockSpan = MockSpan()
-        mockLocalDataSource.tvSeriesWithIDStub = .success(expectedTVSeries)
-        mockObservabilityProvider.currentSpanStub = mockSpan
-        mockSpan.childSpanStub = mockSpan
-
-        let repository = DefaultTVSeriesRepository(
-            remoteDataSource: mockRemoteDataSource,
-            localDataSource: mockLocalDataSource
-        )
-
-        _ = try await SpanContext.$localProvider.withValue(mockObservabilityProvider) {
-            try await repository.tvSeries(withID: id)
-        }
-
-        #expect(mockSpan.finishCallCount == 1)
-        #expect(mockSpan.finishCalledWithStatus[0] == .ok)
     }
 
     @Test("tvSeries with ID should throw on remote error")
@@ -261,36 +141,6 @@ struct DefaultTVSeriesRepositoryTVSeriesTests {
                 return false
             }
         )
-    }
-
-    @Test("tvSeries with ID should set error on span and finish with internal error on remote failure")
-    func tvSeriesWithID_shouldSetErrorOnSpanAndFinishWithInternalErrorOnRemoteFailure()
-    async throws {
-        let id = 808
-        let mockSpan = MockSpan()
-        mockLocalDataSource.tvSeriesWithIDStub = .success(nil)
-        mockRemoteDataSource.tvSeriesWithIDStub = .failure(.notFound)
-        mockObservabilityProvider.currentSpanStub = mockSpan
-        mockSpan.childSpanStub = mockSpan
-
-        let repository = DefaultTVSeriesRepository(
-            remoteDataSource: mockRemoteDataSource,
-            localDataSource: mockLocalDataSource
-        )
-
-        await #expect(
-            performing: {
-                try await SpanContext.$localProvider.withValue(mockObservabilityProvider) {
-                    try await repository.tvSeries(withID: id)
-                }
-            },
-            throws: { _ in true }
-        )
-
-        let errorEntry = mockSpan.setDataCalledWith.first(where: { $0.key == "error" })
-        #expect(errorEntry != nil)
-        #expect(mockSpan.finishCallCount == 1)
-        #expect(mockSpan.finishCalledWithStatus[0] == .internalError)
     }
 
     @Test("tvSeries with ID should throw on local cache error")
@@ -357,5 +207,3 @@ struct DefaultTVSeriesRepositoryTVSeriesTests {
     }
 
 }
-
-// swiftlint:enable type_body_length

@@ -49,9 +49,9 @@ public protocol MovieImageRepository: Sendable {
 ///
 /// Errors that can occur when accessing movie image data through a repository.
 ///
-extension MovieImageRepository {
+public extension MovieImageRepository {
 
-    public func imageCollection(
+    func imageCollection(
         forMovie movieID: Int
     ) async throws(MovieImageRepositoryError) -> ImageCollection {
         try await imageCollection(forMovie: movieID, cachePolicy: .cacheFirst)

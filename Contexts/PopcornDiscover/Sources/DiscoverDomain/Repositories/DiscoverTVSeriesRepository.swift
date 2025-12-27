@@ -17,9 +17,9 @@ public protocol DiscoverTVSeriesRepository: Sendable {
 
 }
 
-extension DiscoverTVSeriesRepository {
+public extension DiscoverTVSeriesRepository {
 
-    public func tvSeries(
+    func tvSeries(
         filter: TVSeriesFilter?,
         page: Int
     ) async throws(DiscoverTVSeriesRepositoryError) -> [TVSeriesPreview] {

@@ -35,9 +35,9 @@ public protocol PersonRepository: Sendable {
 ///
 /// Errors that can occur when accessing person data through a repository.
 ///
-extension PersonRepository {
+public extension PersonRepository {
 
-    public func person(withID id: Int) async throws(PersonRepositoryError) -> Person {
+    func person(withID id: Int) async throws(PersonRepositoryError) -> Person {
         try await person(withID: id, cachePolicy: .cacheFirst)
     }
 

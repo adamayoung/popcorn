@@ -11,10 +11,6 @@ public protocol ObservabilityProviding: Sendable {
 
     func start(_ config: ObservabilityConfiguration) async throws
 
-    func startTransaction(name: String, operation: SpanOperation) -> Transaction
-
-    func currentSpan() -> Span?
-
     func capture(error: any Error)
 
     func capture(error: any Error, extras: [String: any Sendable])

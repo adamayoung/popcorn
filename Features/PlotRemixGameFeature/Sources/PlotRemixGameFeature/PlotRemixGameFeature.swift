@@ -8,7 +8,6 @@
 import AppDependencies
 import ComposableArchitecture
 import Foundation
-import Observability
 import OSLog
 
 @Reducer
@@ -17,7 +16,6 @@ public struct PlotRemixGameFeature: Sendable {
     private static let logger = Logger.plotRemixGame
 
     @Dependency(\.plotRemixGameClient) private var plotRemixGameClient
-    @Dependency(\.observability) private var observability
     @Dependency(\.dismiss) private var dismiss
 
     @ObservableState
@@ -129,44 +127,29 @@ public struct PlotRemixGameFeature: Sendable {
 extension PlotRemixGameFeature {
 
     private func handleFetchGameMetadata(_ state: inout State) -> EffectOf<Self> {
-        .run { [state] send in
+        .run { [state, plotRemixGameClient] send in
             Self.logger.info(
                 "User fetching game metadata [gameID: \(state.gameID, privacy: .private)]")
 
-            let transaction = observability.startTransaction(
-                name: "FetchGameMetadata",
-                operation: .uiAction
-            )
-            transaction.setData(key: "game_id", value: state.gameID)
-
             do {
                 let metadata = try await plotRemixGameClient.gameMetadata(state.gameID)
-                transaction.finish()
                 await send(.metadataLoaded(metadata))
             } catch let error {
                 Self.logger.error(
                     "Failed fetching game metadata [gameID: \(state.gameID, privacy: .private)]: \(error.localizedDescription, privacy: .public)"
                 )
-                transaction.setData(error: error)
-                transaction.finish(status: .internalError)
                 await send(.metadataLoadFailed(error))
             }
         }
     }
 
     private func handleGenerateGame(_ state: inout State) -> EffectOf<Self> {
-        .run { [state] send in
+        .run { [state, plotRemixGameClient] send in
             guard state.metadata != nil else {
                 return
             }
 
             Self.logger.info("User generating game [gameID: \(state.gameID, privacy: .private)]")
-
-            let transaction = observability.startTransaction(
-                name: "GenerateGame",
-                operation: .uiAction
-            )
-            transaction.setData(key: "game_id", value: state.gameID)
 
             let game: Game
             do {
@@ -181,31 +164,24 @@ extension PlotRemixGameFeature {
                         await send(.generatingGame(progress))
                     }
                 }
-                transaction.finish()
             } catch is CancellationError {
-                transaction.finish()
                 return
             } catch let error {
                 guard !Task.isCancelled else {
-                    transaction.finish()
                     return
                 }
 
                 Self.logger.error(
                     "Failed generating game [gameID: \(state.gameID, privacy: .private)]: \(error.localizedDescription, privacy: .public)"
                 )
-                transaction.setData(error: error)
-                transaction.finish(status: .internalError)
                 await send(.generateGameFailed(error))
                 return
             }
 
             guard !Task.isCancelled else {
-                transaction.finish()
                 return
             }
 
-            transaction.finish()
             await send(.generatedGame(game))
         }
     }

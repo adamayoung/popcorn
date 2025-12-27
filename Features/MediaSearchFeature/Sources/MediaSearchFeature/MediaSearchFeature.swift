@@ -8,7 +8,6 @@
 import AppDependencies
 import ComposableArchitecture
 import Foundation
-import Observability
 import OSLog
 
 @Reducer
@@ -17,7 +16,6 @@ public struct MediaSearchFeature: Sendable {
     private static let logger = Logger.mediaSearch
 
     @Dependency(\.mediaSearchClient) private var mediaSearchClient
-    @Dependency(\.observability) private var observability
 
     @ObservableState
     public struct State: Sendable {
@@ -219,13 +217,8 @@ extension MediaSearchFeature {
     }
 
     private func handleFetchGenresAndSearchHistory() -> EffectOf<Self> {
-        .run { send in
+        .run { [mediaSearchClient] send in
             Self.logger.info("User fetching genres and search history")
-
-            let transaction = observability.startTransaction(
-                name: "FetchGenresAndSearchHistory",
-                operation: .uiAction
-            )
 
             async let searchHistoryMedia = mediaSearchClient.fetchMediaSearchHistory()
 
@@ -233,28 +226,20 @@ extension MediaSearchFeature {
                 let genresSnapshot = GenresViewSnapshot(genres: [])
                 let searchHistorySnapshot = try await SearchHistoryViewSnapshot(
                     media: searchHistoryMedia)
-                transaction.finish()
                 await send(.genresAndSearchHistoryLoaded(genresSnapshot, searchHistorySnapshot))
             } catch let error {
                 Self.logger.error(
                     "Failed fetching genres and search history: \(error.localizedDescription, privacy: .public)"
                 )
-                transaction.setData(error: error)
-                transaction.finish(status: .internalError)
                 await send(.genresAndSearchHistoryLoadFailed(error))
             }
         }
     }
 
     private func handleSearchMedia(state: inout State) -> EffectOf<Self> {
-        .run { [state] send in
+        .run { [state, mediaSearchClient] send in
             Self.logger.info(
                 "User searching for media [query: \"\(state.query, privacy: .private)\"]")
-
-            let transaction = observability.startTransaction(
-                name: "SearchMedia",
-                operation: .uiAction
-            )
 
             let results: [MediaPreview]
             do {
@@ -263,19 +248,15 @@ extension MediaSearchFeature {
                 Self.logger.error(
                     "Failed searching for media [query: \"\(state.query, privacy: .private)\"]: \(error.localizedDescription, privacy: .public)"
                 )
-                transaction.setData(error: error)
-                transaction.finish(status: .internalError)
                 await send(.searchResultsLoadFailed(error))
                 return
             }
 
             if results.isEmpty {
                 let snapshot = NoSearchResultsViewSnapshot(query: state.query)
-                transaction.finish()
                 await send(.searchWithNoResultsLoaded(snapshot))
             } else {
                 let snapshot = SearchResultsViewSnapshot(query: state.query, results: results)
-                transaction.finish()
                 await send(.searchResultsLoaded(snapshot))
             }
         }

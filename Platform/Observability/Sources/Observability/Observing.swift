@@ -9,8 +9,6 @@ import Foundation
 
 public protocol Observing: Sendable {
 
-    func startTransaction(name: String, operation: SpanOperation) -> Transaction
-
     func capture(error: any Error)
 
     func capture(error: any Error, extras: [String: any Sendable])

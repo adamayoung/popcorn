@@ -10,7 +10,6 @@ import ComposableArchitecture
 import DiscoverApplication
 import Foundation
 import MoviesApplication
-import Observability
 import OSLog
 import TrendingApplication
 
@@ -43,89 +42,29 @@ extension ExploreClient: DependencyKey {
 
         return ExploreClient(
             fetchDiscoverMovies: {
-                let span = SpanContext.startChild(
-                    operation: .clientFetch,
-                    description: "ExploreClient.fetchDiscoverMovies"
-                )
-                do {
-                    let moviePreviews = try await fetchDiscoverMovies.execute()
-                    let mapper = MoviePreviewMapper()
-                    let result = moviePreviews.map(mapper.map)
-                    span?.finish()
-                    return result
-                } catch let error {
-                    span?.setData(error: error)
-                    span?.finish(status: .internalError)
-                    throw error
-                }
+                let moviePreviews = try await fetchDiscoverMovies.execute()
+                let mapper = MoviePreviewMapper()
+                return moviePreviews.map(mapper.map)
             },
             fetchTrendingMovies: {
-                let span = SpanContext.startChild(
-                    operation: .clientFetch,
-                    description: "ExploreClient.fetchTrendingMovies"
-                )
-                do {
-                    let moviePreviews = try await fetchTrendingMovies.execute()
-                    let mapper = MoviePreviewMapper()
-                    let result = moviePreviews.map(mapper.map)
-                    span?.finish()
-                    return result
-                } catch let error {
-                    span?.setData(error: error)
-                    span?.finish(status: .internalError)
-                    throw error
-                }
+                let moviePreviews = try await fetchTrendingMovies.execute()
+                let mapper = MoviePreviewMapper()
+                return moviePreviews.map(mapper.map)
             },
             fetchPopularMovies: {
-                let span = SpanContext.startChild(
-                    operation: .clientFetch,
-                    description: "ExploreClient.fetchPopularMovies"
-                )
-                do {
-                    let moviePreviews = try await fetchPopularMovies.execute()
-                    let mapper = MoviePreviewMapper()
-                    let result = moviePreviews.map(mapper.map)
-                    span?.finish()
-                    return result
-                } catch let error {
-                    span?.setData(error: error)
-                    span?.finish(status: .internalError)
-                    throw error
-                }
+                let moviePreviews = try await fetchPopularMovies.execute()
+                let mapper = MoviePreviewMapper()
+                return moviePreviews.map(mapper.map)
             },
             fetchTrendingTVSeries: {
-                let span = SpanContext.startChild(
-                    operation: .clientFetch,
-                    description: "ExploreClient.fetchTrendingTVSeries"
-                )
-                do {
-                    let tvSeriesPreviews = try await fetchTrendingTVSeries.execute()
-                    let mapper = TVSeriesPreviewMapper()
-                    let result = tvSeriesPreviews.map(mapper.map)
-                    span?.finish()
-                    return result
-                } catch let error {
-                    span?.setData(error: error)
-                    span?.finish(status: .internalError)
-                    throw error
-                }
+                let tvSeriesPreviews = try await fetchTrendingTVSeries.execute()
+                let mapper = TVSeriesPreviewMapper()
+                return tvSeriesPreviews.map(mapper.map)
             },
             fetchTrendingPeople: {
-                let span = SpanContext.startChild(
-                    operation: .clientFetch,
-                    description: "ExploreClient.fetchTrendingPeople"
-                )
-                do {
-                    let personPreviews = try await fetchTrendingPeople.execute()
-                    let mapper = PersonPreviewMapper()
-                    let result = personPreviews.map(mapper.map)
-                    span?.finish()
-                    return result
-                } catch let error {
-                    span?.setData(error: error)
-                    span?.finish(status: .internalError)
-                    throw error
-                }
+                let personPreviews = try await fetchTrendingPeople.execute()
+                let mapper = PersonPreviewMapper()
+                return personPreviews.map(mapper.map)
             },
             isDiscoverMoviesEnabled: {
                 featureFlags.isEnabled(.exploreDiscoverMovies)

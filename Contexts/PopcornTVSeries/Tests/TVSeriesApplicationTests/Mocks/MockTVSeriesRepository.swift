@@ -14,7 +14,10 @@ final class MockTVSeriesRepository: TVSeriesRepository, @unchecked Sendable {
     var tvSeriesWithIDCalledWith: [Int] = []
     var tvSeriesWithIDStub: Result<TVSeries, TVSeriesRepositoryError>?
 
-    func tvSeries(withID id: Int) async throws(TVSeriesRepositoryError) -> TVSeries {
+    func tvSeries(
+        withID id: Int,
+        cachePolicy: CachePolicy
+    ) async throws(TVSeriesRepositoryError) -> TVSeries {
         tvSeriesWithIDCallCount += 1
         tvSeriesWithIDCalledWith.append(id)
 
@@ -34,8 +37,10 @@ final class MockTVSeriesRepository: TVSeriesRepository, @unchecked Sendable {
     var imagesForTVSeriesCalledWith: [Int] = []
     var imagesForTVSeriesStub: Result<ImageCollection, TVSeriesRepositoryError>?
 
-    func images(forTVSeries tvSeriesID: Int) async throws(TVSeriesRepositoryError)
-    -> ImageCollection {
+    func images(
+        forTVSeries tvSeriesID: Int,
+        cachePolicy: CachePolicy
+    ) async throws(TVSeriesRepositoryError) -> ImageCollection {
         imagesForTVSeriesCallCount += 1
         imagesForTVSeriesCalledWith.append(tvSeriesID)
 

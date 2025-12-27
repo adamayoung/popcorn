@@ -8,7 +8,6 @@
 import AppDependencies
 import ComposableArchitecture
 import Foundation
-import Observability
 import OSLog
 
 @Reducer
@@ -17,7 +16,6 @@ public struct PersonDetailsFeature: Sendable {
     private static let logger = Logger.personDetails
 
     @Dependency(\.personDetails) private var personDetails
-    @Dependency(\.observability) private var observability
 
     @ObservableState
     public struct State: Sendable {
@@ -99,27 +97,18 @@ public struct PersonDetailsFeature: Sendable {
 private extension PersonDetailsFeature {
 
     func handleFetchPerson(_ state: inout State) -> EffectOf<Self> {
-        .run { [state] send in
+        .run { [state, personDetails] send in
             Self.logger.info(
                 "User fetching person [personID: \"\(state.personID, privacy: .private)\"]")
-
-            let transaction = observability.startTransaction(
-                name: "FetchPerson",
-                operation: .uiAction
-            )
-            transaction.setData(key: "person_id", value: state.personID)
 
             do {
                 let person = try await personDetails.fetch(state.personID)
                 let snapshot = ViewSnapshot(person: person)
-                transaction.finish()
                 await send(.loaded(snapshot))
             } catch {
                 Self.logger.error(
                     "Failed fetching person details: [personID: \"\(state.personID, privacy: .private)\"] \(error.localizedDescription, privacy: .public)"
                 )
-                transaction.setData(error: error)
-                transaction.finish(status: .internalError)
                 await send(.loadFailed(error))
             }
         }

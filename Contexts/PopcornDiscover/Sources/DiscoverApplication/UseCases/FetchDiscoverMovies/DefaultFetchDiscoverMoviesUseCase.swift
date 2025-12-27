@@ -8,7 +8,6 @@
 import CoreDomain
 import DiscoverDomain
 import Foundation
-import Observability
 
 final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
 
@@ -47,15 +46,6 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
         filter: MovieFilter?,
         page: Int
     ) async throws(FetchDiscoverMoviesError) -> [MoviePreviewDetails] {
-        let span = SpanContext.startChild(
-            operation: .useCaseExecute,
-            description: "FetchDiscoverMoviesUseCase.execute"
-        )
-        span?.setData([
-            "filter": filter?.dictionary ?? "nil",
-            "page": page
-        ])
-
         let moviePreviews: [MoviePreview]
         let genres: [Genre]
         let appConfiguration: AppConfiguration
@@ -66,10 +56,7 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
                 appConfigurationProvider.appConfiguration()
             )
         } catch let error {
-            let moviesError = FetchDiscoverMoviesError(error)
-            span?.setData(error: moviesError)
-            span?.finish(status: .internalError)
-            throw moviesError
+            throw FetchDiscoverMoviesError(error)
         }
 
         var genresLookup: [Genre.ID: Genre] = [:]
@@ -77,14 +64,7 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
             genresLookup[genre.id] = genre
         }
 
-        let logoURLSets: [Int: ImageURLSet]
-        do {
-            logoURLSets = try await logos(for: moviePreviews)
-        } catch let error {
-            span?.setData(error: error)
-            span?.finish(status: .internalError)
-            throw error
-        }
+        let logoURLSets = try await logos(for: moviePreviews)
 
         let mapper = MoviePreviewDetailsMapper()
         let moviePreviewDetails = moviePreviews.map {
@@ -96,7 +76,6 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
             )
         }
 
-        span?.finish()
         return moviePreviewDetails
     }
 

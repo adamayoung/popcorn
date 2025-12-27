@@ -81,9 +81,9 @@ public protocol MovieRecommendationRepository: Sendable {
 ///
 /// Errors that can occur when accessing movie recommendations data through a repository.
 ///
-extension MovieRecommendationRepository {
+public extension MovieRecommendationRepository {
 
-    public func recommendations(
+    func recommendations(
         forMovie movieID: Int,
         page: Int
     ) async throws(MovieRecommendationRepositoryError) -> [MoviePreview] {

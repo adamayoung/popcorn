@@ -7,7 +7,6 @@
 
 import CoreDomainTestHelpers
 import Foundation
-import ObservabilityTestHelpers
 import Testing
 import TVSeriesDomain
 
@@ -18,24 +17,20 @@ struct DefaultTVSeriesRepositoryTests {
 
     let mockRemoteDataSource: MockTVSeriesRemoteDataSource
     let mockLocalDataSource: MockTVSeriesLocalDataSource
-    let mockObservabilityProvider: MockObservabilityProvider
 
     init() {
         self.mockRemoteDataSource = MockTVSeriesRemoteDataSource()
         self.mockLocalDataSource = MockTVSeriesLocalDataSource()
-        self.mockObservabilityProvider = MockObservabilityProvider()
     }
 
-    @Test("works without span")
-    func worksWithoutSpan() async throws {
+    @Test("all operations work correctly")
+    func allOperationsWorkCorrectly() async throws {
         let id = 2424
         let tvSeries = TVSeries.mock(id: id)
         let imageCollection = ImageCollection.mock(id: id)
 
         mockLocalDataSource.tvSeriesWithIDStub = .success(tvSeries)
         mockLocalDataSource.imagesForTVSeriesStub = .success(imageCollection)
-
-        SpanContext.provider = nil
 
         let repository = DefaultTVSeriesRepository(
             remoteDataSource: mockRemoteDataSource,

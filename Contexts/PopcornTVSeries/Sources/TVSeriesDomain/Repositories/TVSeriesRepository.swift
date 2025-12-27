@@ -49,13 +49,13 @@ public protocol TVSeriesRepository: Sendable {
 ///
 /// Errors that can occur when accessing TV series data through a repository.
 ///
-extension TVSeriesRepository {
+public extension TVSeriesRepository {
 
-    public func tvSeries(withID id: Int) async throws(TVSeriesRepositoryError) -> TVSeries {
+    func tvSeries(withID id: Int) async throws(TVSeriesRepositoryError) -> TVSeries {
         try await tvSeries(withID: id, cachePolicy: .cacheFirst)
     }
 
-    public func images(forTVSeries tvSeriesID: Int) async throws(TVSeriesRepositoryError) -> ImageCollection {
+    func images(forTVSeries tvSeriesID: Int) async throws(TVSeriesRepositoryError) -> ImageCollection {
         try await images(forTVSeries: tvSeriesID, cachePolicy: .cacheFirst)
     }
 

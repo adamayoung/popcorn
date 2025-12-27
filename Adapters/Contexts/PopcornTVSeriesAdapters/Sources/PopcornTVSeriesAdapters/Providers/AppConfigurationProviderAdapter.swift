@@ -7,7 +7,6 @@
 
 import ConfigurationApplication
 import CoreDomain
-import Observability
 import TVSeriesDomain
 
 public struct AppConfigurationProviderAdapter: AppConfigurationProviding {
@@ -19,24 +18,11 @@ public struct AppConfigurationProviderAdapter: AppConfigurationProviding {
     }
 
     public func appConfiguration() async throws(AppConfigurationProviderError) -> AppConfiguration {
-        let span = SpanContext.startChild(
-            operation: .providerGet,
-            description: "Get App Configuration"
-        )
-
-        let appConfiguration: AppConfiguration
         do {
-            appConfiguration = try await fetchUseCase.execute()
+            return try await fetchUseCase.execute()
         } catch let error {
-            let providerError = AppConfigurationProviderError(error)
-            span?.setData(error: providerError)
-            span?.finish(status: .internalError)
-            throw providerError
+            throw AppConfigurationProviderError(error)
         }
-
-        span?.finish()
-
-        return appConfiguration
     }
 
 }

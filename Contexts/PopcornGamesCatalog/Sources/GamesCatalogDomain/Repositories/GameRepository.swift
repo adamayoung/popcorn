@@ -16,13 +16,13 @@ public protocol GameRepository: Sendable {
 
 }
 
-extension GameRepository {
+public extension GameRepository {
 
-    public func games() async throws(GameRepositoryError) -> [GameMetadata] {
+    func games() async throws(GameRepositoryError) -> [GameMetadata] {
         try await games(cachePolicy: .cacheFirst)
     }
 
-    public func game(id: Int) async throws(GameRepositoryError) -> GameMetadata {
+    func game(id: Int) async throws(GameRepositoryError) -> GameMetadata {
         try await game(id: id, cachePolicy: .cacheFirst)
     }
 

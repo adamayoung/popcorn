@@ -8,7 +8,6 @@
 import CachingTestHelpers
 import CoreDomainTestHelpers
 import Foundation
-import ObservabilityTestHelpers
 import Testing
 import TVSeriesDomain
 
@@ -18,20 +17,16 @@ import TVSeriesDomain
 struct CachedTVSeriesLocalDataSourceTests {
 
     let mockCache: MockCache
-    let mockObservabilityProvider: MockObservabilityProvider
 
     init() {
         self.mockCache = MockCache()
-        self.mockObservabilityProvider = MockObservabilityProvider()
     }
 
-    @Test("works without span")
-    func worksWithoutSpan() async throws {
+    @Test("all operations work correctly")
+    func allOperationsWorkCorrectly() async throws {
         let id = 1818
         let tvSeries = TVSeries.mock(id: id)
         let imageCollection = ImageCollection.mock(id: id)
-
-        SpanContext.provider = nil
 
         let dataSource = CachedTVSeriesLocalDataSource(cache: mockCache)
 
