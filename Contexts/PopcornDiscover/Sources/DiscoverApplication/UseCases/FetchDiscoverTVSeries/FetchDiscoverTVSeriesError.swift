@@ -38,6 +38,8 @@ extension FetchDiscoverTVSeriesError {
 
     init(_ error: DiscoverTVSeriesRepositoryError) {
         switch error {
+        case .cacheUnavailable:
+            self = .unknown(nil)
         case .unauthorised:
             self = .unauthorised
         case .unknown(let error):

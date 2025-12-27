@@ -21,25 +21,54 @@ final class DefaultPopularMovieRepository: PopularMovieRepository {
         self.localDataSource = localDataSource
     }
 
-    func popular(page: Int) async throws(PopularMovieRepositoryError) -> [MoviePreview] {
-        do {
-            if let cachedMovies = try await localDataSource.popular(page: page) {
-                return cachedMovies
+    func popular(
+        page: Int,
+        cachePolicy: CachePolicy = .cacheFirst
+    ) async throws(PopularMovieRepositoryError) -> [MoviePreview] {
+        switch cachePolicy {
+        case .cacheFirst:
+            do {
+                if let cachedMovies = try await localDataSource.popular(page: page) {
+                    return cachedMovies
+                }
+            } catch let error {
+                throw PopularMovieRepositoryError(error)
             }
-        } catch let error {
-            throw PopularMovieRepositoryError(error)
-        }
 
-        let movies: [MoviePreview]
-        do { movies = try await remoteDataSource.popular(page: page) } catch let error {
-            throw PopularMovieRepositoryError(error)
-        }
+            let movies: [MoviePreview]
+            do { movies = try await remoteDataSource.popular(page: page) } catch let error {
+                throw PopularMovieRepositoryError(error)
+            }
 
-        do { try await localDataSource.setPopular(movies, page: page) } catch let error {
-            throw PopularMovieRepositoryError(error)
-        }
+            do { try await localDataSource.setPopular(movies, page: page) } catch let error {
+                throw PopularMovieRepositoryError(error)
+            }
 
-        return movies
+            return movies
+
+        case .networkOnly:
+            let movies: [MoviePreview]
+            do { movies = try await remoteDataSource.popular(page: page) } catch let error {
+                throw PopularMovieRepositoryError(error)
+            }
+
+            do { try await localDataSource.setPopular(movies, page: page) } catch let error {
+                throw PopularMovieRepositoryError(error)
+            }
+
+            return movies
+
+        case .cacheOnly:
+            do {
+                if let cachedMovies = try await localDataSource.popular(page: page) {
+                    return cachedMovies
+                }
+            } catch let error {
+                throw PopularMovieRepositoryError(error)
+            }
+
+            throw .cacheUnavailable
+        }
     }
 
     func popularStream() async -> AsyncThrowingStream<[MoviePreview]?, Error> {

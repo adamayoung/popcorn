@@ -19,18 +19,34 @@ public protocol PersonRepository: Sendable {
     ///
     /// Fetches detailed information for a specific person.
     ///
-    /// - Parameter id: The unique identifier of the person to fetch.
+    /// - Parameters:
+    ///   - id: The unique identifier of the person to fetch.
+    ///   - cachePolicy: The caching strategy to use for this request.
     /// - Returns: A ``Person`` instance containing biographical and career details.
     /// - Throws: ``PersonRepositoryError`` if the person cannot be fetched.
     ///
-    func person(withID id: Int) async throws(PersonRepositoryError) -> Person
+    func person(
+        withID id: Int,
+        cachePolicy: CachePolicy
+    ) async throws(PersonRepositoryError) -> Person
 
 }
 
 ///
 /// Errors that can occur when accessing person data through a repository.
 ///
+extension PersonRepository {
+
+    public func person(withID id: Int) async throws(PersonRepositoryError) -> Person {
+        try await person(withID: id, cachePolicy: .cacheFirst)
+    }
+
+}
+
 public enum PersonRepositoryError: Error {
+
+    /// No cached data is available for the request.
+    case cacheUnavailable
 
     /// The requested person was not found.
     case notFound

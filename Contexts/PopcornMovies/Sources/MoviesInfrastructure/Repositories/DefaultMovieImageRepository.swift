@@ -22,29 +22,59 @@ final class DefaultMovieImageRepository: MovieImageRepository {
     }
 
     func imageCollection(
-        forMovie movieID: Int
+        forMovie movieID: Int,
+        cachePolicy: CachePolicy = .cacheFirst
     ) async throws(MovieImageRepositoryError) -> ImageCollection {
-        do {
-            if let cachedImageCollection = try await localDataSource.imageCollection(
-                forMovie: movieID) {
-                return cachedImageCollection
+        switch cachePolicy {
+        case .cacheFirst:
+            do {
+                if let cachedImageCollection = try await localDataSource.imageCollection(
+                    forMovie: movieID) {
+                    return cachedImageCollection
+                }
+            } catch let error {
+                throw MovieImageRepositoryError(error)
             }
-        } catch let error {
-            throw MovieImageRepositoryError(error)
-        }
 
-        let imageCollection: ImageCollection
-        do {
-            imageCollection = try await remoteDataSource.imageCollection(forMovie: movieID)
-        } catch let error {
-            throw MovieImageRepositoryError(error)
-        }
+            let imageCollection: ImageCollection
+            do {
+                imageCollection = try await remoteDataSource.imageCollection(forMovie: movieID)
+            } catch let error {
+                throw MovieImageRepositoryError(error)
+            }
 
-        do { try await localDataSource.setImageCollection(imageCollection) } catch let error {
-            throw MovieImageRepositoryError(error)
-        }
+            do { try await localDataSource.setImageCollection(imageCollection) } catch let error {
+                throw MovieImageRepositoryError(error)
+            }
 
-        return imageCollection
+            return imageCollection
+
+        case .networkOnly:
+            let imageCollection: ImageCollection
+            do {
+                imageCollection = try await remoteDataSource.imageCollection(forMovie: movieID)
+            } catch let error {
+                throw MovieImageRepositoryError(error)
+            }
+
+            do { try await localDataSource.setImageCollection(imageCollection) } catch let error {
+                throw MovieImageRepositoryError(error)
+            }
+
+            return imageCollection
+
+        case .cacheOnly:
+            do {
+                if let cachedImageCollection = try await localDataSource.imageCollection(
+                    forMovie: movieID) {
+                    return cachedImageCollection
+                }
+            } catch let error {
+                throw MovieImageRepositoryError(error)
+            }
+
+            throw .cacheUnavailable
+        }
     }
 
     func imageCollectionStream(

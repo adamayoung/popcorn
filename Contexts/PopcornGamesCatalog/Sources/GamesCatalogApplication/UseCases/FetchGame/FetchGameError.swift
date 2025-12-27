@@ -19,6 +19,7 @@ extension FetchGameError {
 
     init(_ error: GameRepositoryError) {
         switch error {
+        case .cacheUnavailable: self = .unknown(nil)
         case .notFound: self = .notFound
         case .unknown(let error): self = .unknown(error)
         }

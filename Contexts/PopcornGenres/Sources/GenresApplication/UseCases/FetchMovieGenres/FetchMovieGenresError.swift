@@ -19,6 +19,7 @@ extension FetchMovieGenresError {
 
     init(_ error: GenreRepositoryError) {
         switch error {
+        case .cacheUnavailable: self = .unknown(nil)
         case .unauthorised: self = .unauthorised
         case .unknown(let error): self = .unknown(error)
         }

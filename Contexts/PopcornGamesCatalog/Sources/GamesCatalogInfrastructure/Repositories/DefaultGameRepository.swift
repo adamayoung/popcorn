@@ -16,7 +16,8 @@ final class DefaultGameRepository: GameRepository {
         self.featureFlagProvider = featureFlagProvider
     }
 
-    func games() async throws(GameRepositoryError) -> [GameMetadata] {
+    func games(cachePolicy: CachePolicy = .cacheFirst) async throws(GameRepositoryError) -> [GameMetadata] {
+        // Games use static data, cachePolicy is ignored
         Self.availableGames.values
             .filter { game in
                 if game.id == 1, !isPlotRemixEnabled {
@@ -42,7 +43,11 @@ final class DefaultGameRepository: GameRepository {
             }
     }
 
-    func game(id: Int) async throws(GameRepositoryError) -> GameMetadata {
+    func game(
+        id: Int,
+        cachePolicy: CachePolicy = .cacheFirst
+    ) async throws(GameRepositoryError) -> GameMetadata {
+        // Games use static data, cachePolicy is ignored
         guard let game = Self.availableGames[id] else {
             throw .notFound
         }

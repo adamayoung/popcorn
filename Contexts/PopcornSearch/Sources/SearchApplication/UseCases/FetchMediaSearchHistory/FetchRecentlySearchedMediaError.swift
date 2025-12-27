@@ -37,6 +37,8 @@ extension FetchMediaSearchHistoryError {
 
     init(_ error: MediaRepositoryError) {
         switch error {
+        case .cacheUnavailable:
+            self = .unknown(nil)
         case .unauthorised:
             self = .unknown(nil)
         case .unknown(let error):

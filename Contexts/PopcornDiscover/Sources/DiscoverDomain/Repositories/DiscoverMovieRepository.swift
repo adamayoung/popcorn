@@ -22,13 +22,26 @@ public protocol DiscoverMovieRepository: Sendable {
     /// - Parameters:
     ///   - filter: Optional filter criteria to apply (e.g., genre, year, rating). Pass `nil` for no filtering.
     ///   - page: The page number to fetch (1-indexed).
+    ///   - cachePolicy: The caching strategy to use for this request.
     /// - Returns: An array of ``MoviePreview`` instances matching the filter criteria.
     /// - Throws: ``DiscoverMovieRepositoryError`` if the movies cannot be fetched.
     ///
     func movies(
         filter: MovieFilter?,
-        page: Int
+        page: Int,
+        cachePolicy: CachePolicy
     ) async throws(DiscoverMovieRepositoryError) -> [MoviePreview]
+
+}
+
+extension DiscoverMovieRepository {
+
+    public func movies(
+        filter: MovieFilter?,
+        page: Int
+    ) async throws(DiscoverMovieRepositoryError) -> [MoviePreview] {
+        try await movies(filter: filter, page: page, cachePolicy: .cacheFirst)
+    }
 
 }
 
@@ -36,6 +49,9 @@ public protocol DiscoverMovieRepository: Sendable {
 /// Errors that can occur when discovering movies through a repository.
 ///
 public enum DiscoverMovieRepositoryError: Error {
+
+    /// No cached data is available for the request.
+    case cacheUnavailable
 
     /// The request was not authorized.
     case unauthorised

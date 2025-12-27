@@ -19,6 +19,8 @@ extension FetchAppConfigurationError {
 
     init(_ error: ConfigurationRepositoryError) {
         switch error {
+        case .cacheUnavailable:
+            self = .unknown(nil)
         case .unauthorised:
             self = .unauthorised
         case .unknown(let error):

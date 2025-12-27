@@ -34,6 +34,8 @@ extension FetchMovieRecommendationsError {
 
     init(_ error: MovieRecommendationRepositoryError) {
         switch error {
+        case .cacheUnavailable:
+            self = .unknown(nil)
         case .notFound:
             self = .notFound
         case .unauthorised:
@@ -45,6 +47,8 @@ extension FetchMovieRecommendationsError {
 
     init(_ error: MovieImageRepositoryError) {
         switch error {
+        case .cacheUnavailable:
+            self = .unknown(nil)
         case .notFound:
             self = .notFound
         case .unauthorised:

@@ -19,11 +19,16 @@ public protocol MovieRepository: Sendable {
     ///
     /// Fetches detailed information for a specific movie.
     ///
-    /// - Parameter id: The unique identifier of the movie to fetch.
+    /// - Parameters:
+    ///   - id: The unique identifier of the movie to fetch.
+    ///   - cachePolicy: The caching strategy to use for this request.
     /// - Returns: A ``Movie`` instance containing the movie's details.
     /// - Throws: ``MovieRepositoryError`` if the movie cannot be fetched.
     ///
-    func movie(withID id: Int) async throws(MovieRepositoryError) -> Movie
+    func movie(
+        withID id: Int,
+        cachePolicy: CachePolicy
+    ) async throws(MovieRepositoryError) -> Movie
 
     ///
     /// Creates a stream that continuously emits updates for a specific movie.
@@ -41,7 +46,18 @@ public protocol MovieRepository: Sendable {
 ///
 /// Errors that can occur when accessing movie data through a repository.
 ///
+extension MovieRepository {
+
+    public func movie(withID id: Int) async throws(MovieRepositoryError) -> Movie {
+        try await movie(withID: id, cachePolicy: .cacheFirst)
+    }
+
+}
+
 public enum MovieRepositoryError: Error {
+
+    /// No cached data is available for the request.
+    case cacheUnavailable
 
     /// The requested movie was not found.
     case notFound

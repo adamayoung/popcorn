@@ -21,26 +21,54 @@ final class DefaultMediaRepository: MediaRepository {
         self.localDataSource = localDataSource
     }
 
-    func search(query: String, page: Int) async throws(MediaRepositoryError) -> [MediaPreview] {
-        let media: [MediaPreview]
-        do {
-            media = try await remoteDataSource.search(query: query, page: page)
-        } catch let error {
-            throw MediaRepositoryError(error)
-        }
+    func search(
+        query: String,
+        page: Int,
+        cachePolicy: CachePolicy = .cacheFirst
+    ) async throws(MediaRepositoryError) -> [MediaPreview] {
+        // Search is always network-only (no cache for search results)
+        switch cachePolicy {
+        case .cacheFirst, .networkOnly:
+            let media: [MediaPreview]
+            do {
+                media = try await remoteDataSource.search(query: query, page: page)
+            } catch let error {
+                throw MediaRepositoryError(error)
+            }
 
-        return media
+            return media
+
+        case .cacheOnly:
+            throw .cacheUnavailable
+        }
     }
 
-    func mediaSearchHistory() async throws(MediaRepositoryError) -> [MediaSearchHistoryEntry] {
-        let entries: [MediaSearchHistoryEntry]
-        do {
-            entries = try await localDataSource.mediaSearchHistory()
-        } catch let error {
-            throw MediaRepositoryError(error)
-        }
+    func mediaSearchHistory(
+        cachePolicy: CachePolicy = .cacheFirst
+    ) async throws(MediaRepositoryError) -> [MediaSearchHistoryEntry] {
+        // Search history is always local-only
+        switch cachePolicy {
+        case .cacheFirst, .cacheOnly:
+            let entries: [MediaSearchHistoryEntry]
+            do {
+                entries = try await localDataSource.mediaSearchHistory()
+            } catch let error {
+                throw MediaRepositoryError(error)
+            }
 
-        return entries
+            return entries
+
+        case .networkOnly:
+            // No remote source for search history, just return local
+            let entries: [MediaSearchHistoryEntry]
+            do {
+                entries = try await localDataSource.mediaSearchHistory()
+            } catch let error {
+                throw MediaRepositoryError(error)
+            }
+
+            return entries
+        }
     }
 
     func saveMovieSearchHistoryEntry(_ entry: MovieSearchHistoryEntry)

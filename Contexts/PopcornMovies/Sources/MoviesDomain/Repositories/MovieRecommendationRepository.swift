@@ -22,12 +22,14 @@ public protocol MovieRecommendationRepository: Sendable {
     /// - Parameters:
     ///   - movieID: The unique identifier of the reference movie.
     ///   - page: The page number to fetch (1-indexed).
+    ///   - cachePolicy: The caching strategy to use for this request.
     /// - Returns: An array of ``MoviePreview`` instances representing recommended movies.
     /// - Throws: ``MovieRecommendationRepositoryError`` if the movies cannot be fetched.
     ///
     func recommendations(
         forMovie movieID: Int,
-        page: Int
+        page: Int,
+        cachePolicy: CachePolicy
     ) async throws(MovieRecommendationRepositoryError) -> [MoviePreview]
 
     ///
@@ -79,7 +81,21 @@ public protocol MovieRecommendationRepository: Sendable {
 ///
 /// Errors that can occur when accessing movie recommendations data through a repository.
 ///
+extension MovieRecommendationRepository {
+
+    public func recommendations(
+        forMovie movieID: Int,
+        page: Int
+    ) async throws(MovieRecommendationRepositoryError) -> [MoviePreview] {
+        try await recommendations(forMovie: movieID, page: page, cachePolicy: .cacheFirst)
+    }
+
+}
+
 public enum MovieRecommendationRepositoryError: Error {
+
+    /// No cached data is available for the request.
+    case cacheUnavailable
 
     /// The requested movie recommendations were not found.
     case notFound

@@ -33,6 +33,8 @@ extension FetchTrendingPeopleError {
 
     init(_ error: TrendingRepositoryError) {
         switch error {
+        case .cacheUnavailable:
+            self = .unknown(nil)
         case .unauthorised:
             self = .unauthorised
         case .unknown(let error):

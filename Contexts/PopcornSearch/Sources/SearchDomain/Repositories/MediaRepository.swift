@@ -9,9 +9,15 @@ import Foundation
 
 public protocol MediaRepository: Sendable {
 
-    func search(query: String, page: Int) async throws(MediaRepositoryError) -> [MediaPreview]
+    func search(
+        query: String,
+        page: Int,
+        cachePolicy: CachePolicy
+    ) async throws(MediaRepositoryError) -> [MediaPreview]
 
-    func mediaSearchHistory() async throws(MediaRepositoryError) -> [MediaSearchHistoryEntry]
+    func mediaSearchHistory(
+        cachePolicy: CachePolicy
+    ) async throws(MediaRepositoryError) -> [MediaSearchHistoryEntry]
 
     func saveMovieSearchHistoryEntry(_ entry: MovieSearchHistoryEntry)
         async throws(MediaRepositoryError)
@@ -24,8 +30,21 @@ public protocol MediaRepository: Sendable {
 
 }
 
+extension MediaRepository {
+
+    public func search(query: String, page: Int) async throws(MediaRepositoryError) -> [MediaPreview] {
+        try await search(query: query, page: page, cachePolicy: .cacheFirst)
+    }
+
+    public func mediaSearchHistory() async throws(MediaRepositoryError) -> [MediaSearchHistoryEntry] {
+        try await mediaSearchHistory(cachePolicy: .cacheFirst)
+    }
+
+}
+
 public enum MediaRepositoryError: Error {
 
+    case cacheUnavailable
     case unauthorised
     case unknown(Error?)
 

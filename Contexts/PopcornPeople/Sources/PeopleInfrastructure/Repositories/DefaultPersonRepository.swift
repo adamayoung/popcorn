@@ -21,14 +21,32 @@ final class DefaultPersonRepository: PersonRepository {
         self.localDataSource = localDataSource
     }
 
-    func person(withID id: Int) async throws(PersonRepositoryError) -> PeopleDomain.Person {
-        if let cachedPerson = await localDataSource.person(withID: id) {
-            return cachedPerson
-        }
+    func person(
+        withID id: Int,
+        cachePolicy: CachePolicy = .cacheFirst
+    ) async throws(PersonRepositoryError) -> PeopleDomain.Person {
+        switch cachePolicy {
+        case .cacheFirst:
+            if let cachedPerson = await localDataSource.person(withID: id) {
+                return cachedPerson
+            }
 
-        let person = try await remoteDataSource.person(withID: id)
-        await localDataSource.setPerson(person)
-        return person
+            let person = try await remoteDataSource.person(withID: id)
+            await localDataSource.setPerson(person)
+            return person
+
+        case .networkOnly:
+            let person = try await remoteDataSource.person(withID: id)
+            await localDataSource.setPerson(person)
+            return person
+
+        case .cacheOnly:
+            if let cachedPerson = await localDataSource.person(withID: id) {
+                return cachedPerson
+            }
+
+            throw .cacheUnavailable
+        }
     }
 
 }

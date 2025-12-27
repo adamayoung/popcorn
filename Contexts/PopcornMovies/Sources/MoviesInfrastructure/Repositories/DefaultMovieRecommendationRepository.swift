@@ -23,30 +23,61 @@ final class DefaultMovieRecommendationRepository: MovieRecommendationRepository 
 
     func recommendations(
         forMovie movieID: Int,
-        page: Int
+        page: Int,
+        cachePolicy: CachePolicy = .cacheFirst
     ) async throws(MovieRecommendationRepositoryError) -> [MoviePreview] {
-        do {
-            if let cachedMovies = try await localDataSource.recommendations(forMovie: movieID, page: page) {
-                return cachedMovies
+        switch cachePolicy {
+        case .cacheFirst:
+            do {
+                if let cachedMovies = try await localDataSource.recommendations(forMovie: movieID, page: page) {
+                    return cachedMovies
+                }
+            } catch let error {
+                throw MovieRecommendationRepositoryError(error)
             }
-        } catch let error {
-            throw MovieRecommendationRepositoryError(error)
-        }
 
-        let movies: [MoviePreview]
-        do {
-            movies = try await remoteDataSource.recommendations(forMovie: movieID, page: page)
-        } catch let error {
-            throw MovieRecommendationRepositoryError(error)
-        }
+            let movies: [MoviePreview]
+            do {
+                movies = try await remoteDataSource.recommendations(forMovie: movieID, page: page)
+            } catch let error {
+                throw MovieRecommendationRepositoryError(error)
+            }
 
-        do {
-            try await localDataSource.setRecommendations(movies, forMovie: movieID, page: page)
-        } catch let error {
-            throw MovieRecommendationRepositoryError(error)
-        }
+            do {
+                try await localDataSource.setRecommendations(movies, forMovie: movieID, page: page)
+            } catch let error {
+                throw MovieRecommendationRepositoryError(error)
+            }
 
-        return movies
+            return movies
+
+        case .networkOnly:
+            let movies: [MoviePreview]
+            do {
+                movies = try await remoteDataSource.recommendations(forMovie: movieID, page: page)
+            } catch let error {
+                throw MovieRecommendationRepositoryError(error)
+            }
+
+            do {
+                try await localDataSource.setRecommendations(movies, forMovie: movieID, page: page)
+            } catch let error {
+                throw MovieRecommendationRepositoryError(error)
+            }
+
+            return movies
+
+        case .cacheOnly:
+            do {
+                if let cachedMovies = try await localDataSource.recommendations(forMovie: movieID, page: page) {
+                    return cachedMovies
+                }
+            } catch let error {
+                throw MovieRecommendationRepositoryError(error)
+            }
+
+            throw .cacheUnavailable
+        }
     }
 
     func recommendationsStream(

@@ -23,30 +23,61 @@ final class DefaultDiscoverTVSeriesRepository: DiscoverTVSeriesRepository {
 
     func tvSeries(
         filter: TVSeriesFilter?,
-        page: Int
+        page: Int,
+        cachePolicy: CachePolicy = .cacheFirst
     ) async throws(DiscoverTVSeriesRepositoryError) -> [TVSeriesPreview] {
-        do {
-            if let cachedTVSeries = try await localDataSource.tvSeries(filter: filter, page: page) {
-                return cachedTVSeries
+        switch cachePolicy {
+        case .cacheFirst:
+            do {
+                if let cachedTVSeries = try await localDataSource.tvSeries(filter: filter, page: page) {
+                    return cachedTVSeries
+                }
+            } catch let error {
+                throw DiscoverTVSeriesRepositoryError(error)
             }
-        } catch let error {
-            throw DiscoverTVSeriesRepositoryError(error)
-        }
 
-        let tvSeries: [TVSeriesPreview]
-        do {
-            tvSeries = try await remoteDataSource.tvSeries(filter: filter, page: page)
-        } catch let error {
-            throw DiscoverTVSeriesRepositoryError(error)
-        }
+            let tvSeries: [TVSeriesPreview]
+            do {
+                tvSeries = try await remoteDataSource.tvSeries(filter: filter, page: page)
+            } catch let error {
+                throw DiscoverTVSeriesRepositoryError(error)
+            }
 
-        do {
-            try await localDataSource.setTVSeries(tvSeries, filter: filter, page: page)
-        } catch let error {
-            throw DiscoverTVSeriesRepositoryError(error)
-        }
+            do {
+                try await localDataSource.setTVSeries(tvSeries, filter: filter, page: page)
+            } catch let error {
+                throw DiscoverTVSeriesRepositoryError(error)
+            }
 
-        return tvSeries
+            return tvSeries
+
+        case .networkOnly:
+            let tvSeries: [TVSeriesPreview]
+            do {
+                tvSeries = try await remoteDataSource.tvSeries(filter: filter, page: page)
+            } catch let error {
+                throw DiscoverTVSeriesRepositoryError(error)
+            }
+
+            do {
+                try await localDataSource.setTVSeries(tvSeries, filter: filter, page: page)
+            } catch let error {
+                throw DiscoverTVSeriesRepositoryError(error)
+            }
+
+            return tvSeries
+
+        case .cacheOnly:
+            do {
+                if let cachedTVSeries = try await localDataSource.tvSeries(filter: filter, page: page) {
+                    return cachedTVSeries
+                }
+            } catch let error {
+                throw DiscoverTVSeriesRepositoryError(error)
+            }
+
+            throw .cacheUnavailable
+        }
     }
 
 }

@@ -29,6 +29,8 @@ extension FetchMovieImageCollectionError {
 
     init(_ error: MovieRepositoryError) {
         switch error {
+        case .cacheUnavailable:
+            self = .unknown(nil)
         case .notFound:
             self = .notFound
         case .unauthorised:

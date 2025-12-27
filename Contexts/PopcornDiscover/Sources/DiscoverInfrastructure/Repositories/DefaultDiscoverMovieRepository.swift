@@ -23,30 +23,61 @@ final class DefaultDiscoverMovieRepository: DiscoverMovieRepository {
 
     func movies(
         filter: MovieFilter?,
-        page: Int
+        page: Int,
+        cachePolicy: CachePolicy = .cacheFirst
     ) async throws(DiscoverMovieRepositoryError) -> [MoviePreview] {
-        do {
-            if let cachedMovies = try await localDataSource.movies(filter: filter, page: page) {
-                return cachedMovies
+        switch cachePolicy {
+        case .cacheFirst:
+            do {
+                if let cachedMovies = try await localDataSource.movies(filter: filter, page: page) {
+                    return cachedMovies
+                }
+            } catch let error {
+                throw DiscoverMovieRepositoryError(error)
             }
-        } catch let error {
-            throw DiscoverMovieRepositoryError(error)
-        }
 
-        let movies: [MoviePreview]
-        do {
-            movies = try await remoteDataSource.movies(filter: filter, page: page)
-        } catch let error {
-            throw DiscoverMovieRepositoryError(error)
-        }
+            let movies: [MoviePreview]
+            do {
+                movies = try await remoteDataSource.movies(filter: filter, page: page)
+            } catch let error {
+                throw DiscoverMovieRepositoryError(error)
+            }
 
-        do {
-            try await localDataSource.setMovies(movies, filter: filter, page: page)
-        } catch let error {
-            throw DiscoverMovieRepositoryError(error)
-        }
+            do {
+                try await localDataSource.setMovies(movies, filter: filter, page: page)
+            } catch let error {
+                throw DiscoverMovieRepositoryError(error)
+            }
 
-        return movies
+            return movies
+
+        case .networkOnly:
+            let movies: [MoviePreview]
+            do {
+                movies = try await remoteDataSource.movies(filter: filter, page: page)
+            } catch let error {
+                throw DiscoverMovieRepositoryError(error)
+            }
+
+            do {
+                try await localDataSource.setMovies(movies, filter: filter, page: page)
+            } catch let error {
+                throw DiscoverMovieRepositoryError(error)
+            }
+
+            return movies
+
+        case .cacheOnly:
+            do {
+                if let cachedMovies = try await localDataSource.movies(filter: filter, page: page) {
+                    return cachedMovies
+                }
+            } catch let error {
+                throw DiscoverMovieRepositoryError(error)
+            }
+
+            throw .cacheUnavailable
+        }
     }
 
 }

@@ -29,6 +29,8 @@ extension FetchTVSeriesImageCollectionError {
 
     init(_ error: TVSeriesRepositoryError) {
         switch error {
+        case .cacheUnavailable:
+            self = .unknown(nil)
         case .notFound:
             self = .notFound
         case .unauthorised:

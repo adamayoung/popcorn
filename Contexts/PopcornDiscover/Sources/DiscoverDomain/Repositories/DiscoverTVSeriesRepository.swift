@@ -11,13 +11,26 @@ public protocol DiscoverTVSeriesRepository: Sendable {
 
     func tvSeries(
         filter: TVSeriesFilter?,
-        page: Int
+        page: Int,
+        cachePolicy: CachePolicy
     ) async throws(DiscoverTVSeriesRepositoryError) -> [TVSeriesPreview]
+
+}
+
+extension DiscoverTVSeriesRepository {
+
+    public func tvSeries(
+        filter: TVSeriesFilter?,
+        page: Int
+    ) async throws(DiscoverTVSeriesRepositoryError) -> [TVSeriesPreview] {
+        try await tvSeries(filter: filter, page: page, cachePolicy: .cacheFirst)
+    }
 
 }
 
 public enum DiscoverTVSeriesRepositoryError: Error {
 
+    case cacheUnavailable
     case unauthorised
     case unknown(Error?)
 

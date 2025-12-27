@@ -17,27 +17,48 @@ final class DefaultTrendingRepository: TrendingRepository {
     }
 
     func movies(
-        page: Int
+        page: Int,
+        cachePolicy: CachePolicy = .cacheFirst
     ) async throws(TrendingRepositoryError) -> [MoviePreview] {
-        let movies = try await remoteDataSource.movies(page: page)
+        // Trending is remote-only, no local cache
+        switch cachePolicy {
+        case .cacheFirst, .networkOnly:
+            let movies = try await remoteDataSource.movies(page: page)
+            return movies
 
-        return movies
+        case .cacheOnly:
+            throw .cacheUnavailable
+        }
     }
 
     func tvSeries(
-        page: Int
+        page: Int,
+        cachePolicy: CachePolicy = .cacheFirst
     ) async throws(TrendingRepositoryError) -> [TVSeriesPreview] {
-        let tvSeries = try await remoteDataSource.tvSeries(page: page)
+        // Trending is remote-only, no local cache
+        switch cachePolicy {
+        case .cacheFirst, .networkOnly:
+            let tvSeries = try await remoteDataSource.tvSeries(page: page)
+            return tvSeries
 
-        return tvSeries
+        case .cacheOnly:
+            throw .cacheUnavailable
+        }
     }
 
     func people(
-        page: Int
+        page: Int,
+        cachePolicy: CachePolicy = .cacheFirst
     ) async throws(TrendingRepositoryError) -> [PersonPreview] {
-        let people = try await remoteDataSource.people(page: page)
+        // Trending is remote-only, no local cache
+        switch cachePolicy {
+        case .cacheFirst, .networkOnly:
+            let people = try await remoteDataSource.people(page: page)
+            return people
 
-        return people
+        case .cacheOnly:
+            throw .cacheUnavailable
+        }
     }
 
 }

@@ -10,12 +10,23 @@ import Foundation
 
 public protocol ConfigurationRepository: Sendable {
 
-    func configuration() async throws(ConfigurationRepositoryError) -> AppConfiguration
+    func configuration(
+        cachePolicy: CachePolicy
+    ) async throws(ConfigurationRepositoryError) -> AppConfiguration
+
+}
+
+extension ConfigurationRepository {
+
+    public func configuration() async throws(ConfigurationRepositoryError) -> AppConfiguration {
+        try await configuration(cachePolicy: .cacheFirst)
+    }
 
 }
 
 public enum ConfigurationRepositoryError: Error {
 
+    case cacheUnavailable
     case unauthorised
     case unknown(Error? = nil)
 

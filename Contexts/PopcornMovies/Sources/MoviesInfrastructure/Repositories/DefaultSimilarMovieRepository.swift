@@ -23,24 +23,49 @@ final class DefaultSimilarMovieRepository: SimilarMovieRepository {
 
     func similar(
         toMovie movieID: Int,
-        page: Int
+        page: Int,
+        cachePolicy: CachePolicy = .cacheFirst
     ) async throws(SimilarMovieRepositoryError) -> [MoviePreview] {
-        do {
-            if let cachedMovies = try await localDataSource.similar(toMovie: movieID, page: page) {
-                return cachedMovies
+        switch cachePolicy {
+        case .cacheFirst:
+            do {
+                if let cachedMovies = try await localDataSource.similar(toMovie: movieID, page: page) {
+                    return cachedMovies
+                }
+            } catch let error {
+                throw SimilarMovieRepositoryError(error)
             }
-        } catch let error {
-            throw SimilarMovieRepositoryError(error)
+
+            let movies: [MoviePreview]
+            do { movies = try await remoteDataSource.similar(toMovie: movieID, page: page) } catch let
+                error { throw SimilarMovieRepositoryError(error) }
+
+            do { try await localDataSource.setSimilar(movies, toMovie: movieID, page: page) } catch let
+                error { throw SimilarMovieRepositoryError(error) }
+
+            return movies
+
+        case .networkOnly:
+            let movies: [MoviePreview]
+            do { movies = try await remoteDataSource.similar(toMovie: movieID, page: page) } catch let
+                error { throw SimilarMovieRepositoryError(error) }
+
+            do { try await localDataSource.setSimilar(movies, toMovie: movieID, page: page) } catch let
+                error { throw SimilarMovieRepositoryError(error) }
+
+            return movies
+
+        case .cacheOnly:
+            do {
+                if let cachedMovies = try await localDataSource.similar(toMovie: movieID, page: page) {
+                    return cachedMovies
+                }
+            } catch let error {
+                throw SimilarMovieRepositoryError(error)
+            }
+
+            throw .cacheUnavailable
         }
-
-        let movies: [MoviePreview]
-        do { movies = try await remoteDataSource.similar(toMovie: movieID, page: page) } catch let
-            error { throw SimilarMovieRepositoryError(error) }
-
-        do { try await localDataSource.setSimilar(movies, toMovie: movieID, page: page) } catch let
-            error { throw SimilarMovieRepositoryError(error) }
-
-        return movies
     }
 
     func similarStream(

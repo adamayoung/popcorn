@@ -21,44 +21,94 @@ final class DefaultGenreRepository: GenreRepository {
         self.localDataSource = localDataSource
     }
 
-    func movieGenres() async throws(GenreRepositoryError) -> [Genre] {
-        do {
-            if let cachedGenres = try await localDataSource.movieGenres() {
-                return cachedGenres
+    func movieGenres(cachePolicy: CachePolicy = .cacheFirst) async throws(GenreRepositoryError) -> [Genre] {
+        switch cachePolicy {
+        case .cacheFirst:
+            do {
+                if let cachedGenres = try await localDataSource.movieGenres() {
+                    return cachedGenres
+                }
+            } catch let error {
+                throw GenreRepositoryError(error)
             }
-        } catch let error {
-            throw GenreRepositoryError(error)
-        }
 
-        let genres: [Genre]
-        do {
-            genres = try await remoteDataSource.movieGenres()
-            try await localDataSource.setMovieGenres(genres)
-        } catch let error {
-            throw GenreRepositoryError(error)
-        }
+            let genres: [Genre]
+            do {
+                genres = try await remoteDataSource.movieGenres()
+                try await localDataSource.setMovieGenres(genres)
+            } catch let error {
+                throw GenreRepositoryError(error)
+            }
 
-        return genres
+            return genres
+
+        case .networkOnly:
+            let genres: [Genre]
+            do {
+                genres = try await remoteDataSource.movieGenres()
+                try await localDataSource.setMovieGenres(genres)
+            } catch let error {
+                throw GenreRepositoryError(error)
+            }
+
+            return genres
+
+        case .cacheOnly:
+            do {
+                if let cachedGenres = try await localDataSource.movieGenres() {
+                    return cachedGenres
+                }
+            } catch let error {
+                throw GenreRepositoryError(error)
+            }
+
+            throw .cacheUnavailable
+        }
     }
 
-    func tvSeriesGenres() async throws(GenreRepositoryError) -> [Genre] {
-        do {
-            if let cachedGenres = try await localDataSource.tvSeriesGenres() {
-                return cachedGenres
+    func tvSeriesGenres(cachePolicy: CachePolicy = .cacheFirst) async throws(GenreRepositoryError) -> [Genre] {
+        switch cachePolicy {
+        case .cacheFirst:
+            do {
+                if let cachedGenres = try await localDataSource.tvSeriesGenres() {
+                    return cachedGenres
+                }
+            } catch let error {
+                throw GenreRepositoryError(error)
             }
-        } catch let error {
-            throw GenreRepositoryError(error)
-        }
 
-        let genres: [Genre]
-        do {
-            genres = try await remoteDataSource.tvSeriesGenres()
-            try await localDataSource.setTVSeriesGenres(genres)
-        } catch let error {
-            throw GenreRepositoryError(error)
-        }
+            let genres: [Genre]
+            do {
+                genres = try await remoteDataSource.tvSeriesGenres()
+                try await localDataSource.setTVSeriesGenres(genres)
+            } catch let error {
+                throw GenreRepositoryError(error)
+            }
 
-        return genres
+            return genres
+
+        case .networkOnly:
+            let genres: [Genre]
+            do {
+                genres = try await remoteDataSource.tvSeriesGenres()
+                try await localDataSource.setTVSeriesGenres(genres)
+            } catch let error {
+                throw GenreRepositoryError(error)
+            }
+
+            return genres
+
+        case .cacheOnly:
+            do {
+                if let cachedGenres = try await localDataSource.tvSeriesGenres() {
+                    return cachedGenres
+                }
+            } catch let error {
+                throw GenreRepositoryError(error)
+            }
+
+            throw .cacheUnavailable
+        }
     }
 
 }

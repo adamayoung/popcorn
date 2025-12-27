@@ -29,6 +29,8 @@ extension StreamMovieRecommendationsError {
 
     init(_ error: MovieRecommendationRepositoryError) {
         switch error {
+        case .cacheUnavailable:
+            self = .unknown(nil)
         case .notFound:
             self = .notFound
         case .unauthorised:

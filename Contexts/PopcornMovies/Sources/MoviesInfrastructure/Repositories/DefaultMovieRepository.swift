@@ -21,25 +21,54 @@ final class DefaultMovieRepository: MovieRepository {
         self.localDataSource = localDataSource
     }
 
-    func movie(withID id: Int) async throws(MovieRepositoryError) -> Movie {
-        do {
-            if let cachedMovie = try await localDataSource.movie(withID: id) {
-                return cachedMovie
+    func movie(
+        withID id: Int,
+        cachePolicy: CachePolicy = .cacheFirst
+    ) async throws(MovieRepositoryError) -> Movie {
+        switch cachePolicy {
+        case .cacheFirst:
+            do {
+                if let cachedMovie = try await localDataSource.movie(withID: id) {
+                    return cachedMovie
+                }
+            } catch let error {
+                throw MovieRepositoryError(error)
             }
-        } catch let error {
-            throw MovieRepositoryError(error)
-        }
 
-        let movie: Movie
-        do { movie = try await remoteDataSource.movie(withID: id) } catch let error {
-            throw MovieRepositoryError(error)
-        }
+            let movie: Movie
+            do { movie = try await remoteDataSource.movie(withID: id) } catch let error {
+                throw MovieRepositoryError(error)
+            }
 
-        do { try await localDataSource.setMovie(movie) } catch let error {
-            throw MovieRepositoryError(error)
-        }
+            do { try await localDataSource.setMovie(movie) } catch let error {
+                throw MovieRepositoryError(error)
+            }
 
-        return movie
+            return movie
+
+        case .networkOnly:
+            let movie: Movie
+            do { movie = try await remoteDataSource.movie(withID: id) } catch let error {
+                throw MovieRepositoryError(error)
+            }
+
+            do { try await localDataSource.setMovie(movie) } catch let error {
+                throw MovieRepositoryError(error)
+            }
+
+            return movie
+
+        case .cacheOnly:
+            do {
+                if let cachedMovie = try await localDataSource.movie(withID: id) {
+                    return cachedMovie
+                }
+            } catch let error {
+                throw MovieRepositoryError(error)
+            }
+
+            throw .cacheUnavailable
+        }
     }
 
     func movieStream(withID id: Int) async -> AsyncThrowingStream<Movie?, Error> {

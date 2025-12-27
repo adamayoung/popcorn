@@ -22,12 +22,14 @@ public protocol SimilarMovieRepository: Sendable {
     /// - Parameters:
     ///   - movieID: The unique identifier of the reference movie.
     ///   - page: The page number to fetch (1-indexed).
+    ///   - cachePolicy: The caching strategy to use for this request.
     /// - Returns: An array of ``MoviePreview`` instances representing similar movies.
     /// - Throws: ``SimilarMovieRepositoryError`` if the movies cannot be fetched.
     ///
     func similar(
         toMovie movieID: Int,
-        page: Int
+        page: Int,
+        cachePolicy: CachePolicy
     ) async throws(SimilarMovieRepositoryError) -> [MoviePreview]
 
     ///
@@ -78,7 +80,21 @@ public protocol SimilarMovieRepository: Sendable {
 ///
 /// Errors that can occur when accessing similar movies data through a repository.
 ///
+extension SimilarMovieRepository {
+
+    public func similar(
+        toMovie movieID: Int,
+        page: Int
+    ) async throws(SimilarMovieRepositoryError) -> [MoviePreview] {
+        try await similar(toMovie: movieID, page: page, cachePolicy: .cacheFirst)
+    }
+
+}
+
 public enum SimilarMovieRepositoryError: Error {
+
+    /// No cached data is available for the request.
+    case cacheUnavailable
 
     /// The requested similar movies were not found.
     case notFound

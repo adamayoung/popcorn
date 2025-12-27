@@ -20,12 +20,16 @@ public protocol MovieImageRepository: Sendable {
     ///
     /// Fetches the image collection for a specific movie.
     ///
-    /// - Parameter movieID: The unique identifier of the movie.
+    /// - Parameters:
+    ///   - movieID: The unique identifier of the movie.
+    ///   - cachePolicy: The caching strategy to use for this request.
     /// - Returns: An ``ImageCollection`` containing posters, backdrops, and logos.
     /// - Throws: ``MovieImageRepositoryError`` if the images cannot be fetched.
     ///
-    func imageCollection(forMovie movieID: Int) async throws(MovieImageRepositoryError)
-        -> ImageCollection
+    func imageCollection(
+        forMovie movieID: Int,
+        cachePolicy: CachePolicy
+    ) async throws(MovieImageRepositoryError) -> ImageCollection
 
     ///
     /// Creates a stream that continuously emits updates for a movie's image collection.
@@ -45,7 +49,20 @@ public protocol MovieImageRepository: Sendable {
 ///
 /// Errors that can occur when accessing movie image data through a repository.
 ///
+extension MovieImageRepository {
+
+    public func imageCollection(
+        forMovie movieID: Int
+    ) async throws(MovieImageRepositoryError) -> ImageCollection {
+        try await imageCollection(forMovie: movieID, cachePolicy: .cacheFirst)
+    }
+
+}
+
 public enum MovieImageRepositoryError: Error {
+
+    /// No cached data is available for the request.
+    case cacheUnavailable
 
     /// The requested movie images were not found.
     case notFound

@@ -34,6 +34,8 @@ extension FetchTVSeriesDetailsError {
 
     init(_ error: TVSeriesRepositoryError) {
         switch error {
+        case .cacheUnavailable:
+            self = .unknown(nil)
         case .notFound:
             self = .notFound
         case .unauthorised:

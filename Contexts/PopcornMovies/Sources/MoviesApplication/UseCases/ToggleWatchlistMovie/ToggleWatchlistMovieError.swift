@@ -33,6 +33,9 @@ extension ToggleWatchlistMovieError {
 
     init(_ error: MovieRepositoryError) {
         switch error {
+        case .cacheUnavailable:
+            self = .unknown(nil)
+
         case .notFound:
             self = .notFound
 

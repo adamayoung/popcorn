@@ -34,6 +34,8 @@ extension FetchPersonDetailsError {
 
     init(_ error: PersonRepositoryError) {
         switch error {
+        case .cacheUnavailable:
+            self = .unknown(nil)
         case .notFound:
             self = .notFound
         case .unauthorised:
