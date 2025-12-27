@@ -15,7 +15,7 @@ struct MovieMapper {
         Movie(
             id: movieDetails.id,
             title: movieDetails.title,
-            overview: movieDetails.overview ?? "",
+            overview: movieDetails.overview,
             releaseDate: movieDetails.releaseDate,
             posterPath: movieDetails.posterURLSet?.path,
             backdropPath: movieDetails.backdropURLSet?.path

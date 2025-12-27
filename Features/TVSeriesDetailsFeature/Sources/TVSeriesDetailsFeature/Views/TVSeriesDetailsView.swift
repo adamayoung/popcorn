@@ -34,7 +34,7 @@ public struct TVSeriesDetailsView: View {
             }
         }
         .toolbar {
-            if case .ready(let snapshot) = store.viewState {
+            if case .ready(let snapshot) = store.viewState, store.isIntelligenceEnabled {
                 ToolbarItem(placement: .primaryAction) {
                     Button(
                         "Intelligence",
@@ -51,6 +51,9 @@ public struct TVSeriesDetailsView: View {
             if store.isLoading {
                 loadingBody
             }
+        }
+        .onAppear {
+            store.send(.didAppear)
         }
         .task {
             await store.send(.fetch).finish()

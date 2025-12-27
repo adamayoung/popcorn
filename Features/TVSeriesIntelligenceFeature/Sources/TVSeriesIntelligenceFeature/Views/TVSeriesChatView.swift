@@ -12,6 +12,7 @@ import SwiftUI
 public struct TVSeriesChatView: View {
 
     @Bindable private var store: StoreOf<TVSeriesIntelligenceFeature>
+    @Environment(\.dismiss) private var dismiss
 
     public init(store: StoreOf<TVSeriesIntelligenceFeature>) {
         self._store = .init(store)
@@ -26,10 +27,13 @@ public struct TVSeriesChatView: View {
                 },
                 isThinking: store.isThinking
             )
+            .navigationTitle(store.tvSeries?.name ?? "")
+            .navigationSubtitle(store.tvSeries?.tagline ?? "")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(role: .close) {
-                        store.send(.close)
+                        dismiss()
                     }
                 }
             }

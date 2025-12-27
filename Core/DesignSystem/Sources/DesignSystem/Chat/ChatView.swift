@@ -31,6 +31,10 @@ public struct ChatView<Message: ChatMessage>: View {
                         MessageRow(message: message)
                             .id(message)
                             .listRowSeparator(.hidden)
+                            .transition(.asymmetric(
+                                insertion: .move(edge: .bottom).combined(with: .opacity),
+                                removal: .identity
+                            ))
                     }
                 }
 
@@ -46,6 +50,7 @@ public struct ChatView<Message: ChatMessage>: View {
                 }
             }
             .scrollDismissesKeyboard(.interactively)
+            .animation(messages.isEmpty ? nil : .spring(response: 0.4, dampingFraction: 0.7), value: messages.count)
             .task(id: messages.count) {
                 withAnimation {
                     proxy.scrollTo(messages.last, anchor: .bottom)
@@ -55,7 +60,7 @@ public struct ChatView<Message: ChatMessage>: View {
             .safeAreaInset(edge: .bottom) {
                 ZStack {
                     MessageTextField(
-                        isDisabled: !isThinking,
+                        isDisabled: isThinking,
                         onSend: send
                     )
                     .padding()

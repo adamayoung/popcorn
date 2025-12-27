@@ -19,11 +19,11 @@ public struct TVSeriesIntelligenceFeature: Sendable {
 
     @Dependency(\.tvSeriesIntelligenceClient) private var tvSeriesIntelligenceClient
     @Dependency(\.observability) private var observability
-    @Dependency(\.dismiss) private var dismiss
 
     @ObservableState
     public struct State: Sendable {
         let tvSeriesID: Int
+        var tvSeries: TVSeries?
         var session: LLMSession?
         var isThinking: Bool
         var error: Error?
@@ -31,12 +31,14 @@ public struct TVSeriesIntelligenceFeature: Sendable {
 
         public init(
             tvSeriesID: Int,
+            tvSeries: TVSeries? = nil,
             session: LLMSession? = nil,
             isThinking: Bool = false,
             error: Error? = nil,
             messages: [Message] = []
         ) {
             self.tvSeriesID = tvSeriesID
+            self.tvSeries = tvSeries
             self.session = session
             self.isThinking = isThinking
             self.error = error
@@ -46,12 +48,11 @@ public struct TVSeriesIntelligenceFeature: Sendable {
 
     public enum Action {
         case startSession
-        case sessionStarted(LLMSession)
+        case sessionStarted(TVSeries, LLMSession)
         case sessionStartFailed(Error)
         case sendPrompt(String)
         case responseReceived(String)
         case sendPromptFailed(Error)
-        case close
     }
 
     public init() {}
@@ -60,11 +61,12 @@ public struct TVSeriesIntelligenceFeature: Sendable {
         Reduce { state, action in
             switch action {
             case .startSession:
+                state.isThinking = true
                 return handleStartSession(&state)
 
-            case .sessionStarted(let session):
+            case .sessionStarted(let tvSeries, let session):
+                state.tvSeries = tvSeries
                 state.session = session
-                state.isThinking = true
                 return handleSendPrompt(&state, prompt: "Introduce yourself and what you're for")
 
             case .sessionStartFailed(let error):
@@ -88,11 +90,6 @@ public struct TVSeriesIntelligenceFeature: Sendable {
                 state.error = error
                 state.isThinking = false
                 return .none
-
-            case .close:
-                return .run { _ in
-                    await dismiss()
-                }
             }
         }
     }
@@ -103,15 +100,20 @@ private extension TVSeriesIntelligenceFeature {
 
     func handleStartSession(_ state: inout State) -> EffectOf<Self> {
         .run { [state] send in
+            async let tvSeriesTask = tvSeriesIntelligenceClient.fetchTVSeries(id: state.tvSeriesID)
+            async let sessionTask = tvSeriesIntelligenceClient.createSession(tvSeriesID: state.tvSeriesID)
+
+            let tvSeries: TVSeries
             let session: LLMSession
             do {
-                session = try await tvSeriesIntelligenceClient.createSession(tvSeriesID: state.tvSeriesID)
+                tvSeries = try await tvSeriesTask
+                session = try await sessionTask
             } catch let error {
                 await send(.sessionStartFailed(error))
                 return
             }
 
-            await send(.sessionStarted(session))
+            await send(.sessionStarted(tvSeries, session))
         }
     }
 

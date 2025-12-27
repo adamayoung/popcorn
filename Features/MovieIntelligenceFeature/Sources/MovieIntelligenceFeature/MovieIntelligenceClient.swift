@@ -9,10 +9,12 @@ import AppDependencies
 import ComposableArchitecture
 import Foundation
 import IntelligenceDomain
+import MoviesDomain
 
 @DependencyClient
 struct MovieIntelligenceClient: Sendable {
 
+    var fetchMovie: @Sendable (_ id: Int) async throws -> Movie
     var createSession: @Sendable (_ movieID: Int) async throws -> LLMSession
 
 }
@@ -20,9 +22,15 @@ struct MovieIntelligenceClient: Sendable {
 extension MovieIntelligenceClient: DependencyKey {
 
     static var liveValue: MovieIntelligenceClient {
+        @Dependency(\.fetchMovieDetails) var fetchMovieDetails
         @Dependency(\.createMovieIntelligenceSession) var createMovieIntelligenceSession
 
         return MovieIntelligenceClient(
+            fetchMovie: { id in
+                let movie = try await fetchMovieDetails.execute(id: id)
+                let mapper = MovieMapper()
+                return mapper.map(movie)
+            },
             createSession: { movieID in
                 let session = try await createMovieIntelligenceSession.execute(movieID: movieID)
                 return session

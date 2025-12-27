@@ -12,6 +12,7 @@ import SwiftUI
 public struct MovieChatView: View {
 
     @Bindable private var store: StoreOf<MovieIntelligenceFeature>
+    @Environment(\.dismiss) private var dismiss
 
     public init(store: StoreOf<MovieIntelligenceFeature>) {
         self._store = .init(store)
@@ -26,10 +27,12 @@ public struct MovieChatView: View {
                 },
                 isThinking: store.isThinking
             )
+            .navigationTitle(store.movie?.title ?? "")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(role: .close) {
-                        store.send(.close)
+                        dismiss()
                     }
                 }
             }

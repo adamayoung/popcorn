@@ -26,6 +26,10 @@ public enum FeatureFlag: String, Sendable, CaseIterable {
     case posterPixelationGame = "poster_pixelation_game"
     case timelineTangleGame = "timeline_tangle_game"
 
+    // Intelligence
+    case movieIntelligence = "movie_intelligence"
+    case tvSeriesIntelligence = "tv_series_intelligence"
+
     // App Wide
     case watchlist
 }

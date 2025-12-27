@@ -21,6 +21,7 @@ let package = Package(
     dependencies: [
         .package(path: "../../AppDependencies"),
         .package(path: "../../Core/DesignSystem"),
+        .package(path: "../../Contexts/PopcornMovies"),
         .package(path: "../../Contexts/PopcornIntelligence"),
         .package(path: "../../Platform/Observability"),
         .package(
@@ -34,6 +35,7 @@ let package = Package(
             dependencies: [
                 "AppDependencies",
                 "DesignSystem",
+                .product(name: "MoviesApplication", package: "PopcornMovies"),
                 .product(name: "IntelligenceApplication", package: "PopcornIntelligence"),
                 "Observability",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")

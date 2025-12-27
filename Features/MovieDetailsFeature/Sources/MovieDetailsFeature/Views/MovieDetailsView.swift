@@ -51,7 +51,7 @@ public struct MovieDetailsView: View {
                 }
             }
 
-            if case .ready(let snapshot) = store.viewState {
+            if case .ready(let snapshot) = store.viewState, store.isIntelligenceEnabled {
                 ToolbarItem(placement: .primaryAction) {
                     Button(
                         "Intelligence",

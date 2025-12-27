@@ -23,6 +23,7 @@ public struct TVSeriesDetailsFeature: Sendable {
         var tvSeriesID: Int
         public let transitionID: String?
         public var viewState: ViewState
+        public var isIntelligenceEnabled: Bool
 
         public var isLoading: Bool {
             switch viewState {
@@ -41,11 +42,13 @@ public struct TVSeriesDetailsFeature: Sendable {
         public init(
             tvSeriesID: Int,
             transitionID: String? = nil,
-            viewState: ViewState = .initial
+            viewState: ViewState = .initial,
+            isIntelligenceEnabled: Bool = false
         ) {
             self.tvSeriesID = tvSeriesID
             self.transitionID = transitionID
             self.viewState = viewState
+            self.isIntelligenceEnabled = isIntelligenceEnabled
         }
     }
 
@@ -65,6 +68,8 @@ public struct TVSeriesDetailsFeature: Sendable {
     }
 
     public enum Action {
+        case didAppear
+        case updateFeatureFlags
         case fetch
         case loaded(ViewSnapshot)
         case loadFailed(Error)
@@ -80,6 +85,15 @@ public struct TVSeriesDetailsFeature: Sendable {
     public var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
+            case .didAppear:
+                return .run { send in
+                    await send(.updateFeatureFlags)
+                }
+
+            case .updateFeatureFlags:
+                state.isIntelligenceEnabled = (try? tvSeriesDetailsClient.isIntelligenceEnabled()) ?? false
+                return .none
+
             case .fetch:
                 if state.isReady {
                     state.viewState = .loading

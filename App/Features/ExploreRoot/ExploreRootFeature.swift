@@ -31,8 +31,6 @@ struct ExploreRootFeature {
         case movieDetails(MovieDetailsFeature)
         case tvSeriesDetails(TVSeriesDetailsFeature)
         case personDetails(PersonDetailsFeature)
-        case movieIntelligence(MovieIntelligenceFeature)
-        case tvSeriesIntelligence(TVSeriesIntelligenceFeature)
     }
 
     enum Action {

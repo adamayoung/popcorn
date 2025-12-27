@@ -26,30 +26,35 @@ public struct MessageTextField: View {
 
     public var body: some View {
         HStack(alignment: .bottom) {
-            TextField(LocalizedStringResource("MESSAGE", bundle: .module), text: $text, axis: .vertical)
-                .textFieldStyle(.plain)
-                .onSubmit(sendMessage)
-                .focused($focusedField, equals: .message)
-                .padding(.vertical, 11)
-                .padding(.leading, 13)
-                .padding(.trailing, 50)
-                .glassEffect(
-                    in: RoundedRectangle(
-                        cornerRadius: 22,
-                        style: .continuous
+            ZStack(alignment: .bottomTrailing) {
+                TextField(LocalizedStringResource("MESSAGE", bundle: .module), text: $text, axis: .vertical)
+                    .textFieldStyle(.plain)
+                    .onSubmit(sendMessage)
+                    .focused($focusedField, equals: .message)
+                    .padding(.vertical, 11)
+                    .padding(.leading, 13)
+                    .padding(.trailing, 50)
+                    .glassEffect(
+                        in: RoundedRectangle(
+                            cornerRadius: 22,
+                            style: .continuous
+                        )
                     )
-                )
-                .overlay(alignment: .bottomTrailing) {
-                    Button(action: sendMessage) {
-                        Image(systemName: "paperplane")
-                            .fontWeight(.medium)
-                            .padding(5)
-                    }
-                    .buttonStyle(.plain)
-                    .disabled(isDisabled || text.isEmpty)
-                    .padding(.bottom, 6)
-                    .padding(.trailing, 10)
+
+                Button(action: sendMessage) {
+                    Image(systemName: "paperplane.fill")
+                        .fontWeight(.medium)
+                        .foregroundStyle(.white)
+                        .frame(width: 32, height: 32)
+                        .background(Color.accentColor, in: Circle())
                 }
+                .buttonStyle(.plain)
+                .contentShape(Circle())
+                .disabled(isDisabled || text.isEmpty)
+                .opacity(isDisabled || text.isEmpty ? 0.5 : 1.0)
+                .padding(.bottom, 6)
+                .padding(.trailing, 6)
+            }
         }
         .focusEffectDisabled()
         .onAppear {

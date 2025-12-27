@@ -20,11 +20,11 @@ public struct MovieIntelligenceFeature: Sendable {
 
     @Dependency(\.movieIntelligenceClient) private var movieIntelligenceClient
     @Dependency(\.observability) private var observability
-    @Dependency(\.dismiss) private var dismiss
 
     @ObservableState
     public struct State: Sendable {
         let movieID: Int
+        var movie: Movie?
         var session: LLMSession?
         var isThinking: Bool
         var error: Error?
@@ -32,12 +32,14 @@ public struct MovieIntelligenceFeature: Sendable {
 
         public init(
             movieID: Int,
+            movie: Movie? = nil,
             session: LLMSession? = nil,
             isThinking: Bool = false,
             error: Error? = nil,
             messages: [Message] = []
         ) {
             self.movieID = movieID
+            self.movie = movie
             self.session = session
             self.isThinking = isThinking
             self.error = error
@@ -47,12 +49,11 @@ public struct MovieIntelligenceFeature: Sendable {
 
     public enum Action {
         case startSession
-        case sessionStarted(LLMSession)
+        case sessionStarted(Movie, LLMSession)
         case sessionStartFailed(Error)
         case sendPrompt(String)
         case responseReceived(String)
         case sendPromptFailed(Error)
-        case close
     }
 
     public init() {}
@@ -61,38 +62,43 @@ public struct MovieIntelligenceFeature: Sendable {
         Reduce { state, action in
             switch action {
             case .startSession:
+                state.isThinking = true
                 return handleStartSession(&state)
 
-            case .sessionStarted(let session):
+            case .sessionStarted(let movie, let session):
+                state.movie = movie
                 state.session = session
                 return handleSendPrompt(&state, prompt: "Introduce yourself and what you're for")
 
             case .sessionStartFailed(let error):
+                state.isThinking = false
+
+                let message = Message(role: .assistant, textContent: "There was a problem and I can't help you.")
+                state.messages.append(message)
+
                 state.error = error
                 return .none
 
             case .sendPrompt(let prompt):
-                state.isThinking = true
                 let message = Message(role: .user, textContent: prompt)
                 state.messages.append(message)
+
+                state.isThinking = true
 
                 return handleSendPrompt(&state, prompt: prompt)
 
             case .responseReceived(let response):
+                state.isThinking = false
+
                 let message = Message(role: .assistant, textContent: response)
                 state.messages.append(message)
-                state.isThinking = false
+
                 return .none
 
             case .sendPromptFailed(let error):
                 state.isThinking = false
                 state.error = error
                 return .none
-
-            case .close:
-                return .run { _ in
-                    await dismiss()
-                }
             }
         }
     }
@@ -103,15 +109,20 @@ private extension MovieIntelligenceFeature {
 
     func handleStartSession(_ state: inout State) -> EffectOf<Self> {
         .run { [state] send in
+            async let movieTask = movieIntelligenceClient.fetchMovie(id: state.movieID)
+            async let sessionTask = movieIntelligenceClient.createSession(movieID: state.movieID)
+
+            let movie: Movie
             let session: LLMSession
             do {
-                session = try await movieIntelligenceClient.createSession(movieID: state.movieID)
+                movie = try await movieTask
+                session = try await sessionTask
             } catch let error {
                 await send(.sessionStartFailed(error))
                 return
             }
 
-            await send(.sessionStarted(session))
+            await send(.sessionStarted(movie, session))
         }
     }
 
