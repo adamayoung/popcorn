@@ -62,7 +62,7 @@ struct TVSeriesDetailsMapperTests {
         let tvSeries = TVSeries.mock(
             id: 404,
             name: "No Images",
-            overview: nil,
+            overview: "",
             posterPath: nil,
             backdropPath: nil
         )
