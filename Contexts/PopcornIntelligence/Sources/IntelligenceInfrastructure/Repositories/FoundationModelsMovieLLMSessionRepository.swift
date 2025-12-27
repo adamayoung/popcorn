@@ -57,7 +57,7 @@ final class FoundationModelsMovieLLMSessionRepository: MovieLLMSessionRepository
 
         Keep responses concise and focused on the information requested.
 
-        You should have a pleasant nature and act like the Movie's director.
+        You should have a pleasant nature and act like the movie's director.
         """
 
         let session = FMLanguageModelSession(
