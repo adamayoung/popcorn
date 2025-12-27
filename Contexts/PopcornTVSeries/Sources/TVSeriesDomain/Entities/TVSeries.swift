@@ -31,7 +31,7 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
     public let numberOfSeasons: Int
 
     /// The first air date.
-    public let firstAirDate: Date
+    public let firstAirDate: Date?
 
     /// URL path to the TV series' poster image.
     public let posterPath: URL?
@@ -58,7 +58,7 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
         tagline: String? = nil,
         overview: String,
         numberOfSeasons: Int = 0,
-        firstAirDate: Date,
+        firstAirDate: Date? = nil,
         posterPath: URL? = nil,
         backdropPath: URL? = nil
     ) {

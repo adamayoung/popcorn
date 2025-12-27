@@ -18,7 +18,7 @@ struct TVSeriesMapper {
             tagline: dto.tagline,
             overview: dto.overview ?? "",
             numberOfSeasons: dto.numberOfSeasons ?? 0,
-            firstAirDate: dto.firstAirDate ?? .now,
+            firstAirDate: dto.firstAirDate,
             posterPath: dto.posterPath,
             backdropPath: dto.backdropPath
         )

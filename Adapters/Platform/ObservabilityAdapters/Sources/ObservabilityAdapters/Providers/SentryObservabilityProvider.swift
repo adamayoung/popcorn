@@ -29,7 +29,7 @@ struct SentryObservabilityProvider: ObservabilityProviding {
 
             options.enableMetricKit = true
 
-            options.debug = false // isDebug
+            options.debug = isDebug
         }
 
         let user = User()

@@ -15,7 +15,7 @@ public struct TVSeriesDetails: Identifiable, Equatable, Sendable {
     public let tagline: String?
     public let overview: String
     public let numberOfSeasons: Int
-    public let firstAirDate: Date
+    public let firstAirDate: Date?
     public let posterURLSet: ImageURLSet?
     public let backdropURLSet: ImageURLSet?
     public let logoURLSet: ImageURLSet?
@@ -26,7 +26,7 @@ public struct TVSeriesDetails: Identifiable, Equatable, Sendable {
         tagline: String? = nil,
         overview: String,
         numberOfSeasons: Int,
-        firstAirDate: Date,
+        firstAirDate: Date? = nil,
         posterURLSet: ImageURLSet? = nil,
         backdropURLSet: ImageURLSet? = nil,
         logoURLSet: ImageURLSet? = nil
