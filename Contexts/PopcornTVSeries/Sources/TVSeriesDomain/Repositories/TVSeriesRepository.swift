@@ -46,9 +46,6 @@ public protocol TVSeriesRepository: Sendable {
 
 }
 
-///
-/// Errors that can occur when accessing TV series data through a repository.
-///
 public extension TVSeriesRepository {
 
     func tvSeries(withID id: Int) async throws(TVSeriesRepositoryError) -> TVSeries {
@@ -61,6 +58,9 @@ public extension TVSeriesRepository {
 
 }
 
+///
+/// Errors that can occur when accessing TV series data through a repository.
+///
 public enum TVSeriesRepositoryError: Error {
 
     /// No cached data is available for the request.
