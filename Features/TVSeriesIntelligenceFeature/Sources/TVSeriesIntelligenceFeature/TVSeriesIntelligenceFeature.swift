@@ -71,6 +71,10 @@ public struct TVSeriesIntelligenceFeature: Sendable {
 
             case .sessionStartFailed(let error):
                 state.error = error
+
+                let message = Message(role: .assistant, textContent: "There was a problem and I can't help you.")
+                state.messages.append(message)
+
                 return .none
 
             case .sendPrompt(let prompt):

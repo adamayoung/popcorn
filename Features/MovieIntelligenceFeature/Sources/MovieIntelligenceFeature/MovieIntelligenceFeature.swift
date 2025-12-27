@@ -118,6 +118,8 @@ private extension MovieIntelligenceFeature {
                 movie = try await movieTask
                 session = try await sessionTask
             } catch let error {
+                observability.capture(error: error)
+                Self.logger.error("Failed to start session: \(error.localizedDescription)")
                 await send(.sessionStartFailed(error))
                 return
             }
@@ -137,6 +139,8 @@ private extension MovieIntelligenceFeature {
             do {
                 response = try await session.respond(to: prompt)
             } catch let error {
+                observability.capture(error: error)
+                Self.logger.error("Failed to send prompt: \(error.localizedDescription)")
                 await send(.sendPromptFailed(error))
                 return
             }
