@@ -20,6 +20,12 @@ enum ToggleWatchlistMovieUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for toggling a movie's presence in the user's watchlist.
+    ///
+    /// Adds or removes a movie from the user's watchlist based on its
+    /// current state.
+    ///
     var toggleWatchlistMovie: any ToggleWatchlistMovieUseCase {
         get { self[ToggleWatchlistMovieUseCaseKey.self] }
         set { self[ToggleWatchlistMovieUseCaseKey.self] = newValue }

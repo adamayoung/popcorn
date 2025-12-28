@@ -8,9 +8,15 @@
 import Foundation
 import SearchDomain
 
+///
+/// Errors that can occur during media search operations.
+///
 public enum SearchMediaError: Error {
 
+    /// The request was not authorized, typically due to invalid or missing credentials.
     case unauthorised
+
+    /// An unknown error occurred.
     case unknown(Error?)
 
 }

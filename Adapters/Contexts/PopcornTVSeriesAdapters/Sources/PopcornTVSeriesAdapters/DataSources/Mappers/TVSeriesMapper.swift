@@ -9,8 +9,18 @@ import Foundation
 import TMDb
 import TVSeriesDomain
 
+///
+/// A mapper that converts TMDb TV series data to the domain model.
+///
 struct TVSeriesMapper {
 
+    ///
+    /// Maps a TMDb TV series object to a domain TV series entity.
+    ///
+    /// - Parameter dto: The TMDb TV series data transfer object to map.
+    ///
+    /// - Returns: A ``TVSeriesDomain.TVSeries`` entity populated with the TMDb data.
+    ///
     func map(_ dto: TMDb.TVSeries) -> TVSeriesDomain.TVSeries {
         TVSeriesDomain.TVSeries(
             id: dto.id,

@@ -8,9 +8,15 @@
 import DiscoverDomain
 import Foundation
 
+///
+/// Errors that can occur when fetching discoverable TV series.
+///
 public enum FetchDiscoverTVSeriesError: Error {
 
+    /// The request was not authorized due to invalid or missing credentials.
     case unauthorised
+
+    /// An unknown error occurred, optionally wrapping an underlying error.
     case unknown(Error?)
 
 }

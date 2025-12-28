@@ -20,6 +20,12 @@ enum SearchMediaUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for searching movies, TV series, and people.
+    ///
+    /// Performs a multi-type search across the media database and returns
+    /// matching results for movies, TV series, and people.
+    ///
     var searchMedia: any SearchMediaUseCase {
         get { self[SearchMediaUseCaseKey.self] }
         set { self[SearchMediaUseCaseKey.self] = newValue }

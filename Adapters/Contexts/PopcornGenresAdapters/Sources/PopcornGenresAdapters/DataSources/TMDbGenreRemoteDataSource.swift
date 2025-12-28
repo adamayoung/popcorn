@@ -10,14 +10,33 @@ import GenresDomain
 import GenresInfrastructure
 import TMDb
 
+///
+/// A remote data source that fetches movie and TV series genres from TMDb API.
+///
+/// This data source adapts the TMDb genre service to the domain's
+/// ``GenreRemoteDataSource`` protocol, providing access to genre catalogs
+/// for both movies and TV series.
+///
 final class TMDbGenreRemoteDataSource: GenreRemoteDataSource {
 
     private let genreService: any GenreService
 
+    ///
+    /// Creates a new TMDb genre remote data source.
+    ///
+    /// - Parameter genreService: The TMDb genre service for fetching genre data.
+    ///
     init(genreService: any GenreService) {
         self.genreService = genreService
     }
 
+    ///
+    /// Fetches the list of movie genres from the TMDb API.
+    ///
+    /// - Returns: An array of genres applicable to movies.
+    ///
+    /// - Throws: ``GenreRemoteDataSourceError`` if the fetch operation fails.
+    ///
     func movieGenres() async throws(GenreRemoteDataSourceError) -> [GenresDomain.Genre] {
         let tmdbGenres: [TMDb.Genre]
         do {
@@ -32,6 +51,13 @@ final class TMDbGenreRemoteDataSource: GenreRemoteDataSource {
         return genres
     }
 
+    ///
+    /// Fetches the list of TV series genres from the TMDb API.
+    ///
+    /// - Returns: An array of genres applicable to TV series.
+    ///
+    /// - Throws: ``GenreRemoteDataSourceError`` if the fetch operation fails.
+    ///
     func tvSeriesGenres() async throws(GenreRemoteDataSourceError) -> [GenresDomain.Genre] {
         let tmdbGenres: [TMDb.Genre]
         do {

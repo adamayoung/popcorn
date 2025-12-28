@@ -21,6 +21,11 @@ enum FetchMovieGenresUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for fetching the list of movie genres.
+    ///
+    /// Retrieves all available movie genres used for categorising and filtering movies.
+    ///
     var fetchMovieGenres: any FetchMovieGenresUseCase {
         get { self[FetchMovieGenresUseCaseKey.self] }
         set { self[FetchMovieGenresUseCaseKey.self] = newValue }

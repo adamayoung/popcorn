@@ -8,9 +8,15 @@
 import Foundation
 import GamesCatalogDomain
 
+///
+/// Errors that can occur when fetching a single game.
+///
 public enum FetchGameError: Error {
 
+    /// The requested game was not found in the catalog.
     case notFound
+
+    /// An unknown error occurred while fetching the game.
     case unknown(Error? = nil)
 
 }

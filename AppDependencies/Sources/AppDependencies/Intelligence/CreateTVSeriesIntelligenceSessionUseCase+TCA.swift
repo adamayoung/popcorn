@@ -23,6 +23,12 @@ enum CreateTVSeriesIntelligenceSessionUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for creating an intelligence session for a TV series.
+    ///
+    /// Creates an AI-powered conversation session focused on a specific TV series
+    /// for interactive question and answer functionality.
+    ///
     var createTVSeriesIntelligenceSession: any CreateTVSeriesIntelligenceSessionUseCase {
         get { self[CreateTVSeriesIntelligenceSessionUseCaseKey.self] }
         set { self[CreateTVSeriesIntelligenceSessionUseCaseKey.self] = newValue }

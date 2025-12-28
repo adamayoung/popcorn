@@ -1,6 +1,6 @@
 //
 //  TVSeriesProvider.swift
-//  Popcorn
+//  PopcornIntelligenceAdapters
 //
 //  Copyright © 2025 Adam Young.
 //
@@ -9,16 +9,34 @@ import Foundation
 import IntelligenceDomain
 import TVSeriesApplication
 
+///
+/// An adapter that provides TV series data for the intelligence domain.
+///
+/// Bridges the TV series application layer to the intelligence domain by wrapping
+/// the ``FetchTVSeriesDetailsUseCase``.
+///
 final class TVSeriesProviderAdapter: TVSeriesProviding {
 
     private let fetchTVSeriesDetailsUseCase: any FetchTVSeriesDetailsUseCase
 
+    ///
+    /// Creates a TV series provider adapter.
+    ///
+    /// - Parameter fetchTVSeriesDetailsUseCase: The use case for fetching TV series details.
+    ///
     init(
         fetchTVSeriesDetailsUseCase: some FetchTVSeriesDetailsUseCase
     ) {
         self.fetchTVSeriesDetailsUseCase = fetchTVSeriesDetailsUseCase
     }
 
+    ///
+    /// Fetches TV series data by identifier.
+    ///
+    /// - Parameter id: The identifier of the TV series.
+    /// - Returns: A TV series suitable for the intelligence domain.
+    /// - Throws: ``TVSeriesProviderError`` if the TV series cannot be fetched.
+    ///
     func tvSeries(withID id: Int) async throws(TVSeriesProviderError) -> IntelligenceDomain.TVSeries {
         let tvSeriesDetails: TVSeriesDetails
         do {

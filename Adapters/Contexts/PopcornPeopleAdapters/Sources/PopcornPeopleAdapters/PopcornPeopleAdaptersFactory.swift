@@ -10,11 +10,24 @@ import Foundation
 import PeopleComposition
 import TMDb
 
+///
+/// A factory for creating people-related adapters.
+///
+/// Creates adapters that bridge TMDb person services to the application's
+/// people domain.
+///
 public final class PopcornPeopleAdaptersFactory {
 
     private let personService: any PersonService
     private let fetchAppConfigurationUseCase: any FetchAppConfigurationUseCase
 
+    ///
+    /// Creates a people adapters factory.
+    ///
+    /// - Parameters:
+    ///   - personService: The TMDb person service.
+    ///   - fetchAppConfigurationUseCase: The use case for fetching app configuration.
+    ///
     public init(
         personService: some PersonService,
         fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase
@@ -23,6 +36,11 @@ public final class PopcornPeopleAdaptersFactory {
         self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
     }
 
+    ///
+    /// Creates a people factory with configured adapters.
+    ///
+    /// - Returns: A configured ``PopcornPeopleFactory`` instance.
+    ///
     public func makePeopleFactory() -> PopcornPeopleFactory {
         let personRemoteDataSource = TMDbPersonRemoteDataSource(personService: personService)
 

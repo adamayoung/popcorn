@@ -10,14 +10,30 @@ import Foundation
 import OSLog
 import Statsig
 
+///
+/// A feature flag provider that uses Statsig for feature flag management.
+///
+/// This provider implements ``FeatureFlagProviding`` by wrapping the Statsig SDK
+/// to enable and check feature flags.
+///
 struct StatsigFeatureFlagProvider: FeatureFlagProviding {
 
     private static let logger = Logger.featureFlags
 
+    ///
+    /// Indicates whether Statsig has been initialized.
+    ///
     var isInitialized: Bool {
         Statsig.isInitialized()
     }
 
+    ///
+    /// Initializes the Statsig SDK with the provided configuration.
+    ///
+    /// - Parameter config: The feature flags configuration containing API key and environment settings.
+    ///
+    /// - Throws: An error if Statsig initialization fails.
+    ///
     func start(_ config: FeatureFlagsConfiguration) async throws {
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             let options = StatsigOptions(
@@ -56,6 +72,13 @@ struct StatsigFeatureFlagProvider: FeatureFlagProviding {
         }
     }
 
+    ///
+    /// Checks whether a feature flag is enabled.
+    ///
+    /// - Parameter key: The key identifying the feature flag to check.
+    ///
+    /// - Returns: `true` if the feature flag is enabled, `false` otherwise.
+    ///
     func isEnabled(_ key: String) -> Bool {
         Statsig.checkGate(key)
     }

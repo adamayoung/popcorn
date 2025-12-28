@@ -20,6 +20,12 @@ enum FetchTrendingMoviesUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for fetching a list of trending movies.
+    ///
+    /// Retrieves movies that are currently trending based on recent
+    /// user activity and engagement.
+    ///
     var fetchTrendingMovies: any FetchTrendingMoviesUseCase {
         get { self[FetchTrendingMoviesUseCaseKey.self] }
         set { self[FetchTrendingMoviesUseCaseKey.self] = newValue }

@@ -7,6 +7,13 @@
 
 import SwiftUI
 
+///
+/// A row component with navigation chevron and press feedback.
+///
+/// Use this component to create tappable rows that indicate navigation
+/// to another screen. The row displays custom content with a chevron
+/// indicator on the trailing edge and provides visual feedback when pressed.
+///
 public struct NavigationRow<Content: View>: View {
 
     private let action: () -> Void
@@ -14,6 +21,11 @@ public struct NavigationRow<Content: View>: View {
 
     @State private var isPressed = false
 
+    /// Creates a new navigation row.
+    ///
+    /// - Parameters:
+    ///   - action: The action to perform when the row is tapped.
+    ///   - content: A view builder that creates the row content.
     public init(
         action: @escaping () -> Void,
         @ViewBuilder content: () -> Content

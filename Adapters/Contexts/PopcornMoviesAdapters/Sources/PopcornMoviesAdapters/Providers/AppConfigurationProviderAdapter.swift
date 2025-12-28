@@ -9,14 +9,32 @@ import ConfigurationApplication
 import CoreDomain
 import MoviesDomain
 
+///
+/// An adapter that provides app configuration for the movies domain.
+///
+/// Bridges the configuration application layer to the movies domain by wrapping
+/// the ``FetchAppConfigurationUseCase``.
+///
 struct AppConfigurationProviderAdapter: AppConfigurationProviding {
 
     private let fetchUseCase: any FetchAppConfigurationUseCase
 
+    ///
+    /// Creates an app configuration provider adapter.
+    ///
+    /// - Parameter fetchUseCase: The use case for fetching app configuration.
+    ///
     init(fetchUseCase: some FetchAppConfigurationUseCase) {
         self.fetchUseCase = fetchUseCase
     }
 
+    ///
+    /// Fetches the app configuration.
+    ///
+    /// - Returns: The current app configuration.
+    ///
+    /// - Throws: ``AppConfigurationProviderError`` if the configuration cannot be fetched.
+    ///
     func appConfiguration() async throws(AppConfigurationProviderError) -> AppConfiguration {
         let appConfiguration: AppConfiguration
         do {

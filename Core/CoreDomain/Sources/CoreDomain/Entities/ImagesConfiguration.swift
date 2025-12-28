@@ -7,6 +7,13 @@
 
 import Foundation
 
+///
+/// Configuration for building image URLs at various sizes.
+///
+/// Provides handlers for generating properly sized URLs for different
+/// image types including posters, backdrops, logos, and profile images.
+/// Each handler takes a path and ideal width and returns the appropriate URL.
+///
 public struct ImagesConfiguration: Sendable {
 
     private enum ImageWidth {
@@ -40,6 +47,7 @@ public struct ImagesConfiguration: Sendable {
 
     }
 
+    /// A closure that builds a URL for an image path at a specified width.
     public typealias URLHandler = @Sendable (_ path: URL?, _ idealWidth: Int) -> URL?
 
     private let posterURLHandler: URLHandler
@@ -47,6 +55,13 @@ public struct ImagesConfiguration: Sendable {
     private let logoURLHandler: URLHandler
     private let profileURLHandler: URLHandler
 
+    /// Creates a new images configuration.
+    ///
+    /// - Parameters:
+    ///   - posterURLHandler: Handler for building poster image URLs.
+    ///   - backdropURLHandler: Handler for building backdrop image URLs.
+    ///   - logoURLHandler: Handler for building logo image URLs.
+    ///   - profileURLHandler: Handler for building profile image URLs.
     public init(
         posterURLHandler: @escaping URLHandler,
         backdropURLHandler: @escaping URLHandler,
@@ -59,6 +74,10 @@ public struct ImagesConfiguration: Sendable {
         self.profileURLHandler = profileURLHandler
     }
 
+    /// Builds a URL set for a poster image.
+    ///
+    /// - Parameter path: The image path to build URLs for.
+    /// - Returns: An ``ImageURLSet`` containing URLs at various sizes, or `nil` if the path is invalid.
     public func posterURLSet(for path: URL?) -> ImageURLSet? {
         guard
             let path,
@@ -79,6 +98,10 @@ public struct ImagesConfiguration: Sendable {
         )
     }
 
+    /// Builds a URL set for a backdrop image.
+    ///
+    /// - Parameter path: The image path to build URLs for.
+    /// - Returns: An ``ImageURLSet`` containing URLs at various sizes, or `nil` if the path is invalid.
     public func backdropURLSet(for path: URL?) -> ImageURLSet? {
         guard
             let path,
@@ -99,6 +122,10 @@ public struct ImagesConfiguration: Sendable {
         )
     }
 
+    /// Builds a URL set for a logo image.
+    ///
+    /// - Parameter path: The image path to build URLs for.
+    /// - Returns: An ``ImageURLSet`` containing URLs at various sizes, or `nil` if the path is invalid.
     public func logoURLSet(for path: URL?) -> ImageURLSet? {
         guard
             let path,
@@ -119,6 +146,10 @@ public struct ImagesConfiguration: Sendable {
         )
     }
 
+    /// Builds a URL set for a profile image.
+    ///
+    /// - Parameter path: The image path to build URLs for.
+    /// - Returns: An ``ImageURLSet`` containing URLs at various sizes, or `nil` if the path is invalid.
     public func profileURL(for path: URL?) -> ImageURLSet? {
         guard
             let path,

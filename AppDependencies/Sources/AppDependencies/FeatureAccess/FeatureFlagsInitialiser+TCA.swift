@@ -20,6 +20,12 @@ enum FeatureFlagsInitialiserKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A service for initialising the feature flags infrastructure.
+    ///
+    /// Configures and starts the feature flag system with the appropriate
+    /// settings for the current environment.
+    ///
     var featureFlagsInitialiser: any FeatureFlagInitialising {
         get { self[FeatureFlagsInitialiserKey.self] }
         set { self[FeatureFlagsInitialiserKey.self] = newValue }

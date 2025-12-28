@@ -8,8 +8,12 @@
 import Foundation
 import SearchDomain
 
+///
+/// Errors that can occur when fetching media search history.
+///
 public enum FetchMediaSearchHistoryError: Error {
 
+    /// An unknown error occurred.
     case unknown(Error?)
 
 }

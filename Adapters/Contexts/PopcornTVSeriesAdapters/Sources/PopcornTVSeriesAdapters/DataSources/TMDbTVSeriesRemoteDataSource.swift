@@ -11,14 +11,34 @@ import TMDb
 import TVSeriesDomain
 import TVSeriesInfrastructure
 
+///
+/// A remote data source for fetching TV series data from TMDb.
+///
+/// This class implements ``TVSeriesRemoteDataSource`` by leveraging the TMDb API
+/// to retrieve detailed TV series information and images.
+///
 final class TMDbTVSeriesRemoteDataSource: TVSeriesRemoteDataSource {
 
     private let tvSeriesService: any TVSeriesService
 
+    ///
+    /// Creates a new TMDb TV series remote data source.
+    ///
+    /// - Parameter tvSeriesService: The TMDb service for fetching TV series data.
+    ///
     init(tvSeriesService: any TVSeriesService) {
         self.tvSeriesService = tvSeriesService
     }
 
+    ///
+    /// Fetches TV series details from TMDb.
+    ///
+    /// - Parameter id: The unique identifier of the TV series to fetch.
+    ///
+    /// - Returns: The TV series domain object with full details.
+    ///
+    /// - Throws: ``TVSeriesRemoteDataSourceError`` if the fetch operation fails.
+    ///
     func tvSeries(
         withID id: Int
     ) async throws(TVSeriesRemoteDataSourceError) -> TVSeriesDomain.TVSeries {
@@ -33,6 +53,15 @@ final class TMDbTVSeriesRemoteDataSource: TVSeriesRemoteDataSource {
         return mapper.map(tmdbTVSeries)
     }
 
+    ///
+    /// Fetches images for a TV series from TMDb.
+    ///
+    /// - Parameter tvSeriesID: The unique identifier of the TV series.
+    ///
+    /// - Returns: An image collection containing posters, backdrops, and logos.
+    ///
+    /// - Throws: ``TVSeriesRemoteDataSourceError`` if the fetch operation fails.
+    ///
     func images(
         forTVSeries tvSeriesID: Int
     ) async throws(TVSeriesRemoteDataSourceError) -> TVSeriesDomain.ImageCollection {

@@ -20,6 +20,12 @@ enum FeatureFlagsKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A service for querying feature flag states.
+    ///
+    /// Provides access to feature flags for enabling or disabling features
+    /// based on configuration or remote settings.
+    ///
     var featureFlags: any FeatureFlagging {
         get { self[FeatureFlagsKey.self] }
         set { self[FeatureFlagsKey.self] = newValue }

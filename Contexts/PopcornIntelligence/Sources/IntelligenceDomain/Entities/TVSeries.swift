@@ -1,6 +1,6 @@
 //
 //  TVSeries.swift
-//  Popcorn
+//  PopcornIntelligence
 //
 //  Copyright © 2025 Adam Young.
 //
@@ -22,11 +22,13 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
     /// The TV series' name.
     public let name: String
 
+    /// A short promotional phrase or slogan for the TV series.
     public let tagline: String?
 
     /// A brief description or summary of the TV series.
     public let overview: String
 
+    /// The total number of seasons in the TV series.
     public let numberOfSeasons: Int
 
     /// URL path to the TV series' poster image.
@@ -41,7 +43,9 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
     /// - Parameters:
     ///   - id: The unique identifier for the TV series.
     ///   - name: The TV series' name.
-    ///   - overview: A brief description or summary. Defaults to `nil`.
+    ///   - tagline: A short promotional phrase or slogan. Defaults to `nil`.
+    ///   - overview: A brief description or summary.
+    ///   - numberOfSeasons: The total number of seasons in the TV series.
     ///   - posterPath: URL path to the poster image. Defaults to `nil`.
     ///   - backdropPath: URL path to the backdrop image. Defaults to `nil`.
     ///

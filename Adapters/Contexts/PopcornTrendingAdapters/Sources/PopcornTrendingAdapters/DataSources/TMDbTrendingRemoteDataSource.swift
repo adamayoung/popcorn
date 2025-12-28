@@ -10,14 +10,34 @@ import TMDb
 import TrendingDomain
 import TrendingInfrastructure
 
+///
+/// A remote data source for fetching trending content from TMDb.
+///
+/// This class implements ``TrendingRemoteDataSource`` by leveraging the TMDb trending API
+/// to retrieve movies, TV series, and people that are trending.
+///
 final class TMDbTrendingRemoteDataSource: TrendingRemoteDataSource {
 
     private let trendingService: any TrendingService
 
+    ///
+    /// Creates a new TMDb trending remote data source.
+    ///
+    /// - Parameter trendingService: The TMDb service for fetching trending content.
+    ///
     init(trendingService: some TrendingService) {
         self.trendingService = trendingService
     }
 
+    ///
+    /// Fetches trending movies from TMDb.
+    ///
+    /// - Parameter page: The page number for paginated results.
+    ///
+    /// - Returns: An array of movie previews for trending movies.
+    ///
+    /// - Throws: ``TrendingRepositoryError`` if the fetch operation fails.
+    ///
     func movies(page: Int) async throws(TrendingRepositoryError) -> [MoviePreview] {
         let tmdbMovies: [MovieListItem]
         do {
@@ -34,6 +54,15 @@ final class TMDbTrendingRemoteDataSource: TrendingRemoteDataSource {
         return tmdbMovies.map(mapper.map)
     }
 
+    ///
+    /// Fetches trending TV series from TMDb.
+    ///
+    /// - Parameter page: The page number for paginated results.
+    ///
+    /// - Returns: An array of TV series previews for trending TV series.
+    ///
+    /// - Throws: ``TrendingRepositoryError`` if the fetch operation fails.
+    ///
     func tvSeries(
         page: Int
     ) async throws(TrendingRepositoryError) -> [TVSeriesPreview] {
@@ -52,6 +81,15 @@ final class TMDbTrendingRemoteDataSource: TrendingRemoteDataSource {
         return tmdbTVSeries.map(mapper.map)
     }
 
+    ///
+    /// Fetches trending people from TMDb.
+    ///
+    /// - Parameter page: The page number for paginated results.
+    ///
+    /// - Returns: An array of person previews for trending people.
+    ///
+    /// - Throws: ``TrendingRepositoryError`` if the fetch operation fails.
+    ///
     func people(
         page: Int
     ) async throws(TrendingRepositoryError) -> [PersonPreview] {

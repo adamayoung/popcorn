@@ -7,12 +7,25 @@
 
 import SwiftUI
 
+///
+/// A chat interface for displaying messages and sending new ones.
+///
+/// Provides a complete chat experience with a scrollable message list
+/// and a text input field. The view automatically scrolls to the latest
+/// message and displays a thinking indicator when the assistant is processing.
+///
 public struct ChatView<Message: ChatMessage>: View {
 
     private var messages: [Message]
     private var send: (String) -> Void
     private var isThinking: Bool
 
+    /// Creates a new chat view.
+    ///
+    /// - Parameters:
+    ///   - messages: The array of messages to display in the chat.
+    ///   - send: A closure called when the user sends a new message.
+    ///   - isThinking: Whether to show the thinking indicator.
     public init(
         messages: [Message],
         send: @escaping (String) -> Void,

@@ -16,6 +16,12 @@ import SearchComposition
 import TMDb
 import TVSeriesApplication
 
+///
+/// A factory for creating search-related adapters.
+///
+/// Creates adapters that bridge TMDb search services and various use cases
+/// to the application's search domain.
+///
 public final class PopcornSearchAdaptersFactory {
 
     private let searchService: any SearchService
@@ -24,6 +30,16 @@ public final class PopcornSearchAdaptersFactory {
     private let fetchTVSeriesDetailsUseCase: any FetchTVSeriesDetailsUseCase
     private let fetchPersonDetailsUseCase: any FetchPersonDetailsUseCase
 
+    ///
+    /// Creates a search adapters factory.
+    ///
+    /// - Parameters:
+    ///   - searchService: The TMDb search service.
+    ///   - fetchAppConfigurationUseCase: The use case for fetching app configuration.
+    ///   - fetchMovieDetailsUseCase: The use case for fetching movie details.
+    ///   - fetchTVSeriesDetailsUseCase: The use case for fetching TV series details.
+    ///   - fetchPersonDetailsUseCase: The use case for fetching person details.
+    ///
     public init(
         searchService: some SearchService,
         fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase,
@@ -38,6 +54,11 @@ public final class PopcornSearchAdaptersFactory {
         self.fetchPersonDetailsUseCase = fetchPersonDetailsUseCase
     }
 
+    ///
+    /// Creates a search factory with configured adapters.
+    ///
+    /// - Returns: A configured ``PopcornSearchFactory`` instance.
+    ///
     public func makeSearchFactory() -> PopcornSearchFactory {
         let mediaRemoteDataSource = TMDbMediaRemoteDataSource(searchService: searchService)
 

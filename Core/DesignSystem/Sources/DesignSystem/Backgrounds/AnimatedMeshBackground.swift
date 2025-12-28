@@ -13,6 +13,14 @@ import SwiftUI
 #endif
 
 // swiftlint:disable identifier_name
+
+///
+/// An animated background view using a mesh gradient.
+///
+/// Creates a dynamic, animated background effect using a 3x3 mesh gradient
+/// with points that oscillate over time. The animation creates a fluid,
+/// organic visual effect suitable for backgrounds in detail views or loading states.
+///
 public struct AnimatedMeshBackground: View {
 
     private var baseColor: Color
@@ -23,6 +31,9 @@ public struct AnimatedMeshBackground: View {
         .init(x: 0, y: 1), .init(x: 0.9, y: 1), .init(x: 1, y: 1)
     ]
 
+    /// Creates a new animated mesh background.
+    ///
+    /// - Parameter baseColor: The primary color used for the mesh gradient.
     public init(baseColor: Color) {
         self.baseColor = baseColor
     }

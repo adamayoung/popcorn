@@ -20,6 +20,12 @@ enum FetchTVSeriesDetailsUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for fetching detailed information about a specific TV series.
+    ///
+    /// Retrieves comprehensive details for a TV series including cast, crew,
+    /// seasons, and other metadata.
+    ///
     var fetchTVSeriesDetails: any FetchTVSeriesDetailsUseCase {
         get { self[FetchTVSeriesDetailsUseCaseKey.self] }
         set { self[FetchTVSeriesDetailsUseCaseKey.self] = newValue }

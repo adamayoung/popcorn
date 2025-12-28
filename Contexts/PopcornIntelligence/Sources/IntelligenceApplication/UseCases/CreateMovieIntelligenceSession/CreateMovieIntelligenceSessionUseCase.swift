@@ -1,6 +1,6 @@
 //
 //  CreateMovieIntelligenceSessionUseCase.swift
-//  Popcorn
+//  PopcornIntelligence
 //
 //  Copyright © 2025 Adam Young.
 //
@@ -14,11 +14,13 @@ import IntelligenceDomain
 public protocol CreateMovieIntelligenceSessionUseCase: Sendable {
 
     ///
-    /// Creates a new intelligence session for the specified movie
+    /// Creates a new intelligence session for the specified movie.
     ///
-    /// - Parameter movieID: The ID of the movie to create an intelligence session for
+    /// - Parameter movieID: The ID of the movie to create an intelligence session for.
     ///
-    /// - Returns: A new intelligence session instance
+    /// - Returns: A new intelligence session instance.
+    ///
+    /// - Throws: ``CreateMovieIntelligenceSessionError`` if the session cannot be created.
     ///
     func execute(movieID: Int) async throws(CreateMovieIntelligenceSessionError) -> any LLMSession
 

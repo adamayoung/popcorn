@@ -8,10 +8,18 @@
 import Foundation
 import TVSeriesDomain
 
+///
+/// Errors that can occur when fetching TV series details.
+///
 public enum FetchTVSeriesDetailsError: Error {
 
+    /// The requested TV series was not found.
     case notFound
+
+    /// The request was not authorized.
     case unauthorised
+
+    /// An unknown error occurred, optionally wrapping an underlying error.
     case unknown(Error?)
 
 }

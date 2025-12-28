@@ -20,6 +20,12 @@ enum FetchDiscoverMoviesUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for fetching discoverable movies.
+    ///
+    /// Retrieves a curated list of movies based on discovery filters such as
+    /// genre, release date, and popularity.
+    ///
     var fetchDiscoverMovies: any FetchDiscoverMoviesUseCase {
         get { self[FetchDiscoverMoviesUseCaseKey.self] }
         set { self[FetchDiscoverMoviesUseCaseKey.self] = newValue }

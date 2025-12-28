@@ -8,9 +8,15 @@
 import ConfigurationDomain
 import Foundation
 
+///
+/// Errors that can occur when fetching application configuration.
+///
 public enum FetchAppConfigurationError: Error {
 
+    /// The request was not authorised.
     case unauthorised
+
+    /// An unknown error occurred.
     case unknown(Error? = nil)
 
 }

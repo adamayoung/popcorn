@@ -10,8 +10,18 @@ import Foundation
 import TMDb
 import TrendingDomain
 
+///
+/// A mapper that converts TMDb person list items to trending domain person previews.
+///
 struct PersonPreviewMapper {
 
+    ///
+    /// Maps a TMDb person list item to a trending domain person preview.
+    ///
+    /// - Parameter dto: The TMDb person list item to map.
+    ///
+    /// - Returns: A ``PersonPreview`` populated with the person data.
+    ///
     func map(_ dto: PersonListItem) -> PersonPreview {
         PersonPreview(
             id: dto.id,

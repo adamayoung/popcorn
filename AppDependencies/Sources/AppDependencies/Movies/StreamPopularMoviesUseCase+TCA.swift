@@ -20,6 +20,12 @@ enum StreamPopularMoviesUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for streaming a list of popular movies.
+    ///
+    /// Provides a continuous stream of popular movies that updates when
+    /// the underlying data changes.
+    ///
     var streamPopularMovies: any StreamPopularMoviesUseCase {
         get { self[StreamPopularMoviesUseCaseKey.self] }
         set { self[StreamPopularMoviesUseCaseKey.self] = newValue }

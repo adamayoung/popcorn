@@ -9,8 +9,26 @@ import CoreData
 import Foundation
 import SwiftData
 
+///
+/// A protocol for streaming SwiftData fetch results as they change.
+///
+/// Conforming actors can observe changes to persistent models and emit updates
+/// through an async stream. The stream automatically updates when the model
+/// context saves or CloudKit sync events occur.
+///
 public protocol SwiftDataFetchStreaming: ModelActor {
 
+    ///
+    /// Creates an async stream that emits transformed fetch results.
+    ///
+    /// The stream emits an initial snapshot immediately, then updates whenever
+    /// the model context saves or CloudKit sync events occur.
+    ///
+    /// - Parameters:
+    ///   - descriptor: The fetch descriptor defining the query criteria.
+    ///   - map: A closure that transforms the fetched entities into the output type.
+    /// - Returns: An async throwing stream that emits transformed results.
+    ///
     func stream<Entity: PersistentModel, Output: Equatable & Sendable>(
         for descriptor: FetchDescriptor<Entity>,
         map: @escaping @Sendable ([Entity]) -> Output

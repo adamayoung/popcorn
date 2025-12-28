@@ -36,6 +36,18 @@ public protocol DiscoverMovieRepository: Sendable {
 
 public extension DiscoverMovieRepository {
 
+    ///
+    /// Fetches a page of movies using the default cache-first policy.
+    ///
+    /// This convenience method calls the full `movies(filter:page:cachePolicy:)` method
+    /// with ``CachePolicy/cacheFirst`` as the default caching strategy.
+    ///
+    /// - Parameters:
+    ///   - filter: Optional filter criteria to apply. Pass `nil` for no filtering.
+    ///   - page: The page number to fetch (1-indexed).
+    /// - Returns: An array of ``MoviePreview`` instances matching the filter criteria.
+    /// - Throws: ``DiscoverMovieRepositoryError`` if the movies cannot be fetched.
+    ///
     func movies(
         filter: MovieFilter?,
         page: Int

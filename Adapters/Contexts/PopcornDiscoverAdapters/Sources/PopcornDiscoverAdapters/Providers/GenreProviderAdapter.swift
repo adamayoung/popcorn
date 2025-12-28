@@ -10,11 +10,24 @@ import Foundation
 import GenresApplication
 import GenresDomain
 
+///
+/// An adapter that provides genre data for the discover domain.
+///
+/// Bridges the genres application layer to the discover domain by wrapping
+/// the ``FetchMovieGenresUseCase`` and ``FetchTVSeriesGenresUseCase``.
+///
 final class GenreProviderAdapter: GenreProviding {
 
     private let fetchMovieGenresUseCase: any FetchMovieGenresUseCase
     private let fetchTVSeriesGenresUseCase: any FetchTVSeriesGenresUseCase
 
+    ///
+    /// Creates a genre provider adapter.
+    ///
+    /// - Parameters:
+    ///   - fetchMovieGenresUseCase: The use case for fetching movie genres.
+    ///   - fetchTVSeriesGenresUseCase: The use case for fetching TV series genres.
+    ///
     init(
         fetchMovieGenresUseCase: some FetchMovieGenresUseCase,
         fetchTVSeriesGenresUseCase: some FetchTVSeriesGenresUseCase
@@ -23,6 +36,12 @@ final class GenreProviderAdapter: GenreProviding {
         self.fetchTVSeriesGenresUseCase = fetchTVSeriesGenresUseCase
     }
 
+    ///
+    /// Fetches the list of movie genres.
+    ///
+    /// - Returns: An array of genres for movies.
+    /// - Throws: ``GenreProviderError`` if the genres cannot be fetched.
+    ///
     func movieGenres() async throws(GenreProviderError) -> [DiscoverDomain.Genre] {
         let genres: [GenresDomain.Genre]
         do {
@@ -35,6 +54,12 @@ final class GenreProviderAdapter: GenreProviding {
         return genres.map(mapper.map)
     }
 
+    ///
+    /// Fetches the list of TV series genres.
+    ///
+    /// - Returns: An array of genres for TV series.
+    /// - Throws: ``GenreProviderError`` if the genres cannot be fetched.
+    ///
     func tvSeriesGenres() async throws(DiscoverDomain.GenreProviderError) -> [DiscoverDomain.Genre] {
         let genres: [GenresDomain.Genre]
         do {

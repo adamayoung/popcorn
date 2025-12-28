@@ -20,6 +20,11 @@ enum FetchMediaSearchHistoryUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for fetching the media search history.
+    ///
+    /// Retrieves recently searched media items to display in search suggestions.
+    ///
     var fetchMediaSearchHistory: any FetchMediaSearchHistoryUseCase {
         get { self[FetchMediaSearchHistoryUseCaseKey.self] }
         set { self[FetchMediaSearchHistoryUseCaseKey.self] = newValue }

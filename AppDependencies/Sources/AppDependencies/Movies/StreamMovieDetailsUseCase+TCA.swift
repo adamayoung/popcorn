@@ -20,6 +20,12 @@ enum StreamMovieDetailsUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for streaming detailed information about a specific movie.
+    ///
+    /// Provides a continuous stream of movie details that updates when
+    /// the underlying data changes.
+    ///
     var streamMovieDetails: any StreamMovieDetailsUseCase {
         get { self[StreamMovieDetailsUseCaseKey.self] }
         set { self[StreamMovieDetailsUseCaseKey.self] = newValue }

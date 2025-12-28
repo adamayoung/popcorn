@@ -20,6 +20,12 @@ enum FetchMovieRecommendationsUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for fetching recommended movies based on a given movie.
+    ///
+    /// Retrieves a list of movies that are recommended for users who liked
+    /// the specified movie.
+    ///
     var fetchMovieRecommendations: any FetchMovieRecommendationsUseCase {
         get { self[FetchMovieRecommendationsUseCaseKey.self] }
         set { self[FetchMovieRecommendationsUseCaseKey.self] = newValue }

@@ -9,8 +9,18 @@ import DiscoverDomain
 import Foundation
 import PlotRemixGameDomain
 
+///
+/// A mapper that converts Plot Remix Game movie filters to Discover domain filters.
+///
 struct DiscoverDomainMovieFilterMapper {
 
+    ///
+    /// Maps a Plot Remix Game movie filter to a Discover domain movie filter.
+    ///
+    /// - Parameter filter: The Plot Remix Game movie filter to map.
+    ///
+    /// - Returns: A ``DiscoverDomain.MovieFilter`` with equivalent filter criteria.
+    ///
     func map(_ filter: PlotRemixGameDomain.MovieFilter) -> DiscoverDomain.MovieFilter {
         DiscoverDomain.MovieFilter(
             originalLanguage: filter.originalLanguage,

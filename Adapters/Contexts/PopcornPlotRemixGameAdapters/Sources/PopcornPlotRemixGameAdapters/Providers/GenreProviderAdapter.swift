@@ -11,14 +11,31 @@ import GenresDomain
 import PlotRemixGameDomain
 import PopcornGenresAdapters
 
+///
+/// An adapter that provides genres for the plot remix game domain.
+///
+/// Bridges the genres application layer to the plot remix game domain by
+/// wrapping the ``FetchMovieGenresUseCase``.
+///
 public struct GenreProviderAdapter: GenreProviding {
 
     private let fetchMovieGenresUseCase: any FetchMovieGenresUseCase
 
+    ///
+    /// Creates a genre provider adapter.
+    ///
+    /// - Parameter fetchMovieGenresUseCase: The use case for fetching movie genres.
+    ///
     public init(fetchMovieGenresUseCase: some FetchMovieGenresUseCase) {
         self.fetchMovieGenresUseCase = fetchMovieGenresUseCase
     }
 
+    ///
+    /// Fetches available movie genres.
+    ///
+    /// - Returns: An array of movie genres.
+    /// - Throws: ``GenreProviderError`` if the genres cannot be fetched.
+    ///
     public func movies() async throws(GenreProviderError) -> [PlotRemixGameDomain.Genre] {
         let genres: [GenresDomain.Genre]
         do {

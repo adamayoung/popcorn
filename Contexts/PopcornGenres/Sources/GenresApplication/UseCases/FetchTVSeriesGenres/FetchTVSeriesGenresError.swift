@@ -8,9 +8,15 @@
 import Foundation
 import GenresDomain
 
+///
+/// Errors that can occur when fetching TV series genres.
+///
 public enum FetchTVSeriesGenresError: Error {
 
+    /// The request was not authorized, typically due to invalid or missing credentials.
     case unauthorised
+
+    /// An unknown error occurred, optionally wrapping an underlying error.
     case unknown(Error? = nil)
 
 }

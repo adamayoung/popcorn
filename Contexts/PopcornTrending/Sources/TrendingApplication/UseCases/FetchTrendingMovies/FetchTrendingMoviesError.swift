@@ -8,9 +8,15 @@
 import Foundation
 import TrendingDomain
 
+///
+/// Errors that can occur when fetching trending movies.
+///
 public enum FetchTrendingMoviesError: Error {
 
+    /// The request was not authorized.
     case unauthorised
+
+    /// An unknown error occurred.
     case unknown(Error?)
 
 }

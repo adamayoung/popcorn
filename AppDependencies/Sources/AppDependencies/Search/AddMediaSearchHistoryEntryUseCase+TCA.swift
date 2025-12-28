@@ -20,6 +20,12 @@ enum AddMediaSearchHistoryEntryUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for adding a new entry to the media search history.
+    ///
+    /// Records a media item that the user has selected from search results
+    /// to enable recent search functionality.
+    ///
     var addMediaSearchHistoryEntry: any AddMediaSearchHistoryEntryUseCase {
         get { self[AddMediaSearchHistoryEntryUseCaseKey.self] }
         set { self[AddMediaSearchHistoryEntryUseCaseKey.self] = newValue }

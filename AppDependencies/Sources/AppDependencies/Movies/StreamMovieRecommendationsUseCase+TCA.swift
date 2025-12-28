@@ -20,6 +20,12 @@ enum StreamMovieRecommendationsUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for streaming recommended movies based on a given movie.
+    ///
+    /// Provides a continuous stream of movie recommendations that updates
+    /// when the underlying data changes.
+    ///
     var streamMovieRecommendations: any StreamMovieRecommendationsUseCase {
         get { self[StreamMovieRecommendationsUseCaseKey.self] }
         set { self[StreamMovieRecommendationsUseCaseKey.self] = newValue }

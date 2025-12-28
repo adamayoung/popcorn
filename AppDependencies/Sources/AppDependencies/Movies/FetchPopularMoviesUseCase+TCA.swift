@@ -20,6 +20,11 @@ enum FetchPopularMoviesUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for fetching a list of popular movies.
+    ///
+    /// Retrieves movies ranked by popularity based on user engagement metrics.
+    ///
     var fetchPopularMovies: any FetchPopularMoviesUseCase {
         get { self[FetchPopularMoviesUseCaseKey.self] }
         set { self[FetchPopularMoviesUseCaseKey.self] = newValue }

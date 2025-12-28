@@ -22,6 +22,12 @@ enum FetchAppConfigurationUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for fetching the application configuration.
+    ///
+    /// Retrieves configuration data required for the app to function correctly,
+    /// including image base URLs and supported image sizes.
+    ///
     var fetchAppConfiguration: any FetchAppConfigurationUseCase {
         get { self[FetchAppConfigurationUseCaseKey.self] }
         set { self[FetchAppConfigurationUseCaseKey.self] = newValue }

@@ -20,6 +20,11 @@ enum FetchTVSeriesGenresUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for fetching the list of TV series genres.
+    ///
+    /// Retrieves all available TV series genres used for categorising and filtering TV series.
+    ///
     var fetchTVSeriesGenres: any FetchTVSeriesGenresUseCase {
         get { self[FetchTVSeriesGenresUseCaseKey.self] }
         set { self[FetchTVSeriesGenresUseCaseKey.self] = newValue }

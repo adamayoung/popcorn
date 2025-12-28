@@ -20,6 +20,12 @@ enum FetchTrendingTVSeriesUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for fetching a list of trending TV series.
+    ///
+    /// Retrieves TV series that are currently trending based on recent
+    /// user activity and engagement.
+    ///
     var fetchTrendingTVSeries: any FetchTrendingTVSeriesUseCase {
         get { self[FetchTrendingTVSeriesUseCaseKey.self] }
         set { self[FetchTrendingTVSeriesUseCaseKey.self] = newValue }

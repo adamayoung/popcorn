@@ -9,8 +9,18 @@ import Foundation
 import MoviesDomain
 import TMDb
 
+///
+/// Maps TMDb movie data transfer objects to domain movie entities.
+///
 struct MovieMapper {
 
+    ///
+    /// Maps a TMDb movie to a domain movie entity.
+    ///
+    /// - Parameter dto: The TMDb movie data transfer object.
+    ///
+    /// - Returns: A domain movie entity.
+    ///
     func map(_ dto: TMDb.Movie) -> MoviesDomain.Movie {
         MoviesDomain.Movie(
             id: dto.id,

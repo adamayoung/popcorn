@@ -20,6 +20,12 @@ enum FetchDiscoverTVSeriesUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for fetching discoverable TV series.
+    ///
+    /// Retrieves a curated list of TV series based on discovery filters such as
+    /// genre, first air date, and popularity.
+    ///
     var fetchDiscoverTVSeries: any FetchDiscoverTVSeriesUseCase {
         get { self[FetchDiscoverTVSeriesUseCaseKey.self] }
         set { self[FetchDiscoverTVSeriesUseCaseKey.self] = newValue }

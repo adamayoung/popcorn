@@ -1,6 +1,6 @@
 //
 //  MovieToolDataSource.swift
-//  Popcorn
+//  PopcornIntelligence
 //
 //  Copyright © 2025 Adam Young.
 //

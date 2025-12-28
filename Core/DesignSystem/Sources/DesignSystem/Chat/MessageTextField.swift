@@ -7,15 +7,30 @@
 
 import SwiftUI
 
+///
+/// A text field for composing and sending chat messages.
+///
+/// Provides a styled text input with a send button. The field supports
+/// multiline text and includes a glass effect background. The send button
+/// is disabled when the field is empty or when input is disabled.
+///
 public struct MessageTextField: View {
 
     private enum FocusedField {
         case message
     }
 
+    /// Whether the text field and send button are disabled.
     public var isDisabled: Bool
+
+    /// A closure called when the user sends a message.
     public var onSend: (String) -> Void
 
+    /// Creates a new message text field.
+    ///
+    /// - Parameters:
+    ///   - isDisabled: Whether input is disabled.
+    ///   - onSend: A closure called with the message text when sent.
     public init(isDisabled: Bool, onSend: @escaping (String) -> Void) {
         self.isDisabled = isDisabled
         self.onSend = onSend

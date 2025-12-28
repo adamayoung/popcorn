@@ -20,6 +20,12 @@ enum StreamSimilarMoviesUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for streaming movies similar to a given movie.
+    ///
+    /// Provides a continuous stream of similar movies that updates when
+    /// the underlying data changes.
+    ///
     var streamSimilarMovies: any StreamSimilarMoviesUseCase {
         get { self[StreamSimilarMoviesUseCaseKey.self] }
         set { self[StreamSimilarMoviesUseCaseKey.self] = newValue }

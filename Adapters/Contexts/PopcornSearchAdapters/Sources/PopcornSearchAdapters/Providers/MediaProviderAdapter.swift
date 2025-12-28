@@ -12,12 +12,26 @@ import PeopleApplication
 import SearchDomain
 import TVSeriesApplication
 
+///
+/// An adapter that provides media content for the search domain.
+///
+/// Bridges the movies, TV series, and people application layers to the search
+/// domain by wrapping their respective detail use cases.
+///
 public struct MediaProviderAdapter: MediaProviding {
 
     private let fetchMovieUseCase: any FetchMovieDetailsUseCase
     private let fetchTVSeriesUseCase: any FetchTVSeriesDetailsUseCase
     private let fetchPersonUseCase: any FetchPersonDetailsUseCase
 
+    ///
+    /// Creates a media provider adapter.
+    ///
+    /// - Parameters:
+    ///   - fetchMovieUseCase: The use case for fetching movie details.
+    ///   - fetchTVSeriesUseCase: The use case for fetching TV series details.
+    ///   - fetchPersonUseCase: The use case for fetching person details.
+    ///
     public init(
         fetchMovieUseCase: some FetchMovieDetailsUseCase,
         fetchTVSeriesUseCase: some FetchTVSeriesDetailsUseCase,
@@ -28,6 +42,13 @@ public struct MediaProviderAdapter: MediaProviding {
         self.fetchPersonUseCase = fetchPersonUseCase
     }
 
+    ///
+    /// Fetches movie preview details.
+    ///
+    /// - Parameter id: The identifier of the movie.
+    /// - Returns: A movie preview with the specified identifier.
+    /// - Throws: ``MediaProviderError`` if the movie cannot be fetched.
+    ///
     public func movie(withID id: Int) async throws(MediaProviderError) -> MoviePreview {
         let movie: MovieDetails
         do {
@@ -45,6 +66,13 @@ public struct MediaProviderAdapter: MediaProviding {
         )
     }
 
+    ///
+    /// Fetches TV series preview details.
+    ///
+    /// - Parameter id: The identifier of the TV series.
+    /// - Returns: A TV series preview with the specified identifier.
+    /// - Throws: ``MediaProviderError`` if the TV series cannot be fetched.
+    ///
     public func tvSeries(withID id: Int) async throws(MediaProviderError) -> TVSeriesPreview {
         let tvSeries: TVSeriesDetails
         do {
@@ -62,6 +90,13 @@ public struct MediaProviderAdapter: MediaProviding {
         )
     }
 
+    ///
+    /// Fetches person preview details.
+    ///
+    /// - Parameter id: The identifier of the person.
+    /// - Returns: A person preview with the specified identifier.
+    /// - Throws: ``MediaProviderError`` if the person cannot be fetched.
+    ///
     public func person(withID id: Int) async throws(MediaProviderError) -> PersonPreview {
         let person: PersonDetails
         do {

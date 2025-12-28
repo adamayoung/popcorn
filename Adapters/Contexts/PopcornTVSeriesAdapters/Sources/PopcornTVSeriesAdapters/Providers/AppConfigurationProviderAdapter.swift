@@ -9,14 +9,31 @@ import ConfigurationApplication
 import CoreDomain
 import TVSeriesDomain
 
+///
+/// An adapter that provides app configuration for the TV series domain.
+///
+/// Bridges the configuration application layer to the TV series domain by wrapping
+/// the ``FetchAppConfigurationUseCase``.
+///
 public struct AppConfigurationProviderAdapter: AppConfigurationProviding {
 
     private let fetchUseCase: any FetchAppConfigurationUseCase
 
+    ///
+    /// Creates an app configuration provider adapter.
+    ///
+    /// - Parameter fetchUseCase: The use case for fetching app configuration.
+    ///
     public init(fetchUseCase: some FetchAppConfigurationUseCase) {
         self.fetchUseCase = fetchUseCase
     }
 
+    ///
+    /// Fetches the app configuration.
+    ///
+    /// - Returns: The current app configuration.
+    /// - Throws: ``AppConfigurationProviderError`` if the configuration cannot be fetched.
+    ///
     public func appConfiguration() async throws(AppConfigurationProviderError) -> AppConfiguration {
         do {
             return try await fetchUseCase.execute()

@@ -12,6 +12,12 @@ import TMDb
 import TrendingComposition
 import TVSeriesApplication
 
+///
+/// A factory for creating trending-related adapters.
+///
+/// Creates adapters that bridge TMDb trending services and various use cases
+/// to the application's trending domain.
+///
 public final class PopcornTrendingAdaptersFactory {
 
     private let trendingService: any TrendingService
@@ -19,6 +25,15 @@ public final class PopcornTrendingAdaptersFactory {
     private let fetchMovieImageCollectionUseCase: any FetchMovieImageCollectionUseCase
     private let fetchTVSeriesImageCollectionUseCase: any FetchTVSeriesImageCollectionUseCase
 
+    ///
+    /// Creates a trending adapters factory.
+    ///
+    /// - Parameters:
+    ///   - trendingService: The TMDb trending service.
+    ///   - fetchAppConfigurationUseCase: The use case for fetching app configuration.
+    ///   - fetchMovieImageCollectionUseCase: The use case for fetching movie image collections.
+    ///   - fetchTVSeriesImageCollectionUseCase: The use case for fetching TV series image collections.
+    ///
     public init(
         trendingService: some TrendingService,
         fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase,
@@ -31,6 +46,11 @@ public final class PopcornTrendingAdaptersFactory {
         self.fetchTVSeriesImageCollectionUseCase = fetchTVSeriesImageCollectionUseCase
     }
 
+    ///
+    /// Creates a trending factory with configured adapters.
+    ///
+    /// - Returns: A configured ``PopcornTrendingFactory`` instance.
+    ///
     public func makeTrendingFactory() -> PopcornTrendingFactory {
         let trendingRemoteDataSource = TMDbTrendingRemoteDataSource(
             trendingService: trendingService

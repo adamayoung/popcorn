@@ -20,6 +20,12 @@ enum ObservabilityKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A service for error reporting and debugging context.
+    ///
+    /// Provides functionality for capturing errors and messages to monitoring
+    /// services, setting user context, and adding breadcrumbs for debugging.
+    ///
     var observability: any Observing {
         get { self[ObservabilityKey.self] }
         set { self[ObservabilityKey.self] = newValue }

@@ -20,6 +20,12 @@ enum FetchMovieDetailsUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for fetching detailed information about a specific movie.
+    ///
+    /// Retrieves comprehensive details for a movie including cast, crew,
+    /// runtime, and other metadata.
+    ///
     var fetchMovieDetails: any FetchMovieDetailsUseCase {
         get { self[FetchMovieDetailsUseCaseKey.self] }
         set { self[FetchMovieDetailsUseCaseKey.self] = newValue }

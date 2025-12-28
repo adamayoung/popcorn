@@ -9,8 +9,18 @@ import Foundation
 import SearchDomain
 import TMDb
 
+///
+/// A mapper that converts TMDb media objects to domain media previews.
+///
 struct MediaPreviewMapper {
 
+    ///
+    /// Maps a TMDb media object to a domain media preview.
+    ///
+    /// - Parameter dto: The TMDb media data transfer object to map.
+    ///
+    /// - Returns: A ``MediaPreview`` if the media type is supported, or `nil` otherwise.
+    ///
     func map(_ dto: Media) -> MediaPreview? {
         switch dto {
         case .movie(let movieDTO):

@@ -20,6 +20,11 @@ enum FetchGameUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for fetching a single game from the catalog.
+    ///
+    /// Retrieves detailed information about a specific game by its identifier.
+    ///
     var fetchGame: any FetchGameUseCase {
         get { self[FetchGameUseCaseKey.self] }
         set { self[FetchGameUseCaseKey.self] = newValue }

@@ -7,10 +7,21 @@
 
 import SwiftUI
 
+///
+/// A row component that displays a single chat message.
+///
+/// Renders a message with an avatar and styled bubble. User messages
+/// appear on the right with a blue bubble, while assistant messages
+/// appear on the left with a gray bubble.
+///
 public struct MessageRow: View {
 
+    /// The message to display.
     public var message: any ChatMessage
 
+    /// Creates a new message row.
+    ///
+    /// - Parameter message: The chat message to display.
     public init(message: any ChatMessage) {
         self.message = message
     }

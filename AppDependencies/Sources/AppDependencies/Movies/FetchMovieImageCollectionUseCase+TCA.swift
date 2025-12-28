@@ -20,6 +20,11 @@ enum FetchMovieImageCollectionUseCaseKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A use case for fetching a collection of images for a specific movie.
+    ///
+    /// Retrieves posters, backdrops, and logo images associated with a movie.
+    ///
     var fetchMovieImageCollection: any FetchMovieImageCollectionUseCase {
         get { self[FetchMovieImageCollectionUseCaseKey.self] }
         set { self[FetchMovieImageCollectionUseCaseKey.self] = newValue }

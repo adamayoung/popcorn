@@ -10,14 +10,34 @@ import MoviesDomain
 import MoviesInfrastructure
 import TMDb
 
+///
+/// A remote data source for fetching movie data from TMDb.
+///
+/// Implements ``MovieRemoteDataSource`` to provide movie data
+/// by communicating with The Movie Database API.
+///
 final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
 
     private let movieService: any TMDb.MovieService
 
+    ///
+    /// Creates a TMDb movie remote data source.
+    ///
+    /// - Parameter movieService: The TMDb movie service for API communication.
+    ///
     init(movieService: some TMDb.MovieService) {
         self.movieService = movieService
     }
 
+    ///
+    /// Fetches detailed information for a specific movie.
+    ///
+    /// - Parameter id: The unique identifier of the movie.
+    ///
+    /// - Returns: The movie with the specified identifier.
+    ///
+    /// - Throws: ``MovieRemoteDataSourceError`` if the movie cannot be fetched.
+    ///
     func movie(withID id: Int) async throws(MovieRemoteDataSourceError) -> MoviesDomain.Movie {
         let tmdbMovie: TMDb.Movie
         do {
@@ -32,6 +52,15 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
         return movie
     }
 
+    ///
+    /// Fetches the image collection for a specific movie.
+    ///
+    /// - Parameter movieID: The unique identifier of the movie.
+    ///
+    /// - Returns: The image collection containing posters, backdrops, and logos.
+    ///
+    /// - Throws: ``MovieRemoteDataSourceError`` if the image collection cannot be fetched.
+    ///
     func imageCollection(
         forMovie movieID: Int
     ) async throws(MovieRemoteDataSourceError) -> MoviesDomain.ImageCollection {
@@ -51,6 +80,15 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
         return imageCollection
     }
 
+    ///
+    /// Fetches a page of popular movies.
+    ///
+    /// - Parameter page: The page number to fetch.
+    ///
+    /// - Returns: An array of movie previews for the requested page.
+    ///
+    /// - Throws: ``MovieRemoteDataSourceError`` if the popular movies cannot be fetched.
+    ///
     func popular(page: Int) async throws(MovieRemoteDataSourceError) -> [MoviePreview] {
         let tmdbMovies: [TMDb.MovieListItem]
         do {
@@ -65,6 +103,17 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
         return movies
     }
 
+    ///
+    /// Fetches movies similar to a specific movie.
+    ///
+    /// - Parameters:
+    ///   - movieID: The unique identifier of the movie to find similar movies for.
+    ///   - page: The page number to fetch.
+    ///
+    /// - Returns: An array of movie previews similar to the specified movie.
+    ///
+    /// - Throws: ``MovieRemoteDataSourceError`` if the similar movies cannot be fetched.
+    ///
     func similar(
         toMovie movieID: Int,
         page: Int
@@ -83,6 +132,17 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
         return movies
     }
 
+    ///
+    /// Fetches movie recommendations based on a specific movie.
+    ///
+    /// - Parameters:
+    ///   - movieID: The unique identifier of the movie to get recommendations for.
+    ///   - page: The page number to fetch.
+    ///
+    /// - Returns: An array of recommended movie previews.
+    ///
+    /// - Throws: ``MovieRemoteDataSourceError`` if the recommendations cannot be fetched.
+    ///
     func recommendations(
         forMovie movieID: Int,
         page: Int

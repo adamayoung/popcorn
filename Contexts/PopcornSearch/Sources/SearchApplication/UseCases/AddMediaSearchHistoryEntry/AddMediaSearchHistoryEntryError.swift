@@ -8,8 +8,12 @@
 import Foundation
 import SearchDomain
 
+///
+/// Errors that can occur when adding a media search history entry.
+///
 public enum AddMediaSearchHistoryEntryError: Error {
 
+    /// An unknown error occurred.
     case unknown(Error?)
 
 }

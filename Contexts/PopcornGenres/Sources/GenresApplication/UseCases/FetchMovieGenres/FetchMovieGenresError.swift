@@ -8,9 +8,15 @@
 import Foundation
 import GenresDomain
 
+///
+/// Errors that can occur when fetching movie genres.
+///
 public enum FetchMovieGenresError: Error {
 
+    /// The request was not authorized, typically due to invalid or missing credentials.
     case unauthorised
+
+    /// An unknown error occurred, optionally wrapping an underlying error.
     case unknown(Error? = nil)
 
 }

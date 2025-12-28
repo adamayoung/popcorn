@@ -60,6 +60,13 @@ private struct FlexibleHeaderContentModifier: ViewModifier {
 
 public extension ScrollView {
 
+    /// Enables flexible header behavior for the scroll view.
+    ///
+    /// When applied, the scroll view tracks scroll geometry and enables stretchy
+    /// header effects for child views that use the ``flexibleHeaderContent(height:)`` modifier.
+    ///
+    /// - Parameter onChange: An optional closure called when scroll geometry changes.
+    /// - Returns: A scroll view with flexible header behavior enabled.
     @MainActor
     func flexibleHeaderScrollView(onChange: ((ScrollGeometry) -> Void)? = nil) -> some View {
         modifier(FlexibleHeaderScrollViewModifier(onChange: onChange))
@@ -69,6 +76,14 @@ public extension ScrollView {
 
 public extension View {
 
+    /// Marks this view as flexible header content that stretches when pulled down.
+    ///
+    /// Use this modifier on header content within a scroll view that has the
+    /// ``flexibleHeaderScrollView(onChange:)`` modifier applied. The content will
+    /// stretch beyond its normal height when the user pulls down on the scroll view.
+    ///
+    /// - Parameter height: The base height of the header content.
+    /// - Returns: A view that responds to scroll gestures with a stretchy effect.
     func flexibleHeaderContent(height: CGFloat) -> some View {
         modifier(FlexibleHeaderContentModifier(height: height))
     }

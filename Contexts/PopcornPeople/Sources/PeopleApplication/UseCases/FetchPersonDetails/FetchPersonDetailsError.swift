@@ -8,10 +8,18 @@
 import Foundation
 import PeopleDomain
 
+///
+/// Errors that can occur when fetching person details.
+///
 public enum FetchPersonDetailsError: Error {
 
+    /// The requested person was not found.
     case notFound
+
+    /// The request was not authorized.
     case unauthorised
+
+    /// An unknown error occurred, optionally wrapping an underlying error.
     case unknown(Error?)
 
 }

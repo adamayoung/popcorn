@@ -8,10 +8,18 @@
 import Foundation
 import TVSeriesDomain
 
+///
+/// Errors that can occur when fetching a TV series' image collection.
+///
 public enum FetchTVSeriesImageCollectionError: Error {
 
+    /// The requested TV series was not found.
     case notFound
+
+    /// The request was not authorized.
     case unauthorised
+
+    /// An unknown error occurred, optionally wrapping an underlying error.
     case unknown(Error?)
 
 }

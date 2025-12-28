@@ -13,6 +13,12 @@ import MoviesApplication
 import TMDb
 import TVSeriesApplication
 
+///
+/// A factory for creating discover-related adapters.
+///
+/// Creates adapters that bridge TMDb discover services and various use cases
+/// to the application's discover domain.
+///
 public final class PopcornDiscoverAdaptersFactory {
 
     private let discoverService: any DiscoverService
@@ -22,6 +28,17 @@ public final class PopcornDiscoverAdaptersFactory {
     private let fetchMovieImageCollectionUseCase: any FetchMovieImageCollectionUseCase
     private let fetchTVSeriesImageCollectionUseCase: any FetchTVSeriesImageCollectionUseCase
 
+    ///
+    /// Creates a discover adapters factory.
+    ///
+    /// - Parameters:
+    ///   - discoverService: The TMDb discover service.
+    ///   - fetchAppConfigurationUseCase: The use case for fetching app configuration.
+    ///   - fetchMovieGenresUseCase: The use case for fetching movie genres.
+    ///   - fetchTVSeriesGenresUseCase: The use case for fetching TV series genres.
+    ///   - fetchMovieImageCollectionUseCase: The use case for fetching movie image collections.
+    ///   - fetchTVSeriesImageCollectionUseCase: The use case for fetching TV series image collections.
+    ///
     public init(
         discoverService: some DiscoverService,
         fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase,
@@ -38,6 +55,11 @@ public final class PopcornDiscoverAdaptersFactory {
         self.fetchTVSeriesImageCollectionUseCase = fetchTVSeriesImageCollectionUseCase
     }
 
+    ///
+    /// Creates a discover factory with configured adapters.
+    ///
+    /// - Returns: A configured ``PopcornDiscoverFactory`` instance.
+    ///
     public func makeDiscoverFactory() -> PopcornDiscoverFactory {
         let discoverRemoteDataSource = TMDbDiscoverRemoteDataSource(
             discoverService: discoverService)

@@ -20,6 +20,12 @@ enum ObservabilityInitialiserKey: DependencyKey {
 
 public extension DependencyValues {
 
+    ///
+    /// A service for initialising the observability infrastructure.
+    ///
+    /// Configures and starts the observability system with the appropriate
+    /// settings for the current environment.
+    ///
     var observabilityInitialiser: any ObservabilityInitialising {
         get { self[ObservabilityInitialiserKey.self] }
         set { self[ObservabilityInitialiserKey.self] = newValue }

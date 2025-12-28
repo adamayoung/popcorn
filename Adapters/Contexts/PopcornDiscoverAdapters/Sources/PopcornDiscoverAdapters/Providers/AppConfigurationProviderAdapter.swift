@@ -10,14 +10,31 @@ import CoreDomain
 import DiscoverDomain
 import Foundation
 
+///
+/// An adapter that provides app configuration for the discover domain.
+///
+/// Bridges the configuration application layer to the discover domain by wrapping
+/// the ``FetchAppConfigurationUseCase``.
+///
 public final class AppConfigurationProviderAdapter: AppConfigurationProviding {
 
     private let fetchUseCase: any FetchAppConfigurationUseCase
 
+    ///
+    /// Creates an app configuration provider adapter.
+    ///
+    /// - Parameter fetchUseCase: The use case for fetching app configuration.
+    ///
     public init(fetchUseCase: some FetchAppConfigurationUseCase) {
         self.fetchUseCase = fetchUseCase
     }
 
+    ///
+    /// Fetches the app configuration.
+    ///
+    /// - Returns: The current app configuration.
+    /// - Throws: ``AppConfigurationProviderError`` if the configuration cannot be fetched.
+    ///
     public func appConfiguration() async throws(AppConfigurationProviderError) -> AppConfiguration {
         let appConfiguration: AppConfiguration
         do {
