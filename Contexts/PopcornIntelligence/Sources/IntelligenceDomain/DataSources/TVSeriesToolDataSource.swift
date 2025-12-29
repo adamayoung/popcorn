@@ -8,7 +8,7 @@
 import Foundation
 import FoundationModels
 
-protocol TVSeriesToolDataSource: Sendable {
+public protocol TVSeriesToolDataSource: Sendable {
 
     func tvSeriesDetails() -> any Tool
 

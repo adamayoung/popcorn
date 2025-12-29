@@ -26,6 +26,7 @@ attributes:
     - "@Published"
     - "@testable"
     - "@Attribute"
+    - "@Relationship"
   attributes_with_arguments_always_on_line_above: true
 
 identifier_name:

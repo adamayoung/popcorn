@@ -8,7 +8,7 @@
 import Foundation
 import FoundationModels
 
-protocol MovieToolDataSource: Sendable {
+public protocol MovieToolDataSource: Sendable {
 
     func movieDetails() -> any Tool
 

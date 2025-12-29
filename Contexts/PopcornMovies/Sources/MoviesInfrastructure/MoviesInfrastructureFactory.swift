@@ -22,7 +22,10 @@ package final class MoviesInfrastructureFactory {
             MoviesMoviePreviewEntity.self,
             MoviesPopularMovieItemEntity.self,
             MoviesSimilarMovieItemEntity.self,
-            MoviesRecommendationMovieItemEntity.self
+            MoviesRecommendationMovieItemEntity.self,
+            CreditsEntity.self,
+            CastMemberEntity.self,
+            CrewMemberEntity.self
         ])
 
         let storeURL = URL.documentsDirectory.appending(path: "popcorn-movies.sqlite")
@@ -109,6 +112,13 @@ package final class MoviesInfrastructureFactory {
         )
     }
 
+    package func makeMovieCreditsRepository() -> some MovieCreditsRepository {
+        DefaultMovieCreditsRepository(
+            remoteDataSource: movieRemoteDataSource,
+            localDataSource: Self.movieCreditsLocalDataSource
+        )
+    }
+
 }
 
 extension MoviesInfrastructureFactory {
@@ -140,6 +150,11 @@ extension MoviesInfrastructureFactory {
 
     private static let movieRecommendationLocalDataSource: some MovieRecommendationLocalDataSource =
         SwiftDataMovieRecommendationLocalDataSource(
+            modelContainer: modelContainer
+        )
+
+    private static let movieCreditsLocalDataSource: some MovieCreditsLocalDataSource =
+        SwiftDataMovieCreditsLocalDataSource(
             modelContainer: modelContainer
         )
 
