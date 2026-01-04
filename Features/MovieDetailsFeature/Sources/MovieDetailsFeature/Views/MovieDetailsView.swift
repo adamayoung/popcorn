@@ -28,7 +28,9 @@ public struct MovieDetailsView: View {
             case .ready(let snapshot):
                 content(
                     movie: snapshot.movie,
-                    recommendedMovies: snapshot.recommendedMovies
+                    recommendedMovies: snapshot.recommendedMovies,
+                    castMembers: snapshot.castMembers,
+                    crewMembers: snapshot.crewMembers
                 )
 
             case .error(let error):
@@ -39,25 +41,27 @@ public struct MovieDetailsView: View {
             }
         }
         .toolbar {
-            if case .ready(let snapshot) = store.viewState, store.isWatchlistEnabled {
-                ToolbarItem(placement: .primaryAction) {
-                    Button(
-                        snapshot.movie.isOnWatchlist ? "REMOVE_FROM_WATCHLIST" : "ADD_TO_WATCHLIST",
-                        systemImage: snapshot.movie.isOnWatchlist ? "eye.square.fill" : "eye.square"
-                    ) {
-                        store.send(.toggleOnWatchlist)
+            if case .ready(let snapshot) = store.viewState {
+                if store.isWatchlistEnabled {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button(
+                            snapshot.movie.isOnWatchlist ? "REMOVE_FROM_WATCHLIST" : "ADD_TO_WATCHLIST",
+                            systemImage: snapshot.movie.isOnWatchlist ? "eye.square.fill" : "eye.square"
+                        ) {
+                            store.send(.toggleOnWatchlist)
+                        }
+                        .sensoryFeedback(.selection, trigger: snapshot.movie.isOnWatchlist)
                     }
-                    .sensoryFeedback(.selection, trigger: snapshot.movie.isOnWatchlist)
                 }
-            }
 
-            if case .ready(let snapshot) = store.viewState, store.isIntelligenceEnabled {
-                ToolbarItem(placement: .primaryAction) {
-                    Button(
-                        "Intelligence",
-                        systemImage: "apple.intelligence"
-                    ) {
-                        store.send(.navigate(.movieIntelligence(id: snapshot.movie.id)))
+                if store.isIntelligenceEnabled {
+                    ToolbarItem(placement: .primaryAction) {
+                        Button(
+                            "MOVIE_INTELLIGENCE",
+                            systemImage: "apple.intelligence"
+                        ) {
+                            store.send(.navigate(.movieIntelligence(id: snapshot.movie.id)))
+                        }
                     }
                 }
             }
@@ -73,7 +77,7 @@ public struct MovieDetailsView: View {
             store.send(.didAppear)
         }
         .task {
-            await store.send(.stream).finish()
+            store.send(.fetch)
         }
     }
 
@@ -89,12 +93,21 @@ extension MovieDetailsView {
     @ViewBuilder
     private func content(
         movie: Movie,
-        recommendedMovies: [MoviePreview]
+        recommendedMovies: [MoviePreview],
+        castMembers: [CastMember],
+        crewMembers: [CrewMember]
     ) -> some View {
         StretchyHeaderScrollView(
             header: { header(movie: movie) },
             headerOverlay: { headerOverlay(movie: movie) },
-            content: { body(movie: movie, recommendedMovies: recommendedMovies) }
+            content: {
+                body(
+                    movie: movie,
+                    recommendedMovies: recommendedMovies,
+                    castMembers: castMembers,
+                    crewMembers: crewMembers
+                )
+            }
         )
         .navigationTitle(movie.title)
         #if os(iOS)
@@ -121,21 +134,67 @@ extension MovieDetailsView {
     @ViewBuilder
     private func body(
         movie: Movie,
-        recommendedMovies: [MoviePreview]
+        recommendedMovies: [MoviePreview],
+        castMembers: [CastMember],
+        crewMembers: [CrewMember]
     ) -> some View {
-        VStack(alignment: .leading) {
-            Text(verbatim: movie.overview)
-                .multilineTextAlignment(.leading)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal)
+        LazyVStack(alignment: .leading, spacing: 10) {
+            Section {
+                Text(verbatim: movie.overview)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal)
+            }
+            .padding(.bottom, 40)
+
+            Section(header: castAndCrewHeader) {
+                CastAndCrewCarousel(
+                    castMembers: castMembers,
+                    crewMembers: crewMembers,
+                    didSelectPerson: { personID in
+                        store.send(.navigate(.personDetails(id: personID)))
+                    }
+                )
+            }
+            .padding(.bottom)
 
             if !recommendedMovies.isEmpty {
-                MovieCarousel(movies: recommendedMovies) { moviePreview in
-                    store.send(.navigate(.movieDetails(id: moviePreview.id)))
+                Section(header: recommendedHeader) {
+                    MovieCarousel(movies: recommendedMovies) { moviePreview in
+                        store.send(.navigate(.movieDetails(id: moviePreview.id)))
+                    }
                 }
             }
         }
-        .padding(.bottom)
+        .padding(.vertical)
+    }
+
+    private var castAndCrewHeader: some View {
+        Button {} label: {
+            HStack {
+                Text("CAST_AND_CREW", bundle: .module)
+                    .font(.title)
+                Image(systemName: "greaterthan")
+                    .foregroundStyle(.secondary)
+            }
+            .fontWeight(.heavy)
+            .padding(.leading)
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var recommendedHeader: some View {
+        Button {} label: {
+            HStack {
+                Text("RECOMMENDED", bundle: .module)
+                    .font(.title)
+                Image(systemName: "greaterthan")
+                    .foregroundStyle(.secondary)
+            }
+            .fontWeight(.heavy)
+            .padding(.leading)
+        }
+        .buttonStyle(.plain)
     }
 
 }
@@ -151,7 +210,9 @@ extension MovieDetailsView {
                     viewState: .ready(
                         .init(
                             movie: Movie.mock,
-                            recommendedMovies: MoviePreview.mocks
+                            recommendedMovies: MoviePreview.mocks,
+                            castMembers: CastMember.mocks,
+                            crewMembers: CrewMember.mocks
                         )
                     )
                 ),

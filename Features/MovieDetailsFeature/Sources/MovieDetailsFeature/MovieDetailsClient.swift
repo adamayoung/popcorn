@@ -13,9 +13,12 @@ import MoviesApplication
 @DependencyClient
 struct MovieDetailsClient: Sendable {
 
-    var streamMovie: @Sendable (Int) async throws -> AsyncThrowingStream<Movie?, Error>
-    var streamRecommended: @Sendable (Int) async throws -> AsyncThrowingStream<[MoviePreview], Error>
-    var toggleOnWatchlist: @Sendable (Int) async throws -> Void
+    var fetchMovie: @Sendable (_ id: Int) async throws -> Movie
+    var streamMovie: @Sendable (_ id: Int) async throws -> AsyncThrowingStream<Movie?, Error>
+    var fetchRecommendedMovies: @Sendable (_ movieID: Int) async throws -> [MoviePreview]
+    var streamRecommended: @Sendable (_ movieID: Int) async throws -> AsyncThrowingStream<[MoviePreview], Error>
+    var fetchCredits: @Sendable (_ movieID: Int) async throws -> Credits
+    var toggleOnWatchlist: @Sendable (_ movieID: Int) async throws -> Void
 
     var isWatchlistEnabled: @Sendable () throws -> Bool
     var isIntelligenceEnabled: @Sendable () throws -> Bool
@@ -25,12 +28,20 @@ struct MovieDetailsClient: Sendable {
 extension MovieDetailsClient: DependencyKey {
 
     static var liveValue: MovieDetailsClient {
+        @Dependency(\.fetchMovieDetails) var fetchMovieDetails
         @Dependency(\.streamMovieDetails) var streamMovieDetails
+        @Dependency(\.fetchMovieRecommendations) var fetchMovieRecommendations
         @Dependency(\.streamMovieRecommendations) var streamMovieRecommendations
+        @Dependency(\.fetchMovieCredits) var fetchMovieCredits
         @Dependency(\.toggleWatchlistMovie) var toggleWatchlistMovie
         @Dependency(\.featureFlags) var featureFlags
 
         return MovieDetailsClient(
+            fetchMovie: { id in
+                let movie = try await fetchMovieDetails.execute(id: id)
+                let mapper = MovieMapper()
+                return mapper.map(movie)
+            },
             streamMovie: { id in
                 let movieStream = await streamMovieDetails.stream(id: id)
                 return AsyncThrowingStream<Movie?, Error> { continuation in
@@ -49,8 +60,13 @@ extension MovieDetailsClient: DependencyKey {
                     continuation.onTermination = { _ in task.cancel() }
                 }
             },
-            streamRecommended: { id in
-                let moviePreviewStream = await streamMovieRecommendations.stream(movieID: id, limit: 5)
+            fetchRecommendedMovies: { movieID in
+                let movies = try await fetchMovieRecommendations.execute(movieID: movieID)
+                let mapper = MoviePreviewMapper()
+                return movies.prefix(5).map(mapper.map)
+            },
+            streamRecommended: { movieID in
+                let moviePreviewStream = await streamMovieRecommendations.stream(movieID: movieID, limit: 5)
                 return AsyncThrowingStream<[MoviePreview], Error> { continuation in
                     let task = Task {
                         let mapper = MoviePreviewMapper()
@@ -61,6 +77,11 @@ extension MovieDetailsClient: DependencyKey {
                     }
                     continuation.onTermination = { _ in task.cancel() }
                 }
+            },
+            fetchCredits: { movieID in
+                let credits = try await fetchMovieCredits.execute(movieID: movieID)
+                let mapper = CreditsMapper()
+                return mapper.map(credits)
             },
             toggleOnWatchlist: { id in
                 try await toggleWatchlistMovie.execute(id: id)
@@ -76,17 +97,26 @@ extension MovieDetailsClient: DependencyKey {
 
     static var previewValue: MovieDetailsClient {
         MovieDetailsClient(
+            fetchMovie: { _ in
+                Movie.mock
+            },
             streamMovie: { _ in
                 AsyncThrowingStream<Movie?, Error> { continuation in
                     continuation.yield(Movie.mock)
                     continuation.finish()
                 }
             },
+            fetchRecommendedMovies: { _ in
+                MoviePreview.mocks
+            },
             streamRecommended: { _ in
                 AsyncThrowingStream<[MoviePreview], Error> { continuation in
                     continuation.yield(MoviePreview.mocks)
                     continuation.finish()
                 }
+            },
+            fetchCredits: { _ in
+                Credits.mock
             },
             toggleOnWatchlist: { _ in },
             isWatchlistEnabled: { true },

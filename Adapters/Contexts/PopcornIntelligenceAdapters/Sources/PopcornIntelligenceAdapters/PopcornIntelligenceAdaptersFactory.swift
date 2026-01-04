@@ -14,13 +14,16 @@ public final class PopcornIntelligenceAdaptersFactory {
 
     private let fetchMovieDetailsUseCase: any FetchMovieDetailsUseCase
     private let fetchTVSeriesDetailsUseCase: any FetchTVSeriesDetailsUseCase
+    private let fetchMovieCreditsUseCase: any FetchMovieCreditsUseCase
 
     public init(
         fetchMovieDetailsUseCase: some FetchMovieDetailsUseCase,
-        fetchTVSeriesDetailsUseCase: some FetchTVSeriesDetailsUseCase
+        fetchTVSeriesDetailsUseCase: some FetchTVSeriesDetailsUseCase,
+        fetchMovieCreditsUseCase: some FetchMovieCreditsUseCase
     ) {
         self.fetchMovieDetailsUseCase = fetchMovieDetailsUseCase
         self.fetchTVSeriesDetailsUseCase = fetchTVSeriesDetailsUseCase
+        self.fetchMovieCreditsUseCase = fetchMovieCreditsUseCase
     }
 
     public func makeIntelligenceFactory() -> PopcornIntelligenceFactory {
@@ -32,9 +35,14 @@ public final class PopcornIntelligenceAdaptersFactory {
             fetchTVSeriesDetailsUseCase: fetchTVSeriesDetailsUseCase
         )
 
+        let creditsProvider = CreditsProviderAdapter(
+            fetchMovieCreditsUseCase: fetchMovieCreditsUseCase
+        )
+
         return PopcornIntelligenceFactory(
             movieProvider: movieProvider,
-            tvSeriesProvider: tvSeriesProvider
+            tvSeriesProvider: tvSeriesProvider,
+            creditsProvider: creditsProvider
         )
     }
 

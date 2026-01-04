@@ -37,7 +37,7 @@ public struct Carousel<Content: View>: View {
     public var body: some View {
         // Horizontal scroll view with paging behavior
         ScrollView(.horizontal, showsIndicators: false) {
-            LazyHStack(alignment: .top, spacing: spacing) {
+            HStack(alignment: .top, spacing: spacing) {
                 ForEach(subviews: content) { subview in
                     subview
                 }

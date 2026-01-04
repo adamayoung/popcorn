@@ -10,6 +10,6 @@ import FoundationModels
 
 public protocol TVSeriesToolDataSource: Sendable {
 
-    func tvSeriesDetails() -> any Tool
+    func tvSeries() -> any Tool
 
 }

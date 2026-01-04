@@ -1,5 +1,5 @@
 //
-//  MovieDetailsTool.swift
+//  MovieTool.swift
 //  Popcorn
 //
 //  Copyright © 2025 Adam Young.
@@ -15,7 +15,7 @@ import IntelligenceDomain
 /// This tool enables the LLM to retrieve detailed information about movies
 /// including title, overview, and release date.
 ///
-final class MovieDetailsTool: Tool {
+final class MovieTool: Tool {
 
     private let movieProvider: any MovieProviding
 
@@ -44,22 +44,10 @@ final class MovieDetailsTool: Tool {
         let releaseDate: String?
     }
 
-    func call(arguments: MovieDetailsTool.Arguments) async throws -> Movie {
+    func call(arguments: Arguments) async throws -> Movie {
         let movie = try await movieProvider.movie(withID: arguments.movieID)
-        let prompt = Movie(
-            id: movie.id,
-            title: movie.title,
-            overview: movie.overview,
-            releaseDate: {
-                guard let releaseDate = movie.releaseDate else {
-                    return nil
-                }
-
-                return releaseDate.formatted()
-            }()
-        )
-
-        return prompt
+        let mapper = MovieToolMapper()
+        return mapper.map(movie)
     }
 
 }

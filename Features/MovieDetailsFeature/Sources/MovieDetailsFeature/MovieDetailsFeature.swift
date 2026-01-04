@@ -67,21 +67,26 @@ public struct MovieDetailsFeature: Sendable {
     public struct ViewSnapshot: Sendable {
         public let movie: Movie
         public let recommendedMovies: [MoviePreview]
+        public let castMembers: [CastMember]
+        public let crewMembers: [CrewMember]
 
         public init(
             movie: Movie,
-            recommendedMovies: [MoviePreview]
+            recommendedMovies: [MoviePreview],
+            castMembers: [CastMember],
+            crewMembers: [CrewMember]
         ) {
             self.movie = movie
             self.recommendedMovies = recommendedMovies
+            self.castMembers = castMembers
+            self.crewMembers = crewMembers
         }
     }
 
     public enum Action {
         case didAppear
         case updateFeatureFlags
-        case stream
-        case cancelStream
+        case fetch
         case loaded(ViewSnapshot)
         case loadFailed(Error)
         case toggleOnWatchlist
@@ -93,6 +98,7 @@ public struct MovieDetailsFeature: Sendable {
     public enum Navigation: Equatable, Hashable {
         case movieDetails(id: Int)
         case movieIntelligence(id: Int)
+        case personDetails(id: Int)
     }
 
     public init() {}
@@ -110,14 +116,8 @@ public struct MovieDetailsFeature: Sendable {
                 state.isIntelligenceEnabled = (try? movieDetailsClient.isIntelligenceEnabled()) ?? false
                 return .none
 
-            case .stream:
-                if case .initial = state.viewState {
-                    state.viewState = .loading
-                }
-                return handleStreamAll(&state)
-
-            case .cancelStream:
-                return .cancel(id: CancelID.stream)
+            case .fetch:
+                return handleFetch(&state)
 
             case .loaded(let snapshot):
                 state.viewState = .ready(snapshot)
@@ -150,73 +150,30 @@ public struct MovieDetailsFeature: Sendable {
 
 extension MovieDetailsFeature {
 
-    private enum CancelID { case stream }
-
-    // swiftlint:disable function_body_length
-    private func handleStreamAll(_ state: inout State) -> EffectOf<Self> {
+    private func handleFetch(_ state: inout State) -> EffectOf<Self> {
         .run { [state, movieDetailsClient] send in
             Self.logger.info("User streaming movie")
 
+            async let movie = movieDetailsClient.fetchMovie(id: state.movieID)
+            async let recommendedMovies = movieDetailsClient.fetchRecommendedMovies(movieID: state.movieID)
+            async let credits = movieDetailsClient.fetchCredits(movieID: state.movieID)
+
+            let viewSnapshot: ViewSnapshot
             do {
-                actor Snapshot {
-                    var movie: Movie?
-                    var recommendedMovies: [MoviePreview]?
-
-                    func update(
-                        movie: Movie? = nil,
-                        recommendedMovies: [MoviePreview]? = nil,
-                        send: Send<MovieDetailsFeature.Action>
-                    ) async {
-                        if let movie { self.movie = movie }
-                        if let recommendedMovies { self.recommendedMovies = recommendedMovies }
-
-                        guard
-                            let movie = self.movie,
-                            let recommendedMovies = self.recommendedMovies
-                        else {
-                            return
-                        }
-
-                        let viewSnapshot = ViewSnapshot(movie: movie, recommendedMovies: recommendedMovies)
-
-                        await send(.loaded(viewSnapshot))
-                    }
-                }
-
-                let snapshot = Snapshot()
-
-                try await withThrowingTaskGroup(of: Void.self) { group in
-                    group.addTask {
-                        let stream = try await movieDetailsClient.streamMovie(state.movieID)
-                        for try await value in stream {
-                            await snapshot.update(
-                                movie: value,
-                                send: send
-                            )
-                        }
-                    }
-
-                    group.addTask {
-                        let stream = try await movieDetailsClient.streamRecommended(state.movieID)
-                        for try await value in stream {
-                            await snapshot.update(
-                                recommendedMovies: value,
-                                send: send
-                            )
-                        }
-                    }
-
-                    try await group.waitForAll()
-                }
+                viewSnapshot = try await ViewSnapshot(
+                    movie: movie,
+                    recommendedMovies: recommendedMovies,
+                    castMembers: credits.castMembers,
+                    crewMembers: credits.crewMembers
+                )
             } catch let error {
-                Self.logger.error(
-                    "Failed streaming movie: \(error.localizedDescription, privacy: .public)")
                 await send(.loadFailed(error))
+                return
             }
+
+            await send(.loaded(viewSnapshot))
         }
     }
-
-    // swiftlint:enable function_body_length
 
     private func handleToggleMovieOnWatchlist(_ state: inout State) -> EffectOf<Self> {
         .run { [state] send in

@@ -1,5 +1,5 @@
 //
-//  TVSeriesDetailsTool.swift
+//  TVSeriesTool.swift
 //  Popcorn
 //
 //  Copyright © 2025 Adam Young.
@@ -15,7 +15,7 @@ import IntelligenceDomain
 /// This tool enables the LLM to retrieve detailed information about TV series
 /// including name and overview.
 ///
-final class TVSeriesDetailsTool: Tool {
+final class TVSeriesTool: Tool {
 
     private let tvSeriesProvider: any TVSeriesProviding
 
@@ -46,17 +46,10 @@ final class TVSeriesDetailsTool: Tool {
         let numberOfSeasons: Int
     }
 
-    func call(arguments: TVSeriesDetailsTool.Arguments) async throws -> TVSeries {
+    func call(arguments: Arguments) async throws -> TVSeries {
         let tvSeries = try await tvSeriesProvider.tvSeries(withID: arguments.tvSeriesID)
-        let prompt = TVSeries(
-            id: tvSeries.id,
-            name: tvSeries.name,
-            tagline: tvSeries.tagline,
-            overview: tvSeries.overview,
-            numberOfSeasons: tvSeries.numberOfSeasons
-        )
-
-        return prompt
+        let mapper = TVSeriesToolMapper()
+        return mapper.map(tvSeries)
     }
 
 }

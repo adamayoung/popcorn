@@ -22,8 +22,8 @@ final class DefaultTVSeriesToolDataSource: TVSeriesToolDataSource {
         self.tvSeriesProvider = tvSeriesProvider
     }
 
-    func tvSeriesDetails() -> any Tool {
-        TVSeriesDetailsTool(tvSeriesProvider: tvSeriesProvider)
+    func tvSeries() -> any Tool {
+        TVSeriesTool(tvSeriesProvider: tvSeriesProvider)
     }
 
 }

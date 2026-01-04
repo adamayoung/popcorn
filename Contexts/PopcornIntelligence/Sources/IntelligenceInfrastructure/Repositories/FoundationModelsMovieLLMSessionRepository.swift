@@ -41,7 +41,8 @@ final class FoundationModelsMovieLLMSessionRepository: MovieLLMSessionRepository
         }
 
         let tools: [any Tool] = [
-            movieToolDataSource.movieDetails()
+            movieToolDataSource.movie(),
+            movieToolDataSource.movieCredits()
         ]
 
         let instructions = """

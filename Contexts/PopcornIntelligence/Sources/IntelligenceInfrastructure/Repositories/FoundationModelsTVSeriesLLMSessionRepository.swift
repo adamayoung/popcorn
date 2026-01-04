@@ -41,7 +41,7 @@ final class FoundationModelsTVSeriesLLMSessionRepository: TVSeriesLLMSessionRepo
         }
 
         let tools: [any Tool] = [
-            tvSeriesToolDataSource.tvSeriesDetails()
+            tvSeriesToolDataSource.tvSeries()
         ]
 
         let instructions = """

@@ -10,6 +10,8 @@ import FoundationModels
 
 public protocol MovieToolDataSource: Sendable {
 
-    func movieDetails() -> any Tool
+    func movie() -> any Tool
+
+    func movieCredits() -> any Tool
 
 }

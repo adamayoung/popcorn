@@ -34,7 +34,7 @@ public enum FetchMovieCreditsError: Error {
 extension FetchMovieCreditsError {
 
     init(_ error: Error) {
-        if let repositoryError = error as? MovieRepositoryError {
+        if let repositoryError = error as? MovieCreditsRepositoryError {
             self.init(repositoryError)
             return
         }
@@ -47,7 +47,7 @@ extension FetchMovieCreditsError {
         self = .unknown(error)
     }
 
-    init(_ error: MovieRepositoryError) {
+    init(_ error: MovieCreditsRepositoryError) {
         switch error {
         case .notFound:
             self = .notFound

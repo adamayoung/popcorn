@@ -12,8 +12,8 @@ import SwiftData
 final class CreditsEntity: Equatable, Identifiable, ModelExpirable {
 
     @Attribute(.unique) var movieID: Int
-    @Relationship(deleteRule: .cascade, inverse: \CastMemberEntity.movieID) var cast: [CastMemberEntity]
-    @Relationship(deleteRule: .cascade, inverse: \CrewMemberEntity.movieID) var crew: [CrewMemberEntity]
+    @Relationship(deleteRule: .cascade) var cast: [CastMemberEntity]
+    @Relationship(deleteRule: .cascade) var crew: [CrewMemberEntity]
     var cachedAt: Date
 
     init(

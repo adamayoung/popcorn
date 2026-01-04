@@ -73,6 +73,9 @@ struct ExploreRootFeature {
             case .path(.element(_, .movieDetails(.navigate(.movieDetails(let id))))):
                 state.path.append(.movieDetails(MovieDetailsFeature.State(movieID: id)))
                 return .none
+            case .path(.element(_, .movieDetails(.navigate(.personDetails(let id))))):
+                state.path.append(.personDetails(PersonDetailsFeature.State(personID: id)))
+                return .none
             case .path(.element(_, .tvSeriesDetails(.navigate(.tvSeriesIntelligence(let id))))):
                 state.tvSeriesIntelligence = TVSeriesIntelligenceFeature.State(tvSeriesID: id)
                 return .none
