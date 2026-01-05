@@ -10,7 +10,8 @@ import SwiftUI
 public struct NavigationRow<Content: View>: View {
 
     private let action: () -> Void
-    @ViewBuilder private let content: Content
+    @ViewBuilder
+    private let content: Content
 
     @State private var isPressed = false
 

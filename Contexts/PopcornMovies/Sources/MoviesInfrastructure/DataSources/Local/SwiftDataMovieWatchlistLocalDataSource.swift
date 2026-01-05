@@ -63,7 +63,7 @@ SwiftDataFetchStreaming {
 
     func removeMovie(
         withID id: Int
-    ) async throws(MoviesDomain.MovieWatchlistLocalDataSourceError) {
+    ) async throws(MovieWatchlistLocalDataSourceError) {
         let deleteDescriptor = FetchDescriptor<MoviesWatchlistMovieEntity>(
             predicate: #Predicate { $0.movieID == id }
         )

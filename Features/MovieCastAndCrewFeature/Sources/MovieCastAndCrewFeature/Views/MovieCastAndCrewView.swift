@@ -14,14 +14,6 @@ public struct MovieCastAndCrewView: View {
     @Bindable private var store: StoreOf<MovieCastAndCrewFeature>
     private let namespace: Namespace.ID
 
-    private var movieTitle: String {
-        guard case .ready(let snapshot) = store.viewState else {
-            return ""
-        }
-
-        return snapshot.movie.title
-    }
-
     public init(
         store: StoreOf<MovieCastAndCrewFeature>,
         transitionNamespace: Namespace.ID
@@ -48,7 +40,6 @@ public struct MovieCastAndCrewView: View {
             }
         }
         .navigationTitle(Text("CAST_AND_CREW", bundle: .module))
-        .navigationSubtitle(movieTitle)
         #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
         #endif
@@ -96,10 +87,9 @@ public struct MovieCastAndCrewView: View {
         MovieCastAndCrewView(
             store: Store(
                 initialState: MovieCastAndCrewFeature.State(
-                    movieID: Movie.mock.id,
+                    movieID: 1,
                     viewState: .ready(
                         .init(
-                            movie: Movie.mock,
                             castMembers: CastMember.mocks,
                             crewMembers: CrewMember.mocks
                         )
