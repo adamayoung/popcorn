@@ -15,7 +15,7 @@ public struct TVSeriesDetailsFeature: Sendable {
 
     private static let logger = Logger.tvSeriesDetails
 
-    @Dependency(\.tvSeriesDetailsClient) private var tvSeriesDetailsClient
+    @Dependency(\.tvSeriesDetailsClient) private var client
     @Dependency(\.observability) private var observability
 
     @ObservableState
@@ -91,7 +91,7 @@ public struct TVSeriesDetailsFeature: Sendable {
                 }
 
             case .updateFeatureFlags:
-                state.isIntelligenceEnabled = (try? tvSeriesDetailsClient.isIntelligenceEnabled()) ?? false
+                state.isIntelligenceEnabled = (try? client.isIntelligenceEnabled()) ?? false
                 return .none
 
             case .fetch:
@@ -120,7 +120,7 @@ public struct TVSeriesDetailsFeature: Sendable {
 extension TVSeriesDetailsFeature {
 
     private func handleFetchTVSeries(_ state: inout State) -> EffectOf<Self> {
-        .run { [state, observability, tvSeriesDetailsClient] send in
+        .run { [state, client, observability] send in
             Self.logger.info(
                 "User fetching TV series [tvSeriesID: \(state.tvSeriesID, privacy: .private)]")
 
@@ -131,7 +131,7 @@ extension TVSeriesDetailsFeature {
             transaction.setData(key: "tv_series_id", value: state.tvSeriesID)
 
             do {
-                let tvSeries = try await tvSeriesDetailsClient.fetch(state.tvSeriesID)
+                let tvSeries = try await client.fetchTVSeries(state.tvSeriesID)
                 let snapshot = ViewSnapshot(tvSeries: tvSeries)
                 transaction.finish()
                 await send(.loaded(snapshot))

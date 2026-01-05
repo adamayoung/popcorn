@@ -20,7 +20,7 @@ public struct ExploreFeature: Sendable {
 
     private static let logger = Logger.explore
 
-    @Dependency(\.exploreClient) private var exploreClient: ExploreClient
+    @Dependency(\.exploreClient) private var client
     @Dependency(\.observability) private var observability
 
     /// The state managed by the explore feature.
@@ -146,15 +146,15 @@ public struct ExploreFeature: Sendable {
 extension ExploreFeature {
 
     private func handleFetchAll() -> EffectOf<Self> {
-        .run { [exploreClient, observability] send in
+        .run { [client, observability] send in
             Self.logger.info("User fetching explore content")
 
-            let isDiscoverMoviesEnabled = (try? exploreClient.isDiscoverMoviesEnabled()) ?? false
-            let isTrendingMoviesEnabled = (try? exploreClient.isTrendingMoviesEnabled()) ?? false
-            let isPopularMoviesEnabled = (try? exploreClient.isPopularMoviesEnabled()) ?? false
+            let isDiscoverMoviesEnabled = (try? client.isDiscoverMoviesEnabled()) ?? false
+            let isTrendingMoviesEnabled = (try? client.isTrendingMoviesEnabled()) ?? false
+            let isPopularMoviesEnabled = (try? client.isPopularMoviesEnabled()) ?? false
             let isTrendingTVSeriesEnabled =
-                (try? exploreClient.isTrendingTVSeriesEnabled()) ?? false
-            let isTrendingPeopleEnabled = (try? exploreClient.isTrendingPeopleEnabled()) ?? false
+                (try? client.isTrendingTVSeriesEnabled()) ?? false
+            let isTrendingPeopleEnabled = (try? client.isTrendingPeopleEnabled()) ?? false
 
             let transaction = observability.startTransaction(
                 name: "FetchExplore",
@@ -172,15 +172,15 @@ extension ExploreFeature {
 
             do {
                 async let discoverMovies =
-                    isDiscoverMoviesEnabled ? exploreClient.fetchDiscoverMovies() : []
+                    isDiscoverMoviesEnabled ? client.fetchDiscoverMovies() : []
                 async let trendingMovies =
-                    isTrendingMoviesEnabled ? exploreClient.fetchTrendingMovies() : []
+                    isTrendingMoviesEnabled ? client.fetchTrendingMovies() : []
                 async let popularMovies =
-                    isPopularMoviesEnabled ? exploreClient.fetchPopularMovies() : []
+                    isPopularMoviesEnabled ? client.fetchPopularMovies() : []
                 async let trendingTVSeries =
-                    isTrendingTVSeriesEnabled ? exploreClient.fetchTrendingTVSeries() : []
+                    isTrendingTVSeriesEnabled ? client.fetchTrendingTVSeries() : []
                 async let trendingPeople =
-                    isTrendingPeopleEnabled ? exploreClient.fetchTrendingPeople() : []
+                    isTrendingPeopleEnabled ? client.fetchTrendingPeople() : []
 
                 let snapshot = try await ViewSnapshot(
                     discoverMovies: discoverMovies,

@@ -147,15 +147,16 @@ extension MovieDetailsView {
             }
             .padding(.bottom, 40)
 
-            Section(header: castAndCrewHeader) {
-                CastAndCrewCarousel(
-                    castMembers: castMembers,
-                    crewMembers: crewMembers,
-                    didSelectPerson: { personID in
-                        store.send(.navigate(.personDetails(id: personID)))
-                    }
-                )
-            }
+            CastAndCrewCarousel(
+                castMembers: castMembers,
+                crewMembers: crewMembers,
+                didSelectPerson: { personID in
+                    store.send(.navigate(.personDetails(id: personID)))
+                },
+                didSelectSeeAll: {
+                    store.send(.navigate(.castAndCrew(movieID: movie.id)))
+                }
+            )
             .padding(.bottom)
 
             if !recommendedMovies.isEmpty {
@@ -167,20 +168,6 @@ extension MovieDetailsView {
             }
         }
         .padding(.vertical)
-    }
-
-    private var castAndCrewHeader: some View {
-        Button {} label: {
-            HStack {
-                Text("CAST_AND_CREW", bundle: .module)
-                    .font(.title)
-                Image(systemName: "greaterthan")
-                    .foregroundStyle(.secondary)
-            }
-            .fontWeight(.heavy)
-            .padding(.leading)
-        }
-        .buttonStyle(.plain)
     }
 
     private var recommendedHeader: some View {

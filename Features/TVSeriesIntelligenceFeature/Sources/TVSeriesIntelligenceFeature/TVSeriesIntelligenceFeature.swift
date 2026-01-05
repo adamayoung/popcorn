@@ -17,7 +17,7 @@ public struct TVSeriesIntelligenceFeature: Sendable {
 
     private static let logger = Logger.tvSeriesIntelligence
 
-    @Dependency(\.tvSeriesIntelligenceClient) private var tvSeriesIntelligenceClient
+    @Dependency(\.tvSeriesIntelligenceClient) private var client
     @Dependency(\.observability) private var observability
 
     @ObservableState
@@ -103,9 +103,9 @@ public struct TVSeriesIntelligenceFeature: Sendable {
 private extension TVSeriesIntelligenceFeature {
 
     func handleStartSession(_ state: inout State) -> EffectOf<Self> {
-        .run { [state] send in
-            async let tvSeriesTask = tvSeriesIntelligenceClient.fetchTVSeries(id: state.tvSeriesID)
-            async let sessionTask = tvSeriesIntelligenceClient.createSession(tvSeriesID: state.tvSeriesID)
+        .run { [state, client] send in
+            async let tvSeriesTask = client.fetchTVSeries(id: state.tvSeriesID)
+            async let sessionTask = client.createSession(tvSeriesID: state.tvSeriesID)
 
             let tvSeries: TVSeries
             let session: LLMSession

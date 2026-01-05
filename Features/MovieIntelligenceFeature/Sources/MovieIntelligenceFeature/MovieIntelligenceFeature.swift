@@ -18,7 +18,7 @@ public struct MovieIntelligenceFeature: Sendable {
 
     private static let logger = Logger.movieIntelligence
 
-    @Dependency(\.movieIntelligenceClient) private var movieIntelligenceClient
+    @Dependency(\.movieIntelligenceClient) private var client
     @Dependency(\.observability) private var observability
 
     @ObservableState
@@ -108,9 +108,9 @@ public struct MovieIntelligenceFeature: Sendable {
 private extension MovieIntelligenceFeature {
 
     func handleStartSession(_ state: inout State) -> EffectOf<Self> {
-        .run { [state] send in
-            async let movieTask = movieIntelligenceClient.fetchMovie(id: state.movieID)
-            async let sessionTask = movieIntelligenceClient.createSession(movieID: state.movieID)
+        .run { [state, client] send in
+            async let movieTask = client.fetchMovie(id: state.movieID)
+            async let sessionTask = client.createSession(movieID: state.movieID)
 
             let movie: Movie
             let session: LLMSession

@@ -14,7 +14,7 @@ import TVSeriesApplication
 @DependencyClient
 struct TVSeriesDetailsClient: Sendable {
 
-    var fetch: @Sendable (Int) async throws -> TVSeries
+    var fetchTVSeries: @Sendable (Int) async throws -> TVSeries
 
     var isIntelligenceEnabled: @Sendable () throws -> Bool
 
@@ -27,7 +27,7 @@ extension TVSeriesDetailsClient: DependencyKey {
         @Dependency(\.featureFlags) var featureFlags
 
         return TVSeriesDetailsClient(
-            fetch: { id in
+            fetchTVSeries: { id in
                 let span = SpanContext.startChild(
                     operation: .clientFetch,
                     description: "TVSeriesDetailsClient.fetch"
@@ -54,9 +54,8 @@ extension TVSeriesDetailsClient: DependencyKey {
 
     static var previewValue: TVSeriesDetailsClient {
         TVSeriesDetailsClient(
-            fetch: { _ in
-                try await Task.sleep(for: .seconds(2))
-                return TVSeries.mock
+            fetchTVSeries: { _ in
+                TVSeries.mock
             },
             isIntelligenceEnabled: {
                 true

@@ -13,7 +13,7 @@ import TrendingApplication
 @DependencyClient
 struct TrendingTVSeriesClient: Sendable {
 
-    var fetch: @Sendable () async throws -> [TVSeriesPreview]
+    var fetchTrendingTVSeries: @Sendable () async throws -> [TVSeriesPreview]
 
 }
 
@@ -23,7 +23,7 @@ extension TrendingTVSeriesClient: DependencyKey {
         @Dependency(\.fetchTrendingTVSeries) var fetchTrendingTVSeries
 
         return TrendingTVSeriesClient(
-            fetch: {
+            fetchTrendingTVSeries: {
                 let tvSeriesPreviews = try await fetchTrendingTVSeries.execute()
                 let mapper = TVSeriesPreviewMapper()
                 return tvSeriesPreviews.map(mapper.map)
@@ -33,23 +33,8 @@ extension TrendingTVSeriesClient: DependencyKey {
 
     static var previewValue: TrendingTVSeriesClient {
         TrendingTVSeriesClient(
-            fetch: {
-                [
-                    TVSeriesPreview(
-                        id: 225_171,
-                        name: "Pluribus",
-                        posterURL: URL(
-                            string:
-                            "https://image.tmdb.org/t/p/w780/nrM2xFUfKJJEmZzd5d7kohT2G0C.jpg")
-                    ),
-                    TVSeriesPreview(
-                        id: 66732,
-                        name: "Stranger Things",
-                        posterURL: URL(
-                            string:
-                            "https://image.tmdb.org/t/p/w780/cVxVGwHce6xnW8UaVUggaPXbmoE.jpg")
-                    )
-                ]
+            fetchTrendingTVSeries: {
+                TVSeriesPreview.mocks
             }
         )
     }
@@ -58,7 +43,7 @@ extension TrendingTVSeriesClient: DependencyKey {
 
 extension DependencyValues {
 
-    var trendingTVSeries: TrendingTVSeriesClient {
+    var trendingTVSeriesClient: TrendingTVSeriesClient {
         get {
             self[TrendingTVSeriesClient.self]
         }

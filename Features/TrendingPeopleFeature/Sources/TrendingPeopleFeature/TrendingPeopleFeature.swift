@@ -16,7 +16,7 @@ public struct TrendingPeopleFeature: Sendable {
 
     private static let logger = Logger.trendingPeople
 
-    @Dependency(\.trendingPeople) private var trendingPeople
+    @Dependency(\.trendingPeopleClient) private var client
     @Dependency(\.observability) private var observability
 
     @ObservableState
@@ -59,7 +59,7 @@ public struct TrendingPeopleFeature: Sendable {
 private extension TrendingPeopleFeature {
 
     func handleFetchTrendingPeople() -> EffectOf<Self> {
-        .run { send in
+        .run { [client] send in
             Self.logger.info("User fetching trending people")
 
             let transaction = observability.startTransaction(
@@ -68,7 +68,7 @@ private extension TrendingPeopleFeature {
             )
 
             do {
-                let people = try await trendingPeople.fetch()
+                let people = try await client.fetchTrendingPeople()
                 transaction.finish()
                 await send(.trendingPeopleLoaded(people))
             } catch let error {

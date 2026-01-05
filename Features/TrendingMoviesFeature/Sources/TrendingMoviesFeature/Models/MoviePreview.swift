@@ -24,3 +24,26 @@ public struct MoviePreview: Identifiable, Sendable, Equatable, Hashable {
     }
 
 }
+
+extension MoviePreview {
+
+    static var mocks: [MoviePreview] {
+        [
+            MoviePreview(
+                id: 1,
+                title: "The Running Man",
+                posterURL: URL(
+                    string:
+                    "https://image.tmdb.org/t/p/w780/dKL78O9zxczVgjtNcQ9UkbYLzqX.jpg")
+            ),
+            MoviePreview(
+                id: 2,
+                title: "Black Phone 2",
+                posterURL: URL(
+                    string:
+                    "https://image.tmdb.org/t/p/w780/xUWUODKPIilQoFUzjHM6wKJkP3Y.jpg")
+            )
+        ]
+    }
+
+}

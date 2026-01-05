@@ -16,7 +16,7 @@ public struct MovieDetailsFeature: Sendable {
 
     private static let logger = Logger.movieDetails
 
-    @Dependency(\.movieDetailsClient) private var movieDetailsClient
+    @Dependency(\.movieDetailsClient) private var client
     @Dependency(\.observability) private var observability
 
     @ObservableState
@@ -99,6 +99,7 @@ public struct MovieDetailsFeature: Sendable {
         case movieDetails(id: Int)
         case movieIntelligence(id: Int)
         case personDetails(id: Int)
+        case castAndCrew(movieID: Int)
     }
 
     public init() {}
@@ -112,8 +113,8 @@ public struct MovieDetailsFeature: Sendable {
                 }
 
             case .updateFeatureFlags:
-                state.isWatchlistEnabled = (try? movieDetailsClient.isWatchlistEnabled()) ?? false
-                state.isIntelligenceEnabled = (try? movieDetailsClient.isIntelligenceEnabled()) ?? false
+                state.isWatchlistEnabled = (try? client.isWatchlistEnabled()) ?? false
+                state.isIntelligenceEnabled = (try? client.isIntelligenceEnabled()) ?? false
                 return .none
 
             case .fetch:
@@ -151,12 +152,12 @@ public struct MovieDetailsFeature: Sendable {
 extension MovieDetailsFeature {
 
     private func handleFetch(_ state: inout State) -> EffectOf<Self> {
-        .run { [state, movieDetailsClient] send in
+        .run { [state, client] send in
             Self.logger.info("User streaming movie")
 
-            async let movie = movieDetailsClient.fetchMovie(id: state.movieID)
-            async let recommendedMovies = movieDetailsClient.fetchRecommendedMovies(movieID: state.movieID)
-            async let credits = movieDetailsClient.fetchCredits(movieID: state.movieID)
+            async let movie = client.fetchMovie(id: state.movieID)
+            async let recommendedMovies = client.fetchRecommendedMovies(movieID: state.movieID)
+            async let credits = client.fetchCredits(movieID: state.movieID)
 
             let viewSnapshot: ViewSnapshot
             do {
@@ -176,7 +177,7 @@ extension MovieDetailsFeature {
     }
 
     private func handleToggleMovieOnWatchlist(_ state: inout State) -> EffectOf<Self> {
-        .run { [state] send in
+        .run { [state, client] send in
             Self.logger.info(
                 "User toggling movie on watchlist [movieID: \(state.movieID, privacy: .private)]")
 
@@ -187,7 +188,7 @@ extension MovieDetailsFeature {
             transaction.setData(key: "movie_id", value: state.movieID)
 
             do {
-                try await movieDetailsClient.toggleOnWatchlist(state.movieID)
+                try await client.toggleOnWatchlist(state.movieID)
                 transaction.finish()
                 await send(.toggleOnWatchlistCompleted)
             } catch let error {

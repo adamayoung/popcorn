@@ -1,0 +1,41 @@
+//
+//  CastSection.swift
+//  Popcorn
+//
+//  Copyright © 2025 Adam Young.
+//
+
+import SwiftUI
+
+struct CastSection: View {
+
+    let castMembers: [CastMember]
+    let transitionNamespace: Namespace.ID?
+    let didSelectPerson: (Int, String?) -> Void
+
+    var body: some View {
+        Section {
+            ForEach(castMembers) { member in
+                Button {
+                    didSelectPerson(member.personID, member.id)
+                } label: {
+                    CastMemberRow(member: member, transitionNamespace: transitionNamespace)
+                }
+                .buttonStyle(.plain)
+            }
+        } header: {
+            Text(verbatim: "Cast")
+        }
+    }
+
+}
+
+#Preview {
+    List {
+        CastSection(
+            castMembers: CastMember.mocks,
+            transitionNamespace: nil,
+            didSelectPerson: { _, _ in }
+        )
+    }
+}

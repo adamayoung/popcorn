@@ -7,6 +7,7 @@
 
 import ComposableArchitecture
 import ExploreFeature
+import MovieCastAndCrewFeature
 import MovieDetailsFeature
 import MovieIntelligenceFeature
 import PersonDetailsFeature
@@ -36,6 +37,8 @@ struct ExploreRootView: View {
                 tvSeriesDetails(store: store)
             case .personDetails(let store):
                 personDetails(store: store)
+            case .movieCastAndCrew(let store):
+                movieCastAndCrew(store: store)
             }
         }
         .fullScreenCover(
@@ -108,6 +111,14 @@ struct ExploreRootView: View {
                 transitionNamespace: namespace
             )
         }
+    }
+
+    @ViewBuilder
+    private func movieCastAndCrew(store: StoreOf<MovieCastAndCrewFeature>) -> some View {
+        MovieCastAndCrewView(
+            store: store,
+            transitionNamespace: namespace
+        )
     }
 
 }

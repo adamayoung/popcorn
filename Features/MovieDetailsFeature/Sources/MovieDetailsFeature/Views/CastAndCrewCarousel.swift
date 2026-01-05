@@ -14,8 +14,35 @@ struct CastAndCrewCarousel: View {
     var crewMembers: [CrewMember]
     var transitionNamespace: Namespace.ID?
     var didSelectPerson: (Int) -> Void
+    var didSelectSeeAll: () -> Void
 
     var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            header
+            carousel
+        }
+    }
+
+    private var header: some View {
+        Button {
+            didSelectSeeAll()
+        } label: {
+            HStack(spacing: 4) {
+                Text("CAST_AND_CREW", bundle: .module)
+                    .font(.title2)
+                    .fontWeight(.bold)
+
+                Image(systemName: "chevron.right")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal)
+    }
+
+    private var carousel: some View {
         Carousel {
             ForEach(castMembers) { castMember in
                 Button {
@@ -76,7 +103,8 @@ struct CastAndCrewCarousel: View {
             castMembers: CastMember.mocks,
             crewMembers: CrewMember.mocks,
             transitionNamespace: transitionNamespace,
-            didSelectPerson: { _ in }
+            didSelectPerson: { _ in },
+            didSelectSeeAll: {}
         )
     }
 }

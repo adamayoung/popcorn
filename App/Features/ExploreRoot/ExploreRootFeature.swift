@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import ExploreFeature
 import Foundation
+import MovieCastAndCrewFeature
 import MovieDetailsFeature
 import MovieIntelligenceFeature
 import PersonDetailsFeature
@@ -31,6 +32,7 @@ struct ExploreRootFeature {
         case movieDetails(MovieDetailsFeature)
         case tvSeriesDetails(TVSeriesDetailsFeature)
         case personDetails(PersonDetailsFeature)
+        case movieCastAndCrew(MovieCastAndCrewFeature)
     }
 
     enum Action {
@@ -75,6 +77,9 @@ struct ExploreRootFeature {
                 return .none
             case .path(.element(_, .movieDetails(.navigate(.personDetails(let id))))):
                 state.path.append(.personDetails(PersonDetailsFeature.State(personID: id)))
+                return .none
+            case .path(.element(_, .movieDetails(.navigate(.castAndCrew(let id))))):
+                state.path.append(.movieCastAndCrew(MovieCastAndCrewFeature.State(movieID: id)))
                 return .none
             case .path(.element(_, .tvSeriesDetails(.navigate(.tvSeriesIntelligence(let id))))):
                 state.tvSeriesIntelligence = TVSeriesIntelligenceFeature.State(tvSeriesID: id)
