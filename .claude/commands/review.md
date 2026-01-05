@@ -13,7 +13,7 @@ I'll use the specialized code-reviewer agent to perform a comprehensive review o
 3. Gather committed changes with `git diff origin/main...HEAD`
 4. Invoke the code-reviewer agent with the complete context
 
-The code-reviewer agent will review all changes against project standards (AGENTS.md, SWIFT.md, SWIFTUI.md, TCA.md, CLEANARCHITECTURE.md, SWIFTDATA.md) and provide severity-based feedback focusing on:
+The code-reviewer agent will review all changes against project standards (CLAUDE.md, SWIFT.md, SWIFTUI.md, TCA.md, CLEANARCHITECTURE.md, SWIFTDATA.md) and provide severity-based feedback focusing on:
 
 - Correctness and safety
 - Swift 6.2 concurrency violations

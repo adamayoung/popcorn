@@ -35,12 +35,6 @@ Follow gitmoji conventions (see [gitmoji.dev](https://gitmoji.dev)):
 3. Run `/format` and `/lint` before creating PR
 4. Create PR with descriptive title and summary
 5. Link related issues
-6. Request review from [specify]
-
-## Git instructions
-
-- If installed, make sure SwiftLint returns no warnings or errors before committing.
-- If installed, make sure SwiftFormat in lint mode returns no warnings or errors before committing.
 
 ## Creating PRs
 
@@ -51,4 +45,4 @@ Follow gitmoji conventions (see [gitmoji.dev](https://gitmoji.dev)):
 
 ## GitHub
 
-- if installed, use the GitHub CLI
+- Use the GitHub CLI (`gh`) for PR operations
