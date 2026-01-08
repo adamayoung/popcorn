@@ -14,10 +14,7 @@ struct MovieCastAndCrewFeatureTests {
 
     @Test("Initial state is initial")
     func initialStateIsInitial() {
-        let state = MovieCastAndCrewFeature.State(
-            movieID: 123,
-            movieTitle: "Test Movie"
-        )
+        let state = MovieCastAndCrewFeature.State(movieID: 123)
 
         #expect(state.viewState == .initial)
         #expect(state.isLoading == false)
