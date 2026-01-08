@@ -67,6 +67,7 @@ let package = Package(
                 // Context Composition & Application Layers
                 .product(name: "ConfigurationComposition", package: "PopcornConfiguration"),
                 .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),
+                .product(name: "ConfigurationUITesting", package: "PopcornConfiguration"),
                 .product(name: "DiscoverComposition", package: "PopcornDiscover"),
                 .product(name: "DiscoverApplication", package: "PopcornDiscover"),
                 .product(name: "GamesCatalogComposition", package: "PopcornGamesCatalog"),

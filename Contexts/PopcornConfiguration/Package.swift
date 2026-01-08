@@ -18,7 +18,8 @@ let package = Package(
         .library(name: "ConfigurationComposition", targets: ["ConfigurationComposition"]),
         .library(name: "ConfigurationApplication", targets: ["ConfigurationApplication"]),
         .library(name: "ConfigurationDomain", targets: ["ConfigurationDomain"]),
-        .library(name: "ConfigurationInfrastructure", targets: ["ConfigurationInfrastructure"])
+        .library(name: "ConfigurationInfrastructure", targets: ["ConfigurationInfrastructure"]),
+        .library(name: "ConfigurationUITesting", targets: ["ConfigurationUITesting"])
     ],
 
     dependencies: [
@@ -82,6 +83,15 @@ let package = Package(
                 .product(name: "CachingTestHelpers", package: "Caching"),
                 .product(name: "CoreDomainTestHelpers", package: "CoreDomain"),
                 .product(name: "ObservabilityTestHelpers", package: "Observability")
+            ]
+        ),
+
+        .target(
+            name: "ConfigurationUITesting",
+            dependencies: [
+                "ConfigurationComposition",
+                "ConfigurationApplication",
+                "ConfigurationDomain"
             ]
         )
     ]
