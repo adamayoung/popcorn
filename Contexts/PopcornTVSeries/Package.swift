@@ -24,8 +24,7 @@ let package = Package(
     dependencies: [
         .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Platform/Caching"),
-        .package(path: "../../Platform/Observability"),
-        .package(path: "../PopcornIntelligence")
+        .package(path: "../../Platform/Observability")
     ],
 
     targets: [
@@ -34,8 +33,7 @@ let package = Package(
             dependencies: [
                 "TVSeriesApplication",
                 "TVSeriesDomain",
-                "TVSeriesInfrastructure",
-                .product(name: "IntelligenceDomain", package: "PopcornIntelligence")
+                "TVSeriesInfrastructure"
             ]
         ),
 

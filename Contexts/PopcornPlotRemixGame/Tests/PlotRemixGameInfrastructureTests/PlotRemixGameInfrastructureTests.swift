@@ -1,5 +1,5 @@
 //
-//  QuizKitTests.swift
+//  PlotRemixGameInfrastructureTests.swift
 //  PopcornPlotRemixGame
 //
 //  Copyright © 2025 Adam Young.
@@ -7,7 +7,7 @@
 
 import Testing
 
-@testable import PlotRemixGameApplication
+@testable import PlotRemixGameInfrastructure
 
 @Test
 func example() async throws {
