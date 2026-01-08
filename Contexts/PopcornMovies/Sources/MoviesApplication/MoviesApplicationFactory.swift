@@ -16,6 +16,7 @@ package final class MoviesApplicationFactory {
     private let popularMovieRepository: any PopularMovieRepository
     private let similarMovieRepository: any SimilarMovieRepository
     private let movieRecommendationRepository: any MovieRecommendationRepository
+    private let movieCreditsRepository: any MovieCreditsRepository
     private let appConfigurationProvider: any AppConfigurationProviding
 
     package init(
@@ -25,6 +26,7 @@ package final class MoviesApplicationFactory {
         popularMovieRepository: some PopularMovieRepository,
         similarMovieRepository: some SimilarMovieRepository,
         movieRecommendationRepository: some MovieRecommendationRepository,
+        movieCreditsRepository: some MovieCreditsRepository,
         appConfigurationProvider: some AppConfigurationProviding
     ) {
         self.movieRepository = movieRepository
@@ -33,6 +35,7 @@ package final class MoviesApplicationFactory {
         self.popularMovieRepository = popularMovieRepository
         self.similarMovieRepository = similarMovieRepository
         self.movieRecommendationRepository = movieRecommendationRepository
+        self.movieCreditsRepository = movieCreditsRepository
         self.appConfigurationProvider = appConfigurationProvider
     }
 
@@ -112,6 +115,13 @@ package final class MoviesApplicationFactory {
         DefaultStreamMovieRecommendationsUseCase(
             movieRecommendationRepository: movieRecommendationRepository,
             movieImageRepository: movieImageRepository,
+            appConfigurationProvider: appConfigurationProvider
+        )
+    }
+
+    package func makeFetchMovieCreditsUseCase() -> some FetchMovieCreditsUseCase {
+        DefaultFetchMovieCreditsUseCase(
+            movieCreditsRepository: movieCreditsRepository,
             appConfigurationProvider: appConfigurationProvider
         )
     }

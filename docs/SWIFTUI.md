@@ -2,7 +2,7 @@
 
 ## Core instructions
 
-- See **Platform Targets** section in AGENTS.md for deployment versions.
+- **Platform Targets**: iOS 26.0+, macOS 26.0+, visionOS 2.0+
 - Swift 6.2 or later, using modern Swift concurrency.
 - SwiftUI backed up by `@Observable` classes for shared data.
 - Do not introduce third-party frameworks without asking first.
@@ -169,7 +169,7 @@ Only use `#if` when API truly doesn't exist on platform:
 
 ## Navigation
 
-### NavigationStack (iOS 16+)
+### NavigationStack
 
 Use `NavigationStack` with value-based navigation.
 

@@ -15,7 +15,7 @@ struct MovieCarousel: View {
 
     var body: some View {
         Carousel {
-            ForEach(Array(movies.enumerated()), id: \.offset) { offset, movie in
+            ForEach(movies) { movie in
                 Button {
                     didSelectMovie(movie)
                 } label: {
@@ -23,7 +23,7 @@ struct MovieCarousel: View {
                         imageURL: movie.backdropURL,
                         logoURL: movie.logoURL
                     ) {
-                        cellLabel(title: movie.title, index: offset)
+                        EmptyView()
                     }
                 }
                 .buttonStyle(.plain)
@@ -31,23 +31,6 @@ struct MovieCarousel: View {
             }
         }
         .contentMargins([.leading, .trailing], 16)
-    }
-
-    @ViewBuilder
-    private func cellLabel(title: String, index: Int) -> some View {
-        HStack(alignment: .top, spacing: 15) {
-            Text(verbatim: "\(index + 1)")
-                .font(.title)
-                .bold()
-                .foregroundStyle(Color.secondary)
-
-            Text(verbatim: title)
-                .lineLimit(2, reservesSpace: true)
-                .multilineTextAlignment(.leading)
-
-            Spacer()
-        }
-        .fixedSize(horizontal: false, vertical: true)
     }
 
 }

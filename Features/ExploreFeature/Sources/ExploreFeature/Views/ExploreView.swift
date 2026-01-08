@@ -54,7 +54,8 @@ public struct ExploreView: View {
 
 extension ExploreView {
 
-    @ViewBuilder private var loadingBody: some View {
+    @ViewBuilder
+    private var loadingBody: some View {
         ProgressView()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

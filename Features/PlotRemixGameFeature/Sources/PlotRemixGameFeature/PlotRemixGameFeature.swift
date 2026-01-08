@@ -16,7 +16,7 @@ public struct PlotRemixGameFeature: Sendable {
 
     private static let logger = Logger.plotRemixGame
 
-    @Dependency(\.plotRemixGameClient) private var plotRemixGameClient
+    @Dependency(\.plotRemixGameClient) private var client
     @Dependency(\.observability) private var observability
     @Dependency(\.dismiss) private var dismiss
 
@@ -129,7 +129,7 @@ public struct PlotRemixGameFeature: Sendable {
 extension PlotRemixGameFeature {
 
     private func handleFetchGameMetadata(_ state: inout State) -> EffectOf<Self> {
-        .run { [state] send in
+        .run { [state, client] send in
             Self.logger.info(
                 "User fetching game metadata [gameID: \(state.gameID, privacy: .private)]")
 
@@ -140,7 +140,7 @@ extension PlotRemixGameFeature {
             transaction.setData(key: "game_id", value: state.gameID)
 
             do {
-                let metadata = try await plotRemixGameClient.gameMetadata(state.gameID)
+                let metadata = try await client.gameMetadata(state.gameID)
                 transaction.finish()
                 await send(.metadataLoaded(metadata))
             } catch let error {
@@ -155,7 +155,7 @@ extension PlotRemixGameFeature {
     }
 
     private func handleGenerateGame(_ state: inout State) -> EffectOf<Self> {
-        .run { [state] send in
+        .run { [state, client] send in
             guard state.metadata != nil else {
                 return
             }
@@ -170,7 +170,7 @@ extension PlotRemixGameFeature {
 
             let game: Game
             do {
-                game = try await plotRemixGameClient.generateGame { progress in
+                game = try await client.generateGame { progress in
                     guard !Task.isCancelled else {
                         return
                     }

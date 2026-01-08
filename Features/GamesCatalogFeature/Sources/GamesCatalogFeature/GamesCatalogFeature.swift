@@ -16,7 +16,7 @@ public struct GamesCatalogFeature: Sendable {
 
     private static let logger = Logger.gamesCatalog
 
-    @Dependency(\.gamesCatalogClient) private var gamesCatalogClient
+    @Dependency(\.gamesCatalogClient) private var client
     @Dependency(\.observability) private var observability
 
     @ObservableState
@@ -78,7 +78,7 @@ public struct GamesCatalogFeature: Sendable {
                     state.viewState = .loading
                 }
 
-                return handleFetchGames(state: &state)
+                return handleFetchGames()
 
             case .loaded(let snapshot):
                 state.viewState = .ready(snapshot)
@@ -98,8 +98,8 @@ public struct GamesCatalogFeature: Sendable {
 
 extension GamesCatalogFeature {
 
-    private func handleFetchGames(state: inout State) -> EffectOf<Self> {
-        .run { send in
+    private func handleFetchGames() -> EffectOf<Self> {
+        .run { [client] send in
             Self.logger.info("User fetching games")
 
             let transaction = observability.startTransaction(
@@ -108,7 +108,7 @@ extension GamesCatalogFeature {
             )
 
             do {
-                let games = try await gamesCatalogClient.fetchGames()
+                let games = try await client.fetchGames()
                 let snapshot = ViewSnapshot(games: games)
                 transaction.finish()
                 await send(.loaded(snapshot))

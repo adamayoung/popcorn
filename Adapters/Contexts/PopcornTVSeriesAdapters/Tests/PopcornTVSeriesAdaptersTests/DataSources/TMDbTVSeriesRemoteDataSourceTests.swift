@@ -9,6 +9,7 @@ import Foundation
 import Testing
 import TMDb
 import TVSeriesDomain
+import TVSeriesInfrastructure
 
 @testable import PopcornTVSeriesAdapters
 

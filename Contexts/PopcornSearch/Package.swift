@@ -45,7 +45,11 @@ let package = Package(
         ),
         .testTarget(
             name: "SearchApplicationTests",
-            dependencies: ["SearchApplication"]
+            dependencies: [
+                "SearchApplication",
+                "SearchDomain",
+                .product(name: "CoreDomainTestHelpers", package: "CoreDomain")
+            ]
         ),
 
         .target(
@@ -68,7 +72,10 @@ let package = Package(
         ),
         .testTarget(
             name: "SearchInfrastructureTests",
-            dependencies: ["SearchInfrastructure"]
+            dependencies: [
+                "SearchInfrastructure",
+                "SearchDomain"
+            ]
         )
     ]
 )

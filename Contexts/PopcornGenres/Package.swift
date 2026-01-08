@@ -45,7 +45,8 @@ let package = Package(
         .testTarget(
             name: "GenresApplicationTests",
             dependencies: [
-                "GenresApplication"
+                "GenresApplication",
+                "GenresDomain"
             ]
         ),
 
@@ -70,7 +71,8 @@ let package = Package(
         .testTarget(
             name: "GenresInfrastructureTests",
             dependencies: [
-                "GenresInfrastructure"
+                "GenresInfrastructure",
+                "GenresDomain"
             ]
         )
     ]

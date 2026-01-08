@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class MoviesMovieEntity: Equatable, Identifiable, ModelExpirable {
+final class MoviesMovieEntity: Equatable, ModelExpirable {
 
     @Attribute(.unique) var movieID: Int
     var title: String

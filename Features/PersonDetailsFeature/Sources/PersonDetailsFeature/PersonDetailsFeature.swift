@@ -16,7 +16,7 @@ public struct PersonDetailsFeature: Sendable {
 
     private static let logger = Logger.personDetails
 
-    @Dependency(\.personDetails) private var personDetails
+    @Dependency(\.personDetailsClient) private var client
     @Dependency(\.observability) private var observability
 
     @ObservableState
@@ -99,7 +99,7 @@ public struct PersonDetailsFeature: Sendable {
 private extension PersonDetailsFeature {
 
     func handleFetchPerson(_ state: inout State) -> EffectOf<Self> {
-        .run { [state] send in
+        .run { [state, client] send in
             Self.logger.info(
                 "User fetching person [personID: \"\(state.personID, privacy: .private)\"]")
 
@@ -110,7 +110,7 @@ private extension PersonDetailsFeature {
             transaction.setData(key: "person_id", value: state.personID)
 
             do {
-                let person = try await personDetails.fetch(state.personID)
+                let person = try await client.fetchPerson(state.personID)
                 let snapshot = ViewSnapshot(person: person)
                 transaction.finish()
                 await send(.loaded(snapshot))

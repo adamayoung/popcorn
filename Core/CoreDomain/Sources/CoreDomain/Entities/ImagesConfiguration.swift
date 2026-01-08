@@ -119,7 +119,7 @@ public struct ImagesConfiguration: Sendable {
         )
     }
 
-    public func profileURL(for path: URL?) -> ImageURLSet? {
+    public func profileURLSet(for path: URL?) -> ImageURLSet? {
         guard
             let path,
             let thumbnail = profileURLHandler(path, ImageWidth.Profile.thumbnail),

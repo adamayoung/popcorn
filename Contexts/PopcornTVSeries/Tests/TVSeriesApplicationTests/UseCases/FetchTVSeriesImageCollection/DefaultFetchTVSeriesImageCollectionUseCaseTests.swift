@@ -13,7 +13,6 @@ import TVSeriesDomain
 
 @testable import TVSeriesApplication
 
-// swiftlint:disable type_name
 @Suite("DefaultFetchTVSeriesImageCollectionUseCaseTests")
 struct DefaultFetchTVSeriesImageCollectionUseCaseTests {
 
@@ -212,5 +211,3 @@ struct DefaultFetchTVSeriesImageCollectionUseCaseTests {
     }
 
 }
-
-// swiftlint:enable type_name

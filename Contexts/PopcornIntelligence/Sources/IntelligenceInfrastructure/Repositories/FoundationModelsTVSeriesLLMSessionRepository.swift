@@ -11,7 +11,6 @@ import IntelligenceDomain
 import Observability
 import OSLog
 
-// swiftlint:disable:next type_name
 final class FoundationModelsTVSeriesLLMSessionRepository: TVSeriesLLMSessionRepository {
 
     private typealias FMLanguageModelSession = FoundationModels.LanguageModelSession
@@ -41,7 +40,7 @@ final class FoundationModelsTVSeriesLLMSessionRepository: TVSeriesLLMSessionRepo
         }
 
         let tools: [any Tool] = [
-            tvSeriesToolDataSource.tvSeriesDetails()
+            tvSeriesToolDataSource.tvSeries()
         ]
 
         let instructions = """

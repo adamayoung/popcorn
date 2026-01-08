@@ -11,7 +11,6 @@ import IntelligenceDomain
 import Observability
 import OSLog
 
-// swiftlint:disable:next type_name
 final class FoundationModelsMovieLLMSessionRepository: MovieLLMSessionRepository {
 
     private typealias FMLanguageModelSession = FoundationModels.LanguageModelSession
@@ -41,7 +40,8 @@ final class FoundationModelsMovieLLMSessionRepository: MovieLLMSessionRepository
         }
 
         let tools: [any Tool] = [
-            movieToolDataSource.movieDetails()
+            movieToolDataSource.movie(),
+            movieToolDataSource.movieCredits()
         ]
 
         let instructions = """

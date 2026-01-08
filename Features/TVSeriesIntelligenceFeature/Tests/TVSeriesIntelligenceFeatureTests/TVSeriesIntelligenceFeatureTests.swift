@@ -9,7 +9,7 @@ import Testing
 
 @testable import TVSeriesIntelligenceFeature
 
-@Suite(.tags(.unit))
+@Suite("TVSeriesIntelligenceFeatureTests")
 struct TVSeriesIntelligenceFeatureTests {
 
     @Test

@@ -14,7 +14,7 @@ import TrendingApplication
 @DependencyClient
 struct TrendingPeopleClient: Sendable {
 
-    var fetch: @Sendable () async throws -> [PersonPreview]
+    var fetchTrendingPeople: @Sendable () async throws -> [PersonPreview]
 
 }
 
@@ -24,7 +24,7 @@ extension TrendingPeopleClient: DependencyKey {
         @Dependency(\.fetchTrendingPeople) var fetchTrendingPeople
 
         return TrendingPeopleClient(
-            fetch: {
+            fetchTrendingPeople: {
                 let personPreviews = try await fetchTrendingPeople.execute()
                 let mapper = PersonPreviewMapper()
                 return personPreviews.map(mapper.map)
@@ -34,23 +34,8 @@ extension TrendingPeopleClient: DependencyKey {
 
     static var previewValue: TrendingPeopleClient {
         TrendingPeopleClient(
-            fetch: {
-                [
-                    PersonPreview(
-                        id: 234_352,
-                        name: "Margot Robbie",
-                        profileURL: URL(
-                            string:
-                            "https://image.tmdb.org/t/p/h632/euDPyqLnuwaWMHajcU3oZ9uZezR.jpg")
-                    ),
-                    PersonPreview(
-                        id: 2283,
-                        name: "Stanley Tucci",
-                        profileURL: URL(
-                            string:
-                            "https://image.tmdb.org/t/p/h632/q4TanMDI5Rgsvw4SfyNbPBh4URr.jpg")
-                    )
-                ]
+            fetchTrendingPeople: {
+                PersonPreview.mocks
             }
         )
     }
@@ -59,7 +44,7 @@ extension TrendingPeopleClient: DependencyKey {
 
 extension DependencyValues {
 
-    var trendingPeople: TrendingPeopleClient {
+    var trendingPeopleClient: TrendingPeopleClient {
         get {
             self[TrendingPeopleClient.self]
         }

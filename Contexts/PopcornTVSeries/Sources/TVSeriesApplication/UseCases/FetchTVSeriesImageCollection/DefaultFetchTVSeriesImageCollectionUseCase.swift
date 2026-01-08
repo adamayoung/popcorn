@@ -10,7 +10,6 @@ import Foundation
 import Observability
 import TVSeriesDomain
 
-// swiftlint:disable:next type_name
 final class DefaultFetchTVSeriesImageCollectionUseCase: FetchTVSeriesImageCollectionUseCase {
 
     private let repository: any TVSeriesRepository

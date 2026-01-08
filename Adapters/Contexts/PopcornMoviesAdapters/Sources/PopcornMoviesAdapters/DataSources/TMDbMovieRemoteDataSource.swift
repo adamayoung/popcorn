@@ -101,6 +101,19 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
         return movies
     }
 
+    func credits(forMovie movieID: Int) async throws(MovieRemoteDataSourceError) -> Credits {
+        let tmdbCredits: TMDb.ShowCredits
+        do {
+            tmdbCredits = try await movieService.credits(forMovie: movieID, language: "en")
+        } catch let error {
+            throw MovieRemoteDataSourceError(error)
+        }
+
+        let mapper = CreditsMapper()
+        let credits = mapper.map(tmdbCredits)
+        return credits
+    }
+
 }
 
 private extension MovieRemoteDataSourceError {

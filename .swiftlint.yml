@@ -5,6 +5,10 @@ excluded:
   - "**/*.xcodeproj/**"
   - "**/*.xcworkspace/**"
 
+disabled_rules:
+  - type_name
+  - large_tuple
+
 opt_in_rules:
   - attributes
   - closure_spacing
@@ -26,6 +30,9 @@ attributes:
     - "@Published"
     - "@testable"
     - "@Attribute"
+    - "@Relationship"
+  always_on_line_above:
+    - "@ViewBuilder"
   attributes_with_arguments_always_on_line_above: true
 
 identifier_name:

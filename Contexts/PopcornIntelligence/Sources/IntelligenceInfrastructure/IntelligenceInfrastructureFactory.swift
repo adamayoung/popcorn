@@ -13,15 +13,18 @@ package final class IntelligenceInfrastructureFactory {
 
     private let movieProvider: any MovieProviding
     private let tvSeriesProvider: any TVSeriesProviding
+    private let creditsProvider: any CreditsProviding
 //    private let observability: any Observing
 
     package init(
         movieProvider: some MovieProviding,
-        tvSeriesProvider: some TVSeriesProviding
+        tvSeriesProvider: some TVSeriesProviding,
+        creditsProvider: some CreditsProviding
 //        observability: some Observing
     ) {
         self.movieProvider = movieProvider
         self.tvSeriesProvider = tvSeriesProvider
+        self.creditsProvider = creditsProvider
 //        self.observability = observability
     }
 
@@ -51,7 +54,8 @@ extension IntelligenceInfrastructureFactory {
 
     private func makeMovieToolDataSource() -> some MovieToolDataSource {
         DefaultMovieToolDataSource(
-            movieProvider: movieProvider
+            movieProvider: movieProvider,
+            creditsProvider: creditsProvider
         )
     }
 

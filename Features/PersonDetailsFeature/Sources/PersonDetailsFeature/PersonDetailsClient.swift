@@ -13,7 +13,7 @@ import PeopleApplication
 @DependencyClient
 struct PersonDetailsClient: Sendable {
 
-    var fetch: @Sendable (Int) async throws -> Person
+    var fetchPerson: @Sendable (Int) async throws -> Person
 
 }
 
@@ -23,7 +23,7 @@ extension PersonDetailsClient: DependencyKey {
         @Dependency(\.fetchPersonDetails) var fetchPersonDetails
 
         return PersonDetailsClient(
-            fetch: { id in
+            fetchPerson: { id in
                 let person = try await fetchPersonDetails.execute(id: id)
                 let mapper = PersonMapper()
                 return mapper.map(person)
@@ -33,19 +33,8 @@ extension PersonDetailsClient: DependencyKey {
 
     static var previewValue: PersonDetailsClient {
         PersonDetailsClient(
-            fetch: { _ in
-                try await Task.sleep(for: .seconds(2))
-
-                return Person(
-                    id: 2283,
-                    name: "Stanley Tucci",
-                    biography:
-                    "Stanley Tucci Stanley Tucci Stanley Tucci Stanley Tucci Stanley Tucci",
-                    knownForDepartment: "Acting",
-                    gender: .male,
-                    profileURL: URL(
-                        string: "https://image.tmdb.org/t/p/h632/q4TanMDI5Rgsvw4SfyNbPBh4URr.jpg")
-                )
+            fetchPerson: { _ in
+                Person.mock
             }
         )
     }
@@ -54,7 +43,7 @@ extension PersonDetailsClient: DependencyKey {
 
 extension DependencyValues {
 
-    var personDetails: PersonDetailsClient {
+    var personDetailsClient: PersonDetailsClient {
         get {
             self[PersonDetailsClient.self]
         }

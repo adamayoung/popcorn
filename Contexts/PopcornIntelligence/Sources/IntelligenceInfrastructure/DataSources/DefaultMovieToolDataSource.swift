@@ -17,13 +17,22 @@ import IntelligenceDomain
 final class DefaultMovieToolDataSource: MovieToolDataSource {
 
     private let movieProvider: any MovieProviding
+    private let creditsProvider: any CreditsProviding
 
-    init(movieProvider: some MovieProviding) {
+    init(
+        movieProvider: some MovieProviding,
+        creditsProvider: some CreditsProviding
+    ) {
         self.movieProvider = movieProvider
+        self.creditsProvider = creditsProvider
     }
 
-    func movieDetails() -> any Tool {
-        MovieDetailsTool(movieProvider: movieProvider)
+    func movie() -> any Tool {
+        MovieTool(movieProvider: movieProvider)
+    }
+
+    func movieCredits() -> any Tool {
+        MovieCreditsTool(creditsProvider: creditsProvider)
     }
 
 }

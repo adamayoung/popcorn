@@ -45,7 +45,10 @@ let package = Package(
         ),
         .testTarget(
             name: "IntelligenceApplicationTests",
-            dependencies: ["IntelligenceApplication"]
+            dependencies: [
+                "IntelligenceApplication",
+                "IntelligenceDomain"
+            ]
         ),
 
         .target(
@@ -73,6 +76,7 @@ let package = Package(
             dependencies: [
                 "IntelligenceInfrastructure",
                 "IntelligenceDomain",
+                "CoreDomain",
                 .product(name: "ObservabilityTestHelpers", package: "Observability")
             ]
         )

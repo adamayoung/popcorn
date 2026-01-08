@@ -41,7 +41,10 @@ let package = Package(
         ),
         .testTarget(
             name: "GamesCatalogApplicationTests",
-            dependencies: ["GamesCatalogApplication"]
+            dependencies: [
+                "GamesCatalogApplication",
+                "GamesCatalogDomain"
+            ]
         ),
 
         .target(
@@ -61,7 +64,10 @@ let package = Package(
         ),
         .testTarget(
             name: "GamesCatalogInfrastructureTests",
-            dependencies: ["GamesCatalogInfrastructure"]
+            dependencies: [
+                "GamesCatalogInfrastructure",
+                "GamesCatalogDomain"
+            ]
         )
     ]
 )

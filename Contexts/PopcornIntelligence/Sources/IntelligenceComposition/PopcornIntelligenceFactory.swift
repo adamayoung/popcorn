@@ -20,12 +20,14 @@ public struct PopcornIntelligenceFactory {
 
     public init(
         movieProvider: some MovieProviding,
-        tvSeriesProvider: some TVSeriesProviding
+        tvSeriesProvider: some TVSeriesProviding,
+        creditsProvider: some CreditsProviding
 //        observability: some Observing
     ) {
         let infrastructureFactory = IntelligenceInfrastructureFactory(
             movieProvider: movieProvider,
-            tvSeriesProvider: tvSeriesProvider
+            tvSeriesProvider: tvSeriesProvider,
+            creditsProvider: creditsProvider
 //            observability: observability
         )
 
