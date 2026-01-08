@@ -92,8 +92,118 @@ package final class MoviesApplicationFactory {
 
 Implements repositories and data sources using SwiftData and external APIs.
 
+#### Directory Structure
+
+```
+MoviesInfrastructure/
+├── DataSources/
+│   ├── Local/
+│   │   ├── SwiftDataMovieLocalDataSource.swift  # SwiftData implementation
+│   │   ├── Models/
+│   │   │   └── MovieEntity.swift                # SwiftData @Model
+│   │   └── Mappers/
+│   │       └── MovieEntityMapper.swift          # Entity ↔ Domain mapping
+│   └── Protocols/
+│       ├── Local/
+│       │   └── MovieLocalDataSource.swift       # Local data source protocol
+│       └── Remote/
+│           └── MovieRemoteDataSource.swift      # Remote data source protocol
+├── Repositories/
+│   └── DefaultMovieRepository.swift
+└── MoviesInfrastructureFactory.swift
+```
+
+#### Data Source Protocols
+
+Data source protocols define contracts for data access. Place them in `Protocols/Local/` or `Protocols/Remote/`:
+
 ```swift
-// Repository implementation (cache-then-network)
+// Protocols/Remote/MovieRemoteDataSource.swift
+public protocol MovieRemoteDataSource: Sendable {
+    func movie(withID id: Int) async throws(MovieRemoteDataSourceError) -> Movie
+    func credits(forMovie movieID: Int) async throws(MovieRemoteDataSourceError) -> Credits
+}
+
+public enum MovieRemoteDataSourceError: Error {
+    case notFound
+    case unauthorised
+    case unknown(Error? = nil)
+}
+```
+
+```swift
+// Protocols/Local/MovieLocalDataSource.swift
+public protocol MovieLocalDataSource: Actor {
+    func movie(withID id: Int) async throws -> Movie?
+    func setMovie(_ movie: Movie) async throws
+}
+```
+
+**Key differences:**
+- Remote protocols use `Sendable` conformance
+- Local protocols use `Actor` for thread-safe SwiftData access
+- Remote protocols have typed throws; local protocols use optional returns for cache misses
+
+#### Local Data Source Implementation
+
+Local data sources use SwiftData with actor isolation:
+
+```swift
+// DataSources/Local/SwiftDataMovieLocalDataSource.swift
+public actor SwiftDataMovieLocalDataSource: MovieLocalDataSource {
+    private let modelContainer: ModelContainer
+
+    public init(modelContainer: ModelContainer) {
+        self.modelContainer = modelContainer
+    }
+
+    public func movie(withID id: Int) async throws -> Movie? {
+        let context = ModelContext(modelContainer)
+        let predicate = #Predicate<MovieEntity> { $0.id == id }
+        let descriptor = FetchDescriptor(predicate: predicate)
+
+        guard let entity = try context.fetch(descriptor).first else {
+            return nil
+        }
+
+        return MovieEntityMapper().mapToDomain(entity)
+    }
+
+    public func setMovie(_ movie: Movie) async throws {
+        let context = ModelContext(modelContainer)
+        let entity = MovieEntityMapper().mapToEntity(movie)
+        context.insert(entity)
+        try context.save()
+    }
+}
+```
+
+#### Remote Data Source Implementation
+
+Remote data sources are implemented in the Adapters layer, not Infrastructure:
+
+```swift
+// Adapters/Contexts/PopcornMoviesAdapters/DataSources/TMDbMovieRemoteDataSource.swift
+public final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
+    private let movieService: any MovieService
+
+    public func movie(withID id: Int) async throws(MovieRemoteDataSourceError) -> Movie {
+        do {
+            let dto = try await movieService.details(forMovie: id)
+            return MovieMapper().map(dto)
+        } catch let error as TMDbError {
+            throw error.toDataSourceError()
+        }
+    }
+}
+```
+
+#### Repository Implementation
+
+Repositories coordinate between local and remote data sources:
+
+```swift
+// Repositories/DefaultMovieRepository.swift
 final class DefaultMovieRepository: MovieRepository {
     private let remoteDataSource: any MovieRemoteDataSource
     private let localDataSource: any MovieLocalDataSource
@@ -110,6 +220,53 @@ final class DefaultMovieRepository: MovieRepository {
     }
 }
 ```
+
+#### Infrastructure Factory
+
+Creates repositories with injected data sources:
+
+```swift
+// MoviesInfrastructureFactory.swift
+package final class MoviesInfrastructureFactory {
+    private let remoteDataSource: any MovieRemoteDataSource
+    private let localDataSource: any MovieLocalDataSource
+
+    package init(
+        remoteDataSource: some MovieRemoteDataSource,
+        modelContainer: ModelContainer
+    ) {
+        self.remoteDataSource = remoteDataSource
+        self.localDataSource = SwiftDataMovieLocalDataSource(modelContainer: modelContainer)
+    }
+
+    package func makeMovieRepository() -> some MovieRepository {
+        DefaultMovieRepository(
+            remoteDataSource: remoteDataSource,
+            localDataSource: localDataSource
+        )
+    }
+}
+```
+
+#### Adding a New Data Source
+
+1. Create protocol in `Protocols/Local/` or `Protocols/Remote/`:
+   ```swift
+   // Protocols/Remote/MovieCreditsRemoteDataSource.swift
+   public protocol MovieCreditsRemoteDataSource: Sendable {
+       func credits(forMovie movieID: Int) async throws(MovieCreditsRemoteDataSourceError) -> Credits
+   }
+   ```
+
+2. For local data sources, create SwiftData entity and mapper:
+   ```
+   DataSources/Local/Models/CreditsEntity.swift
+   DataSources/Local/Mappers/CreditsEntityMapper.swift
+   ```
+
+3. Implement the data source (local in Infrastructure, remote in Adapters)
+
+4. Update the Infrastructure factory to expose the new data source
 
 SwiftData entities are internal to Infrastructure and mapped to domain entities at boundaries.
 

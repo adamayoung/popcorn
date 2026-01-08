@@ -20,7 +20,7 @@ SwiftData is used exclusively in the Infrastructure layer:
 ## Model Definition
 
 ```swift
-// Infrastructure/DataSources/Local/Models/MoviesMovieEntity.swift
+// DataSources/Local/Models/MoviesMovieEntity.swift
 @Model
 final class MoviesMovieEntity {
     // Primary identifier (NOT @Attribute(.unique) for CloudKit)
@@ -50,8 +50,8 @@ final class MoviesMovieEntity {
 ## Mapping to Domain Entities
 
 ```swift
-// Infrastructure/DataSources/Local/Mappers/MovieMapper.swift
-struct MovieMapper {
+// DataSources/Local/Mappers/MovieEntityMapper.swift
+struct MovieEntityMapper {
     func map(_ entity: MoviesMovieEntity) -> Movie {
         Movie(
             id: entity.movieID,
@@ -80,10 +80,12 @@ struct MovieMapper {
 
 ## Local Data Source Pattern
 
+Use the `@ModelActor` macro for SwiftData actors that need automatic `ModelContainer` and `ModelContext` injection:
+
 ```swift
-// Infrastructure/DataSources/Local/SwiftDataMovieLocalDataSource.swift
+// DataSources/Local/SwiftDataMovieLocalDataSource.swift
 @ModelActor
-actor SwiftDataMovieLocalDataSource: MovieLocalDataSource {
+public actor SwiftDataMovieLocalDataSource: MovieLocalDataSource {
     private let ttl: TimeInterval = 60 * 60 * 24  // 1 day cache
 
     func movie(withID id: Int) async throws(MovieLocalDataSourceError) -> Movie? {
@@ -100,11 +102,11 @@ actor SwiftDataMovieLocalDataSource: MovieLocalDataSource {
             return nil
         }
 
-        return MovieMapper().map(entity)
+        return MovieEntityMapper().map(entity)
     }
 
     func setMovie(_ movie: Movie) async throws(MovieLocalDataSourceError) {
-        let entity = MovieMapper().map(movie)
+        let entity = MovieEntityMapper().map(movie)
         modelContext.insert(entity)
         try modelContext.save()
     }
@@ -118,7 +120,7 @@ actor SwiftDataMovieLocalDataSource: MovieLocalDataSource {
 ## Repository Using Local + Remote
 
 ```swift
-// Infrastructure/Repositories/DefaultMovieRepository.swift
+// Repositories/DefaultMovieRepository.swift
 final class DefaultMovieRepository: MovieRepository {
     private let remoteDataSource: any MovieRemoteDataSource
     private let localDataSource: any MovieLocalDataSource

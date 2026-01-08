@@ -168,11 +168,46 @@ let data = try! await fetchData()
 ```swift
 import Testing
 
-@Test
-func movieTitleIsCorrect() {
-    let movie = Movie(id: 1, title: "Test", overview: "Overview")
-    #expect(movie.title == "Test")
+@Suite("MovieRepository")
+struct MovieRepositoryTests {
+
+    @Test("movie returns cached value when available")
+    func movieReturnsCachedValueWhenAvailable() async throws {
+        // Test implementation
+    }
+
 }
+```
+
+### Test Naming Conventions
+
+Use descriptive test names that explain the scenario:
+
+```swift
+// Good: Describes behavior
+@Test("execute returns movie details on success")
+@Test("execute throws not found error when movie does not exist")
+
+// Bad: Vague names
+@Test("test execute")
+@Test("test error")
+```
+
+### Test Directory Structure
+
+Organize tests to mirror source structure:
+
+```
+Tests/MoviesApplicationTests/
+├── Helpers/
+│   ├── Movie+Mocks.swift
+│   └── Credits+Mocks.swift
+├── Mocks/
+│   ├── MockMovieRepository.swift
+│   └── MockCreditsRepository.swift
+└── UseCases/
+    └── FetchMovieDetails/
+        └── DefaultFetchMovieDetailsUseCaseTests.swift
 ```
 
 ### Use try #require() for Optionals
@@ -248,5 +283,88 @@ final class MovieCache: Sendable {
 // Actors are implicitly Sendable
 actor MovieStore {
     private var movies: [Movie] = []
+}
+```
+
+## Mock Patterns
+
+### Mock Classes for Protocols
+
+Use `@unchecked Sendable` for mocks with mutable state:
+
+```swift
+final class MockMovieRepository: MovieRepository, @unchecked Sendable {
+
+    var movieCallCount = 0
+    var movieCalledWith: [Int] = []
+    var movieStub: Result<Movie, MovieRepositoryError>?
+
+    func movie(withID id: Int) async throws(MovieRepositoryError) -> Movie {
+        movieCallCount += 1
+        movieCalledWith.append(id)
+
+        guard let stub = movieStub else {
+            throw .unknown()
+        }
+
+        switch stub {
+        case .success(let movie):
+            return movie
+        case .failure(let error):
+            throw error
+        }
+    }
+
+}
+```
+
+### Mock Extensions for Domain Entities
+
+Create static mock factories on domain types:
+
+```swift
+// MoviePreview+Mocks.swift
+extension MoviePreview {
+
+    static func mock(
+        id: Int = 1,
+        title: String = "Test Movie",
+        overview: String = "A test movie overview",
+        releaseDate: Date? = nil
+    ) -> MoviePreview {
+        MoviePreview(
+            id: id,
+            title: title,
+            overview: overview,
+            releaseDate: releaseDate
+        )
+    }
+
+    static var mocks: [MoviePreview] {
+        [
+            .mock(id: 1, title: "Movie One"),
+            .mock(id: 2, title: "Movie Two"),
+            .mock(id: 3, title: "Movie Three")
+        ]
+    }
+
+}
+```
+
+### Actor Mocks
+
+For actor protocols, use `nonisolated(unsafe)` for stub properties:
+
+```swift
+actor MockMovieLocalDataSource: MovieLocalDataSource {
+
+    nonisolated(unsafe) var movieStub: Movie?
+    var movieCallCount = 0
+
+    func movie(withID id: Int) async throws -> Movie? {
+        movieCallCount += 1
+        return movieStub
+    }
+
 }
 ```

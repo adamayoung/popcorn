@@ -169,7 +169,7 @@ Only use `#if` when API truly doesn't exist on platform:
 
 ## Navigation
 
-### NavigationStack (iOS 16+)
+### NavigationStack
 
 Use `NavigationStack` with value-based navigation.
 

@@ -16,8 +16,6 @@ struct SentryObservabilityProvider: ObservabilityProviding {
 
     @MainActor
     func start(_ config: ObservabilityConfiguration) async throws {
-        let isDebug = config.environment == .production ? false : true
-
         SentrySDK.start { options in
             options.dsn = config.dsn
             options.environment = config.environment.rawValue
@@ -29,7 +27,7 @@ struct SentryObservabilityProvider: ObservabilityProviding {
 
             options.enableMetricKit = true
 
-            options.debug = false // isDebug
+            options.debug = false
         }
 
         let user = User()
@@ -39,7 +37,7 @@ struct SentryObservabilityProvider: ObservabilityProviding {
         if SentrySDK.isEnabled {
             Self.logger
                 .info(
-                    "Sentry enabled (DSN: \(config.dsn, privacy: .private), environment: \(config.environment.rawValue, privacy: .public), debug: \(isDebug, privacy: .public))"
+                    "Sentry enabled (DSN: \(config.dsn, privacy: .private), environment: \(config.environment.rawValue, privacy: .public))"
                 )
         } else {
             Self.logger
