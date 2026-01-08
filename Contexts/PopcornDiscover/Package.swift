@@ -47,7 +47,11 @@ let package = Package(
         ),
         .testTarget(
             name: "DiscoverApplicationTests",
-            dependencies: ["DiscoverApplication"]
+            dependencies: [
+                "DiscoverApplication",
+                .product(name: "CoreDomainTestHelpers", package: "CoreDomain"),
+                .product(name: "ObservabilityTestHelpers", package: "Observability")
+            ]
         ),
 
         .target(
@@ -71,7 +75,10 @@ let package = Package(
         ),
         .testTarget(
             name: "DiscoverInfrastructureTests",
-            dependencies: ["DiscoverInfrastructure"]
+            dependencies: [
+                "DiscoverInfrastructure",
+                .product(name: "ObservabilityTestHelpers", package: "Observability")
+            ]
         )
     ]
 )

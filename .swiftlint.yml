@@ -5,6 +5,10 @@ excluded:
   - "**/*.xcodeproj/**"
   - "**/*.xcworkspace/**"
 
+disabled_rules:
+  - type_name
+  - large_tuple
+
 opt_in_rules:
   - attributes
   - closure_spacing

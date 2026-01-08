@@ -7,6 +7,7 @@
 
 import Foundation
 import TVSeriesDomain
+import TVSeriesInfrastructure
 
 final class MockTVSeriesRemoteDataSource: TVSeriesRemoteDataSource, @unchecked Sendable {
 

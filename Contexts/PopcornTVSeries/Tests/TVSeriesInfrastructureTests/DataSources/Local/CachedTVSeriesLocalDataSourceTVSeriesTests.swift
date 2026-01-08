@@ -14,10 +14,8 @@ import TVSeriesDomain
 
 @testable import TVSeriesInfrastructure
 
-// swiftlint:disable type_name
 @Suite("CachedTVSeriesLocalDataSource TV Series Tests")
 struct CachedTVSeriesLocalDataSourceTVSeriesTests {
-    // swiftlint:enable type_name
 
     let mockCache: MockCache
     let mockObservabilityProvider: MockObservabilityProvider

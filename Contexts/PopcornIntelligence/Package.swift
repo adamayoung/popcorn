@@ -45,7 +45,10 @@ let package = Package(
         ),
         .testTarget(
             name: "IntelligenceApplicationTests",
-            dependencies: ["IntelligenceApplication"]
+            dependencies: [
+                "IntelligenceApplication",
+                "IntelligenceDomain"
+            ]
         ),
 
         .target(

@@ -7,8 +7,9 @@
 
 import Foundation
 import TVSeriesDomain
+import TVSeriesInfrastructure
 
-actor MockTVSeriesLocalDataSource: TVSeriesLocalDataSource, @unchecked Sendable {
+actor MockTVSeriesLocalDataSource: TVSeriesLocalDataSource {
 
     var tvSeriesWithIDCallCount = 0
     var tvSeriesWithIDCalledWith: [Int] = []

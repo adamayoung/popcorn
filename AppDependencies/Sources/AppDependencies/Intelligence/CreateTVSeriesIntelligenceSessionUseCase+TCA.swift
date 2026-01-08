@@ -11,7 +11,6 @@ import IntelligenceApplication
 import IntelligenceComposition
 import PopcornIntelligenceAdapters
 
-// swiftlint:disable:next type_name
 enum CreateTVSeriesIntelligenceSessionUseCaseKey: DependencyKey {
 
     static var liveValue: any CreateTVSeriesIntelligenceSessionUseCase {

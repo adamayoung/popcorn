@@ -12,10 +12,8 @@ import Testing
 
 @testable import PlotRemixGameInfrastructure
 
-// swiftlint:disable type_name
 @Suite("FoundationModelsSynopsisRiddleGeneratorTests")
 struct FoundationModelsSynopsisRiddleGeneratorTests {
-    // swiftlint:enable type_name
 
     private let generator: FoundationModelsSynopsisRiddleGenerator
     private let mockObservability: MockObservability

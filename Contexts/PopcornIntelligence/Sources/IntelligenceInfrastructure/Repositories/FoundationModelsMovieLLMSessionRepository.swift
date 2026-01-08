@@ -11,7 +11,6 @@ import IntelligenceDomain
 import Observability
 import OSLog
 
-// swiftlint:disable:next type_name
 final class FoundationModelsMovieLLMSessionRepository: MovieLLMSessionRepository {
 
     private typealias FMLanguageModelSession = FoundationModels.LanguageModelSession

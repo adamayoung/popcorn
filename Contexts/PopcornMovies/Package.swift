@@ -48,7 +48,11 @@ let package = Package(
         ),
         .testTarget(
             name: "MoviesApplicationTests",
-            dependencies: ["MoviesApplication"]
+            dependencies: [
+                "MoviesApplication",
+                "MoviesDomain",
+                .product(name: "CoreDomainTestHelpers", package: "CoreDomain")
+            ]
         ),
 
         .target(
@@ -72,7 +76,10 @@ let package = Package(
         ),
         .testTarget(
             name: "MoviesInfrastructureTests",
-            dependencies: ["MoviesInfrastructure"]
+            dependencies: [
+                "MoviesInfrastructure",
+                "MoviesDomain"
+            ]
         )
     ]
 )

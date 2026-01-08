@@ -8,7 +8,6 @@
 import Foundation
 import IntelligenceDomain
 
-// swiftlint:disable:next type_name
 final class DefaultCreateTVSeriesIntelligenceSessionUseCase: CreateTVSeriesIntelligenceSessionUseCase {
 
     private let tvSeriesSessionRepository: any TVSeriesLLMSessionRepository

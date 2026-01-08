@@ -1,0 +1,25 @@
+//
+//  Credits+Mocks.swift
+//  PopcornMovies
+//
+//  Copyright © 2025 Adam Young.
+//
+
+import Foundation
+import MoviesDomain
+
+extension Credits {
+
+    static func mock(
+        id: Int = 1,
+        cast: [CastMember] = CastMember.mocks,
+        crew: [CrewMember] = CrewMember.mocks
+    ) -> Credits {
+        Credits(
+            id: id,
+            cast: cast,
+            crew: crew
+        )
+    }
+
+}
