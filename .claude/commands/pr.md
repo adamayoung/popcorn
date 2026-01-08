@@ -16,8 +16,9 @@ I'll create a pull request for the current branch by following these steps. If a
 8. Analyze the commits and changes to generate an appropriate title and summary
 9. Push the current branch to remote if not already pushed
 10. Create a PR using `gh pr create` with:
-    - A descriptive title with gitmoji prefix (e.g., "✨ Add new feature" or "📚 Improve documentation")
+    - **IMPORTANT: Title MUST start with a gitmoji prefix** (e.g., "✨ Add new feature", "🐛 Fix bug", "📚 Improve documentation")
         - Refer to <https://gitmoji.dev> to use the correct emoji
+        - Common: ✨ feature, 🐛 bugfix, ♻️ refactor, 🧪 tests, 📚 docs, 🔧 config, 🎨 style
     - A comprehensive summary with bullet points
     - Proper formatting with sections (Summary, Changes, Benefits, etc.)
 

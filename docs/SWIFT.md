@@ -4,6 +4,30 @@ This repository uses Swift 6.2 with strict concurrency. Follow these guidelines 
 
 **Platform Targets**: iOS 26.0+, macOS 26.0+, visionOS 2.0+
 
+## File Organization
+
+### One Type Per File
+
+Each file should contain only one primary type (class, struct, enum, actor, or protocol). This applies to all generated code including mocks, helpers, and test fixtures.
+
+```swift
+// Good: Separate files
+// MockMovieRepository.swift
+final class MockMovieRepository: MovieRepository { ... }
+
+// MockTVSeriesRepository.swift
+final class MockTVSeriesRepository: TVSeriesRepository { ... }
+
+// Bad: Multiple types in one file
+// Mocks.swift
+final class MockMovieRepository: MovieRepository { ... }
+final class MockTVSeriesRepository: TVSeriesRepository { ... }
+```
+
+**Exceptions:**
+- Small, tightly-coupled types can share a file (e.g., an enum with its associated error type)
+- Extensions on the same type can share a file
+
 ## Concurrency
 
 ### Strict Concurrency Mode

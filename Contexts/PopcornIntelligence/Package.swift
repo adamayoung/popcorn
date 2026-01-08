@@ -76,6 +76,7 @@ let package = Package(
             dependencies: [
                 "IntelligenceInfrastructure",
                 "IntelligenceDomain",
+                "CoreDomain",
                 .product(name: "ObservabilityTestHelpers", package: "Observability")
             ]
         )
