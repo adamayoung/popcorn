@@ -2,7 +2,7 @@
 //  PopcornUITestCase.swift
 //  Popcorn
 //
-//  Created by Adam Young on 08/01/2026.
+//  Copyright © 2025 Adam Young.
 //
 
 import XCTest
@@ -15,9 +15,9 @@ class PopcornUITestCase: XCTestCase {
     override func setUp() async throws {
         try await super.setUp()
         continueAfterFailure = false
-#if os(iOS)
-        XCUIDevice.shared.orientation = .portrait
-#endif
+        #if os(iOS)
+            XCUIDevice.shared.orientation = .portrait
+        #endif
         app = XCUIApplication()
         app.launchArguments = ["-uitest"]
         app.launch()

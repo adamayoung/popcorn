@@ -18,7 +18,8 @@ let package = Package(
         .library(name: "IntelligenceComposition", targets: ["IntelligenceComposition"]),
         .library(name: "IntelligenceApplication", targets: ["IntelligenceApplication"]),
         .library(name: "IntelligenceDomain", targets: ["IntelligenceDomain"]),
-        .library(name: "IntelligenceInfrastructure", targets: ["IntelligenceInfrastructure"])
+        .library(name: "IntelligenceInfrastructure", targets: ["IntelligenceInfrastructure"]),
+        .library(name: "IntelligenceUITesting", targets: ["IntelligenceUITesting"])
     ],
 
     dependencies: [
@@ -78,6 +79,15 @@ let package = Package(
                 "IntelligenceDomain",
                 "CoreDomain",
                 .product(name: "ObservabilityTestHelpers", package: "Observability")
+            ]
+        ),
+
+        .target(
+            name: "IntelligenceUITesting",
+            dependencies: [
+                "IntelligenceComposition",
+                "IntelligenceApplication",
+                "IntelligenceDomain"
             ]
         )
     ]

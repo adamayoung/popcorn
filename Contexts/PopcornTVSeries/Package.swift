@@ -18,7 +18,8 @@ let package = Package(
         .library(name: "TVSeriesComposition", targets: ["TVSeriesComposition"]),
         .library(name: "TVSeriesApplication", targets: ["TVSeriesApplication"]),
         .library(name: "TVSeriesDomain", targets: ["TVSeriesDomain"]),
-        .library(name: "TVSeriesInfrastructure", targets: ["TVSeriesInfrastructure"])
+        .library(name: "TVSeriesInfrastructure", targets: ["TVSeriesInfrastructure"]),
+        .library(name: "TVSeriesUITesting", targets: ["TVSeriesUITesting"])
     ],
 
     dependencies: [
@@ -83,6 +84,16 @@ let package = Package(
                 .product(name: "CachingTestHelpers", package: "Caching"),
                 .product(name: "CoreDomainTestHelpers", package: "CoreDomain"),
                 .product(name: "ObservabilityTestHelpers", package: "Observability")
+            ]
+        ),
+
+        .target(
+            name: "TVSeriesUITesting",
+            dependencies: [
+                "TVSeriesComposition",
+                "TVSeriesApplication",
+                "TVSeriesDomain",
+                "CoreDomain"
             ]
         )
     ]

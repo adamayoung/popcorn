@@ -2,7 +2,7 @@
 //  Screen.swift
 //  Popcorn
 //
-//  Created by Adam Young on 08/01/2026.
+//  Copyright © 2025 Adam Young.
 //
 
 import XCTest
@@ -50,7 +50,7 @@ class Screen {
         maxAttempts: Int = 5
     ) -> Bool {
         var attempts = 0
-        while !element.isHittable && attempts < maxAttempts {
+        while !element.isHittable, attempts < maxAttempts {
             switch direction {
             case .up:
                 scrollUp()
@@ -80,7 +80,7 @@ class Screen {
             return true
         }
 
-        for _ in 0..<maxAttempts {
+        for _ in 0 ..< maxAttempts {
             switch direction {
             case .up:
                 scrollUp()
@@ -88,7 +88,7 @@ class Screen {
                 scrollDown()
             }
 
-            if element.waitForExistence(timeout: timeout) && element.isHittable {
+            if element.waitForExistence(timeout: timeout), element.isHittable {
                 return true
             }
         }

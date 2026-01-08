@@ -2,7 +2,7 @@
 //  PopcornDiscoverFactory.swift
 //  PopcornDiscover
 //
-//  Created by Adam Young on 08/01/2026.
+//  Copyright © 2025 Adam Young.
 //
 
 import DiscoverApplication

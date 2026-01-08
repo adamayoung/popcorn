@@ -18,7 +18,8 @@ let package = Package(
         .library(name: "PeopleComposition", targets: ["PeopleComposition"]),
         .library(name: "PeopleApplication", targets: ["PeopleApplication"]),
         .library(name: "PeopleDomain", targets: ["PeopleDomain"]),
-        .library(name: "PeopleInfrastructure", targets: ["PeopleInfrastructure"])
+        .library(name: "PeopleInfrastructure", targets: ["PeopleInfrastructure"]),
+        .library(name: "PeopleUITesting", targets: ["PeopleUITesting"])
     ],
 
     dependencies: [
@@ -75,6 +76,16 @@ let package = Package(
             dependencies: [
                 "PeopleInfrastructure",
                 "PeopleDomain"
+            ]
+        ),
+
+        .target(
+            name: "PeopleUITesting",
+            dependencies: [
+                "PeopleComposition",
+                "PeopleApplication",
+                "PeopleDomain",
+                "CoreDomain"
             ]
         )
     ]

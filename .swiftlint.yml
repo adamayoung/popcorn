@@ -39,6 +39,7 @@ identifier_name:
   excluded:
     - 'ok'
     - 'id'
+    - 'up'
 
 line_length:
   ignores_urls: true

@@ -1,3 +1,10 @@
+//
+//  PopcornUITestsLaunchTests.swift
+//  Popcorn
+//
+//  Copyright © 2025 Adam Young.
+//
+
 ////
 ////  PopcornUITestsLaunchTests.swift
 ////  Popcorn
@@ -5,9 +12,9 @@
 ////  Copyright © 2025 Adam Young.
 ////
 //
-//import XCTest
+// import XCTest
 //
-//final class PopcornUITestsLaunchTests: XCTestCase {
+// final class PopcornUITestsLaunchTests: XCTestCase {
 //
 //    override static var runsForEachTargetApplicationUIConfiguration: Bool {
 //        true
@@ -30,4 +37,4 @@
 //        attachment.lifetime = .keepAlways
 //        add(attachment)
 //    }
-//}
+// }

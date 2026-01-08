@@ -18,7 +18,8 @@ let package = Package(
         .library(name: "GamesCatalogComposition", targets: ["GamesCatalogComposition"]),
         .library(name: "GamesCatalogApplication", targets: ["GamesCatalogApplication"]),
         .library(name: "GamesCatalogDomain", targets: ["GamesCatalogDomain"]),
-        .library(name: "GamesCatalogInfrastructure", targets: ["GamesCatalogInfrastructure"])
+        .library(name: "GamesCatalogInfrastructure", targets: ["GamesCatalogInfrastructure"]),
+        .library(name: "GamesCatalogUITesting", targets: ["GamesCatalogUITesting"])
     ],
 
     dependencies: [],
@@ -66,6 +67,15 @@ let package = Package(
             name: "GamesCatalogInfrastructureTests",
             dependencies: [
                 "GamesCatalogInfrastructure",
+                "GamesCatalogDomain"
+            ]
+        ),
+
+        .target(
+            name: "GamesCatalogUITesting",
+            dependencies: [
+                "GamesCatalogComposition",
+                "GamesCatalogApplication",
                 "GamesCatalogDomain"
             ]
         )

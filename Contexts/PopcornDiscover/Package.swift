@@ -18,7 +18,8 @@ let package = Package(
         .library(name: "DiscoverComposition", targets: ["DiscoverComposition"]),
         .library(name: "DiscoverApplication", targets: ["DiscoverApplication"]),
         .library(name: "DiscoverDomain", targets: ["DiscoverDomain"]),
-        .library(name: "DiscoverInfrastructure", targets: ["DiscoverInfrastructure"])
+        .library(name: "DiscoverInfrastructure", targets: ["DiscoverInfrastructure"]),
+        .library(name: "DiscoverUITesting", targets: ["DiscoverUITesting"])
     ],
 
     dependencies: [
@@ -78,6 +79,16 @@ let package = Package(
             dependencies: [
                 "DiscoverInfrastructure",
                 .product(name: "ObservabilityTestHelpers", package: "Observability")
+            ]
+        ),
+
+        .target(
+            name: "DiscoverUITesting",
+            dependencies: [
+                "DiscoverComposition",
+                "DiscoverApplication",
+                "DiscoverDomain",
+                "CoreDomain"
             ]
         )
     ]
