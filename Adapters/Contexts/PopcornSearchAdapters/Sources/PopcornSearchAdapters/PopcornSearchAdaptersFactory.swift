@@ -38,7 +38,7 @@ public final class PopcornSearchAdaptersFactory {
         self.fetchPersonDetailsUseCase = fetchPersonDetailsUseCase
     }
 
-    public func makeSearchFactory() -> PopcornSearchFactory {
+    public func makeSearchFactory() -> some PopcornSearchFactory {
         let mediaRemoteDataSource = TMDbMediaRemoteDataSource(searchService: searchService)
 
         let appConfigurationProvider = AppConfigurationProviderAdapter(
@@ -51,7 +51,7 @@ public final class PopcornSearchAdaptersFactory {
             fetchPersonUseCase: fetchPersonDetailsUseCase
         )
 
-        return PopcornSearchFactory(
+        return LivePopcornSearchFactory(
             mediaRemoteDataSource: mediaRemoteDataSource,
             appConfigurationProvider: appConfigurationProvider,
             mediaProvider: mediaProvider

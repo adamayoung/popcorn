@@ -2,33 +2,16 @@
 //  PopcornGamesCatalogFactory.swift
 //  PopcornGamesCatalog
 //
-//  Copyright © 2025 Adam Young.
+//  Created by Adam Young on 08/01/2026.
 //
 
 import Foundation
 import GamesCatalogApplication
-import GamesCatalogDomain
-import GamesCatalogInfrastructure
 
-public final class PopcornGamesCatalogFactory {
+public protocol PopcornGamesCatalogFactory: Sendable {
 
-    private let applicationFactory: GamesCatalogApplicationFactory
+    func makeFetchGamesUseCase() -> FetchGamesUseCase
 
-    public init(featureFlagProvider: some FeatureFlagProviding) {
-        let infrastructureFactory = GamesCatalogInfrastructureFactory(
-            featureFlagProvider: featureFlagProvider
-        )
-        self.applicationFactory = GamesCatalogApplicationFactory(
-            gameRepository: infrastructureFactory.makeGameRepository()
-        )
-    }
-
-    public func makeFetchGamesUseCase() -> some FetchGamesUseCase {
-        applicationFactory.makeFetchGamesUseCase()
-    }
-
-    public func makeFetchGameUseCase() -> some FetchGameUseCase {
-        applicationFactory.makeFetchGameUseCase()
-    }
+    func makeFetchGameUseCase() -> FetchGameUseCase
 
 }

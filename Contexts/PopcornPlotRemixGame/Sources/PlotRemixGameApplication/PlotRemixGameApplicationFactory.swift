@@ -8,7 +8,7 @@
 import Foundation
 import PlotRemixGameDomain
 
-package final class PlotRemixGameApplicationFactory {
+package final class PlotRemixGameApplicationFactory: Sendable {
 
     private let appConfigurationProvider: any AppConfigurationProviding
     private let movieProvider: any MovieProviding

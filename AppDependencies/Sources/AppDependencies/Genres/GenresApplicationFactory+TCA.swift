@@ -10,12 +10,22 @@ import Foundation
 import GenresComposition
 import PopcornGenresAdapters
 
+enum PopcornGenresFactoryKey: DependencyKey {
+
+    static var liveValue: PopcornGenresFactory {
+        @Dependency(\.genreService) var genreService
+        return PopcornGenresAdaptersFactory(
+            genreService: genreService
+        ).makeGenresFactory()
+    }
+
+}
+
 extension DependencyValues {
 
     var genresFactory: PopcornGenresFactory {
-        PopcornGenresAdaptersFactory(
-            genreService: genreService
-        ).makeGenresFactory()
+        get { self[PopcornGenresFactoryKey.self] }
+        set { self[PopcornGenresFactoryKey.self] = newValue }
     }
 
 }

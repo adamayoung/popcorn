@@ -8,7 +8,7 @@
 import Foundation
 import TrendingDomain
 
-package final class TrendingApplicationFactory {
+package final class TrendingApplicationFactory: Sendable {
 
     private let trendingRepository: any TrendingRepository
     private let appConfigurationProvider: any AppConfigurationProviding

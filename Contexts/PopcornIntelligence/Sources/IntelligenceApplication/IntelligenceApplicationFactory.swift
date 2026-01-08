@@ -8,7 +8,7 @@
 import Foundation
 import IntelligenceDomain
 
-package final class IntelligenceApplicationFactory {
+package final class IntelligenceApplicationFactory: Sendable {
 
     private let movieSessionRepository: any MovieLLMSessionRepository
     private let tvSeriesSessionRepository: any TVSeriesLLMSessionRepository

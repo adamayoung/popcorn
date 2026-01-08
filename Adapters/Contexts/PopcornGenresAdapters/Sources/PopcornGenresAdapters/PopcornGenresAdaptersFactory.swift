@@ -17,12 +17,12 @@ public final class PopcornGenresAdaptersFactory {
         self.genreService = genreService
     }
 
-    public func makeGenresFactory() -> PopcornGenresFactory {
+    public func makeGenresFactory() -> some PopcornGenresFactory {
         let genreRemoteDataSource = TMDbGenreRemoteDataSource(
             genreService: genreService
         )
 
-        return PopcornGenresFactory(
+        return LivePopcornGenresFactory(
             genreRemoteDataSource: genreRemoteDataSource
         )
     }

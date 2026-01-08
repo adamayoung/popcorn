@@ -8,7 +8,7 @@
 import Foundation
 import GenresDomain
 
-package final class GenresApplicationFactory {
+package final class GenresApplicationFactory: Sendable {
 
     private let genreRepository: any GenreRepository
 

@@ -33,6 +33,7 @@ public struct TVSeriesDetailsView: View {
                 EmptyView()
             }
         }
+        .accessibilityIdentifier("tv-series-details.view")
         .toolbar {
             if case .ready(let snapshot) = store.viewState, store.isIntelligenceEnabled {
                 ToolbarItem(placement: .primaryAction) {

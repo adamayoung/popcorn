@@ -8,7 +8,7 @@
 import Foundation
 import GamesCatalogDomain
 
-package final class GamesCatalogApplicationFactory {
+package final class GamesCatalogApplicationFactory: Sendable {
 
     private let gameRepository: any GameRepository
 

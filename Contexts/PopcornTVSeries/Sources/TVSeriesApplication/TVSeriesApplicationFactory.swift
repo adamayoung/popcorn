@@ -8,7 +8,7 @@
 import Foundation
 import TVSeriesDomain
 
-package final class TVSeriesApplicationFactory {
+package final class TVSeriesApplicationFactory: Sendable {
 
     private let tvSeriesRepository: any TVSeriesRepository
     private let appConfigurationProvider: any AppConfigurationProviding

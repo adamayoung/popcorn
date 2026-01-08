@@ -41,6 +41,7 @@ public struct ExploreView: View {
                 EmptyView()
             }
         }
+        .accessibilityIdentifier("explore.view")
         .overlay {
             if store.isLoading {
                 loadingBody
@@ -108,6 +109,7 @@ extension ExploreView {
                 store.send(.navigate(.movieDetails(id: movie.id, transitionID: transitionID)))
             }
         )
+        .accessibilityIdentifier("explore.discover-movies.carousel")
     }
 
     @ViewBuilder
@@ -129,6 +131,7 @@ extension ExploreView {
                 store.send(.navigate(.movieDetails(id: movie.id, transitionID: transitionID)))
             }
         )
+        .accessibilityIdentifier("explore.trending-movies.carousel")
     }
 
     @ViewBuilder
@@ -150,6 +153,7 @@ extension ExploreView {
                 store.send(.navigate(.movieDetails(id: movie.id, transitionID: transitionID)))
             }
         )
+        .accessibilityIdentifier("explore.popular-movies.carousel")
     }
 
     @ViewBuilder
@@ -171,6 +175,7 @@ extension ExploreView {
                 store.send(.navigate(.tvSeriesDetails(id: tvSeries.id, transitionID: transitionID)))
             }
         )
+        .accessibilityIdentifier("explore.trending-tvseries.carousel")
     }
 
     @ViewBuilder
@@ -191,6 +196,7 @@ extension ExploreView {
                 store.send(.navigate(.personDetails(id: person.id, transitionID: transitionID)))
             }
         )
+        .accessibilityIdentifier("explore.trending-people.carousel")
     }
 
 }

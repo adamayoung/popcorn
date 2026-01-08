@@ -8,7 +8,7 @@
 import DiscoverDomain
 import Foundation
 
-package final class DiscoverApplicationFactory {
+package final class DiscoverApplicationFactory: Sendable {
 
     private let discoverMovieRepository: any DiscoverMovieRepository
     private let discoverTVSeriesRepository: any DiscoverTVSeriesRepository

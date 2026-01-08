@@ -8,7 +8,7 @@
 import Foundation
 import MoviesDomain
 
-package final class MoviesApplicationFactory {
+package final class MoviesApplicationFactory: Sendable {
 
     private let movieRepository: any MovieRepository
     private let movieWatchlistRepository: any MovieWatchlistRepository

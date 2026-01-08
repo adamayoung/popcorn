@@ -8,7 +8,7 @@
 import ConfigurationDomain
 import Foundation
 
-package final class ConfigurationApplicationFactory {
+package final class ConfigurationApplicationFactory: Sendable {
 
     private let configurationRepository: any ConfigurationRepository
 

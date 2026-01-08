@@ -23,7 +23,7 @@ public final class PopcornTVSeriesAdaptersFactory {
         self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
     }
 
-    public func makeTVSeriesFactory() -> PopcornTVSeriesFactory {
+    public func makeTVSeriesFactory() -> some PopcornTVSeriesFactory {
         let tvSeriesRemoteDataSource = TMDbTVSeriesRemoteDataSource(
             tvSeriesService: tvSeriesService
         )
@@ -32,7 +32,7 @@ public final class PopcornTVSeriesAdaptersFactory {
             fetchUseCase: fetchAppConfigurationUseCase
         )
 
-        return PopcornTVSeriesFactory(
+        return LivePopcornTVSeriesFactory(
             tvSeriesRemoteDataSource: tvSeriesRemoteDataSource,
             appConfigurationProvider: appConfigurationProvider
         )

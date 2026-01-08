@@ -8,7 +8,7 @@
 import Foundation
 import PeopleDomain
 
-package final class PeopleApplicationFactory {
+package final class PeopleApplicationFactory: Sendable {
 
     private let personRepository: any PersonRepository
     private let appConfigurationProvider: any AppConfigurationProviding

@@ -26,7 +26,7 @@ public final class PopcornIntelligenceAdaptersFactory {
         self.fetchMovieCreditsUseCase = fetchMovieCreditsUseCase
     }
 
-    public func makeIntelligenceFactory() -> PopcornIntelligenceFactory {
+    public func makeIntelligenceFactory() -> some PopcornIntelligenceFactory {
         let movieProvider = MovieProviderAdapter(
             fetchMovieDetailsUseCase: fetchMovieDetailsUseCase
         )
@@ -39,7 +39,7 @@ public final class PopcornIntelligenceAdaptersFactory {
             fetchMovieCreditsUseCase: fetchMovieCreditsUseCase
         )
 
-        return PopcornIntelligenceFactory(
+        return LivePopcornIntelligenceFactory(
             movieProvider: movieProvider,
             tvSeriesProvider: tvSeriesProvider,
             creditsProvider: creditsProvider

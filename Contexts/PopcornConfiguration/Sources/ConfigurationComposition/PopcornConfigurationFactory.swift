@@ -2,31 +2,14 @@
 //  PopcornConfigurationFactory.swift
 //  PopcornConfiguration
 //
-//  Copyright © 2025 Adam Young.
+//  Created by Adam Young on 08/01/2026.
 //
 
 import ConfigurationApplication
-import ConfigurationDomain
-import ConfigurationInfrastructure
 import Foundation
 
-public final class PopcornConfigurationFactory {
+public protocol PopcornConfigurationFactory: Sendable {
 
-    private let applicationFactory: ConfigurationApplicationFactory
-
-    public init(
-        configurationRemoteDataSource: some ConfigurationRemoteDataSource
-    ) {
-        let infrastructureFactory = ConfigurationInfrastructureFactory(
-            configurationRemoteDataSource: configurationRemoteDataSource
-        )
-        self.applicationFactory = ConfigurationApplicationFactory(
-            configurationRepository: infrastructureFactory.makeConfigurationRepository()
-        )
-    }
-
-    public func makeFetchAppConfigurationUseCase() -> some FetchAppConfigurationUseCase {
-        applicationFactory.makeFetchAppConfigurationUseCase()
-    }
+    func makeFetchAppConfigurationUseCase() -> FetchAppConfigurationUseCase
 
 }

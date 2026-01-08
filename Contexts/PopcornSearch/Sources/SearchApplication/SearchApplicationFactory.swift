@@ -8,7 +8,7 @@
 import Foundation
 import SearchDomain
 
-package final class SearchApplicationFactory {
+package final class SearchApplicationFactory: Sendable {
 
     private let mediaRepository: any MediaRepository
     private let appConfigurationProvider: any AppConfigurationProviding

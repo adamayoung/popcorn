@@ -7,74 +7,29 @@
 
 import Foundation
 import MoviesApplication
-import MoviesDomain
-import MoviesInfrastructure
 
-public struct PopcornMoviesFactory {
+public protocol PopcornMoviesFactory: Sendable {
 
-    private let applicationFactory: MoviesApplicationFactory
+    func makeFetchMovieDetailsUseCase() -> FetchMovieDetailsUseCase
 
-    public init(
-        movieRemoteDataSource: some MovieRemoteDataSource,
-        appConfigurationProvider: some AppConfigurationProviding
-    ) {
-        let infrastructureFactory = MoviesInfrastructureFactory(
-            movieRemoteDataSource: movieRemoteDataSource
-        )
-        self.applicationFactory = MoviesApplicationFactory(
-            movieRepository: infrastructureFactory.makeMovieRepository(),
-            movieWatchlistRepository: infrastructureFactory.makeMovieWatchlistRepository(),
-            movieImageRepository: infrastructureFactory.makeMovieImageRepository(),
-            popularMovieRepository: infrastructureFactory.makePopularMovieRepository(),
-            similarMovieRepository: infrastructureFactory.makeSimilarMovieRepository(),
-            movieRecommendationRepository: infrastructureFactory.makeMovieRecommendationRepository(),
-            movieCreditsRepository: infrastructureFactory.makeMovieCreditsRepository(),
-            appConfigurationProvider: appConfigurationProvider
-        )
-    }
+    func makeStreamMovieDetailsUseCase() -> StreamMovieDetailsUseCase
 
-    public func makeFetchMovieDetailsUseCase() -> some FetchMovieDetailsUseCase {
-        applicationFactory.makeFetchMovieDetailsUseCase()
-    }
+    func makeToggleWatchlistMovieUseCase() -> ToggleWatchlistMovieUseCase
 
-    public func makeStreamMovieDetailsUseCase() -> some StreamMovieDetailsUseCase {
-        applicationFactory.makeStreamMovieDetailsUseCase()
-    }
+    func makeFetchMovieImageCollectionUseCase() -> FetchMovieImageCollectionUseCase
 
-    public func makeToggleWatchlistMovieUseCase() -> some ToggleWatchlistMovieUseCase {
-        applicationFactory.makeToggleWatchlistMovieUseCase()
-    }
+    func makeFetchPopularMoviesUseCase() -> FetchPopularMoviesUseCase
 
-    public func makeFetchMovieImageCollectionUseCase() -> some FetchMovieImageCollectionUseCase {
-        applicationFactory.makeFetchMovieImageCollectionUseCase()
-    }
+    func makeStreamPopularMoviesUseCase() -> StreamPopularMoviesUseCase
 
-    public func makeFetchPopularMoviesUseCase() -> some FetchPopularMoviesUseCase {
-        applicationFactory.makeFetchPopularMoviesUseCase()
-    }
+    func makeFetchSimilarMoviesUseCase() -> FetchSimilarMoviesUseCase
 
-    public func makeStreamPopularMoviesUseCase() -> some StreamPopularMoviesUseCase {
-        applicationFactory.makeStreamPopularMoviesUseCase()
-    }
+    func makeStreamSimilarMoviesUseCase() -> StreamSimilarMoviesUseCase
 
-    public func makeFetchSimilarMoviesUseCase() -> some FetchSimilarMoviesUseCase {
-        applicationFactory.makeFetchSimilarMoviesUseCase()
-    }
+    func makeFetchMovieRecommendationsUseCase() -> FetchMovieRecommendationsUseCase
 
-    public func makeStreamSimilarMoviesUseCase() -> some StreamSimilarMoviesUseCase {
-        applicationFactory.makeStreamSimilarMoviesUseCase()
-    }
+    func makeStreamMovieRecommendationsUseCase() -> StreamMovieRecommendationsUseCase
 
-    public func makeFetchMovieRecommendationsUseCase() -> some FetchMovieRecommendationsUseCase {
-        applicationFactory.makeFetchMovieRecommendationsUseCase()
-    }
-
-    public func makeStreamMovieRecommendationsUseCase() -> some StreamMovieRecommendationsUseCase {
-        applicationFactory.makeStreamMovieRecommendationsUseCase()
-    }
-
-    public func makeFetchMovieCreditsUseCase() -> some FetchMovieCreditsUseCase {
-        applicationFactory.makeFetchMovieCreditsUseCase()
-    }
+    func makeFetchMovieCreditsUseCase() -> FetchMovieCreditsUseCase
 
 }
