@@ -6,18 +6,18 @@
 //
 
 import ComposableArchitecture
-import ConfigurationUITesting
-import DiscoverUITesting
 import Foundation
-import GamesCatalogUITesting
-import GenresUITesting
-import IntelligenceUITesting
-import MoviesUITesting
-import PeopleUITesting
-import PlotRemixGameUITesting
-import SearchUITesting
-import TrendingUITesting
-import TVSeriesUITesting
+import PopcornConfigurationAdaptersUITesting
+import PopcornDiscoverAdaptersUITesting
+import PopcornGamesCatalogAdaptersUITesting
+import PopcornGenresAdaptersUITesting
+import PopcornIntelligenceAdaptersUITesting
+import PopcornMoviesAdaptersUITesting
+import PopcornPeopleAdaptersUITesting
+import PopcornPlotRemixGameAdaptersUITesting
+import PopcornSearchAdaptersUITesting
+import PopcornTrendingAdaptersUITesting
+import PopcornTVSeriesAdaptersUITesting
 
 public enum UITestDependencies {
 

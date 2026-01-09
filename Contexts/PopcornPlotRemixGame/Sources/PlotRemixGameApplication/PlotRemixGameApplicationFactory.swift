@@ -8,14 +8,14 @@
 import Foundation
 import PlotRemixGameDomain
 
-package final class PlotRemixGameApplicationFactory: Sendable {
+public final class PlotRemixGameApplicationFactory: Sendable {
 
     private let appConfigurationProvider: any AppConfigurationProviding
     private let movieProvider: any MovieProviding
     private let genreProvider: any GenreProviding
     private let synopsisRiddleGenerator: any SynopsisRiddleGenerating
 
-    package init(
+    public init(
         appConfigurationProvider: some AppConfigurationProviding,
         movieProvider: some MovieProviding,
         genreProvider: some GenreProviding,
@@ -27,7 +27,7 @@ package final class PlotRemixGameApplicationFactory: Sendable {
         self.synopsisRiddleGenerator = synopsisRiddleGenerator
     }
 
-    package func makeGeneratePlotRemixGameUseCase() -> some GeneratePlotRemixGameUseCase {
+    public func makeGeneratePlotRemixGameUseCase() -> some GeneratePlotRemixGameUseCase {
         DefaultGeneratePlotRemixGameUseCase(
             appConfigurationProvider: appConfigurationProvider,
             movieProvider: movieProvider,

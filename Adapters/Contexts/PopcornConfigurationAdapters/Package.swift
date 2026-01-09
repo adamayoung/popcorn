@@ -15,7 +15,8 @@ let package = Package(
     ],
 
     products: [
-        .library(name: "PopcornConfigurationAdapters", targets: ["PopcornConfigurationAdapters"])
+        .library(name: "PopcornConfigurationAdapters", targets: ["PopcornConfigurationAdapters"]),
+        .library(name: "PopcornConfigurationAdaptersUITesting", targets: ["PopcornConfigurationAdaptersUITesting"])
     ],
 
     dependencies: [
@@ -40,6 +41,16 @@ let package = Package(
         .testTarget(
             name: "PopcornConfigurationAdaptersTests",
             dependencies: ["PopcornConfigurationAdapters"]
+        ),
+
+        .target(
+            name: "PopcornConfigurationAdaptersUITesting",
+            dependencies: [
+                .product(name: "ConfigurationComposition", package: "PopcornConfiguration"),
+                .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),
+                .product(name: "ConfigurationDomain", package: "PopcornConfiguration"),
+                "CoreDomain"
+            ]
         )
     ]
 )

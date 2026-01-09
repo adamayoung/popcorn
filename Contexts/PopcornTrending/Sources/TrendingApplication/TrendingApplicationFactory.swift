@@ -8,14 +8,14 @@
 import Foundation
 import TrendingDomain
 
-package final class TrendingApplicationFactory: Sendable {
+public final class TrendingApplicationFactory: Sendable {
 
     private let trendingRepository: any TrendingRepository
     private let appConfigurationProvider: any AppConfigurationProviding
     private let movieLogoImageProvider: any MovieLogoImageProviding
     private let tvSeriesLogoImageProvider: any TVSeriesLogoImageProviding
 
-    package init(
+    public init(
         trendingRepository: some TrendingRepository,
         appConfigurationProvider: some AppConfigurationProviding,
         movieLogoImageProvider: some MovieLogoImageProviding,
@@ -27,7 +27,7 @@ package final class TrendingApplicationFactory: Sendable {
         self.tvSeriesLogoImageProvider = tvSeriesLogoImageProvider
     }
 
-    package func makeFetchTrendingMoviesUseCase() -> some FetchTrendingMoviesUseCase {
+    public func makeFetchTrendingMoviesUseCase() -> some FetchTrendingMoviesUseCase {
         DefaultFetchTrendingMoviesUseCase(
             repository: trendingRepository,
             appConfigurationProvider: appConfigurationProvider,
@@ -35,14 +35,14 @@ package final class TrendingApplicationFactory: Sendable {
         )
     }
 
-    package func makeFetchTrendingTVSeriesUseCase() -> some FetchTrendingTVSeriesUseCase {
+    public func makeFetchTrendingTVSeriesUseCase() -> some FetchTrendingTVSeriesUseCase {
         DefaultFetchTrendingTVSeriesUseCase(
             repository: trendingRepository,
             appConfigurationProvider: appConfigurationProvider
         )
     }
 
-    package func makeFetchTrendingPeopleUseCase() -> some FetchTrendingPeopleUseCase {
+    public func makeFetchTrendingPeopleUseCase() -> some FetchTrendingPeopleUseCase {
         DefaultFetchTrendingPeopleUseCase(
             repository: trendingRepository,
             appConfigurationProvider: appConfigurationProvider

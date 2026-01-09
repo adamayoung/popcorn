@@ -81,12 +81,14 @@ final class DefaultFetchMovieDetailsUseCase: FetchMovieDetailsUseCase {
 The `MoviesApplicationFactory` creates all use cases:
 
 ```swift
-package final class MoviesApplicationFactory {
+public final class MoviesApplicationFactory {
     func makeFetchMovieDetailsUseCase() -> some FetchMovieDetailsUseCase {
         DefaultFetchMovieDetailsUseCase(movieRepository: movieRepository)
     }
 }
 ```
+
+> **Note:** `*ApplicationFactory` classes are marked `public` (not `package`) to support UI testing. The Adapters layer contains `*AdaptersUITesting` modules that instantiate these factories with stub repositories, enabling isolated UI tests without network dependencies.
 
 ### Infrastructure Layer
 

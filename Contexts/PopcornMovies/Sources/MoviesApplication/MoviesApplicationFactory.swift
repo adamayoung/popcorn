@@ -8,7 +8,7 @@
 import Foundation
 import MoviesDomain
 
-package final class MoviesApplicationFactory: Sendable {
+public final class MoviesApplicationFactory: Sendable {
 
     private let movieRepository: any MovieRepository
     private let movieWatchlistRepository: any MovieWatchlistRepository
@@ -19,7 +19,7 @@ package final class MoviesApplicationFactory: Sendable {
     private let movieCreditsRepository: any MovieCreditsRepository
     private let appConfigurationProvider: any AppConfigurationProviding
 
-    package init(
+    public init(
         movieRepository: some MovieRepository,
         movieWatchlistRepository: some MovieWatchlistRepository,
         movieImageRepository: some MovieImageRepository,
@@ -39,7 +39,7 @@ package final class MoviesApplicationFactory: Sendable {
         self.appConfigurationProvider = appConfigurationProvider
     }
 
-    package func makeFetchMovieDetailsUseCase() -> some FetchMovieDetailsUseCase {
+    public func makeFetchMovieDetailsUseCase() -> some FetchMovieDetailsUseCase {
         DefaultFetchMovieDetailsUseCase(
             movieRepository: movieRepository,
             movieImageRepository: movieImageRepository,
@@ -48,7 +48,7 @@ package final class MoviesApplicationFactory: Sendable {
         )
     }
 
-    package func makeStreamMovieDetailsUseCase() -> some StreamMovieDetailsUseCase {
+    public func makeStreamMovieDetailsUseCase() -> some StreamMovieDetailsUseCase {
         DefaultStreamMovieDetailsUseCase(
             movieRepository: movieRepository,
             movieImageRepository: movieImageRepository,
@@ -57,21 +57,21 @@ package final class MoviesApplicationFactory: Sendable {
         )
     }
 
-    package func makeToggleWatchlistMovieUseCase() -> some ToggleWatchlistMovieUseCase {
+    public func makeToggleWatchlistMovieUseCase() -> some ToggleWatchlistMovieUseCase {
         DefaultToggleWatchlistMovieUseCase(
             movieRepository: movieRepository,
             movieWatchlistRepository: movieWatchlistRepository
         )
     }
 
-    package func makeFetchMovieImageCollectionUseCase() -> some FetchMovieImageCollectionUseCase {
+    public func makeFetchMovieImageCollectionUseCase() -> some FetchMovieImageCollectionUseCase {
         DefaultFetchMovieImageCollectionUseCase(
             movieImageRepository: movieImageRepository,
             appConfigurationProvider: appConfigurationProvider
         )
     }
 
-    package func makeFetchPopularMoviesUseCase() -> some FetchPopularMoviesUseCase {
+    public func makeFetchPopularMoviesUseCase() -> some FetchPopularMoviesUseCase {
         DefaultFetchPopularMoviesUseCase(
             popularMovieRepository: popularMovieRepository,
             movieImageRepository: movieImageRepository,
@@ -79,7 +79,7 @@ package final class MoviesApplicationFactory: Sendable {
         )
     }
 
-    package func makeStreamPopularMoviesUseCase() -> some StreamPopularMoviesUseCase {
+    public func makeStreamPopularMoviesUseCase() -> some StreamPopularMoviesUseCase {
         DefaultStreamPopularMoviesUseCase(
             popularMovieRepository: popularMovieRepository,
             movieImageRepository: movieImageRepository,
@@ -87,7 +87,7 @@ package final class MoviesApplicationFactory: Sendable {
         )
     }
 
-    package func makeFetchSimilarMoviesUseCase() -> some FetchSimilarMoviesUseCase {
+    public func makeFetchSimilarMoviesUseCase() -> some FetchSimilarMoviesUseCase {
         DefaultFetchSimilarMoviesUseCase(
             similarMovieRepository: similarMovieRepository,
             movieImageRepository: movieImageRepository,
@@ -95,7 +95,7 @@ package final class MoviesApplicationFactory: Sendable {
         )
     }
 
-    package func makeStreamSimilarMoviesUseCase() -> some StreamSimilarMoviesUseCase {
+    public func makeStreamSimilarMoviesUseCase() -> some StreamSimilarMoviesUseCase {
         DefaultStreamSimilarMoviesUseCase(
             similarMovieRepository: similarMovieRepository,
             movieImageRepository: movieImageRepository,
@@ -103,7 +103,7 @@ package final class MoviesApplicationFactory: Sendable {
         )
     }
 
-    package func makeFetchMovieRecommendationsUseCase() -> some FetchMovieRecommendationsUseCase {
+    public func makeFetchMovieRecommendationsUseCase() -> some FetchMovieRecommendationsUseCase {
         DefaultFetchMovieRecommendationsUseCase(
             movieRecommendationRepository: movieRecommendationRepository,
             movieImageRepository: movieImageRepository,
@@ -111,7 +111,7 @@ package final class MoviesApplicationFactory: Sendable {
         )
     }
 
-    package func makeStreamMovieRecommendationsUseCase() -> some StreamMovieRecommendationsUseCase {
+    public func makeStreamMovieRecommendationsUseCase() -> some StreamMovieRecommendationsUseCase {
         DefaultStreamMovieRecommendationsUseCase(
             movieRecommendationRepository: movieRecommendationRepository,
             movieImageRepository: movieImageRepository,
@@ -119,7 +119,7 @@ package final class MoviesApplicationFactory: Sendable {
         )
     }
 
-    package func makeFetchMovieCreditsUseCase() -> some FetchMovieCreditsUseCase {
+    public func makeFetchMovieCreditsUseCase() -> some FetchMovieCreditsUseCase {
         DefaultFetchMovieCreditsUseCase(
             movieCreditsRepository: movieCreditsRepository,
             appConfigurationProvider: appConfigurationProvider

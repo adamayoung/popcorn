@@ -18,8 +18,7 @@ let package = Package(
         .library(name: "GenresComposition", targets: ["GenresComposition"]),
         .library(name: "GenresApplication", targets: ["GenresApplication"]),
         .library(name: "GenresDomain", targets: ["GenresDomain"]),
-        .library(name: "GenresInfrastructure", targets: ["GenresInfrastructure"]),
-        .library(name: "GenresUITesting", targets: ["GenresUITesting"])
+        .library(name: "GenresInfrastructure", targets: ["GenresInfrastructure"])
     ],
 
     dependencies: [
@@ -73,15 +72,6 @@ let package = Package(
             name: "GenresInfrastructureTests",
             dependencies: [
                 "GenresInfrastructure",
-                "GenresDomain"
-            ]
-        ),
-
-        .target(
-            name: "GenresUITesting",
-            dependencies: [
-                "GenresComposition",
-                "GenresApplication",
                 "GenresDomain"
             ]
         )

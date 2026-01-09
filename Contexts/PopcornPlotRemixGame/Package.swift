@@ -18,8 +18,7 @@ let package = Package(
         .library(name: "PlotRemixGameComposition", targets: ["PlotRemixGameComposition"]),
         .library(name: "PlotRemixGameApplication", targets: ["PlotRemixGameApplication"]),
         .library(name: "PlotRemixGameDomain", targets: ["PlotRemixGameDomain"]),
-        .library(name: "PlotRemixGameInfrastructure", targets: ["PlotRemixGameInfrastructure"]),
-        .library(name: "PlotRemixGameUITesting", targets: ["PlotRemixGameUITesting"])
+        .library(name: "PlotRemixGameInfrastructure", targets: ["PlotRemixGameInfrastructure"])
     ],
 
     dependencies: [
@@ -75,16 +74,6 @@ let package = Package(
                 "PlotRemixGameInfrastructure",
                 "PlotRemixGameDomain",
                 .product(name: "ObservabilityTestHelpers", package: "Observability")
-            ]
-        ),
-
-        .target(
-            name: "PlotRemixGameUITesting",
-            dependencies: [
-                "PlotRemixGameComposition",
-                "PlotRemixGameApplication",
-                "PlotRemixGameDomain",
-                "CoreDomain"
             ]
         )
     ]

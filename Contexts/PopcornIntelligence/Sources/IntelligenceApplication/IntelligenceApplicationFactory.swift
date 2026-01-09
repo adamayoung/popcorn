@@ -8,12 +8,12 @@
 import Foundation
 import IntelligenceDomain
 
-package final class IntelligenceApplicationFactory: Sendable {
+public final class IntelligenceApplicationFactory: Sendable {
 
     private let movieSessionRepository: any MovieLLMSessionRepository
     private let tvSeriesSessionRepository: any TVSeriesLLMSessionRepository
 
-    package init(
+    public init(
         movieSessionRepository: some MovieLLMSessionRepository,
         tvSeriesSessionRepository: some TVSeriesLLMSessionRepository
     ) {
@@ -21,13 +21,13 @@ package final class IntelligenceApplicationFactory: Sendable {
         self.tvSeriesSessionRepository = tvSeriesSessionRepository
     }
 
-    package func makeCreateMovieIntelligenceSessionUseCase() -> any CreateMovieIntelligenceSessionUseCase {
+    public func makeCreateMovieIntelligenceSessionUseCase() -> any CreateMovieIntelligenceSessionUseCase {
         DefaultCreateMovieIntelligenceSessionUseCase(
             movieSessionRepository: movieSessionRepository
         )
     }
 
-    package func makeCreateTVSeriesIntelligenceSessionUseCase() -> any CreateTVSeriesIntelligenceSessionUseCase {
+    public func makeCreateTVSeriesIntelligenceSessionUseCase() -> any CreateTVSeriesIntelligenceSessionUseCase {
         DefaultCreateTVSeriesIntelligenceSessionUseCase(
             tvSeriesSessionRepository: tvSeriesSessionRepository
         )

@@ -8,19 +8,19 @@
 import Foundation
 import GamesCatalogDomain
 
-package final class GamesCatalogApplicationFactory: Sendable {
+public final class GamesCatalogApplicationFactory: Sendable {
 
     private let gameRepository: any GameRepository
 
-    package init(gameRepository: some GameRepository) {
+    public init(gameRepository: some GameRepository) {
         self.gameRepository = gameRepository
     }
 
-    package func makeFetchGamesUseCase() -> some FetchGamesUseCase {
+    public func makeFetchGamesUseCase() -> some FetchGamesUseCase {
         DefaultFetchGamesUseCase(repository: gameRepository)
     }
 
-    package func makeFetchGameUseCase() -> some FetchGameUseCase {
+    public func makeFetchGameUseCase() -> some FetchGameUseCase {
         DefaultFetchGameUseCase(repository: gameRepository)
     }
 

@@ -15,7 +15,8 @@ let package = Package(
     ],
 
     products: [
-        .library(name: "PopcornTVSeriesAdapters", targets: ["PopcornTVSeriesAdapters"])
+        .library(name: "PopcornTVSeriesAdapters", targets: ["PopcornTVSeriesAdapters"]),
+        .library(name: "PopcornTVSeriesAdaptersUITesting", targets: ["PopcornTVSeriesAdaptersUITesting"])
     ],
 
     dependencies: [
@@ -45,6 +46,16 @@ let package = Package(
                 "PopcornTVSeriesAdapters",
                 .product(name: "CoreDomainTestHelpers", package: "CoreDomain"),
                 .product(name: "ObservabilityTestHelpers", package: "Observability")
+            ]
+        ),
+
+        .target(
+            name: "PopcornTVSeriesAdaptersUITesting",
+            dependencies: [
+                .product(name: "TVSeriesComposition", package: "PopcornTVSeries"),
+                .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
+                .product(name: "TVSeriesDomain", package: "PopcornTVSeries"),
+                "CoreDomain"
             ]
         )
     ]

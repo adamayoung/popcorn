@@ -18,8 +18,7 @@ let package = Package(
         .library(name: "TrendingComposition", targets: ["TrendingComposition"]),
         .library(name: "TrendingApplication", targets: ["TrendingApplication"]),
         .library(name: "TrendingDomain", targets: ["TrendingDomain"]),
-        .library(name: "TrendingInfrastructure", targets: ["TrendingInfrastructure"]),
-        .library(name: "TrendingUITesting", targets: ["TrendingUITesting"])
+        .library(name: "TrendingInfrastructure", targets: ["TrendingInfrastructure"])
     ],
 
     dependencies: [
@@ -68,16 +67,6 @@ let package = Package(
         .testTarget(
             name: "TrendingInfrastructureTests",
             dependencies: ["TrendingInfrastructure"]
-        ),
-
-        .target(
-            name: "TrendingUITesting",
-            dependencies: [
-                "TrendingComposition",
-                "TrendingApplication",
-                "TrendingDomain",
-                "CoreDomain"
-            ]
         )
     ]
 )
