@@ -23,14 +23,14 @@ public final class PopcornMoviesAdaptersFactory {
         self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
     }
 
-    public func makeMoviesFactory() -> PopcornMoviesFactory {
+    public func makeMoviesFactory() -> some PopcornMoviesFactory {
         let movieRemoteDataSource = TMDbMovieRemoteDataSource(movieService: movieService)
 
         let appConfigurationProvider = AppConfigurationProviderAdapter(
             fetchUseCase: fetchAppConfigurationUseCase
         )
 
-        return PopcornMoviesFactory(
+        return LivePopcornMoviesFactory(
             movieRemoteDataSource: movieRemoteDataSource,
             appConfigurationProvider: appConfigurationProvider
         )

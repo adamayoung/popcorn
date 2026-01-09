@@ -33,6 +33,7 @@ public struct PersonDetailsView: View {
                 EmptyView()
             }
         }
+        .accessibilityIdentifier("person-details.view")
         .contentTransition(.opacity)
         .animation(.easeInOut(duration: 1), value: store.isReady)
         .overlay {

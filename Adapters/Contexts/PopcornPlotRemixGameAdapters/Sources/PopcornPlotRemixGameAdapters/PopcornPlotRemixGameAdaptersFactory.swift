@@ -36,7 +36,7 @@ public final class PopcornPlotRemixGameAdaptersFactory {
         self.observability = observability
     }
 
-    public func makePlotRemixGameFactory() -> PopcornPlotRemixGameFactory {
+    public func makePlotRemixGameFactory() -> some PopcornPlotRemixGameFactory {
         let appConfigurationProvider = AppConfigurationProviderAdapter(
             fetchUseCase: fetchAppConfigurationUseCase
         )
@@ -46,7 +46,7 @@ public final class PopcornPlotRemixGameAdaptersFactory {
         )
         let genreProvider = GenreProviderAdapter(fetchMovieGenresUseCase: fetchMovieGenresUseCase)
 
-        return PopcornPlotRemixGameFactory(
+        return LivePopcornPlotRemixGameFactory(
             appConfigurationProvider: appConfigurationProvider,
             movieProvider: movieProvider,
             genreProvider: genreProvider,

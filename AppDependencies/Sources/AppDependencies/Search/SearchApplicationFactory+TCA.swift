@@ -10,16 +10,30 @@ import Foundation
 import PopcornSearchAdapters
 import SearchComposition
 
-extension DependencyValues {
+enum PopcornSearchFactoryKey: DependencyKey {
 
-    var searchFactory: PopcornSearchFactory {
-        PopcornSearchAdaptersFactory(
+    static var liveValue: PopcornSearchFactory {
+        @Dependency(\.searchService) var searchService
+        @Dependency(\.fetchAppConfiguration) var fetchAppConfiguration
+        @Dependency(\.fetchMovieDetails) var fetchMovieDetails
+        @Dependency(\.fetchTVSeriesDetails) var fetchTVSeriesDetails
+        @Dependency(\.fetchPersonDetails) var fetchPersonDetails
+        return PopcornSearchAdaptersFactory(
             searchService: searchService,
             fetchAppConfigurationUseCase: fetchAppConfiguration,
             fetchMovieDetailsUseCase: fetchMovieDetails,
             fetchTVSeriesDetailsUseCase: fetchTVSeriesDetails,
             fetchPersonDetailsUseCase: fetchPersonDetails
         ).makeSearchFactory()
+    }
+
+}
+
+extension DependencyValues {
+
+    var searchFactory: PopcornSearchFactory {
+        get { self[PopcornSearchFactoryKey.self] }
+        set { self[PopcornSearchFactoryKey.self] = newValue }
     }
 
 }

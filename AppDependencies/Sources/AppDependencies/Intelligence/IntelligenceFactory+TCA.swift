@@ -10,14 +10,26 @@ import Foundation
 import IntelligenceComposition
 import PopcornIntelligenceAdapters
 
-extension DependencyValues {
+enum PopcornIntelligenceFactoryKey: DependencyKey {
 
-    var intelligenceFactory: PopcornIntelligenceFactory {
-        PopcornIntelligenceAdaptersFactory(
+    static var liveValue: PopcornIntelligenceFactory {
+        @Dependency(\.fetchMovieDetails) var fetchMovieDetails
+        @Dependency(\.fetchTVSeriesDetails) var fetchTVSeriesDetails
+        @Dependency(\.fetchMovieCredits) var fetchMovieCredits
+        return PopcornIntelligenceAdaptersFactory(
             fetchMovieDetailsUseCase: fetchMovieDetails,
             fetchTVSeriesDetailsUseCase: fetchTVSeriesDetails,
             fetchMovieCreditsUseCase: fetchMovieCredits
         ).makeIntelligenceFactory()
+    }
+
+}
+
+extension DependencyValues {
+
+    var intelligenceFactory: PopcornIntelligenceFactory {
+        get { self[PopcornIntelligenceFactoryKey.self] }
+        set { self[PopcornIntelligenceFactoryKey.self] = newValue }
     }
 
 }

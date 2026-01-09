@@ -6,40 +6,12 @@
 //
 
 import DiscoverApplication
-import DiscoverDomain
-import DiscoverInfrastructure
 import Foundation
 
-public final class PopcornDiscoverFactory {
+public protocol PopcornDiscoverFactory: Sendable {
 
-    private let applicationFactory: DiscoverApplicationFactory
+    func makeFetchDiscoverMoviesUseCase() -> FetchDiscoverMoviesUseCase
 
-    public init(
-        discoverRemoteDataSource: some DiscoverRemoteDataSource,
-        appConfigurationProvider: some AppConfigurationProviding,
-        genreProvider: some GenreProviding,
-        movieLogoImageProvider: some MovieLogoImageProviding,
-        tvSeriesLogoImageProvider: some TVSeriesLogoImageProviding
-    ) {
-        let infrastructureFactory = DiscoverInfrastructureFactory(
-            discoverRemoteDataSource: discoverRemoteDataSource
-        )
-        self.applicationFactory = DiscoverApplicationFactory(
-            discoverMovieRepository: infrastructureFactory.makeDiscoverMovieRepository(),
-            discoverTVSeriesRepository: infrastructureFactory.makeDiscoverTVSeriesRepository(),
-            genreProvider: genreProvider,
-            appConfigurationProvider: appConfigurationProvider,
-            movieLogoImageProvider: movieLogoImageProvider,
-            tvSeriesLogoImageProvider: tvSeriesLogoImageProvider
-        )
-    }
-
-    public func makeFetchDiscoverMoviesUseCase() -> some FetchDiscoverMoviesUseCase {
-        applicationFactory.makeFetchDiscoverMoviesUseCase()
-    }
-
-    public func makeFetchDiscoverTVSeriesUseCase() -> some FetchDiscoverTVSeriesUseCase {
-        applicationFactory.makeFetchDiscoverTVSeriesUseCase()
-    }
+    func makeFetchDiscoverTVSeriesUseCase() -> FetchDiscoverTVSeriesUseCase
 
 }

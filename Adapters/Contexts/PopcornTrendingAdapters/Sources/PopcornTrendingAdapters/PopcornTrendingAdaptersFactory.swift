@@ -31,7 +31,7 @@ public final class PopcornTrendingAdaptersFactory {
         self.fetchTVSeriesImageCollectionUseCase = fetchTVSeriesImageCollectionUseCase
     }
 
-    public func makeTrendingFactory() -> PopcornTrendingFactory {
+    public func makeTrendingFactory() -> some PopcornTrendingFactory {
         let trendingRemoteDataSource = TMDbTrendingRemoteDataSource(
             trendingService: trendingService
         )
@@ -45,7 +45,7 @@ public final class PopcornTrendingAdaptersFactory {
             fetchTVSeriesImageCollectionUseCase: fetchTVSeriesImageCollectionUseCase
         )
 
-        return PopcornTrendingFactory(
+        return LivePopcornTrendingFactory(
             trendingRemoteDataSource: trendingRemoteDataSource,
             appConfigurationProvider: appConfigurationProvider,
             movieLogoImageProvider: movieLogoProvider,

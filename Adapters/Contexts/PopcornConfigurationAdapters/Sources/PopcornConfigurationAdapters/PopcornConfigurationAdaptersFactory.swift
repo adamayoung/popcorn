@@ -17,12 +17,12 @@ public final class PopcornConfigurationAdaptersFactory {
         self.configurationService = configurationService
     }
 
-    public func makeConfigurationFactory() -> PopcornConfigurationFactory {
+    public func makeConfigurationFactory() -> some PopcornConfigurationFactory {
         let configurationRemoteDataSource = TMDbConfigurationRemoteDataSource(
             configurationService: configurationService
         )
 
-        return PopcornConfigurationFactory(
+        return LivePopcornConfigurationFactory(
             configurationRemoteDataSource: configurationRemoteDataSource
         )
     }

@@ -40,6 +40,7 @@ public struct MovieDetailsView: View {
                 EmptyView()
             }
         }
+        .accessibilityIdentifier("movie-details.view")
         .toolbar {
             if case .ready(let snapshot) = store.viewState {
                 if store.isWatchlistEnabled {

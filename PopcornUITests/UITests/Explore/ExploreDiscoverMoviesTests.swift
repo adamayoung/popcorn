@@ -1,0 +1,38 @@
+//
+//  ExploreDiscoverMoviesTests.swift
+//  Popcorn
+//
+//  Copyright © 2025 Adam Young.
+//
+
+import XCTest
+
+@MainActor
+final class ExploreDiscoverMoviesTests: PopcornUITestCase {
+
+    func testNavigateToFirstDiscoverMovie() throws {
+        let explore = ExploreScreen(app: app)
+        explore.tapOnFirstDiscoverMovie()
+    }
+
+    func testNavigateToFirstTrendingMovie() throws {
+        let explore = ExploreScreen(app: app)
+        explore.tapOnFirstTrendingMovie()
+    }
+
+    func testNavigateToFirstPopularMovie() throws {
+        let explore = ExploreScreen(app: app)
+        explore.tapOnFirstPopularMovie()
+    }
+
+    func testNavigateToFirstTrendingTVSeries() throws {
+        let explore = ExploreScreen(app: app)
+        explore.tapOnFirstTrendingTVSeries()
+    }
+
+    func testNavigateToFirstTrendingPerson() throws {
+        let explore = ExploreScreen(app: app)
+        explore.tapOnFirstTrendingPerson()
+    }
+
+}

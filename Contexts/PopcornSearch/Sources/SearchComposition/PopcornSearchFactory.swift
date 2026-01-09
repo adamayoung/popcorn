@@ -7,38 +7,13 @@
 
 import Foundation
 import SearchApplication
-import SearchDomain
-import SearchInfrastructure
 
-public struct PopcornSearchFactory {
+public protocol PopcornSearchFactory: Sendable {
 
-    private let applicationFactory: SearchApplicationFactory
+    func makeSearchMediaUseCase() -> SearchMediaUseCase
 
-    public init(
-        mediaRemoteDataSource: some MediaRemoteDataSource,
-        appConfigurationProvider: some AppConfigurationProviding,
-        mediaProvider: some MediaProviding
-    ) {
-        let infrastructureFactory = SearchInfrastructureFactory(
-            mediaRemoteDataSource: mediaRemoteDataSource
-        )
-        self.applicationFactory = SearchApplicationFactory(
-            mediaRepository: infrastructureFactory.makeMediaRepository(),
-            appConfigurationProvider: appConfigurationProvider,
-            mediaProvider: mediaProvider
-        )
-    }
+    func makeFetchMediaSearchHistory() -> FetchMediaSearchHistoryUseCase
 
-    public func makeSearchMediaUseCase() -> some SearchMediaUseCase {
-        applicationFactory.makeSearchMediaUseCase()
-    }
-
-    public func makeFetchMediaSearchHistory() -> some FetchMediaSearchHistoryUseCase {
-        applicationFactory.makeFetchMediaSearchHistory()
-    }
-
-    public func makeAddMediaSearchHistoryEntryUseCase() -> some AddMediaSearchHistoryEntryUseCase {
-        applicationFactory.makeAddMediaSearchHistoryEntryUseCase()
-    }
+    func makeAddMediaSearchHistoryEntryUseCase() -> AddMediaSearchHistoryEntryUseCase
 
 }

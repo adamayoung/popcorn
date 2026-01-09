@@ -15,7 +15,8 @@ let package = Package(
     ],
 
     products: [
-        .library(name: "PopcornIntelligenceAdapters", targets: ["PopcornIntelligenceAdapters"])
+        .library(name: "PopcornIntelligenceAdapters", targets: ["PopcornIntelligenceAdapters"]),
+        .library(name: "PopcornIntelligenceAdaptersUITesting", targets: ["PopcornIntelligenceAdaptersUITesting"])
     ],
 
     dependencies: [
@@ -38,6 +39,15 @@ let package = Package(
         .testTarget(
             name: "PopcornIntelligenceAdaptersTests",
             dependencies: ["PopcornIntelligenceAdapters"]
+        ),
+
+        .target(
+            name: "PopcornIntelligenceAdaptersUITesting",
+            dependencies: [
+                .product(name: "IntelligenceComposition", package: "PopcornIntelligence"),
+                .product(name: "IntelligenceApplication", package: "PopcornIntelligence"),
+                .product(name: "IntelligenceDomain", package: "PopcornIntelligence")
+            ]
         )
     ]
 )

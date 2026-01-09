@@ -5,18 +5,34 @@
 //  Copyright © 2025 Adam Young.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import SwiftUI
 
 @main
 struct PopcornApp: App {
 
-    @StateObject private var store = Store(
-        initialState: AppRootFeature.State(),
-        reducer: {
-            AppRootFeature()
+    @StateObject private var store: StoreOf<AppRootFeature>
+
+    init() {
+        let isUITesting = CommandLine.arguments.contains("-uitest")
+
+        if isUITesting {
+            _store = StateObject(wrappedValue: Store(
+                initialState: AppRootFeature.State()
+            ) {
+                AppRootFeature()
+            } withDependencies: {
+                UITestDependencies.configure(&$0)
+            })
+        } else {
+            _store = StateObject(wrappedValue: Store(
+                initialState: AppRootFeature.State()
+            ) {
+                AppRootFeature()
+            })
         }
-    )
+    }
 
     var body: some Scene {
         #if os(macOS)
@@ -27,4 +43,5 @@ struct PopcornApp: App {
             PhoneScene(store: store)
         #endif
     }
+
 }

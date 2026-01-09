@@ -10,13 +10,22 @@ import Foundation
 import GamesCatalogComposition
 import PopcornGamesCatalogAdapters
 
-extension DependencyValues {
+enum PopcornGamesCatalogFactoryKey: DependencyKey {
 
-    var gamesCatalogFactory: PopcornGamesCatalogFactory {
+    static var liveValue: PopcornGamesCatalogFactory {
         @Dependency(\.featureFlags) var featureFlags
         return PopcornGamesCatalogAdaptersFactory(
             featureFlags: featureFlags
         ).makeGamesCatalogFactory()
+    }
+
+}
+
+extension DependencyValues {
+
+    var gamesCatalogFactory: PopcornGamesCatalogFactory {
+        get { self[PopcornGamesCatalogFactoryKey.self] }
+        set { self[PopcornGamesCatalogFactoryKey.self] = newValue }
     }
 
 }

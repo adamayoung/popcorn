@@ -15,7 +15,8 @@ let package = Package(
     ],
 
     products: [
-        .library(name: "PopcornPlotRemixGameAdapters", targets: ["PopcornPlotRemixGameAdapters"])
+        .library(name: "PopcornPlotRemixGameAdapters", targets: ["PopcornPlotRemixGameAdapters"]),
+        .library(name: "PopcornPlotRemixGameAdaptersUITesting", targets: ["PopcornPlotRemixGameAdaptersUITesting"])
     ],
 
     dependencies: [
@@ -50,6 +51,16 @@ let package = Package(
         .testTarget(
             name: "PopcornPlotRemixGameAdaptersTests",
             dependencies: ["PopcornPlotRemixGameAdapters"]
+        ),
+
+        .target(
+            name: "PopcornPlotRemixGameAdaptersUITesting",
+            dependencies: [
+                .product(name: "PlotRemixGameComposition", package: "PopcornPlotRemixGame"),
+                .product(name: "PlotRemixGameApplication", package: "PopcornPlotRemixGame"),
+                .product(name: "PlotRemixGameDomain", package: "PopcornPlotRemixGame"),
+                "CoreDomain"
+            ]
         )
     ]
 )

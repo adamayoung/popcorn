@@ -38,7 +38,7 @@ public final class PopcornDiscoverAdaptersFactory {
         self.fetchTVSeriesImageCollectionUseCase = fetchTVSeriesImageCollectionUseCase
     }
 
-    public func makeDiscoverFactory() -> PopcornDiscoverFactory {
+    public func makeDiscoverFactory() -> some PopcornDiscoverFactory {
         let discoverRemoteDataSource = TMDbDiscoverRemoteDataSource(
             discoverService: discoverService)
 
@@ -58,7 +58,7 @@ public final class PopcornDiscoverAdaptersFactory {
             fetchTVSeriesImageCollectionUseCase: fetchTVSeriesImageCollectionUseCase
         )
 
-        return PopcornDiscoverFactory(
+        return LivePopcornDiscoverFactory(
             discoverRemoteDataSource: discoverRemoteDataSource,
             appConfigurationProvider: appConfigurationProvider,
             genreProvider: genreProvider,

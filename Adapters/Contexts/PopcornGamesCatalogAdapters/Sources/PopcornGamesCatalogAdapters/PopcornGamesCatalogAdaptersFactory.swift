@@ -17,9 +17,9 @@ public final class PopcornGamesCatalogAdaptersFactory {
         self.featureFlags = featureFlags
     }
 
-    public func makeGamesCatalogFactory() -> PopcornGamesCatalogFactory {
+    public func makeGamesCatalogFactory() -> some PopcornGamesCatalogFactory {
         let featureFlagProvider = FeatureFlagProvider(featureFlags: featureFlags)
-        return PopcornGamesCatalogFactory(featureFlagProvider: featureFlagProvider)
+        return LivePopcornGamesCatalogFactory(featureFlagProvider: featureFlagProvider)
     }
 
 }

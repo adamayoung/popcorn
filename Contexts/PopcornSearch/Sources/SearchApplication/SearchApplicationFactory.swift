@@ -8,13 +8,13 @@
 import Foundation
 import SearchDomain
 
-package final class SearchApplicationFactory {
+public final class SearchApplicationFactory: Sendable {
 
     private let mediaRepository: any MediaRepository
     private let appConfigurationProvider: any AppConfigurationProviding
     private let mediaProvider: any MediaProviding
 
-    package init(
+    public init(
         mediaRepository: some MediaRepository,
         appConfigurationProvider: some AppConfigurationProviding,
         mediaProvider: any MediaProviding
@@ -24,14 +24,14 @@ package final class SearchApplicationFactory {
         self.mediaProvider = mediaProvider
     }
 
-    package func makeSearchMediaUseCase() -> some SearchMediaUseCase {
+    public func makeSearchMediaUseCase() -> some SearchMediaUseCase {
         DefaultSearchMediaUseCase(
             repository: mediaRepository,
             appConfigurationProvider: appConfigurationProvider
         )
     }
 
-    package func makeFetchMediaSearchHistory() -> some FetchMediaSearchHistoryUseCase {
+    public func makeFetchMediaSearchHistory() -> some FetchMediaSearchHistoryUseCase {
         DefaultFetchMediaSearchHistoryUseCase(
             repository: mediaRepository,
             appConfigurationProvider: appConfigurationProvider,
@@ -39,7 +39,7 @@ package final class SearchApplicationFactory {
         )
     }
 
-    package func makeAddMediaSearchHistoryEntryUseCase() -> some AddMediaSearchHistoryEntryUseCase {
+    public func makeAddMediaSearchHistoryEntryUseCase() -> some AddMediaSearchHistoryEntryUseCase {
         DefaultAddMediaSearchHistoryEntryUseCase(repository: mediaRepository)
     }
 
