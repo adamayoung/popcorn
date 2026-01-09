@@ -10,8 +10,6 @@ import XCTest
 @MainActor
 final class ExploreDiscoverMoviesTests: PopcornUITestCase {
 
-    var explore: ExploreScreen!
-
     func testNavigateToFirstDiscoverMovie() throws {
         let explore = ExploreScreen(app: app)
         explore.tapOnFirstDiscoverMovie()

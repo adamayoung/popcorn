@@ -7,6 +7,7 @@
 
 import XCTest
 
+@MainActor
 class PopcornUITestCase: XCTestCase {
 
     var app: XCUIApplication!
