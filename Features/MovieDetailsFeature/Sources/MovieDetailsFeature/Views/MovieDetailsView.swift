@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import DesignSystem
 import SwiftUI
+import TCAFoundation
 
 public struct MovieDetailsView: View {
 
@@ -34,7 +35,18 @@ public struct MovieDetailsView: View {
                 )
 
             case .error(let error):
-                Text(verbatim: "\(error.localizedDescription)")
+                ContentUnavailableView {
+                    Label("UNABLE_TO_LOAD", systemImage: "exclamationmark.triangle")
+                } description: {
+                    Text(error.message)
+                } actions: {
+                    if error.isRetryable {
+                        Button("RETRY") {
+                            store.send(.fetch)
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                }
 
             default:
                 EmptyView()
@@ -68,9 +80,9 @@ public struct MovieDetailsView: View {
             }
         }
         .contentTransition(.opacity)
-        .animation(.easeInOut(duration: 1), value: store.isReady)
+        .animation(.easeInOut(duration: 1), value: store.viewState.isReady)
         .overlay {
-            if store.isLoading {
+            if store.viewState.isLoading {
                 loadingBody
             }
         }
