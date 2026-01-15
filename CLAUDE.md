@@ -54,6 +54,8 @@ Use slash commands or XcodeBuildMCP tools directly:
 | Auto-fix | `/format` |
 | Check only | `/lint` |
 
+**Always run `/format` and `/lint` after making code changes** to ensure consistent style before committing.
+
 ## Key Entry Points
 
 | File | Purpose |
@@ -128,7 +130,7 @@ Detailed guides: [SWIFT.md](docs/SWIFT.md) · [SWIFTUI.md](docs/SWIFTUI.md) · [
 
 ### Quick Reference
 
-**Swift**: `@Observable` needs `@MainActor` · No force unwraps (`try #require()` in tests) · `Task.sleep(for:)` · `localizedStandardContains()`
+**Swift**: `@Observable` needs `@MainActor` · **No force unwraps (`!`) anywhere, including tests** — use `try #require()` for unwrapping optionals in tests · `Task.sleep(for:)` · `localizedStandardContains()`
 
 **SwiftUI**: `foregroundStyle()` · `clipShape(.rect(cornerRadius:))` · `Tab` API · `@Observable` · `NavigationStack`
 

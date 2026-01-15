@@ -35,7 +35,8 @@ let package = Package(
                 "DesignSystem",
                 .product(name: "TrendingApplication", package: "PopcornTrending"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
-            ]
+            ],
+            resources: [.process("Localizable.xcstrings")]
         ),
         .testTarget(
             name: "TrendingTVSeriesFeatureTests",

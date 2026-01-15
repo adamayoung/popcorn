@@ -23,6 +23,7 @@ let package = Package(
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Core/TCAFoundation"),
         .package(path: "../../Contexts/PopcornMovies"),
+        .package(path: "../../Platform/FeatureAccess"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
         )
@@ -37,11 +38,17 @@ let package = Package(
                 "TCAFoundation",
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
-            ]
+            ],
+            resources: [.process("Localizable.xcstrings")]
         ),
         .testTarget(
             name: "MovieDetailsFeatureTests",
-            dependencies: ["MovieDetailsFeature"]
+            dependencies: [
+                "MovieDetailsFeature",
+                .product(name: "MoviesApplication", package: "PopcornMovies"),
+                .product(name: "MoviesDomain", package: "PopcornMovies"),
+                .product(name: "FeatureAccessTestHelpers", package: "FeatureAccess")
+            ]
         )
     ]
 )

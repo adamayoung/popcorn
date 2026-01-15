@@ -116,20 +116,20 @@ public struct AnimatedMeshBackground: View {
 private extension Color {
 
     func lighter(by amount: CGFloat = 0.2) -> Color {
-        #if canImport(UIKit)
-            let platformColor = UIColor(self)
-        #elseif canImport(AppKit)
-            let platformColor = NSColor(self)
-        #endif
-
         var r: CGFloat = 0
         var g: CGFloat = 0
         var b: CGFloat = 0
         var a: CGFloat = 0
 
-        guard platformColor.getRed(&r, green: &g, blue: &b, alpha: &a) else {
-            return self
-        }
+        #if canImport(UIKit)
+            let platformColor = UIColor(self)
+            guard platformColor.getRed(&r, green: &g, blue: &b, alpha: &a) else {
+                return self
+            }
+        #elseif canImport(AppKit)
+            let platformColor = NSColor(self)
+            platformColor.getRed(&r, green: &g, blue: &b, alpha: &a)
+        #endif
 
         return Color(
             .sRGB,

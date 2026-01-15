@@ -2,7 +2,7 @@
 //  Genre.swift
 //  PopcornMovies
 //
-//  Created by Adam Young on 15/01/2026.
+//  Copyright © 2025 Adam Young.
 //
 
 import Foundation

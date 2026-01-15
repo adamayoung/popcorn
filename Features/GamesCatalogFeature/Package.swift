@@ -40,7 +40,8 @@ let package = Package(
                 "DesignSystem",
                 "TCAFoundation",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
-            ]
+            ],
+            resources: [.process("Localizable.xcstrings")]
         ),
         .testTarget(
             name: "GamesCatalogFeatureTests",

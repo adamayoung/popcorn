@@ -14,9 +14,7 @@ import MoviesApplication
 struct MovieDetailsClient: Sendable {
 
     var fetchMovie: @Sendable (_ id: Int) async throws -> Movie
-    var streamMovie: @Sendable (_ id: Int) async throws -> AsyncThrowingStream<Movie?, Error>
     var fetchRecommendedMovies: @Sendable (_ movieID: Int) async throws -> [MoviePreview]
-    var streamRecommended: @Sendable (_ movieID: Int) async throws -> AsyncThrowingStream<[MoviePreview], Error>
     var fetchCredits: @Sendable (_ movieID: Int) async throws -> Credits
     var toggleOnWatchlist: @Sendable (_ movieID: Int) async throws -> Void
 
@@ -29,9 +27,7 @@ extension MovieDetailsClient: DependencyKey {
 
     static var liveValue: MovieDetailsClient {
         @Dependency(\.fetchMovieDetails) var fetchMovieDetails
-        @Dependency(\.streamMovieDetails) var streamMovieDetails
         @Dependency(\.fetchMovieRecommendations) var fetchMovieRecommendations
-        @Dependency(\.streamMovieRecommendations) var streamMovieRecommendations
         @Dependency(\.fetchMovieCredits) var fetchMovieCredits
         @Dependency(\.toggleWatchlistMovie) var toggleWatchlistMovie
         @Dependency(\.featureFlags) var featureFlags
@@ -42,41 +38,10 @@ extension MovieDetailsClient: DependencyKey {
                 let mapper = MovieMapper()
                 return mapper.map(movie)
             },
-            streamMovie: { id in
-                let movieStream = await streamMovieDetails.stream(id: id)
-                return AsyncThrowingStream<Movie?, Error> { continuation in
-                    let task = Task {
-                        let mapper = MovieMapper()
-                        for try await movie in movieStream {
-                            guard let movie else {
-                                continuation.yield(nil)
-                                continue
-                            }
-
-                            continuation.yield(mapper.map(movie))
-                        }
-                        continuation.finish()
-                    }
-                    continuation.onTermination = { _ in task.cancel() }
-                }
-            },
             fetchRecommendedMovies: { movieID in
                 let movies = try await fetchMovieRecommendations.execute(movieID: movieID)
                 let mapper = MoviePreviewMapper()
                 return movies.prefix(5).map(mapper.map)
-            },
-            streamRecommended: { movieID in
-                let moviePreviewStream = await streamMovieRecommendations.stream(movieID: movieID, limit: 5)
-                return AsyncThrowingStream<[MoviePreview], Error> { continuation in
-                    let task = Task {
-                        let mapper = MoviePreviewMapper()
-                        for try await moviePreviews in moviePreviewStream {
-                            continuation.yield(moviePreviews.map(mapper.map))
-                        }
-                        continuation.finish()
-                    }
-                    continuation.onTermination = { _ in task.cancel() }
-                }
             },
             fetchCredits: { movieID in
                 let credits = try await fetchMovieCredits.execute(movieID: movieID)
@@ -100,20 +65,8 @@ extension MovieDetailsClient: DependencyKey {
             fetchMovie: { _ in
                 Movie.mock
             },
-            streamMovie: { _ in
-                AsyncThrowingStream<Movie?, Error> { continuation in
-                    continuation.yield(Movie.mock)
-                    continuation.finish()
-                }
-            },
             fetchRecommendedMovies: { _ in
                 MoviePreview.mocks
-            },
-            streamRecommended: { _ in
-                AsyncThrowingStream<[MoviePreview], Error> { continuation in
-                    continuation.yield(MoviePreview.mocks)
-                    continuation.finish()
-                }
             },
             fetchCredits: { _ in
                 Credits.mock

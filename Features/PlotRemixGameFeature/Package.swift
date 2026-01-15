@@ -36,7 +36,8 @@ let package = Package(
                 .product(name: "GamesCatalogDomain", package: "PopcornGamesCatalog"),
                 "DesignSystem",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
-            ]
+            ],
+            resources: [.process("Localizable.xcstrings")]
         ),
         .testTarget(
             name: "PlotRemixGameFeatureTests",

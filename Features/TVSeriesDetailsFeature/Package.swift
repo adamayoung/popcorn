@@ -39,7 +39,8 @@ let package = Package(
                 "Observability",
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
-            ]
+            ],
+            resources: [.process("Localizable.xcstrings")]
         ),
         .testTarget(
             name: "TVSeriesDetailsFeatureTests",

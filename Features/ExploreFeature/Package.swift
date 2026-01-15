@@ -47,7 +47,8 @@ let package = Package(
                 .product(name: "TrendingApplication", package: "PopcornTrending"),
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
-            ]
+            ],
+            resources: [.process("Localizable.xcstrings")]
         ),
         .testTarget(
             name: "ExploreFeatureTests",
