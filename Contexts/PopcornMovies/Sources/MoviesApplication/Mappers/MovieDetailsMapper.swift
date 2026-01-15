@@ -24,10 +24,17 @@ struct MovieDetailsMapper {
         return MovieDetails(
             id: movie.id,
             title: movie.title,
+            tagline: movie.tagline,
             overview: movie.overview,
+            runtime: movie.runtime,
+            genres: movie.genres,
+            releaseDate: movie.releaseDate,
             posterURLSet: posterURLSet,
             backdropURLSet: backdropURLSet,
             logoURLSet: logoURLSet,
+            budget: movie.budget,
+            revenue: movie.revenue,
+            homepageURL: movie.homepageURL,
             isOnWatchlist: isOnWatchlist
         )
     }

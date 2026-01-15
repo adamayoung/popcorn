@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import DesignSystem
 import SwiftUI
+import TCAFoundation
 
 public struct ExploreView: View {
 
@@ -35,7 +36,18 @@ public struct ExploreView: View {
                 )
 
             case .error(let error):
-                Text(verbatim: error.localizedDescription)
+                ContentUnavailableView {
+                    Label("UNABLE_TO_LOAD", systemImage: "exclamationmark.triangle")
+                } description: {
+                    Text(error.message)
+                } actions: {
+                    if error.isRetryable {
+                        Button("RETRY") {
+                            store.send(.load)
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                }
 
             default:
                 EmptyView()
@@ -43,7 +55,7 @@ public struct ExploreView: View {
         }
         .accessibilityIdentifier("explore.view")
         .overlay {
-            if store.isLoading {
+            if store.viewState.isLoading {
                 loadingBody
             }
         }

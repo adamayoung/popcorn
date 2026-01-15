@@ -8,8 +8,8 @@
 import AppDependencies
 import ComposableArchitecture
 import Foundation
-import Observability
 import OSLog
+import TCAFoundation
 
 @Reducer
 public struct PersonDetailsFeature: Sendable {
@@ -17,32 +17,17 @@ public struct PersonDetailsFeature: Sendable {
     private static let logger = Logger.personDetails
 
     @Dependency(\.personDetailsClient) private var client
-    @Dependency(\.observability) private var observability
 
     @ObservableState
     public struct State: Sendable {
         var personID: Int
         public let transitionID: String?
-        public var viewState: ViewState
-
-        public var isLoading: Bool {
-            switch viewState {
-            case .loading: true
-            default: false
-            }
-        }
-
-        public var isReady: Bool {
-            switch viewState {
-            case .ready: true
-            default: false
-            }
-        }
+        public var viewState: ViewState<ViewSnapshot>
 
         public init(
             personID: Int,
             transitionID: String? = nil,
-            viewState: ViewState = .initial
+            viewState: ViewState<ViewSnapshot> = .initial
         ) {
             self.personID = personID
             self.transitionID = transitionID
@@ -50,14 +35,7 @@ public struct PersonDetailsFeature: Sendable {
         }
     }
 
-    public enum ViewState: Sendable {
-        case initial
-        case loading
-        case ready(ViewSnapshot)
-        case error(Error)
-    }
-
-    public struct ViewSnapshot: Sendable {
+    public struct ViewSnapshot: Equatable, Sendable {
         public let person: Person
 
         public init(person: Person) {
@@ -68,7 +46,7 @@ public struct PersonDetailsFeature: Sendable {
     public enum Action {
         case fetch
         case loaded(ViewSnapshot)
-        case loadFailed(Error)
+        case loadFailed(ViewStateError)
     }
 
     public init() {}
@@ -77,7 +55,7 @@ public struct PersonDetailsFeature: Sendable {
         Reduce { state, action in
             switch action {
             case .fetch:
-                if state.isReady {
+                if state.viewState.isReady {
                     state.viewState = .loading
                 }
 
@@ -103,25 +81,19 @@ private extension PersonDetailsFeature {
             Self.logger.info(
                 "User fetching person [personID: \"\(state.personID, privacy: .private)\"]")
 
-            let transaction = observability.startTransaction(
-                name: "FetchPerson",
-                operation: .uiAction
-            )
-            transaction.setData(key: "person_id", value: state.personID)
-
+            let person: Person
             do {
-                let person = try await client.fetchPerson(state.personID)
-                let snapshot = ViewSnapshot(person: person)
-                transaction.finish()
-                await send(.loaded(snapshot))
+                person = try await client.fetchPerson(state.personID)
             } catch {
                 Self.logger.error(
                     "Failed fetching person details: [personID: \"\(state.personID, privacy: .private)\"] \(error.localizedDescription, privacy: .public)"
                 )
-                transaction.setData(error: error)
-                transaction.finish(status: .internalError)
-                await send(.loadFailed(error))
+                await send(.loadFailed(ViewStateError(error)))
+                return
             }
+
+            let snapshot = ViewSnapshot(person: person)
+            await send(.loaded(snapshot))
         }
     }
 

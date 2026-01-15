@@ -86,8 +86,11 @@ public struct BackdropCarouselCell<CellLabel: View>: View {
     private var backdropImage: some View {
         BackdropImage(url: imageURL, logoURL: logoURL)
             .backdropWidth(width)
-            .cornerRadius(20)
-            .clipped()
+            .clipShape(.rect(cornerRadius: 20))
+            .overlay {
+                RoundedRectangle(cornerRadius: 20)
+                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+            }
     }
 
 }
@@ -115,6 +118,7 @@ public struct BackdropCarouselCell<CellLabel: View>: View {
             .fixedSize(horizontal: true, vertical: false)
         }
         .scrollTargetLayout()
+        .frame(height: 200)
     }
     .scrollTargetBehavior(.viewAligned)
 }

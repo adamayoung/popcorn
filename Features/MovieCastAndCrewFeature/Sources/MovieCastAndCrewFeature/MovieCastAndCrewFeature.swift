@@ -10,6 +10,7 @@ import ComposableArchitecture
 import Foundation
 import Observability
 import OSLog
+import TCAFoundation
 
 @Reducer
 public struct MovieCastAndCrewFeature: Sendable {
@@ -22,32 +23,18 @@ public struct MovieCastAndCrewFeature: Sendable {
     @ObservableState
     public struct State: Sendable {
         let movieID: Int
-        public var viewState: ViewState
-
-        public var isLoading: Bool {
-            switch viewState {
-            case .loading: true
-            default: false
-            }
-        }
+        public var viewState: ViewState<ViewSnapshot>
 
         public init(
             movieID: Int,
-            viewState: ViewState = .initial
+            viewState: ViewState<ViewSnapshot> = .initial
         ) {
             self.movieID = movieID
             self.viewState = viewState
         }
     }
 
-    public enum ViewState: Sendable {
-        case initial
-        case loading
-        case ready(ViewSnapshot)
-        case error(Error)
-    }
-
-    public struct ViewSnapshot: Sendable {
+    public struct ViewSnapshot: Equatable, Sendable {
         public let castMembers: [CastMember]
         public let crewMembers: [CrewMember]
         public let crewByDepartment: [String: [CrewMember]]
@@ -65,7 +52,7 @@ public struct MovieCastAndCrewFeature: Sendable {
     public enum Action {
         case fetch
         case loaded(ViewSnapshot)
-        case loadFailed(Error)
+        case loadFailed(ViewStateError)
         case navigate(Navigation)
     }
 
@@ -79,6 +66,10 @@ public struct MovieCastAndCrewFeature: Sendable {
         Reduce { state, action in
             switch action {
             case .fetch:
+                if case .ready = state.viewState {
+                    return .none
+                }
+
                 state.viewState = .loading
                 return handleFetch(&state)
 
@@ -113,7 +104,7 @@ extension MovieCastAndCrewFeature {
                 Self.logger.error(
                     "Failed fetching cast and crew [movieID: \(state.movieID, privacy: .private)]: \(error.localizedDescription, privacy: .public)"
                 )
-                await send(.loadFailed(error))
+                await send(.loadFailed(ViewStateError(error)))
                 return
             }
 

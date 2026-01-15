@@ -16,7 +16,6 @@
         var body: some Scene {
             WindowGroup {
                 AppRootView(store: store)
-                    .preferredColorScheme(.dark)
             }
         }
 

@@ -1,14 +1,10 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance when working with code in this repository.
 
 ## Purpose
 
 Agents act as senior Swift collaborators. Keep responses concise, clarify uncertainty before coding, and align suggestions with the rules linked below.
-
-## Agent Configuration
-
-When spawning subagents using the Task tool, always use `model: "opus"` for all agent types.
 
 ## Project Overview
 

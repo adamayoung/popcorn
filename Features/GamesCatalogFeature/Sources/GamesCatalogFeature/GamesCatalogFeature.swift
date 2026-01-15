@@ -10,6 +10,7 @@ import ComposableArchitecture
 import Foundation
 import Observability
 import OSLog
+import TCAFoundation
 
 @Reducer
 public struct GamesCatalogFeature: Sendable {
@@ -21,35 +22,14 @@ public struct GamesCatalogFeature: Sendable {
 
     @ObservableState
     public struct State {
-        var viewState: ViewState
+        var viewState: ViewState<ViewSnapshot>
 
-        public var isLoading: Bool {
-            switch viewState {
-            case .loading: true
-            default: false
-            }
-        }
-
-        public var isReady: Bool {
-            switch viewState {
-            case .ready: true
-            default: false
-            }
-        }
-
-        public init(viewState: ViewState = .initial) {
+        public init(viewState: ViewState<ViewSnapshot> = .initial) {
             self.viewState = viewState
         }
     }
 
-    public enum ViewState: Sendable {
-        case initial
-        case loading
-        case ready(ViewSnapshot)
-        case error(Error)
-    }
-
-    public struct ViewSnapshot: Sendable {
+    public struct ViewSnapshot: Equatable, Sendable {
         public let games: [GameMetadata]
 
         public init(games: [GameMetadata]) {
@@ -60,7 +40,7 @@ public struct GamesCatalogFeature: Sendable {
     public enum Action {
         case fetch
         case loaded(ViewSnapshot)
-        case loadFailed(Error)
+        case loadFailed(ViewStateError)
         case navigate(Navigation)
     }
 
@@ -74,7 +54,7 @@ public struct GamesCatalogFeature: Sendable {
         Reduce { state, action in
             switch action {
             case .fetch:
-                if state.isReady {
+                if state.viewState.isReady {
                     state.viewState = .loading
                 }
 
@@ -102,22 +82,17 @@ extension GamesCatalogFeature {
         .run { [client] send in
             Self.logger.info("User fetching games")
 
-            let transaction = observability.startTransaction(
-                name: "FetchGames",
-                operation: .uiAction
-            )
-
+            let snapshot: ViewSnapshot
             do {
                 let games = try await client.fetchGames()
-                let snapshot = ViewSnapshot(games: games)
-                transaction.finish()
-                await send(.loaded(snapshot))
-            } catch let error {
+                snapshot = ViewSnapshot(games: games)
+            } catch {
                 Self.logger.error("Failed fetching games: \(error, privacy: .public)")
-                transaction.setData(error: error)
-                transaction.finish(status: .internalError)
-                await send(.loadFailed(error))
+                await send(.loadFailed(ViewStateError(error)))
+                return
             }
+
+            await send(.loaded(snapshot))
         }
     }
 

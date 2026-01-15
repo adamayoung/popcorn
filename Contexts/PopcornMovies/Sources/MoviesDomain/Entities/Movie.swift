@@ -22,8 +22,14 @@ public struct Movie: Identifiable, Equatable, Sendable {
     /// The movie's title.
     public let title: String
 
+    public let tagline: String?
+
     /// A brief description or plot summary of the movie.
     public let overview: String
+
+    public let runtime: Int?
+
+    public let genres: [Genre]?
 
     /// The movie's theatrical release date, if known.
     public let releaseDate: Date?
@@ -33,6 +39,12 @@ public struct Movie: Identifiable, Equatable, Sendable {
 
     /// URL path to the movie's backdrop image.
     public let backdropPath: URL?
+
+    public let budget: Double?
+
+    public let revenue: Double?
+
+    public let homepageURL: URL?
 
     ///
     /// Creates a new movie instance.
@@ -48,17 +60,29 @@ public struct Movie: Identifiable, Equatable, Sendable {
     public init(
         id: Int,
         title: String,
+        tagline: String? = nil,
         overview: String,
+        runtime: Int? = nil,
+        genres: [Genre]? = nil,
         releaseDate: Date? = nil,
         posterPath: URL? = nil,
-        backdropPath: URL? = nil
+        backdropPath: URL? = nil,
+        budget: Double? = nil,
+        revenue: Double? = nil,
+        homepageURL: URL? = nil
     ) {
         self.id = id
         self.title = title
+        self.tagline = tagline
         self.overview = overview
+        self.runtime = runtime
+        self.genres = genres
         self.releaseDate = releaseDate
         self.posterPath = posterPath
         self.backdropPath = backdropPath
+        self.budget = budget
+        self.revenue = revenue
+        self.homepageURL = homepageURL
     }
 
 }

@@ -7,8 +7,8 @@
 
 import ComposableArchitecture
 import Foundation
-import Observability
 import OSLog
+import TCAFoundation
 
 @Reducer
 public struct TVSeriesDetailsFeature: Sendable {
@@ -16,33 +16,18 @@ public struct TVSeriesDetailsFeature: Sendable {
     private static let logger = Logger.tvSeriesDetails
 
     @Dependency(\.tvSeriesDetailsClient) private var client
-    @Dependency(\.observability) private var observability
 
     @ObservableState
     public struct State: Sendable {
         var tvSeriesID: Int
         public let transitionID: String?
-        public var viewState: ViewState
+        public var viewState: ViewState<ViewSnapshot>
         public var isIntelligenceEnabled: Bool
-
-        public var isLoading: Bool {
-            switch viewState {
-            case .loading: true
-            default: false
-            }
-        }
-
-        public var isReady: Bool {
-            switch viewState {
-            case .ready: true
-            default: false
-            }
-        }
 
         public init(
             tvSeriesID: Int,
             transitionID: String? = nil,
-            viewState: ViewState = .initial,
+            viewState: ViewState<ViewSnapshot> = .initial,
             isIntelligenceEnabled: Bool = false
         ) {
             self.tvSeriesID = tvSeriesID
@@ -52,14 +37,7 @@ public struct TVSeriesDetailsFeature: Sendable {
         }
     }
 
-    public enum ViewState: Sendable {
-        case initial
-        case loading
-        case ready(ViewSnapshot)
-        case error(Error)
-    }
-
-    public struct ViewSnapshot: Sendable {
+    public struct ViewSnapshot: Equatable, Sendable {
         public let tvSeries: TVSeries
 
         public init(tvSeries: TVSeries) {
@@ -72,7 +50,7 @@ public struct TVSeriesDetailsFeature: Sendable {
         case updateFeatureFlags
         case fetch
         case loaded(ViewSnapshot)
-        case loadFailed(Error)
+        case loadFailed(ViewStateError)
         case navigate(Navigation)
     }
 
@@ -95,7 +73,7 @@ public struct TVSeriesDetailsFeature: Sendable {
                 return .none
 
             case .fetch:
-                if state.isReady {
+                if state.viewState.isReady {
                     state.viewState = .loading
                 }
 
@@ -120,29 +98,23 @@ public struct TVSeriesDetailsFeature: Sendable {
 extension TVSeriesDetailsFeature {
 
     private func handleFetchTVSeries(_ state: inout State) -> EffectOf<Self> {
-        .run { [state, client, observability] send in
+        .run { [state, client] send in
             Self.logger.info(
                 "User fetching TV series [tvSeriesID: \(state.tvSeriesID, privacy: .private)]")
 
-            let transaction = observability.startTransaction(
-                name: "FetchTVSeriesDetails",
-                operation: .uiAction
-            )
-            transaction.setData(key: "tv_series_id", value: state.tvSeriesID)
-
+            let tvSeries: TVSeries
             do {
-                let tvSeries = try await client.fetchTVSeries(state.tvSeriesID)
-                let snapshot = ViewSnapshot(tvSeries: tvSeries)
-                transaction.finish()
-                await send(.loaded(snapshot))
+                tvSeries = try await client.fetchTVSeries(state.tvSeriesID)
             } catch {
                 Self.logger.error(
                     "Failed fetching TV series [tvSeriesID: \(state.tvSeriesID, privacy: .private)]: \(error.localizedDescription, privacy: .public)"
                 )
-                transaction.setData(error: error)
-                transaction.finish(status: .internalError)
-                await send(.loadFailed(error))
+                await send(.loadFailed(ViewStateError(error)))
+                return
             }
+
+            let snapshot = ViewSnapshot(tvSeries: tvSeries)
+            await send(.loaded(snapshot))
         }
     }
 }

@@ -74,8 +74,11 @@ public struct ProfileCarouselCell<CellLabel: View>: View {
     private var profileImage: some View {
         ProfileImage(url: imageURL)
             .frame(width: width, height: width)
-            .cornerRadius(width / 2)
-            .clipped()
+            .clipShape(.rect(cornerRadius: width / 2))
+            .overlay {
+                RoundedRectangle(cornerRadius: width / 2)
+                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+            }
     }
 
 }
