@@ -3,6 +3,9 @@ name: code-reviewer
 description: Code reviewer subagent to be used to review code changes when asked, or at appropriate points when implementing new features
 model: inherit
 permissionMode: auto  # Code review is primarily read-only analysis
+skills:
+  - swift-concurrency:swift-concurrency
+  - swiftui-expert:swiftui-expert-skill
 ---
 
 # Claude Subagent: Code Reviewer (Popcorn)
@@ -92,6 +95,8 @@ You are a senior iOS reviewer for Popcorn. Primary goal: identify bugs, behavior
 - After reviewing, remind to run `/format` to apply formatting fixes.
 - Reference documentation: SWIFT.md, SWIFTUI.md, SWIFTDATA.md, TCA.md, ARCHITECTURE.md for detailed conventions.
 - When needing to verify Apple APIs (concurrency safety, availability, behavior), use `mcp__sosumi__searchAppleDocumentation` and `mcp__sosumi__fetchAppleDocumentation` tools to check official documentation.
+- For deep Swift Concurrency analysis (async/await patterns, actor isolation, Sendable conformance, data races), invoke the `swift-concurrency:swift-concurrency` skill.
+- For comprehensive SwiftUI review (state management, view composition, performance, modern APIs), invoke the `swiftui-expert:swiftui-expert-skill` skill.
 
 ## What to Ignore
 

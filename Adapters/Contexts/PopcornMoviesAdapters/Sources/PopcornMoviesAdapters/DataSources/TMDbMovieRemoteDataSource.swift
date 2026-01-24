@@ -122,7 +122,9 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
             throw MovieRemoteDataSourceError(error)
         }
 
-        guard let releaseDates = (tmdbReleaseDatesByCountry.first { $0.countryCode == "GB" })?.releaseDates else {
+        let countryCode = Locale.current.region?.identifier ?? "US"
+        guard let releaseDates = (tmdbReleaseDatesByCountry.first { $0.countryCode == countryCode })?.releaseDates
+        else {
             throw .notFound
         }
 

@@ -50,12 +50,13 @@ final class DefaultStreamMovieDetailsUseCase: StreamMovieDetailsUseCase {
                     let isOnWatchlist: Bool
                     let appConfiguration: AppConfiguration
                     do {
+                        async let certificationTask = movieRepository.certification(forMovie: id)
                         (imageCollection, isOnWatchlist, appConfiguration) = try await (
                             movieImageRepository.imageCollection(forMovie: id),
                             movieWatchlistRepository.isOnWatchlist(movieID: id),
                             appConfigurationProvider.appConfiguration()
                         )
-                        certification = try? await movieRepository.certification(forMovie: id)
+                        certification = try? await certificationTask
                     } catch let error {
                         throw FetchMovieDetailsError(error)
                     }
