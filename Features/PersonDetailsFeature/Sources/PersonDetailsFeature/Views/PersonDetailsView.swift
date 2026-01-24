@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import DesignSystem
 import SwiftUI
+import TCAFoundation
 
 public struct PersonDetailsView: View {
 
@@ -28,16 +29,25 @@ public struct PersonDetailsView: View {
             case .ready(let snapshot):
                 content(person: snapshot.person)
             case .error(let error):
-                Text(verbatim: "\(error.localizedDescription)")
+                ContentUnavailableView {
+                    Label("UNABLE_TO_LOAD", systemImage: "exclamationmark.triangle")
+                } description: {
+                    Text(error.message)
+                } actions: {
+                    if error.isRetryable {
+                        Button("RETRY") {
+                            store.send(.fetch)
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                }
             default:
                 EmptyView()
             }
         }
         .accessibilityIdentifier("person-details.view")
-        .contentTransition(.opacity)
-        .animation(.easeInOut(duration: 1), value: store.isReady)
         .overlay {
-            if store.isLoading {
+            if store.viewState.isLoading {
                 loadingBody
             }
         }

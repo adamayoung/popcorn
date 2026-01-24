@@ -28,10 +28,7 @@ struct SearchRootView: View {
         } destination: { store in
             switch store.case {
             case .movieDetails(let store):
-                MovieDetailsView(
-                    store: store,
-                    transitionNamespace: namespace
-                )
+                MovieDetailsView(store: store)
             case .tvSeriesDetails(let store):
                 TVSeriesDetailsView(
                     store: store,

@@ -8,8 +8,8 @@
 import AppDependencies
 import ComposableArchitecture
 import Foundation
-import Observability
 import OSLog
+import TCAFoundation
 
 /// A feature that manages the exploration of various media content including movies, TV series, and people.
 ///
@@ -21,7 +21,6 @@ public struct ExploreFeature: Sendable {
     private static let logger = Logger.explore
 
     @Dependency(\.exploreClient) private var client
-    @Dependency(\.observability) private var observability
 
     /// The state managed by the explore feature.
     ///
@@ -29,46 +28,18 @@ public struct ExploreFeature: Sendable {
     @ObservableState
     public struct State {
         /// The current view state of the explore feature.
-        public var viewState: ViewState
+        public var viewState: ViewState<ViewSnapshot>
 
-        /// Indicates whether content is currently being loaded.
-        public var isLoading: Bool {
-            switch viewState {
-            case .loading: true
-            default: false
-            }
-        }
-
-        /// Indicates whether content has been loaded and is ready to display.
-        public var isReady: Bool {
-            switch viewState {
-            case .ready: true
-            default: false
-            }
-        }
-
-        public init(viewState: ViewState = .initial) {
+        public init(viewState: ViewState<ViewSnapshot> = .initial) {
             self.viewState = viewState
         }
-    }
-
-    /// Represents the various states of the explore view.
-    public enum ViewState {
-        /// Initial state before any data is loaded.
-        case initial
-        /// Content is currently being fetched.
-        case loading
-        /// Content has been successfully loaded.
-        case ready(ViewSnapshot)
-        /// An error occurred while loading content.
-        case error(Error)
     }
 
     /// A snapshot of all explore content loaded from various sources.
     ///
     /// Contains collections of different media types that can be displayed together
     /// in the explore view. Each collection is controlled by feature flags.
-    public struct ViewSnapshot: Sendable {
+    public struct ViewSnapshot: Equatable, Sendable {
         /// Movies from the discover endpoint.
         public let discoverMovies: [MoviePreview]
         /// Currently trending movies.
@@ -102,7 +73,7 @@ public struct ExploreFeature: Sendable {
         /// Content has been successfully loaded.
         case loaded(ViewSnapshot)
         /// Loading content failed with an error.
-        case loadFailed(Error)
+        case loadFailed(ViewStateError)
         /// Navigate to a detail view.
         case navigate(Navigation)
     }
@@ -123,7 +94,7 @@ public struct ExploreFeature: Sendable {
         Reduce { state, action in
             switch action {
             case .load:
-                guard !state.isReady else {
+                guard !state.viewState.isReady else {
                     return .none
                 }
 
@@ -146,7 +117,7 @@ public struct ExploreFeature: Sendable {
 extension ExploreFeature {
 
     private func handleFetchAll() -> EffectOf<Self> {
-        .run { [client, observability] send in
+        .run { [client] send in
             Self.logger.info("User fetching explore content")
 
             let isDiscoverMoviesEnabled = (try? client.isDiscoverMoviesEnabled()) ?? false
@@ -156,20 +127,7 @@ extension ExploreFeature {
                 (try? client.isTrendingTVSeriesEnabled()) ?? false
             let isTrendingPeopleEnabled = (try? client.isTrendingPeopleEnabled()) ?? false
 
-            let transaction = observability.startTransaction(
-                name: "FetchExplore",
-                operation: .uiAction
-            )
-            transaction.setData([
-                "explore_filters": [
-                    "discover_movies": isDiscoverMoviesEnabled,
-                    "trending_movies": isTrendingMoviesEnabled,
-                    "popular_movies": isPopularMoviesEnabled,
-                    "trending_tv_series": isTrendingTVSeriesEnabled,
-                    "trending_people": isTrendingPeopleEnabled
-                ]
-            ])
-
+            let snapshot: ViewSnapshot
             do {
                 async let discoverMovies =
                     isDiscoverMoviesEnabled ? client.fetchDiscoverMovies() : []
@@ -182,23 +140,22 @@ extension ExploreFeature {
                 async let trendingPeople =
                     isTrendingPeopleEnabled ? client.fetchTrendingPeople() : []
 
-                let snapshot = try await ViewSnapshot(
+                snapshot = try await ViewSnapshot(
                     discoverMovies: discoverMovies,
                     trendingMovies: trendingMovies,
                     popularMovies: popularMovies,
                     trendingTVSeries: trendingTVSeries,
                     trendingPeople: trendingPeople
                 )
-                transaction.finish()
-                await send(.loaded(snapshot))
             } catch {
-                transaction.setData(error: error)
-                transaction.finish(status: .internalError)
                 Self.logger.error(
                     "Failed fetching explore content: \(error.localizedDescription, privacy: .public)"
                 )
-                await send(.loadFailed(error))
+                await send(.loadFailed(ViewStateError(error)))
+                return
             }
+
+            await send(.loaded(snapshot))
         }
     }
 

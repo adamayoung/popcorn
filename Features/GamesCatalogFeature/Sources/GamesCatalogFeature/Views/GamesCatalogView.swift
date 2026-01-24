@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import DesignSystem
 import SwiftUI
+import TCAFoundation
 
 public struct GamesCatalogView: View {
 
@@ -28,13 +29,24 @@ public struct GamesCatalogView: View {
             case .ready(let snapshot):
                 content(games: snapshot.games)
             case .error(let error):
-                Text(verbatim: "\(error.localizedDescription)")
+                ContentUnavailableView {
+                    Label("UNABLE_TO_LOAD", systemImage: "exclamationmark.triangle")
+                } description: {
+                    Text(error.message)
+                } actions: {
+                    if error.isRetryable {
+                        Button("RETRY") {
+                            store.send(.fetch)
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                }
             default:
                 EmptyView()
             }
         }
         .overlay {
-            if store.isLoading {
+            if store.viewState.isLoading {
                 loadingBody
             }
         }

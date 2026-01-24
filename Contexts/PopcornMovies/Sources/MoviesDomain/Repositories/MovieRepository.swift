@@ -36,6 +36,8 @@ public protocol MovieRepository: Sendable {
     ///
     func movieStream(withID id: Int) async -> AsyncThrowingStream<Movie?, Error>
 
+    func certification(forMovie movieID: Int) async throws(MovieRepositoryError) -> String
+
 }
 
 ///

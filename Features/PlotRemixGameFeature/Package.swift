@@ -21,7 +21,6 @@ let package = Package(
     dependencies: [
         .package(path: "../../AppDependencies"),
         .package(path: "../../Contexts/PopcornGamesCatalog"),
-        .package(path: "../../Platform/Observability"),
         .package(path: "../../Core/DesignSystem"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
@@ -35,10 +34,10 @@ let package = Package(
                 "AppDependencies",
                 .product(name: "GamesCatalogApplication", package: "PopcornGamesCatalog"),
                 .product(name: "GamesCatalogDomain", package: "PopcornGamesCatalog"),
-                "Observability",
                 "DesignSystem",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
-            ]
+            ],
+            resources: [.process("Localizable.xcstrings")]
         ),
         .testTarget(
             name: "PlotRemixGameFeatureTests",

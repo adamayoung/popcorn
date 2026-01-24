@@ -110,9 +110,8 @@ final class MockTVSeriesService: TVSeriesService, @unchecked Sendable {
     }
 
     func watchProviders(
-        forTVSeries tvSeriesID: TVSeries.ID,
-        country: String
-    ) async throws -> ShowWatchProvider? {
+        forTVSeries tvSeriesID: TVSeries.ID
+    ) async throws -> [ShowWatchProvidersByCountry] {
         fatalError("Not implemented")
     }
 
@@ -123,9 +122,31 @@ final class MockTVSeriesService: TVSeriesService, @unchecked Sendable {
     }
 
     func contentRatings(
-        forTVSeries tvSeriesID: TVSeries.ID,
-        country: String
-    ) async throws -> ContentRating? {
+        forTVSeries tvSeriesID: TVSeries.ID
+    ) async throws -> [ContentRating] {
+        fatalError("Not implemented")
+    }
+
+    func airingToday(
+        page: Int?,
+        timezone: String?,
+        language: String?
+    ) async throws -> TVSeriesPageableList {
+        fatalError("Not implemented")
+    }
+
+    func onTheAir(
+        page: Int?,
+        timezone: String?,
+        language: String?
+    ) async throws -> TVSeriesPageableList {
+        fatalError("Not implemented")
+    }
+
+    func topRated(
+        page: Int?,
+        language: String?
+    ) async throws -> TVSeriesPageableList {
         fatalError("Not implemented")
     }
 

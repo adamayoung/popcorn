@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import DesignSystem
 import SwiftUI
+import TCAFoundation
 
 public struct MovieCastAndCrewView: View {
 
@@ -29,11 +30,21 @@ public struct MovieCastAndCrewView: View {
                 content(snapshot: snapshot)
 
             case .error(let error):
-                ContentUnavailableView(
-                    LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
-                    systemImage: "exclamationmark.triangle",
-                    description: Text(error.localizedDescription)
-                )
+                ContentUnavailableView {
+                    Label(
+                        LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
+                        systemImage: "exclamationmark.triangle"
+                    )
+                } description: {
+                    Text(error.message)
+                } actions: {
+                    if error.isRetryable {
+                        Button(LocalizedStringResource("RETRY", bundle: .module)) {
+                            store.send(.fetch)
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                }
 
             default:
                 EmptyView()
@@ -44,7 +55,7 @@ public struct MovieCastAndCrewView: View {
             .navigationBarTitleDisplayMode(.large)
         #endif
             .overlay {
-                if store.isLoading {
+                if store.viewState.isLoading {
                     ProgressView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }

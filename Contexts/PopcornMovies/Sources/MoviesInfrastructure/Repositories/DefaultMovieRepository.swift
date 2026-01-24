@@ -7,8 +7,11 @@
 
 import Foundation
 import MoviesDomain
+import OSLog
 
 final class DefaultMovieRepository: MovieRepository {
+
+    private static let logger = Logger.moviesInfrastructure
 
     private let remoteDataSource: any MovieRemoteDataSource
     private let localDataSource: any MovieLocalDataSource
@@ -46,11 +49,40 @@ final class DefaultMovieRepository: MovieRepository {
         let stream = await localDataSource.movieStream(forMovie: id)
 
         Task {
-            let movie = try await remoteDataSource.movie(withID: id)
-            try await localDataSource.setMovie(movie)
+            do {
+                let movie = try await remoteDataSource.movie(withID: id)
+                try await localDataSource.setMovie(movie)
+            } catch {
+                Self.logger.error("Failed to fetch/cache movie in stream [movieID: \(id)]: \(error)")
+            }
         }
 
         return stream
+    }
+
+    func certification(forMovie movieID: Int) async throws(MovieRepositoryError) -> String {
+        do {
+            if let cachedCertification = try await localDataSource.certification(forMovie: movieID) {
+                return cachedCertification
+            }
+        } catch let error {
+            throw MovieRepositoryError(error)
+        }
+
+        let certification: String
+        do {
+            certification = try await remoteDataSource.certification(forMovie: movieID)
+        } catch let error {
+            throw MovieRepositoryError(error)
+        }
+
+        do {
+            try await localDataSource.setCertification(certification, forMovie: movieID)
+        } catch let error {
+            throw MovieRepositoryError(error)
+        }
+
+        return certification
     }
 
 }

@@ -8,8 +8,8 @@
 import AppDependencies
 import ComposableArchitecture
 import Foundation
-import Observability
 import OSLog
+import TCAFoundation
 
 @Reducer
 public struct MovieDetailsFeature: Sendable {
@@ -17,35 +17,20 @@ public struct MovieDetailsFeature: Sendable {
     private static let logger = Logger.movieDetails
 
     @Dependency(\.movieDetailsClient) private var client
-    @Dependency(\.observability) private var observability
 
     @ObservableState
-    public struct State: Sendable {
+    public struct State: Sendable, Equatable {
         let movieID: Int
         public let transitionID: String?
-        var viewState: ViewState
+        var viewState: ViewState<ViewSnapshot>
 
         var isWatchlistEnabled: Bool
         var isIntelligenceEnabled: Bool
 
-        public var isLoading: Bool {
-            switch viewState {
-            case .loading: true
-            default: false
-            }
-        }
-
-        public var isReady: Bool {
-            switch viewState {
-            case .ready: true
-            default: false
-            }
-        }
-
         public init(
             movieID: Int,
             transitionID: String? = nil,
-            viewState: ViewState = .initial,
+            viewState: ViewState<ViewSnapshot> = .initial,
             isWatchlistEnabled: Bool = false,
             isIntelligenceEnabled: Bool = false
         ) {
@@ -57,14 +42,7 @@ public struct MovieDetailsFeature: Sendable {
         }
     }
 
-    public enum ViewState: Sendable {
-        case initial
-        case loading
-        case ready(ViewSnapshot)
-        case error(Error)
-    }
-
-    public struct ViewSnapshot: Sendable {
+    public struct ViewSnapshot: Equatable, Sendable {
         public let movie: Movie
         public let recommendedMovies: [MoviePreview]
         public let castMembers: [CastMember]
@@ -88,7 +66,7 @@ public struct MovieDetailsFeature: Sendable {
         case updateFeatureFlags
         case fetch
         case loaded(ViewSnapshot)
-        case loadFailed(Error)
+        case loadFailed(ViewStateError)
         case toggleOnWatchlist
         case toggleOnWatchlistFailed(Error)
         case toggleOnWatchlistCompleted
@@ -167,8 +145,8 @@ extension MovieDetailsFeature {
                     castMembers: credits.castMembers,
                     crewMembers: credits.crewMembers
                 )
-            } catch let error {
-                await send(.loadFailed(error))
+            } catch {
+                await send(.loadFailed(ViewStateError(error)))
                 return
             }
 
@@ -181,24 +159,17 @@ extension MovieDetailsFeature {
             Self.logger.info(
                 "User toggling movie on watchlist [movieID: \(state.movieID, privacy: .private)]")
 
-            let transaction = observability.startTransaction(
-                name: "ToggleMovieOnWatchlist",
-                operation: .uiAction
-            )
-            transaction.setData(key: "movie_id", value: state.movieID)
-
             do {
                 try await client.toggleOnWatchlist(state.movieID)
-                transaction.finish()
-                await send(.toggleOnWatchlistCompleted)
             } catch let error {
                 Self.logger.error(
                     "Failed toggling movie on watchlist [movieID: \(state.movieID, privacy: .private)]: \(error.localizedDescription, privacy: .public)"
                 )
-                transaction.setData(error: error)
-                transaction.finish(status: .internalError)
                 await send(.toggleOnWatchlistFailed(error))
+                return
             }
+
+            await send(.toggleOnWatchlistCompleted)
         }
     }
 }

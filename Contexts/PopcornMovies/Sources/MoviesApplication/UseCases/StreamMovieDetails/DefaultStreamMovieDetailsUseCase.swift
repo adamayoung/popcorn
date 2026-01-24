@@ -46,14 +46,17 @@ final class DefaultStreamMovieDetailsUseCase: StreamMovieDetailsUseCase {
                     }
 
                     let imageCollection: ImageCollection
+                    let certification: String?
                     let isOnWatchlist: Bool
                     let appConfiguration: AppConfiguration
                     do {
+                        async let certificationTask = movieRepository.certification(forMovie: id)
                         (imageCollection, isOnWatchlist, appConfiguration) = try await (
                             movieImageRepository.imageCollection(forMovie: id),
                             movieWatchlistRepository.isOnWatchlist(movieID: id),
                             appConfigurationProvider.appConfiguration()
                         )
+                        certification = try? await certificationTask
                     } catch let error {
                         throw FetchMovieDetailsError(error)
                     }
@@ -62,6 +65,7 @@ final class DefaultStreamMovieDetailsUseCase: StreamMovieDetailsUseCase {
                     let movieDetails = mapper.map(
                         movie,
                         imageCollection: imageCollection,
+                        certification: certification,
                         isOnWatchlist: isOnWatchlist,
                         imagesConfiguration: appConfiguration.images
                     )

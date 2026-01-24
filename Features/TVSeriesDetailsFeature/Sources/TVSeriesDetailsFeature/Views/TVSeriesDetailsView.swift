@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import DesignSystem
 import SwiftUI
+import TCAFoundation
 
 public struct TVSeriesDetailsView: View {
 
@@ -28,7 +29,18 @@ public struct TVSeriesDetailsView: View {
             case .ready(let snapshot):
                 content(tvSeries: snapshot.tvSeries)
             case .error(let error):
-                Text(verbatim: "\(error.localizedDescription)")
+                ContentUnavailableView {
+                    Label("UNABLE_TO_LOAD", systemImage: "exclamationmark.triangle")
+                } description: {
+                    Text(error.message)
+                } actions: {
+                    if error.isRetryable {
+                        Button("RETRY") {
+                            store.send(.fetch)
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                }
             default:
                 EmptyView()
             }
@@ -47,9 +59,9 @@ public struct TVSeriesDetailsView: View {
             }
         }
         .contentTransition(.opacity)
-        .animation(.easeInOut(duration: 1), value: store.isReady)
+        .animation(.easeInOut(duration: 1), value: store.viewState.isReady)
         .overlay {
-            if store.isLoading {
+            if store.viewState.isLoading {
                 loadingBody
             }
         }

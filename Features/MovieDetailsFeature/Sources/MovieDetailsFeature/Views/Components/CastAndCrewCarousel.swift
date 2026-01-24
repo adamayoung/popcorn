@@ -12,46 +12,15 @@ struct CastAndCrewCarousel: View {
 
     var castMembers: [CastMember]
     var crewMembers: [CrewMember]
-    var transitionNamespace: Namespace.ID?
     var didSelectPerson: (Int) -> Void
-    var didSelectSeeAll: () -> Void
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            header
-            carousel
-        }
-    }
-
-    private var header: some View {
-        Button {
-            didSelectSeeAll()
-        } label: {
-            HStack(spacing: 4) {
-                Text("CAST_AND_CREW", bundle: .module)
-                    .font(.title2)
-                    .fontWeight(.bold)
-
-                Image(systemName: "chevron.right")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .buttonStyle(.plain)
-        .padding(.horizontal)
-    }
-
-    private var carousel: some View {
         Carousel {
             ForEach(castMembers) { castMember in
                 Button {
                     didSelectPerson(castMember.personID)
                 } label: {
-                    ProfileCarouselCell(
-                        imageURL: castMember.profileURL,
-                        transitionNamespace: transitionNamespace
-                    ) {
+                    ProfileCarouselCell(imageURL: castMember.profileURL) {
                         cellLabel(personName: castMember.personName, characterName: castMember.characterName)
                     }
                 }
@@ -63,10 +32,7 @@ struct CastAndCrewCarousel: View {
                 Button {
                     didSelectPerson(crewMember.personID)
                 } label: {
-                    ProfileCarouselCell(
-                        imageURL: crewMember.profileURL,
-                        transitionNamespace: transitionNamespace
-                    ) {
+                    ProfileCarouselCell(imageURL: crewMember.profileURL) {
                         cellLabel(personName: crewMember.personName, characterName: crewMember.job)
                     }
                 }
@@ -102,9 +68,7 @@ struct CastAndCrewCarousel: View {
         CastAndCrewCarousel(
             castMembers: CastMember.mocks,
             crewMembers: CrewMember.mocks,
-            transitionNamespace: transitionNamespace,
-            didSelectPerson: { _ in },
-            didSelectSeeAll: {}
+            didSelectPerson: { _ in }
         )
     }
 }

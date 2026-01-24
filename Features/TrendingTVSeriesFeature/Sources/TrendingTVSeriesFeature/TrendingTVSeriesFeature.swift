@@ -8,7 +8,6 @@
 import AppDependencies
 import ComposableArchitecture
 import Foundation
-import Observability
 import OSLog
 
 @Reducer
@@ -17,7 +16,6 @@ public struct TrendingTVSeriesFeature: Sendable {
     private static let logger = Logger.trendingTVSeries
 
     @Dependency(\.trendingTVSeriesClient) private var client
-    @Dependency(\.observability) private var observability
 
     @ObservableState
     public struct State {
@@ -65,23 +63,18 @@ private extension TrendingTVSeriesFeature {
         .run { [client] send in
             Self.logger.info("User fetching trending TV series")
 
-            let transaction = observability.startTransaction(
-                name: "FetchTrendingTVSeries",
-                operation: .uiAction
-            )
-
+            let tvSeries: [TVSeriesPreview]
             do {
-                let tvSeries = try await client.fetchTrendingTVSeries()
-                transaction.finish()
-                await send(.trendingTVSeriesLoaded(tvSeries))
+                tvSeries = try await client.fetchTrendingTVSeries()
             } catch let error {
                 Self.logger.error(
                     "Failed fetching trending TV series: \(error.localizedDescription, privacy: .public)"
                 )
-                transaction.setData(error: error)
-                transaction.finish(status: .internalError)
                 await send(.loadTrendingTVSeriesFailed(error))
+                return
             }
+
+            await send(.trendingTVSeriesLoaded(tvSeries))
         }
     }
 

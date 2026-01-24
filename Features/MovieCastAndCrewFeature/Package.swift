@@ -21,6 +21,7 @@ let package = Package(
     dependencies: [
         .package(path: "../../AppDependencies"),
         .package(path: "../../Core/DesignSystem"),
+        .package(path: "../../Core/TCAFoundation"),
         .package(path: "../../Contexts/PopcornMovies"),
         .package(path: "../../Platform/Observability"),
         .package(
@@ -34,10 +35,12 @@ let package = Package(
             dependencies: [
                 "AppDependencies",
                 "DesignSystem",
+                "TCAFoundation",
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
                 "Observability",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
-            ]
+            ],
+            resources: [.process("Localizable.xcstrings")]
         ),
         .testTarget(
             name: "MovieCastAndCrewFeatureTests",

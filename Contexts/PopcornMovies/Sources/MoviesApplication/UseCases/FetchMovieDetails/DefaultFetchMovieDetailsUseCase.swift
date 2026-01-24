@@ -79,15 +79,18 @@ final class DefaultFetchMovieDetailsUseCase: FetchMovieDetailsUseCase {
     func execute(id: Movie.ID) async throws(FetchMovieDetailsError) -> MovieDetails {
         let movie: Movie
         let imageCollection: ImageCollection
+        let certification: String?
         let isOnWatchlist: Bool
         let appConfiguration: AppConfiguration
         do {
+            async let certificationTask = movieRepository.certification(forMovie: id)
             (movie, imageCollection, isOnWatchlist, appConfiguration) = try await (
                 movieRepository.movie(withID: id),
                 movieImageRepository.imageCollection(forMovie: id),
                 movieWatchlistRepository.isOnWatchlist(movieID: id),
                 appConfigurationProvider.appConfiguration()
             )
+            certification = try? await certificationTask
         } catch let error {
             throw FetchMovieDetailsError(error)
         }
@@ -96,6 +99,7 @@ final class DefaultFetchMovieDetailsUseCase: FetchMovieDetailsUseCase {
         return mapper.map(
             movie,
             imageCollection: imageCollection,
+            certification: certification,
             isOnWatchlist: isOnWatchlist,
             imagesConfiguration: appConfiguration.images
         )

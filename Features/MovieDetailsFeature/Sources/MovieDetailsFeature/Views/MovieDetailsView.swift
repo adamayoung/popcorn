@@ -8,34 +8,23 @@
 import ComposableArchitecture
 import DesignSystem
 import SwiftUI
+import TCAFoundation
 
 public struct MovieDetailsView: View {
 
     @Bindable private var store: StoreOf<MovieDetailsFeature>
-    private let namespace: Namespace.ID
 
-    public init(
-        store: StoreOf<MovieDetailsFeature>,
-        transitionNamespace: Namespace.ID
-    ) {
+    public init(store: StoreOf<MovieDetailsFeature>) {
         self._store = .init(store)
-        self.namespace = transitionNamespace
     }
 
     public var body: some View {
         ZStack {
             switch store.viewState {
             case .ready(let snapshot):
-                content(
-                    movie: snapshot.movie,
-                    recommendedMovies: snapshot.recommendedMovies,
-                    castMembers: snapshot.castMembers,
-                    crewMembers: snapshot.crewMembers
-                )
-
+                content(snapshot)
             case .error(let error):
-                Text(verbatim: "\(error.localizedDescription)")
-
+                errorBody(error)
             default:
                 EmptyView()
             }
@@ -68,9 +57,9 @@ public struct MovieDetailsView: View {
             }
         }
         .contentTransition(.opacity)
-        .animation(.easeInOut(duration: 1), value: store.isReady)
+        .animation(.easeInOut(duration: 1), value: store.viewState.isReady)
         .overlay {
-            if store.isLoading {
+            if store.viewState.isLoading {
                 loadingBody
             }
         }
@@ -91,105 +80,52 @@ extension MovieDetailsView {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    @ViewBuilder
-    private func content(
-        movie: Movie,
-        recommendedMovies: [MoviePreview],
-        castMembers: [CastMember],
-        crewMembers: [CrewMember]
-    ) -> some View {
-        StretchyHeaderScrollView(
-            header: { header(movie: movie) },
-            headerOverlay: { headerOverlay(movie: movie) },
-            content: {
-                body(
-                    movie: movie,
-                    recommendedMovies: recommendedMovies,
-                    castMembers: castMembers,
-                    crewMembers: crewMembers
-                )
+}
+
+extension MovieDetailsView {
+
+    private func content(_ snapshot: MovieDetailsFeature.ViewSnapshot) -> some View {
+        MovieDetailsContentView(
+            movie: snapshot.movie,
+            recommendedMovies: snapshot.recommendedMovies,
+            castMembers: snapshot.castMembers,
+            crewMembers: snapshot.crewMembers,
+            didSelectPerson: { personID in
+                store.send(.navigate(.personDetails(id: personID)))
+            },
+            didSelectMovie: { movieID in
+                store.send(.navigate(.movieDetails(id: movieID)))
+            },
+            navigateToCastAndCrew: { movieID in
+                store.send(.navigate(.castAndCrew(movieID: movieID)))
             }
         )
-        .navigationTitle(movie.title)
-        #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
-        #endif
     }
 
-    @ViewBuilder
-    private func header(movie: Movie) -> some View {
-        BackdropImage(url: movie.backdropURL)
-            .flexibleHeaderContent(height: 600)
-        #if os(macOS)
-            .backgroundExtensionEffect()
-        #endif
-    }
+}
 
-    @ViewBuilder
-    private func headerOverlay(movie: Movie) -> some View {
-        LogoImage(url: movie.logoURL)
-            .padding(.bottom, 20)
-            .frame(maxWidth: 300, maxHeight: 150, alignment: .bottom)
-    }
+extension MovieDetailsView {
 
-    @ViewBuilder
-    private func body(
-        movie: Movie,
-        recommendedMovies: [MoviePreview],
-        castMembers: [CastMember],
-        crewMembers: [CrewMember]
-    ) -> some View {
-        LazyVStack(alignment: .leading, spacing: 10) {
-            Section {
-                Text(verbatim: movie.overview)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.horizontal)
-            }
-            .padding(.bottom, 40)
-
-            CastAndCrewCarousel(
-                castMembers: castMembers,
-                crewMembers: crewMembers,
-                didSelectPerson: { personID in
-                    store.send(.navigate(.personDetails(id: personID)))
-                },
-                didSelectSeeAll: {
-                    store.send(.navigate(.castAndCrew(movieID: movie.id)))
+    private func errorBody(_ error: ViewStateError) -> some View {
+        ContentUnavailableView {
+            Label(LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module), systemImage: "exclamationmark.triangle")
+        } description: {
+            Text(error.message)
+        } actions: {
+            if error.isRetryable {
+                Button {
+                    store.send(.fetch)
+                } label: {
+                    Text("RETRY", bundle: .module)
                 }
-            )
-            .padding(.bottom)
-
-            if !recommendedMovies.isEmpty {
-                Section(header: recommendedHeader) {
-                    MovieCarousel(movies: recommendedMovies) { moviePreview in
-                        store.send(.navigate(.movieDetails(id: moviePreview.id)))
-                    }
-                }
+                .buttonStyle(.bordered)
             }
         }
-        .padding(.vertical)
-    }
-
-    private var recommendedHeader: some View {
-        Button {} label: {
-            HStack {
-                Text("RECOMMENDED", bundle: .module)
-                    .font(.title)
-                Image(systemName: "greaterthan")
-                    .foregroundStyle(.secondary)
-            }
-            .fontWeight(.heavy)
-            .padding(.leading)
-        }
-        .buttonStyle(.plain)
     }
 
 }
 
 #Preview("Ready") {
-    @Previewable @Namespace var namespace
-
     NavigationStack {
         MovieDetailsView(
             store: Store(
@@ -207,15 +143,12 @@ extension MovieDetailsView {
                 reducer: {
                     EmptyReducer()
                 }
-            ),
-            transitionNamespace: namespace
+            )
         )
     }
 }
 
 #Preview("Loading") {
-    @Previewable @Namespace var namespace
-
     NavigationStack {
         MovieDetailsView(
             store: Store(
@@ -224,8 +157,21 @@ extension MovieDetailsView {
                     viewState: .loading
                 ),
                 reducer: { EmptyReducer() }
-            ),
-            transitionNamespace: namespace
+            )
+        )
+    }
+}
+
+#Preview("Error") {
+    NavigationStack {
+        MovieDetailsView(
+            store: Store(
+                initialState: MovieDetailsFeature.State(
+                    movieID: Movie.mock.id,
+                    viewState: .error(ViewStateError(message: "Error loading movie"))
+                ),
+                reducer: { EmptyReducer() }
+            )
         )
     }
 }

@@ -54,7 +54,7 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
     func popular(page: Int) async throws(MovieRemoteDataSourceError) -> [MoviePreview] {
         let tmdbMovies: [TMDb.MovieListItem]
         do {
-            tmdbMovies = try await movieService.popular(page: page, country: "GB", language: "en")
+            tmdbMovies = try await movieService.popular(page: page)
                 .results
         } catch let error {
             throw MovieRemoteDataSourceError(error)
@@ -72,7 +72,7 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
         let tmdbMovies: [TMDb.MovieListItem]
         do {
             tmdbMovies = try await movieService.similar(
-                toMovie: movieID, page: page, language: "en"
+                toMovie: movieID, page: page
             ).results
         } catch let error {
             throw MovieRemoteDataSourceError(error)
@@ -90,7 +90,7 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
         let tmdbMovies: [TMDb.MovieListItem]
         do {
             tmdbMovies = try await movieService.recommendations(
-                forMovie: movieID, page: page, language: "en"
+                forMovie: movieID, page: page
             ).results
         } catch let error {
             throw MovieRemoteDataSourceError(error)
@@ -104,7 +104,7 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
     func credits(forMovie movieID: Int) async throws(MovieRemoteDataSourceError) -> Credits {
         let tmdbCredits: TMDb.ShowCredits
         do {
-            tmdbCredits = try await movieService.credits(forMovie: movieID, language: "en")
+            tmdbCredits = try await movieService.credits(forMovie: movieID)
         } catch let error {
             throw MovieRemoteDataSourceError(error)
         }
@@ -112,6 +112,29 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
         let mapper = CreditsMapper()
         let credits = mapper.map(tmdbCredits)
         return credits
+    }
+
+    func certification(forMovie movieID: Int) async throws(MovieRemoteDataSourceError) -> String {
+        let tmdbReleaseDatesByCountry: [MovieReleaseDatesByCountry]
+        do {
+            tmdbReleaseDatesByCountry = try await movieService.releaseDates(forMovie: movieID)
+        } catch let error {
+            throw MovieRemoteDataSourceError(error)
+        }
+
+        let countryCode = Locale.current.region?.identifier ?? "US"
+        let releaseDates = tmdbReleaseDatesByCountry.first { $0.countryCode == countryCode }?.releaseDates
+            ?? tmdbReleaseDatesByCountry.first { $0.countryCode == "US" }?.releaseDates
+
+        guard let releaseDates else {
+            throw .notFound
+        }
+
+        guard let firstReleaseDate = releaseDates.first(where: { !$0.certification.isEmpty }) else {
+            throw .notFound
+        }
+
+        return firstReleaseDate.certification
     }
 
 }

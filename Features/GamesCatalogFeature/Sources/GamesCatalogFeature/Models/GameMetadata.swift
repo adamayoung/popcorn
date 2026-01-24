@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public struct GameMetadata: Identifiable, Sendable {
+public struct GameMetadata: Identifiable, Equatable, Sendable {
 
     public let id: Int
     public let name: String

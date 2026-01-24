@@ -22,7 +22,6 @@ let package = Package(
         .package(path: "../../AppDependencies"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Contexts/PopcornSearch"),
-        .package(path: "../../Platform/Observability"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
         )
@@ -35,9 +34,9 @@ let package = Package(
                 "AppDependencies",
                 "DesignSystem",
                 .product(name: "SearchApplication", package: "PopcornSearch"),
-                "Observability",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
-            ]
+            ],
+            resources: [.process("Localizable.xcstrings")]
         ),
         .testTarget(
             name: "MediaSearchFeatureTests",

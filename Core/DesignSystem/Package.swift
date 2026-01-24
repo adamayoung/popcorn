@@ -25,7 +25,8 @@ let package = Package(
     targets: [
         .target(
             name: "DesignSystem",
-            dependencies: ["SDWebImageSwiftUI"]
+            dependencies: ["SDWebImageSwiftUI"],
+            resources: [.process("Localizable.xcstrings")]
         ),
         .testTarget(
             name: "DesignSystemTests",

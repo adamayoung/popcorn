@@ -29,6 +29,10 @@ SENTRY_DSN = <your-sentry-dsn>           # Optional
 STATSIG_SDK_KEY = <your-statsig-key>     # Optional
 ```
 
+### Finding function definitions and call sites
+
+Use tool `xcode-index-mcp` if available. Use project name Popcorn. The tool can locate call sites of functions, and function definitions from call sites. If you need a filepath to make a request, use `rg` to find the file and `rg -n` to find the line number. Use the absolute path when requesting symbols from a file.
+
 ### Build & Test (XcodeBuildMCP)
 
 Use slash commands or XcodeBuildMCP tools directly:
@@ -49,6 +53,18 @@ Use slash commands or XcodeBuildMCP tools directly:
 |------|---------------|
 | Auto-fix | `/format` |
 | Check only | `/lint` |
+
+**Always run `/format` and `/lint` after making code changes** to ensure consistent style before committing.
+
+### Pre-PR Checklist
+
+Before creating a pull request, **always** verify:
+
+1. Run `/format` and `/lint` — no violations
+2. Run `/build` — build succeeds
+3. Run `/test` — all tests pass
+
+This prevents CI failures and ensures code quality before review.
 
 ## Key Entry Points
 
@@ -124,7 +140,7 @@ Detailed guides: [SWIFT.md](docs/SWIFT.md) · [SWIFTUI.md](docs/SWIFTUI.md) · [
 
 ### Quick Reference
 
-**Swift**: `@Observable` needs `@MainActor` · No force unwraps (`try #require()` in tests) · `Task.sleep(for:)` · `localizedStandardContains()`
+**Swift**: `@Observable` needs `@MainActor` · **No force unwraps (`!`) anywhere, including tests** — use `try #require()` for unwrapping optionals in tests · `Task.sleep(for:)` · `localizedStandardContains()`
 
 **SwiftUI**: `foregroundStyle()` · `clipShape(.rect(cornerRadius:))` · `Tab` API · `@Observable` · `NavigationStack`
 

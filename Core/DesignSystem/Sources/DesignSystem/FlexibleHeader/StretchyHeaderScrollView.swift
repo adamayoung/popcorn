@@ -29,6 +29,21 @@ public struct StretchyHeaderScrollView<Header: View, HeaderOverlay: View, Conten
                 header
                     .overlay(alignment: .bottom) {
                         headerOverlay
+                            .frame(maxWidth: .infinity)
+                            .background {
+                                Rectangle()
+                                    .fill(.ultraThinMaterial)
+                                    .mask {
+                                        LinearGradient(
+                                            stops: [
+                                                .init(color: .clear, location: 0.0),
+                                                .init(color: .gray, location: 0.6)
+                                            ],
+                                            startPoint: .top,
+                                            endPoint: .bottom
+                                        )
+                                    }
+                            }
                     }
 
                 content
@@ -53,7 +68,10 @@ public struct StretchyHeaderScrollView<Header: View, HeaderOverlay: View, Conten
                 .flexibleHeaderContent(height: 600)
             },
             headerOverlay: {
-                Text("Film")
+                VStack {
+                    Text("Film")
+                        .frame(maxWidth: .infinity)
+                }
             },
             content: {
                 Text(

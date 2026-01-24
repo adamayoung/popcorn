@@ -21,6 +21,7 @@ let package = Package(
     dependencies: [
         .package(path: "../../AppDependencies"),
         .package(path: "../../Core/DesignSystem"),
+        .package(path: "../../Core/TCAFoundation"),
         .package(path: "../../Contexts/PopcornDiscover"),
         .package(path: "../../Contexts/PopcornTrending"),
         .package(path: "../../Contexts/PopcornMovies"),
@@ -40,12 +41,14 @@ let package = Package(
             dependencies: [
                 "AppDependencies",
                 "DesignSystem",
+                "TCAFoundation",
                 "Observability",
                 .product(name: "DiscoverApplication", package: "PopcornDiscover"),
                 .product(name: "TrendingApplication", package: "PopcornTrending"),
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
-            ]
+            ],
+            resources: [.process("Localizable.xcstrings")]
         ),
         .testTarget(
             name: "ExploreFeatureTests",

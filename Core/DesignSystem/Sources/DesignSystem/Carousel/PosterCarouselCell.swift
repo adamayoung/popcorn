@@ -80,8 +80,11 @@ public struct PosterCarouselCell<CellLabel: View>: View {
     private var posterImage: some View {
         PosterImage(url: imageURL)
             .posterWidth(width)
-            .cornerRadius(10)
-            .clipped()
+            .clipShape(.rect(cornerRadius: 10))
+            .overlay {
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+            }
     }
 
 }
@@ -103,5 +106,4 @@ public struct PosterCarouselCell<CellLabel: View>: View {
             Spacer()
         }
     }
-    .background(Color.secondary)
 }

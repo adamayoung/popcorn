@@ -1,5 +1,5 @@
 //
-//  MovieCarousel.swift
+//  RecommendedCarousel.swift
 //  MovieDetailsFeature
 //
 //  Copyright © 2025 Adam Young.
@@ -8,16 +8,16 @@
 import DesignSystem
 import SwiftUI
 
-struct MovieCarousel: View {
+struct RecommendedCarousel: View {
 
     var movies: [MoviePreview]
-    var didSelectMovie: (MoviePreview) -> Void
+    var didSelectMovie: (_ movieID: Int) -> Void
 
     var body: some View {
         Carousel {
             ForEach(movies) { movie in
                 Button {
-                    didSelectMovie(movie)
+                    didSelectMovie(movie.id)
                 } label: {
                     BackdropCarouselCell(
                         imageURL: movie.backdropURL,
@@ -37,7 +37,7 @@ struct MovieCarousel: View {
 
 #Preview {
     ScrollView {
-        MovieCarousel(
+        RecommendedCarousel(
             movies: MoviePreview.mocks,
             didSelectMovie: { _ in }
         )
