@@ -40,6 +40,9 @@ public struct BackdropCarouselCell<CellLabel: View>: View {
         private let width: CGFloat = 250
     #endif
 
+    /// Corner radius for the backdrop image.
+    private let cornerRadius: CGFloat = 20
+
     /// Creates a new backdrop carousel cell.
     ///
     /// - Parameters:
@@ -86,9 +89,9 @@ public struct BackdropCarouselCell<CellLabel: View>: View {
     private var backdropImage: some View {
         BackdropImage(url: imageURL, logoURL: logoURL)
             .backdropWidth(width)
-            .clipShape(.rect(cornerRadius: 20))
+            .clipShape(.rect(cornerRadius: cornerRadius))
             .overlay {
-                RoundedRectangle(cornerRadius: 20)
+                RoundedRectangle(cornerRadius: cornerRadius)
                     .stroke(Color.gray.opacity(0.3), lineWidth: 1)
             }
     }

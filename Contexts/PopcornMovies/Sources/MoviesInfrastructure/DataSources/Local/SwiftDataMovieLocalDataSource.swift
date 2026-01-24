@@ -16,7 +16,7 @@ actor SwiftDataMovieLocalDataSource: MovieLocalDataSource, SwiftDataFetchStreami
 
     private static let logger = Logger.moviesInfrastructure
 
-    private var ttl: TimeInterval = 60 * 60 * 24 // 1 day
+    private let ttl: TimeInterval = 60 * 60 * 24 // 1 day
 
     func movie(withID id: Int) async throws(MovieLocalDataSourceError) -> Movie? {
         let entity: MoviesMovieEntity?
