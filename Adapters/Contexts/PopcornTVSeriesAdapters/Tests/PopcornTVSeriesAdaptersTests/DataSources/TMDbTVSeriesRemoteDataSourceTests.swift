@@ -59,7 +59,7 @@ struct TMDbTVSeriesRemoteDataSourceTests {
     func tvSeries_throwsNotFoundErrorForTMDbNotFound() async {
         let id = 13
 
-        mockService.detailsStub = .failure(.notFound)
+        mockService.detailsStub = .failure(.notFound())
 
         let dataSource = TMDbTVSeriesRemoteDataSource(tvSeriesService: mockService)
 
