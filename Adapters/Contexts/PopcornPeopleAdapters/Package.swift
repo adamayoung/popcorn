@@ -23,7 +23,7 @@ let package = Package(
         .package(path: "../../../Contexts/PopcornPeople"),
         .package(path: "../../../Contexts/PopcornConfiguration"),
         .package(path: "../../../Core/CoreDomain"),
-        .package(url: "https://github.com/adamayoung/TMDb.git", from: "13.4.0")
+        .package(url: "https://github.com/adamayoung/TMDb.git", from: "15.0.0")
     ],
 
     targets: [

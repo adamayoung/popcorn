@@ -24,6 +24,7 @@ public struct MovieDetails: Identifiable, Equatable, Sendable {
     public let budget: Double?
     public let revenue: Double?
     public let homepageURL: URL?
+    public let certification: String?
     public let isOnWatchlist: Bool
 
     public init(
@@ -40,6 +41,7 @@ public struct MovieDetails: Identifiable, Equatable, Sendable {
         budget: Double? = nil,
         revenue: Double? = nil,
         homepageURL: URL? = nil,
+        certification: String? = nil,
         isOnWatchlist: Bool
     ) {
         self.id = id
@@ -55,6 +57,7 @@ public struct MovieDetails: Identifiable, Equatable, Sendable {
         self.budget = budget
         self.revenue = revenue
         self.homepageURL = homepageURL
+        self.certification = certification
         self.isOnWatchlist = isOnWatchlist
     }
 

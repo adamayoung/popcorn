@@ -27,6 +27,7 @@ struct MovieMapper {
             budget: movieDetails.budget,
             revenue: movieDetails.revenue,
             homepageURL: movieDetails.homepageURL,
+            certification: movieDetails.certification,
             isOnWatchlist: movieDetails.isOnWatchlist
         )
     }

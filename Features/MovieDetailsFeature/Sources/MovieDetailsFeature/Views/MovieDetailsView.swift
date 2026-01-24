@@ -13,14 +13,9 @@ import TCAFoundation
 public struct MovieDetailsView: View {
 
     @Bindable private var store: StoreOf<MovieDetailsFeature>
-    private let namespace: Namespace.ID
 
-    public init(
-        store: StoreOf<MovieDetailsFeature>,
-        transitionNamespace: Namespace.ID
-    ) {
+    public init(store: StoreOf<MovieDetailsFeature>) {
         self._store = .init(store)
-        self.namespace = transitionNamespace
     }
 
     public var body: some View {
@@ -131,8 +126,6 @@ extension MovieDetailsView {
 }
 
 #Preview("Ready") {
-    @Previewable @Namespace var namespace
-
     NavigationStack {
         MovieDetailsView(
             store: Store(
@@ -150,15 +143,12 @@ extension MovieDetailsView {
                 reducer: {
                     EmptyReducer()
                 }
-            ),
-            transitionNamespace: namespace
+            )
         )
     }
 }
 
 #Preview("Loading") {
-    @Previewable @Namespace var namespace
-
     NavigationStack {
         MovieDetailsView(
             store: Store(
@@ -167,15 +157,12 @@ extension MovieDetailsView {
                     viewState: .loading
                 ),
                 reducer: { EmptyReducer() }
-            ),
-            transitionNamespace: namespace
+            )
         )
     }
 }
 
 #Preview("Error") {
-    @Previewable @Namespace var namespace
-
     NavigationStack {
         MovieDetailsView(
             store: Store(
@@ -184,8 +171,7 @@ extension MovieDetailsView {
                     viewState: .error(ViewStateError(message: "Error loading movie"))
                 ),
                 reducer: { EmptyReducer() }
-            ),
-            transitionNamespace: namespace
+            )
         )
     }
 }

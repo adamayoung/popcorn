@@ -22,6 +22,7 @@ public struct Movie: Identifiable, Sendable, Equatable, Hashable {
     public let budget: Double?
     public let revenue: Double?
     public let homepageURL: URL?
+    public let certification: String?
     public let isOnWatchlist: Bool
 
     public init(
@@ -38,6 +39,7 @@ public struct Movie: Identifiable, Sendable, Equatable, Hashable {
         budget: Double? = nil,
         revenue: Double? = nil,
         homepageURL: URL? = nil,
+        certification: String? = nil,
         isOnWatchlist: Bool
     ) {
         self.id = id
@@ -53,6 +55,7 @@ public struct Movie: Identifiable, Sendable, Equatable, Hashable {
         self.budget = budget
         self.revenue = revenue
         self.homepageURL = homepageURL
+        self.certification = certification
         self.isOnWatchlist = isOnWatchlist
     }
 
@@ -83,6 +86,7 @@ extension Movie {
             budget: 100_000_000,
             revenue: 250_000_000,
             homepageURL: URL(string: "https://www.runningmanmovie.com"),
+            certification: "15",
             isOnWatchlist: false
         )
     }

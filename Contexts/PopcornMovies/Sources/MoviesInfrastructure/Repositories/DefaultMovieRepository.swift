@@ -53,6 +53,31 @@ final class DefaultMovieRepository: MovieRepository {
         return stream
     }
 
+    func certification(forMovie movieID: Int) async throws(MovieRepositoryError) -> String {
+        do {
+            if let cachedCertification = try await localDataSource.certification(forMovie: movieID) {
+                return cachedCertification
+            }
+        } catch let error {
+            throw MovieRepositoryError(error)
+        }
+
+        let certification: String
+        do {
+            certification = try await remoteDataSource.certification(forMovie: movieID)
+        } catch let error {
+            throw MovieRepositoryError(error)
+        }
+
+        do {
+            try await localDataSource.setCertification(certification, forMovie: movieID)
+        } catch let error {
+            throw MovieRepositoryError(error)
+        }
+
+        return certification
+    }
+
 }
 
 extension MovieRepositoryError {

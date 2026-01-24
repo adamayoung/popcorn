@@ -80,4 +80,67 @@ actor SwiftDataMovieLocalDataSource: MovieLocalDataSource, SwiftDataFetchStreami
         do { try modelContext.save() } catch let error { throw .unknown(error) }
     }
 
+    func certification(forMovie movieID: Int) async throws(MovieLocalDataSourceError) -> String? {
+        let entity: MoviesMovieCertificationEntity?
+        var descriptor = FetchDescriptor<MoviesMovieCertificationEntity>(
+            predicate: #Predicate { $0.movieID == movieID }
+        )
+        descriptor.fetchLimit = 1
+
+        do {
+            entity = try modelContext.fetch(descriptor).first
+        } catch let error {
+            throw .persistence(error)
+        }
+
+        guard let entity else {
+            Self.logger.debug("SwiftData MISS: MovieCertification(movie-id: \(movieID, privacy: .public))")
+            return nil
+        }
+
+        guard !entity.isExpired(ttl: ttl) else {
+            Self.logger.debug(
+                "SwiftData EXPIRED: MovieCertification(movie-id: \(movieID, privacy: .public)) - deleting"
+            )
+            modelContext.delete(entity)
+            do {
+                try modelContext.save()
+            } catch let error {
+                throw .persistence(error)
+            }
+            return nil
+        }
+
+        Self.logger.debug("SwiftData HIT: MovieCertification(movie-id: \(movieID, privacy: .public))")
+
+        return entity.certification
+    }
+
+    func setCertification(_ certification: String, forMovie movieID: Int) async throws(MovieLocalDataSourceError) {
+        let descriptor = FetchDescriptor<MoviesMovieCertificationEntity>(
+            predicate: #Predicate { $0.movieID == movieID }
+        )
+        let existing: MoviesMovieCertificationEntity?
+
+        do {
+            existing = try modelContext.fetch(descriptor).first
+        } catch let error {
+            throw .persistence(error)
+        }
+
+        if let existing {
+            existing.certification = certification
+            existing.cachedAt = Date.now
+        } else {
+            let entity = MoviesMovieCertificationEntity(movieID: movieID, certification: certification)
+            modelContext.insert(entity)
+        }
+
+        do {
+            try modelContext.save()
+        } catch let error {
+            throw .persistence(error)
+        }
+    }
+
 }

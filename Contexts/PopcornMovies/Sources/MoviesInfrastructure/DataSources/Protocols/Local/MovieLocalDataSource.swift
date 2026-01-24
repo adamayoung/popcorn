@@ -16,6 +16,10 @@ public protocol MovieLocalDataSource: Sendable, Actor {
 
     func setMovie(_ movie: Movie) async throws(MovieLocalDataSourceError)
 
+    func certification(forMovie movieID: Int) async throws(MovieLocalDataSourceError) -> String?
+
+    func setCertification(_ certification: String, forMovie movieID: Int) async throws(MovieLocalDataSourceError)
+
 }
 
 public enum MovieLocalDataSourceError: Error {

@@ -30,6 +30,8 @@ public protocol MovieRemoteDataSource: Sendable {
 
     func credits(forMovie movieID: Int) async throws(MovieRemoteDataSourceError) -> Credits
 
+    func certification(forMovie movieID: Int) async throws(MovieRemoteDataSourceError) -> String
+
 }
 
 public enum MovieRemoteDataSourceError: Error {

@@ -28,6 +28,33 @@ public final class StubMovieRepository: MovieRepository, Sendable {
         }
     }
 
+    public func certification(forMovie movieID: Int) async throws(MoviesDomain.MovieRepositoryError) -> String {
+        let certifications: [Int: String] = [
+            1_242_898: "12A", // Predator: Badlands
+            83533: "12A", // Avatar: Fire and Ash
+            1_084_242: "PG", // Zootopia 2
+            1_252_037: "15", // The Tank
+            1_368_166: "15", // The Housemaid
+            1_228_246: "15", // Five Nights at Freddy's 2
+            533_533: "12A", // TRON: Ares
+            425_274: "12A", // Now You See Me: Now You Don't
+            1_062_722: "15", // Frankenstein
+            812_583: "12", // Wake Up Dead Man: A Knives Out Mystery
+            1_311_031: "15", // Demon Slayer: Infinity Castle
+            628_847: "15", // Trap House
+            967_941: "PG", // Wicked: For Good
+            1_317_288: "15", // Marty Supreme
+            1_054_867: "15", // One Battle After Another
+            1_234_731: "12A" // Anaconda
+        ]
+
+        guard let certification = certifications[movieID] else {
+            throw .notFound
+        }
+
+        return certification
+    }
+
 }
 
 extension StubMovieRepository {

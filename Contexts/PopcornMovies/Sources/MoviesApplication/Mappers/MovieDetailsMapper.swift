@@ -14,6 +14,7 @@ struct MovieDetailsMapper {
     func map(
         _ movie: Movie,
         imageCollection: ImageCollection,
+        certification: String?,
         isOnWatchlist: Bool = false,
         imagesConfiguration: ImagesConfiguration
     ) -> MovieDetails {
@@ -35,6 +36,7 @@ struct MovieDetailsMapper {
             budget: movie.budget,
             revenue: movie.revenue,
             homepageURL: movie.homepageURL,
+            certification: certification,
             isOnWatchlist: isOnWatchlist
         )
     }

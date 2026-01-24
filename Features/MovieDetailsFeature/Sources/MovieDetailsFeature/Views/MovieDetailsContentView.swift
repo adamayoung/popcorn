@@ -43,12 +43,40 @@ extension MovieDetailsContentView {
     }
 
     private var headerOverlay: some View {
-        VStack {
+        VStack(spacing: 20) {
             LogoImage(url: movie.logoURL)
                 .frame(maxWidth: 300, maxHeight: 90, alignment: .bottom)
 
-            Text("2023")
-                .foregroundStyle(.white)
+            VStack {
+                HStack {
+                    if let genres = movie.genres {
+                        Text("\(genres.map(\.name).joined(separator: " ∙ "))")
+                    }
+                }
+
+                HStack(spacing: 4) {
+                    if let releaseDate = movie.releaseDate {
+                        Text(releaseDate, format: .dateTime.year())
+                    }
+
+                    if movie.releaseDate != nil, movie.certification != nil {
+                        Text("∙")
+                    }
+
+                    if let certification = movie.certification {
+                        Text(certification)
+                            .font(.caption)
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 4)
+                                    .stroke(lineWidth: 1)
+                            }
+                    }
+                }
+            }
+            .font(.callout)
+            .padding(.horizontal, 10)
         }
         .padding(.bottom, 10)
     }
@@ -83,9 +111,7 @@ extension MovieDetailsContentView {
             CastAndCrewCarousel(
                 castMembers: castMembers,
                 crewMembers: crewMembers,
-                didSelectPerson: { personID in
-                    didSelectPerson(personID)
-                }
+                didSelectPerson: didSelectPerson
             )
         }
     }
@@ -96,9 +122,7 @@ extension MovieDetailsContentView {
 
             RecommendedCarousel(
                 movies: recommendedMovies,
-                didSelectMovie: { movieID in
-                    didSelectMovie(movieID)
-                }
+                didSelectMovie: didSelectMovie
             )
         }
     }

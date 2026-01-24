@@ -35,17 +35,11 @@ struct RecommendedCarousel: View {
 
 }
 
-//
-// #Preview {
-//    @Previewable @Namespace var transitionNamespace
-//
-//    ScrollView {
-//        CastAndCrewCarousel(
-//            castMembers: CastMember.mocks,
-//            crewMembers: CrewMember.mocks,
-//            transitionNamespace: transitionNamespace,
-//            didSelectPerson: { _ in },
-//            didSelectSeeAll: {}
-//        )
-//    }
-// }
+#Preview {
+    ScrollView {
+        RecommendedCarousel(
+            movies: MoviePreview.mocks,
+            didSelectMovie: { _ in }
+        )
+    }
+}

@@ -62,18 +62,12 @@ struct ExploreRootView: View {
     @ViewBuilder
     private func movieDetails(store: StoreOf<MovieDetailsFeature>) -> some View {
         if let transitionID = store.transitionID {
-            MovieDetailsView(
-                store: store,
-                transitionNamespace: namespace
-            )
+            MovieDetailsView(store: store)
             #if os(iOS)
-            .navigationTransition(.zoom(sourceID: transitionID, in: namespace))
+                .navigationTransition(.zoom(sourceID: transitionID, in: namespace))
             #endif
         } else {
-            MovieDetailsView(
-                store: store,
-                transitionNamespace: namespace
-            )
+            MovieDetailsView(store: store)
         }
     }
 
