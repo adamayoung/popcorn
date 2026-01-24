@@ -134,4 +134,24 @@ final class MockMovieRemoteDataSource: MovieRemoteDataSource, @unchecked Sendabl
         }
     }
 
+    var certificationCallCount = 0
+    var certificationCalledWith: [Int] = []
+    var certificationStub: Result<String, MovieRemoteDataSourceError>?
+
+    func certification(forMovie movieID: Int) async throws(MovieRemoteDataSourceError) -> String {
+        certificationCallCount += 1
+        certificationCalledWith.append(movieID)
+
+        guard let stub = certificationStub else {
+            throw .unknown(nil)
+        }
+
+        switch stub {
+        case .success(let certification):
+            return certification
+        case .failure(let error):
+            throw error
+        }
+    }
+
 }
