@@ -56,6 +56,16 @@ Use slash commands or XcodeBuildMCP tools directly:
 
 **Always run `/format` and `/lint` after making code changes** to ensure consistent style before committing.
 
+### Pre-PR Checklist
+
+Before creating a pull request, **always** verify:
+
+1. Run `/format` and `/lint` — no violations
+2. Run `/build` — build succeeds
+3. Run `/test` — all tests pass
+
+This prevents CI failures and ensures code quality before review.
+
 ## Key Entry Points
 
 | File | Purpose |
