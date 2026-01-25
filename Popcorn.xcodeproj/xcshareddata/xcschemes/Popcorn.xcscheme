@@ -36,7 +36,7 @@
             reference = "container:TestPlans/Features.xctestplan">
          </TestPlanReference>
          <TestPlanReference
-            reference = "container:TestPlans/UITests.xctestplan">
+            reference = "container:TestPlans/PopcornUITests.xctestplan">
          </TestPlanReference>
          <TestPlanReference
             reference = "container:TestPlans/Core.xctestplan">
