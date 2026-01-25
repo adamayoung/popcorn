@@ -2,11 +2,18 @@
 
 ## CloudKit Constraints
 
-When SwiftData is configured with CloudKit sync:
+**Important:** Before applying CloudKit constraints, check where the model is registered in the Infrastructure factory (e.g., `MoviesInfrastructureFactory.swift`). Look for `cloudKitDatabase` configuration:
+
+- `cloudKitDatabase: .private` or `.public` → CloudKit rules apply
+- `cloudKitDatabase: .none` → CloudKit rules do NOT apply (local-only store)
+
+When SwiftData is configured with CloudKit sync (`cloudKitDatabase` is NOT `.none`):
 
 - Never use `@Attribute(.unique)` - causes sync conflicts
 - Model properties must have default values or be optional
 - All relationships must be optional
+
+For local-only stores (`cloudKitDatabase: .none`), `@Attribute(.unique)` is acceptable for enforcing uniqueness constraints.
 
 ## Infrastructure Layer Usage
 
