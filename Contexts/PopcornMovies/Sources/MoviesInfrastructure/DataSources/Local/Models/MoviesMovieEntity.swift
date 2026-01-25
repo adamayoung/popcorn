@@ -37,6 +37,7 @@ final class MoviesMovieEntity: Equatable, ModelExpirable {
         budget: Double? = nil,
         revenue: Double? = nil,
         homepageURL: URL? = nil,
+        genres: [MoviesGenreEntity]? = nil,
         cachedAt: Date = Date.now
     ) {
         self.movieID = movieID
@@ -50,6 +51,7 @@ final class MoviesMovieEntity: Equatable, ModelExpirable {
         self.budget = budget
         self.revenue = revenue
         self.homepageURL = homepageURL
+        self.genres = genres
         self.cachedAt = cachedAt
     }
 

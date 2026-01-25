@@ -17,7 +17,7 @@ struct MovieMapper {
             tagline: entity.tagline,
             overview: entity.overview,
             runtime: entity.runtime,
-            genres: entity.genres.map { mapGenres($0) },
+            genres: entity.genres.map { mapGenresToDomain($0) },
             releaseDate: entity.releaseDate,
             posterPath: entity.posterPath,
             backdropPath: entity.backdropPath,
@@ -36,7 +36,7 @@ struct MovieMapper {
     }
 
     func map(_ movie: Movie) -> MoviesMovieEntity {
-        let entity = MoviesMovieEntity(
+        MoviesMovieEntity(
             movieID: movie.id,
             title: movie.title,
             tagline: movie.tagline,
@@ -47,10 +47,9 @@ struct MovieMapper {
             backdropPath: movie.backdropPath,
             budget: movie.budget,
             revenue: movie.revenue,
-            homepageURL: movie.homepageURL
+            homepageURL: movie.homepageURL,
+            genres: movie.genres.map { mapGenresToEntity($0) }
         )
-        entity.genres = movie.genres.map { mapGenres($0) }
-        return entity
     }
 
     func map(_ movie: Movie, to entity: MoviesMovieEntity) {
@@ -64,17 +63,17 @@ struct MovieMapper {
         entity.budget = movie.budget
         entity.revenue = movie.revenue
         entity.homepageURL = movie.homepageURL
-        entity.genres = movie.genres.map { mapGenres($0) }
+        entity.genres = movie.genres.map { mapGenresToEntity($0) }
         entity.cachedAt = .now
     }
 
     // MARK: - Private
 
-    private func mapGenres(_ genres: [MoviesGenreEntity]) -> [Genre] {
+    private func mapGenresToDomain(_ genres: [MoviesGenreEntity]) -> [Genre] {
         genres.map { Genre(id: $0.genreID, name: $0.name) }
     }
 
-    private func mapGenres(_ genres: [Genre]) -> [MoviesGenreEntity] {
+    private func mapGenresToEntity(_ genres: [Genre]) -> [MoviesGenreEntity] {
         genres.map { MoviesGenreEntity(genreID: $0.id, name: $0.name) }
     }
 

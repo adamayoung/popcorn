@@ -31,12 +31,12 @@ struct MovieMapperTests {
             backdropPath: URL(string: "https://example.com/backdrop.jpg"),
             budget: 100_000_000,
             revenue: 500_000_000,
-            homepageURL: URL(string: "https://example.com/movie")
+            homepageURL: URL(string: "https://example.com/movie"),
+            genres: [
+                MoviesGenreEntity(genreID: 28, name: "Action"),
+                MoviesGenreEntity(genreID: 12, name: "Adventure")
+            ]
         )
-        entity.genres = [
-            MoviesGenreEntity(genreID: 28, name: "Action"),
-            MoviesGenreEntity(genreID: 12, name: "Adventure")
-        ]
 
         let movie = mapper.map(entity)
 
@@ -87,13 +87,38 @@ struct MovieMapperTests {
         let entity = MoviesMovieEntity(
             movieID: 789,
             title: "No Genres Movie",
-            overview: "Overview"
+            overview: "Overview",
+            genres: []
         )
-        entity.genres = []
 
         let movie = mapper.map(entity)
 
+        #expect(movie.genres != nil)
         #expect(movie.genres?.isEmpty == true)
+    }
+
+    // MARK: - CompactMap Tests
+
+    @Test("compactMap returns movie when entity is not nil")
+    func compactMapReturnMovieWhenEntityIsNotNil() {
+        let entity = MoviesMovieEntity(
+            movieID: 123,
+            title: "Test Movie",
+            overview: "Test Overview"
+        )
+
+        let movie = mapper.compactMap(entity)
+
+        #expect(movie != nil)
+        #expect(movie?.id == 123)
+        #expect(movie?.title == "Test Movie")
+    }
+
+    @Test("compactMap returns nil when entity is nil")
+    func compactMapReturnsNilWhenEntityIsNil() {
+        let movie = mapper.compactMap(nil)
+
+        #expect(movie == nil)
     }
 
     // MARK: - Domain to Entity Tests
@@ -168,7 +193,7 @@ struct MovieMapperTests {
         #expect(entity.budget == nil)
         #expect(entity.revenue == nil)
         #expect(entity.homepageURL == nil)
-        #expect(entity.genres?.isEmpty == true)
+        #expect(entity.genres == nil)
     }
 
     @Test("maps with empty genres array from domain to entity")
@@ -182,6 +207,7 @@ struct MovieMapperTests {
 
         let entity = mapper.map(movie)
 
+        #expect(entity.genres != nil)
         #expect(entity.genres?.isEmpty == true)
     }
 
@@ -234,12 +260,12 @@ struct MovieMapperTests {
         let entity = MoviesMovieEntity(
             movieID: 123,
             title: "Test Movie",
-            overview: "Test Overview"
+            overview: "Test Overview",
+            genres: [
+                MoviesGenreEntity(genreID: 28, name: "Action"),
+                MoviesGenreEntity(genreID: 12, name: "Adventure")
+            ]
         )
-        entity.genres = [
-            MoviesGenreEntity(genreID: 28, name: "Action"),
-            MoviesGenreEntity(genreID: 12, name: "Adventure")
-        ]
 
         let movie = Movie.mock(
             id: 123,
@@ -262,11 +288,11 @@ struct MovieMapperTests {
         let entity = MoviesMovieEntity(
             movieID: 123,
             title: "Test Movie",
-            overview: "Test Overview"
+            overview: "Test Overview",
+            genres: [
+                MoviesGenreEntity(genreID: 28, name: "Action")
+            ]
         )
-        entity.genres = [
-            MoviesGenreEntity(genreID: 28, name: "Action")
-        ]
 
         let movie = Movie.mock(
             id: 123,

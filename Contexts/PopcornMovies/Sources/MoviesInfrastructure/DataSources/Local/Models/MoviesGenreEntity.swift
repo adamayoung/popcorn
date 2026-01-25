@@ -13,6 +13,7 @@ final class MoviesGenreEntity: Equatable {
 
     var genreID: Int
     var name: String
+    @Relationship(inverse: \MoviesMovieEntity.genres) var movie: MoviesMovieEntity?
 
     init(genreID: Int, name: String) {
         self.genreID = genreID
