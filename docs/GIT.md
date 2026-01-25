@@ -38,8 +38,19 @@ Follow gitmoji conventions (see [gitmoji.dev](https://gitmoji.dev)):
 
 ## Creating PRs
 
-- Create a title with appropriate gitmoji that best suits the PR based on changes on the branch when compared with main branch
-- Reference [gitmoji.dev](https://gitmoji.dev) for the correct emoji
+### PR Title Format
+
+**Required format**: `<gitmoji> <description>`
+
+Examples:
+- `✨ Add user authentication`
+- `🐛 Fix movie caching bug`
+- `♻️ Refactor navigation stack`
+
+Use the gitmoji that best matches the primary change. Reference [gitmoji.dev](https://gitmoji.dev) for the correct emoji.
+
+### PR Description
+
 - Give a comprehensive summary of the PR with bullet points
 - Include sections: Summary, Changes, Benefits (as appropriate)
 

@@ -63,6 +63,7 @@ Before creating a pull request, **always** verify:
 1. Run `/format` and `/lint` — no violations
 2. Run `/build` — build succeeds
 3. Run `/test` — all tests pass
+4. PR title follows gitmoji format: `<gitmoji> <description>` (see [GIT.md](docs/GIT.md))
 
 This prevents CI failures and ensures code quality before review.
 
