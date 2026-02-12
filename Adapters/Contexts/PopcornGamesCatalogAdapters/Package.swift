@@ -34,7 +34,10 @@ let package = Package(
         ),
         .testTarget(
             name: "PopcornGamesCatalogAdaptersTests",
-            dependencies: ["PopcornGamesCatalogAdapters"]
+            dependencies: [
+                "PopcornGamesCatalogAdapters",
+                .product(name: "FeatureAccessTestHelpers", package: "FeatureAccess")
+            ]
         ),
 
         .target(

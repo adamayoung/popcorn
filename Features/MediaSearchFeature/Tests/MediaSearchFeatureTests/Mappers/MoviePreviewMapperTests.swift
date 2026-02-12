@@ -7,10 +7,9 @@
 
 import CoreDomain
 import Foundation
+@testable import MediaSearchFeature
 import SearchApplication
 import Testing
-
-@testable import MediaSearchFeature
 
 @Suite("MoviePreviewMapper Tests")
 struct MoviePreviewMapperTests {

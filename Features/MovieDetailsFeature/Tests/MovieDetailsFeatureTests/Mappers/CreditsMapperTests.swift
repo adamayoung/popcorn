@@ -7,10 +7,9 @@
 
 import CoreDomain
 import Foundation
+@testable import MovieDetailsFeature
 import MoviesApplication
 import Testing
-
-@testable import MovieDetailsFeature
 
 @Suite("CreditsMapper Tests")
 struct CreditsMapperTests {

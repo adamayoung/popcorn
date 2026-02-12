@@ -7,9 +7,8 @@
 
 import Foundation
 import MoviesDomain
-import Testing
-
 @testable import MoviesInfrastructure
+import Testing
 
 @Suite("MovieMapper")
 struct MovieMapperTests {

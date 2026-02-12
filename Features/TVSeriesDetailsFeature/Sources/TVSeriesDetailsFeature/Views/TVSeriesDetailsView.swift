@@ -104,14 +104,12 @@ extension TVSeriesDetailsView {
         #endif
     }
 
-    @ViewBuilder
     private func headerOverlay(tvSeries: TVSeries) -> some View {
         LogoImage(url: tvSeries.logoURL)
             .padding(.bottom, 20)
             .frame(maxWidth: 300, maxHeight: 150, alignment: .bottom)
     }
 
-    @ViewBuilder
     private func body(tvSeries: TVSeries) -> some View {
         VStack(alignment: .leading) {
             Text(verbatim: tvSeries.overview)

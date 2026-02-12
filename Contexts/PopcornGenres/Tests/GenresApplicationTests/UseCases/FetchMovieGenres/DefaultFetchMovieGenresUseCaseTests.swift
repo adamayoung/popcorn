@@ -6,10 +6,9 @@
 //
 
 import Foundation
+@testable import GenresApplication
 import GenresDomain
 import Testing
-
-@testable import GenresApplication
 
 @Suite("DefaultFetchMovieGenresUseCase")
 struct DefaultFetchMovieGenresUseCaseTests {
@@ -50,7 +49,7 @@ struct DefaultFetchMovieGenresUseCaseTests {
     // MARK: - Error Cases
 
     @Test("execute throws unauthorised error when repository throws unauthorised")
-    func executeThrowsUnauthorisedErrorWhenRepositoryThrowsUnauthorised() async throws {
+    func executeThrowsUnauthorisedErrorWhenRepositoryThrowsUnauthorised() async {
         mockRepository.movieGenresStub = .failure(.unauthorised)
 
         let useCase = DefaultFetchMovieGenresUseCase(repository: mockRepository)
@@ -72,7 +71,7 @@ struct DefaultFetchMovieGenresUseCaseTests {
     }
 
     @Test("execute throws unknown error when repository throws unknown")
-    func executeThrowsUnknownErrorWhenRepositoryThrowsUnknown() async throws {
+    func executeThrowsUnknownErrorWhenRepositoryThrowsUnknown() async {
         let underlyingError = NSError(domain: "test", code: 123)
         mockRepository.movieGenresStub = .failure(.unknown(underlyingError))
 

@@ -29,7 +29,7 @@ public struct ProfileCarouselCell<CellLabel: View>: View {
     /// The namespace for matched geometry transitions, if applicable.
     private var namespace: Namespace.ID?
 
-    /// Platform-specific width for the profile image.
+    // Platform-specific width for the profile image.
     #if os(macOS) || os(visionOS)
         private let width: CGFloat = 200
     #else

@@ -8,10 +8,9 @@
 import CoreDomain
 import CoreDomainTestHelpers
 import Foundation
+@testable import PeopleApplication
 import PeopleDomain
 import Testing
-
-@testable import PeopleApplication
 
 @Suite("DefaultFetchPersonDetailsUseCase")
 struct DefaultFetchPersonDetailsUseCaseTests {
@@ -60,7 +59,7 @@ struct DefaultFetchPersonDetailsUseCaseTests {
     // MARK: - Repository Error Cases
 
     @Test("execute throws notFound error when repository throws notFound")
-    func executeThrowsNotFoundErrorWhenRepositoryThrowsNotFound() async throws {
+    func executeThrowsNotFoundErrorWhenRepositoryThrowsNotFound() async {
         mockRepository.personStub = .failure(.notFound)
         mockAppConfigurationProvider.appConfigurationStub = .success(AppConfiguration.mock())
 
@@ -83,7 +82,7 @@ struct DefaultFetchPersonDetailsUseCaseTests {
     }
 
     @Test("execute throws unauthorised error when repository throws unauthorised")
-    func executeThrowsUnauthorisedErrorWhenRepositoryThrowsUnauthorised() async throws {
+    func executeThrowsUnauthorisedErrorWhenRepositoryThrowsUnauthorised() async {
         mockRepository.personStub = .failure(.unauthorised)
         mockAppConfigurationProvider.appConfigurationStub = .success(AppConfiguration.mock())
 
@@ -106,7 +105,7 @@ struct DefaultFetchPersonDetailsUseCaseTests {
     }
 
     @Test("execute throws unknown error when repository throws unknown")
-    func executeThrowsUnknownErrorWhenRepositoryThrowsUnknown() async throws {
+    func executeThrowsUnknownErrorWhenRepositoryThrowsUnknown() async {
         let underlyingError = NSError(domain: "test", code: 123)
         mockRepository.personStub = .failure(.unknown(underlyingError))
         mockAppConfigurationProvider.appConfigurationStub = .success(AppConfiguration.mock())
@@ -132,7 +131,7 @@ struct DefaultFetchPersonDetailsUseCaseTests {
     // MARK: - App Configuration Error Cases
 
     @Test("execute throws unauthorised error when app config provider throws unauthorised")
-    func executeThrowsUnauthorisedErrorWhenAppConfigProviderThrowsUnauthorised() async throws {
+    func executeThrowsUnauthorisedErrorWhenAppConfigProviderThrowsUnauthorised() async {
         mockRepository.personStub = .success(Person.mock())
         mockAppConfigurationProvider.appConfigurationStub = .failure(.unauthorised)
 
@@ -155,7 +154,7 @@ struct DefaultFetchPersonDetailsUseCaseTests {
     }
 
     @Test("execute throws unknown error when app config provider throws unknown")
-    func executeThrowsUnknownErrorWhenAppConfigProviderThrowsUnknown() async throws {
+    func executeThrowsUnknownErrorWhenAppConfigProviderThrowsUnknown() async {
         let underlyingError = NSError(domain: "test", code: 456)
         mockRepository.personStub = .success(Person.mock())
         mockAppConfigurationProvider.appConfigurationStub = .failure(.unknown(underlyingError))

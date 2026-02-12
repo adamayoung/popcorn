@@ -9,7 +9,6 @@ import CoreDomain
 import Foundation
 import Testing
 import TVSeriesApplication
-
 @testable import TVSeriesIntelligenceFeature
 
 @Suite("TVSeriesMapper Tests")

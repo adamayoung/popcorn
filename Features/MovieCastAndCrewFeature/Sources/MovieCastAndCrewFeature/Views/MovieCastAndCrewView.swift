@@ -65,7 +65,6 @@ public struct MovieCastAndCrewView: View {
             }
     }
 
-    @ViewBuilder
     private func content(snapshot: MovieCastAndCrewFeature.ViewSnapshot) -> some View {
         List {
             if !snapshot.castMembers.isEmpty {

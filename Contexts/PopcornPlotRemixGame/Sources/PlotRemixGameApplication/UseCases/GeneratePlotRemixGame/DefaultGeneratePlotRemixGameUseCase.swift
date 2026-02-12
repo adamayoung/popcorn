@@ -52,7 +52,8 @@ final class DefaultGeneratePlotRemixGameUseCase: GeneratePlotRemixGameUseCase {
         }
 
         Self.logger.debug(
-            "Generating Plot Remix Game with \(movies.count, privacy: .public) movies")
+            "Generating Plot Remix Game with \(movies.count, privacy: .public) movies"
+        )
         let signpostID = Self.signposter.makeSignpostID()
         let interval = Self.signposter.beginInterval("Generating Plot Remix Game", id: signpostID)
         let questions: [GameQuestion]
@@ -107,7 +108,7 @@ final class DefaultGeneratePlotRemixGameUseCase: GeneratePlotRemixGameUseCase {
         }
         Self.signposter.endInterval("Generating Plot Remix Game", interval)
 
-        let game = Game(
+        return Game(
             id: UUID(),
             settings: Game.Settings(
                 theme: config.theme,
@@ -116,8 +117,6 @@ final class DefaultGeneratePlotRemixGameUseCase: GeneratePlotRemixGameUseCase {
             ),
             questions: questions
         )
-
-        return game
     }
     // swiftlint:enable function_body_length
 

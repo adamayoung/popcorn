@@ -84,7 +84,7 @@ SwiftDataFetchStreaming {
             predicate: #Predicate { $0.filterKey == filterKey },
             sortBy: [SortDescriptor(\.page), SortDescriptor(\.sortIndex)]
         )
-        let stream = stream(for: descriptor) { entities -> [MoviePreview]? in
+        return stream(for: descriptor) { entities -> [MoviePreview]? in
             guard !entities.isEmpty else {
                 return nil
             }
@@ -94,8 +94,6 @@ SwiftDataFetchStreaming {
                 mapper.compactMap($0.movie)
             }
         }
-
-        return stream
     }
 
     func currentMoviesStreamPage(
@@ -138,7 +136,8 @@ SwiftDataFetchStreaming {
         for (index, preview) in moviePreviews.enumerated() {
             let id = preview.id
             let descriptor = FetchDescriptor<DiscoverMoviePreviewEntity>(
-                predicate: #Predicate { $0.movieID == id })
+                predicate: #Predicate { $0.movieID == id }
+            )
             let mapper = MoviePreviewMapper()
             let existing: DiscoverMoviePreviewEntity?
             do { existing = try modelContext.fetch(descriptor).first } catch let error {

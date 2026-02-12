@@ -1,6 +1,6 @@
 //
 //  MovieProviderAdapter.swift
-//  Popcorn
+//  PopcornIntelligenceAdapters
 //
 //  Copyright © 2025 Adam Young.
 //

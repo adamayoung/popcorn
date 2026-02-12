@@ -107,7 +107,6 @@ struct ExploreRootView: View {
         }
     }
 
-    @ViewBuilder
     private func movieCastAndCrew(store: StoreOf<MovieCastAndCrewFeature>) -> some View {
         MovieCastAndCrewView(
             store: store,

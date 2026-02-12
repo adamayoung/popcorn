@@ -6,10 +6,9 @@
 //
 
 import Foundation
+@testable import IntelligenceApplication
 import IntelligenceDomain
 import Testing
-
-@testable import IntelligenceApplication
 
 @Suite("DefaultCreateTVSeriesIntelligenceSessionUseCase")
 struct DefaultCreateTVSeriesIntelligenceSessionUseCaseTests {
@@ -48,7 +47,7 @@ struct DefaultCreateTVSeriesIntelligenceSessionUseCaseTests {
     }
 
     @Test("execute throws session creation failed when repository throws TV series not found")
-    func executeThrowsSessionCreationFailedWhenTVSeriesNotFound() async throws {
+    func executeThrowsSessionCreationFailedWhenTVSeriesNotFound() async {
         mockRepository.sessionStub = .failure(.tvSeriesNotFound)
 
         let useCase = makeUseCase()
@@ -70,7 +69,7 @@ struct DefaultCreateTVSeriesIntelligenceSessionUseCaseTests {
     }
 
     @Test("execute throws session creation failed when repository throws tools not found")
-    func executeThrowsSessionCreationFailedWhenToolsNotFound() async throws {
+    func executeThrowsSessionCreationFailedWhenToolsNotFound() async {
         mockRepository.sessionStub = .failure(.toolsNotFound)
 
         let useCase = makeUseCase()
@@ -92,7 +91,7 @@ struct DefaultCreateTVSeriesIntelligenceSessionUseCaseTests {
     }
 
     @Test("execute throws session creation failed when repository throws unknown error")
-    func executeThrowsSessionCreationFailedWhenRepositoryThrowsUnknown() async throws {
+    func executeThrowsSessionCreationFailedWhenRepositoryThrowsUnknown() async {
         let underlyingError = NSError(domain: "test", code: 123)
         mockRepository.sessionStub = .failure(.unknown(underlyingError))
 

@@ -10,7 +10,6 @@ import Foundation
 import ObservabilityTestHelpers
 import Testing
 import TVSeriesDomain
-
 @testable import TVSeriesInfrastructure
 
 // swiftlint:disable type_body_length
@@ -151,7 +150,8 @@ struct DefaultTVSeriesRepositoryTVSeriesTests {
 
         #expect(mockSpan.startChildCallCount == 1)
         #expect(
-            mockSpan.startChildCalledWith[0].operation.value == SpanOperation.repositoryGet.value)
+            mockSpan.startChildCalledWith[0].operation.value == SpanOperation.repositoryGet.value
+        )
         #expect(mockSpan.startChildCalledWith[0].description == "Fetch TV Series #\(id)")
     }
 
@@ -202,7 +202,7 @@ struct DefaultTVSeriesRepositoryTVSeriesTests {
     }
 
     @Test("tvSeries with ID should throw on remote error")
-    func tvSeriesWithID_shouldThrowOnRemoteError() async throws {
+    func tvSeriesWithID_shouldThrowOnRemoteError() async {
         let id = 606
         mockLocalDataSource.tvSeriesWithIDStub = .success(nil)
         mockRemoteDataSource.tvSeriesWithIDStub = .failure(.notFound)
@@ -226,7 +226,7 @@ struct DefaultTVSeriesRepositoryTVSeriesTests {
     }
 
     @Test("tvSeries with ID should map remote error correctly")
-    func tvSeriesWithID_shouldMapRemoteErrorCorrectly() async throws {
+    func tvSeriesWithID_shouldMapRemoteErrorCorrectly() async {
         let id = 707
         mockLocalDataSource.tvSeriesWithIDStub = .success(nil)
 
@@ -265,7 +265,7 @@ struct DefaultTVSeriesRepositoryTVSeriesTests {
 
     @Test("tvSeries with ID should set error on span and finish with internal error on remote failure")
     func tvSeriesWithID_shouldSetErrorOnSpanAndFinishWithInternalErrorOnRemoteFailure()
-    async throws {
+    async {
         let id = 808
         let mockSpan = MockSpan()
         mockLocalDataSource.tvSeriesWithIDStub = .success(nil)
@@ -294,7 +294,7 @@ struct DefaultTVSeriesRepositoryTVSeriesTests {
     }
 
     @Test("tvSeries with ID should throw on local cache error")
-    func tvSeriesWithID_shouldThrowOnLocalCacheError() async throws {
+    func tvSeriesWithID_shouldThrowOnLocalCacheError() async {
         let id = 909
         mockLocalDataSource.tvSeriesWithIDStub = .failure(.unknown())
 
@@ -314,7 +314,7 @@ struct DefaultTVSeriesRepositoryTVSeriesTests {
     }
 
     @Test("tvSeries with ID should throw on local cache save error")
-    func tvSeriesWithID_shouldThrowOnLocalCacheSaveError() async throws {
+    func tvSeriesWithID_shouldThrowOnLocalCacheSaveError() async {
         let id = 1010
         let tvSeries = TVSeries.mock(id: id)
         mockLocalDataSource.tvSeriesWithIDStub = .success(nil)
@@ -337,7 +337,7 @@ struct DefaultTVSeriesRepositoryTVSeriesTests {
     }
 
     @Test("tvSeries with ID should map local error correctly")
-    func tvSeriesWithID_shouldMapLocalErrorCorrectly() async throws {
+    func tvSeriesWithID_shouldMapLocalErrorCorrectly() async {
         let id = 1111
         mockLocalDataSource.tvSeriesWithIDStub = .failure(.persistence(NSError(domain: "test", code: 1)))
 

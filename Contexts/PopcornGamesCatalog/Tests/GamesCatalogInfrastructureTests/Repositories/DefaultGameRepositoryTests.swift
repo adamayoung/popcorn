@@ -7,9 +7,8 @@
 
 import Foundation
 import GamesCatalogDomain
-import Testing
-
 @testable import GamesCatalogInfrastructure
+import Testing
 
 @Suite("DefaultGameRepository")
 struct DefaultGameRepositoryTests {
@@ -198,7 +197,7 @@ struct DefaultGameRepositoryTests {
     // MARK: - game(id:) Error Cases
 
     @Test("game throws notFound for invalid ID")
-    func gameThrowsNotFoundForInvalidID() async throws {
+    func gameThrowsNotFoundForInvalidID() async {
         let repository = makeRepository()
 
         await #expect(
@@ -218,7 +217,7 @@ struct DefaultGameRepositoryTests {
     }
 
     @Test("game throws notFound for ID 0")
-    func gameThrowsNotFoundForID0() async throws {
+    func gameThrowsNotFoundForID0() async {
         let repository = makeRepository()
 
         await #expect(
@@ -238,7 +237,7 @@ struct DefaultGameRepositoryTests {
     }
 
     @Test("game throws notFound for negative ID")
-    func gameThrowsNotFoundForNegativeID() async throws {
+    func gameThrowsNotFoundForNegativeID() async {
         let repository = makeRepository()
 
         await #expect(

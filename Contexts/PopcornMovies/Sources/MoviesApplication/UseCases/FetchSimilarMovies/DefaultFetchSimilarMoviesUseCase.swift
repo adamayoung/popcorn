@@ -47,15 +47,13 @@ final class DefaultFetchSimilarMoviesUseCase: FetchSimilarMoviesUseCase {
         let imageCollections = try await imageCollections(for: moviePreviews)
 
         let mapper = MoviePreviewDetailsMapper()
-        let moviePreviewDetails = moviePreviews.map {
+        return moviePreviews.map {
             mapper.map(
                 $0,
                 imageCollection: imageCollections[$0.id],
                 imagesConfiguration: appConfiguration.images
             )
         }
-
-        return moviePreviewDetails
     }
 
 }

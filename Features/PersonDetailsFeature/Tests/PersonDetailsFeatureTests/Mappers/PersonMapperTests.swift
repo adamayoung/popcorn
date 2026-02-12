@@ -8,9 +8,8 @@
 import CoreDomain
 import Foundation
 import PeopleApplication
-import Testing
-
 @testable import PersonDetailsFeature
+import Testing
 
 @Suite("PersonMapper Tests")
 struct PersonMapperTests {

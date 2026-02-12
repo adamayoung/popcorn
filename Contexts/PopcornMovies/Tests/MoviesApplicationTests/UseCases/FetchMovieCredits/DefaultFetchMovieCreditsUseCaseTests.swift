@@ -7,10 +7,9 @@
 
 import CoreDomainTestHelpers
 import Foundation
+@testable import MoviesApplication
 import MoviesDomain
 import Testing
-
-@testable import MoviesApplication
 
 @Suite("DefaultFetchMovieCreditsUseCase")
 struct DefaultFetchMovieCreditsUseCaseTests {
@@ -54,7 +53,7 @@ struct DefaultFetchMovieCreditsUseCaseTests {
     }
 
     @Test("execute throws not found error when repository throws not found")
-    func executeThrowsNotFoundWhenRepositoryThrowsNotFound() async throws {
+    func executeThrowsNotFoundWhenRepositoryThrowsNotFound() async {
         mockRepository.creditsStub = .failure(.notFound)
         mockAppConfigurationProvider.appConfigurationStub = .success(.mock())
 
@@ -77,7 +76,7 @@ struct DefaultFetchMovieCreditsUseCaseTests {
     }
 
     @Test("execute throws unauthorised error when repository throws unauthorised")
-    func executeThrowsUnauthorisedWhenRepositoryThrowsUnauthorised() async throws {
+    func executeThrowsUnauthorisedWhenRepositoryThrowsUnauthorised() async {
         mockRepository.creditsStub = .failure(.unauthorised)
         mockAppConfigurationProvider.appConfigurationStub = .success(.mock())
 
@@ -100,7 +99,7 @@ struct DefaultFetchMovieCreditsUseCaseTests {
     }
 
     @Test("execute throws unknown error when repository throws unknown")
-    func executeThrowsUnknownWhenRepositoryThrowsUnknown() async throws {
+    func executeThrowsUnknownWhenRepositoryThrowsUnknown() async {
         let underlyingError = NSError(domain: "test", code: 123)
         mockRepository.creditsStub = .failure(.unknown(underlyingError))
         mockAppConfigurationProvider.appConfigurationStub = .success(.mock())
@@ -124,7 +123,7 @@ struct DefaultFetchMovieCreditsUseCaseTests {
     }
 
     @Test("execute throws unauthorised error when app configuration provider throws unauthorised")
-    func executeThrowsUnauthorisedWhenAppConfigProviderThrowsUnauthorised() async throws {
+    func executeThrowsUnauthorisedWhenAppConfigProviderThrowsUnauthorised() async {
         mockRepository.creditsStub = .success(.mock())
         mockAppConfigurationProvider.appConfigurationStub = .failure(.unauthorised)
 

@@ -9,9 +9,8 @@ import CoreDomain
 import CoreDomainTestHelpers
 import Foundation
 import Testing
-import TVSeriesDomain
-
 @testable import TVSeriesApplication
+import TVSeriesDomain
 
 @Suite("TVSeriesDetailsMapperTests")
 struct TVSeriesDetailsMapperTests {

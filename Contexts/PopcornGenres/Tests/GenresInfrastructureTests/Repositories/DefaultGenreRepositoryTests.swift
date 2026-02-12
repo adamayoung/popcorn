@@ -7,9 +7,8 @@
 
 import Foundation
 import GenresDomain
-import Testing
-
 @testable import GenresInfrastructure
+import Testing
 
 @Suite("DefaultGenreRepository")
 struct DefaultGenreRepositoryTests {
@@ -76,7 +75,7 @@ struct DefaultGenreRepositoryTests {
     // MARK: - movieGenres Error Tests
 
     @Test("movieGenres throws error when local data source fails")
-    func movieGenresThrowsErrorWhenLocalDataSourceFails() async throws {
+    func movieGenresThrowsErrorWhenLocalDataSourceFails() async {
         let underlyingError = NSError(domain: "test", code: 123)
         mockLocalDataSource.movieGenresStub = .failure(.persistence(underlyingError))
 
@@ -99,7 +98,7 @@ struct DefaultGenreRepositoryTests {
     }
 
     @Test("movieGenres throws unauthorised error when remote throws unauthorised")
-    func movieGenresThrowsUnauthorisedWhenRemoteThrowsUnauthorised() async throws {
+    func movieGenresThrowsUnauthorisedWhenRemoteThrowsUnauthorised() async {
         mockLocalDataSource.movieGenresStub = .success(nil)
         mockRemoteDataSource.movieGenresStub = .failure(.unauthorised)
 
@@ -122,7 +121,7 @@ struct DefaultGenreRepositoryTests {
     }
 
     @Test("movieGenres throws unknown error when remote throws unknown")
-    func movieGenresThrowsUnknownWhenRemoteThrowsUnknown() async throws {
+    func movieGenresThrowsUnknownWhenRemoteThrowsUnknown() async {
         let underlyingError = NSError(domain: "test", code: 456)
         mockLocalDataSource.movieGenresStub = .success(nil)
         mockRemoteDataSource.movieGenresStub = .failure(.unknown(underlyingError))
@@ -199,7 +198,7 @@ struct DefaultGenreRepositoryTests {
     // MARK: - tvSeriesGenres Error Tests
 
     @Test("tvSeriesGenres throws error when local data source fails")
-    func tvSeriesGenresThrowsErrorWhenLocalDataSourceFails() async throws {
+    func tvSeriesGenresThrowsErrorWhenLocalDataSourceFails() async {
         let underlyingError = NSError(domain: "test", code: 123)
         mockLocalDataSource.tvSeriesGenresStub = .failure(.persistence(underlyingError))
 
@@ -222,7 +221,7 @@ struct DefaultGenreRepositoryTests {
     }
 
     @Test("tvSeriesGenres throws unauthorised error when remote throws unauthorised")
-    func tvSeriesGenresThrowsUnauthorisedWhenRemoteThrowsUnauthorised() async throws {
+    func tvSeriesGenresThrowsUnauthorisedWhenRemoteThrowsUnauthorised() async {
         mockLocalDataSource.tvSeriesGenresStub = .success(nil)
         mockRemoteDataSource.tvSeriesGenresStub = .failure(.unauthorised)
 
@@ -245,7 +244,7 @@ struct DefaultGenreRepositoryTests {
     }
 
     @Test("tvSeriesGenres throws unknown error when remote throws unknown")
-    func tvSeriesGenresThrowsUnknownWhenRemoteThrowsUnknown() async throws {
+    func tvSeriesGenresThrowsUnknownWhenRemoteThrowsUnknown() async {
         let underlyingError = NSError(domain: "test", code: 456)
         mockLocalDataSource.tvSeriesGenresStub = .success(nil)
         mockRemoteDataSource.tvSeriesGenresStub = .failure(.unknown(underlyingError))

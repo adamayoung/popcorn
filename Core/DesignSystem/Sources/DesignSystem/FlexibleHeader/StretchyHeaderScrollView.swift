@@ -63,7 +63,8 @@ public struct StretchyHeaderScrollView<Header: View, HeaderOverlay: View, Conten
             header: {
                 BackdropImage(
                     url: URL(
-                        string: "https://image.tmdb.org/t/p/w1280/56v2KjBlU4XaOv9rVYEQypROD7P.jpg")
+                        string: "https://image.tmdb.org/t/p/w1280/56v2KjBlU4XaOv9rVYEQypROD7P.jpg"
+                    )
                 )
                 .flexibleHeaderContent(height: 600)
             },

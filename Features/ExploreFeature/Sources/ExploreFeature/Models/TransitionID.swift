@@ -17,16 +17,16 @@ struct TransitionID {
         self.context = context
     }
 
-    init(movie: MoviePreview, carouselType: MovieCarousel.CarouselType) {
-        self.init(itemID: movie.id, context: carouselType.rawValue)
+    init(movie: MoviePreview, context: String) {
+        self.init(itemID: movie.id, context: context)
     }
 
-    init(tvSeries: TVSeriesPreview, carouselType: TVSeriesCarousel.CarouselType) {
-        self.init(itemID: tvSeries.id, context: carouselType.rawValue)
+    init(tvSeries: TVSeriesPreview, context: String) {
+        self.init(itemID: tvSeries.id, context: context)
     }
 
-    init(person: PersonPreview) {
-        self.init(itemID: person.id)
+    init(person: PersonPreview, context: String) {
+        self.init(itemID: person.id, context: context)
     }
 
     var value: String {

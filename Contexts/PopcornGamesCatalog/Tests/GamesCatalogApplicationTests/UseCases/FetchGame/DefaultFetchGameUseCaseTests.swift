@@ -6,10 +6,9 @@
 //
 
 import Foundation
+@testable import GamesCatalogApplication
 import GamesCatalogDomain
 import Testing
-
-@testable import GamesCatalogApplication
 
 @Suite("DefaultFetchGameUseCase")
 struct DefaultFetchGameUseCaseTests {
@@ -51,7 +50,7 @@ struct DefaultFetchGameUseCaseTests {
     // MARK: - Error Cases
 
     @Test("execute throws notFound error when repository throws notFound")
-    func executeThrowsNotFoundErrorWhenRepositoryThrowsNotFound() async throws {
+    func executeThrowsNotFoundErrorWhenRepositoryThrowsNotFound() async {
         mockRepository.gameStub = .failure(.notFound)
 
         let useCase = DefaultFetchGameUseCase(repository: mockRepository)
@@ -73,7 +72,7 @@ struct DefaultFetchGameUseCaseTests {
     }
 
     @Test("execute throws unknown error when repository throws unknown")
-    func executeThrowsUnknownErrorWhenRepositoryThrowsUnknown() async throws {
+    func executeThrowsUnknownErrorWhenRepositoryThrowsUnknown() async {
         let underlyingError = NSError(domain: "test", code: 123)
         mockRepository.gameStub = .failure(.unknown(underlyingError))
 

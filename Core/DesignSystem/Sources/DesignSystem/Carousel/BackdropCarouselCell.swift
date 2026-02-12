@@ -33,7 +33,7 @@ public struct BackdropCarouselCell<CellLabel: View>: View {
     /// The namespace for matched geometry transitions, if applicable.
     private var namespace: Namespace.ID?
 
-    /// Platform-specific width for the backdrop image.
+    // Platform-specific width for the backdrop image.
     #if os(macOS) || os(visionOS)
         private let width: CGFloat = 300
     #else
@@ -103,7 +103,8 @@ public struct BackdropCarouselCell<CellLabel: View>: View {
         LazyHStack(alignment: .top, spacing: 20) {
             BackdropCarouselCell(
                 imageURL: URL(
-                    string: "https://image.tmdb.org/t/p/w1280/xRyINp9KfMLVjRiO5nCsoRDdvvF.jpg")
+                    string: "https://image.tmdb.org/t/p/w1280/xRyINp9KfMLVjRiO5nCsoRDdvvF.jpg"
+                )
             ) {
                 HStack(alignment: .top, spacing: 15) {
                     Text(verbatim: "1")

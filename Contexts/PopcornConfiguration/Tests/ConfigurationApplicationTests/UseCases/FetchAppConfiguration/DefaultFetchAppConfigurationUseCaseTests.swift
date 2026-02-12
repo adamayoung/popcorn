@@ -5,14 +5,13 @@
 //  Copyright © 2025 Adam Young.
 //
 
+@testable import ConfigurationApplication
 import ConfigurationDomain
 import CoreDomain
 import CoreDomainTestHelpers
 import Foundation
 import ObservabilityTestHelpers
 import Testing
-
-@testable import ConfigurationApplication
 
 @Suite("DefaultFetchAppConfigurationUseCase")
 struct DefaultFetchAppConfigurationUseCaseTests {
@@ -77,7 +76,7 @@ struct DefaultFetchAppConfigurationUseCaseTests {
     }
 
     @Test("execute throws unauthorised error when repository throws unauthorised")
-    func executeThrowsUnauthorisedErrorWhenRepositoryThrowsUnauthorised() async throws {
+    func executeThrowsUnauthorisedErrorWhenRepositoryThrowsUnauthorised() async {
         mockRepository.configurationStub = .failure(.unauthorised)
 
         let useCase = DefaultFetchAppConfigurationUseCase(repository: mockRepository)
@@ -99,7 +98,7 @@ struct DefaultFetchAppConfigurationUseCaseTests {
     }
 
     @Test("execute throws unknown error when repository throws unknown")
-    func executeThrowsUnknownErrorWhenRepositoryThrowsUnknown() async throws {
+    func executeThrowsUnknownErrorWhenRepositoryThrowsUnknown() async {
         let underlyingError = NSError(domain: "test", code: 123)
         mockRepository.configurationStub = .failure(.unknown(underlyingError))
 
@@ -122,7 +121,7 @@ struct DefaultFetchAppConfigurationUseCaseTests {
     }
 
     @Test("execute sets error on span and finishes with internal error on failure")
-    func executeSetsErrorOnSpanAndFinishesWithInternalErrorOnFailure() async throws {
+    func executeSetsErrorOnSpanAndFinishesWithInternalErrorOnFailure() async {
         let mockSpan = MockSpan()
 
         mockRepository.configurationStub = .failure(.unauthorised)

@@ -39,11 +39,9 @@ final class DefaultFetchTrendingTVSeriesUseCase: FetchTrendingTVSeriesUseCase {
         }
 
         let mapper = TVSeriesPreviewDetailsMapper()
-        let tvSeriesPreviewDetails = tvSeriesPreviews.map {
+        return tvSeriesPreviews.map {
             mapper.map($0, imagesConfiguration: appConfiguration.images)
         }
-
-        return tvSeriesPreviewDetails
     }
 
 }

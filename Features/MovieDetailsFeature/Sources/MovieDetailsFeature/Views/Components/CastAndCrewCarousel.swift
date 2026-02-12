@@ -43,7 +43,6 @@ struct CastAndCrewCarousel: View {
         .contentMargins([.leading, .trailing], 16)
     }
 
-    @ViewBuilder
     private func cellLabel(personName: String, characterName: String) -> some View {
         VStack(alignment: .center) {
             Text(verbatim: personName)

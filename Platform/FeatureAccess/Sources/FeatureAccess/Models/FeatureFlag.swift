@@ -30,6 +30,6 @@ public enum FeatureFlag: String, Sendable, CaseIterable {
     case movieIntelligence = "movie_intelligence"
     case tvSeriesIntelligence = "tv_series_intelligence"
 
-    // App Wide
+    /// App Wide
     case watchlist
 }

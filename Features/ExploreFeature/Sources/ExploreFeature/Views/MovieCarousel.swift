@@ -17,13 +17,14 @@ struct MovieCarousel: View {
 
     var movies: [MoviePreview]
     var type: CarouselType
+    var carouselID: String
     var transitionNamespace: Namespace.ID?
     var didSelectMovie: (MoviePreview, String) -> Void
 
     var body: some View {
         Carousel {
             ForEach(Array(movies.enumerated()), id: \.offset) { offset, movie in
-                let transitionID = TransitionID(movie: movie, carouselType: type).value
+                let transitionID = TransitionID(movie: movie, context: carouselID).value
 
                 switch type {
                 case .backdrop:
@@ -62,7 +63,6 @@ struct MovieCarousel: View {
         .contentMargins([.leading, .trailing], 16)
     }
 
-    @ViewBuilder
     private func cellLabel(title: String, index: Int) -> some View {
         HStack(alignment: .top, spacing: 15) {
             Text(verbatim: "\(index + 1)")
@@ -88,6 +88,7 @@ struct MovieCarousel: View {
         MovieCarousel(
             movies: MoviePreview.mocks,
             type: .backdrop,
+            carouselID: "movie-backdrops",
             transitionNamespace: transitionNamespace,
             didSelectMovie: { _, _ in }
         )
@@ -101,6 +102,7 @@ struct MovieCarousel: View {
         MovieCarousel(
             movies: MoviePreview.mocks,
             type: .poster,
+            carouselID: "movie-posters",
             transitionNamespace: transitionNamespace,
             didSelectMovie: { _, _ in }
         )

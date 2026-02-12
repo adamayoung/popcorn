@@ -40,7 +40,8 @@ public final class PopcornDiscoverAdaptersFactory {
 
     public func makeDiscoverFactory() -> some PopcornDiscoverFactory {
         let discoverRemoteDataSource = TMDbDiscoverRemoteDataSource(
-            discoverService: discoverService)
+            discoverService: discoverService
+        )
 
         let appConfigurationProvider = AppConfigurationProviderAdapter(
             fetchUseCase: fetchAppConfigurationUseCase

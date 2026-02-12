@@ -18,6 +18,8 @@ final class MovieDetailsScreen: Screen {
 
 extension MovieDetailsScreen {
 
-    private var detailsView: XCUIElement { app.scrollViews["movie-details.view"] }
+    private var detailsView: XCUIElement {
+        app.scrollViews["movie-details.view"]
+    }
 
 }

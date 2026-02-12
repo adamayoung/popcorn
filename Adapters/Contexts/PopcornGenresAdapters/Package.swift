@@ -21,7 +21,7 @@ let package = Package(
 
     dependencies: [
         .package(path: "../../../Contexts/PopcornGenres"),
-        .package(url: "https://github.com/adamayoung/TMDb.git", from: "15.0.0")
+        .package(url: "https://github.com/adamayoung/TMDb.git", from: "16.0.0")
     ],
 
     targets: [

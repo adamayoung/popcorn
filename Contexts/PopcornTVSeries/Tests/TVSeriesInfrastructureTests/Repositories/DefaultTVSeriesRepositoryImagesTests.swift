@@ -10,7 +10,6 @@ import Foundation
 import ObservabilityTestHelpers
 import Testing
 import TVSeriesDomain
-
 @testable import TVSeriesInfrastructure
 
 @Suite("DefaultTVSeriesRepository Images Tests")
@@ -149,9 +148,11 @@ struct DefaultTVSeriesRepositoryImagesTests {
 
         #expect(mockSpan.startChildCallCount == 1)
         #expect(
-            mockSpan.startChildCalledWith[0].operation.value == SpanOperation.repositoryGet.value)
+            mockSpan.startChildCalledWith[0].operation.value == SpanOperation.repositoryGet.value
+        )
         #expect(
-            mockSpan.startChildCalledWith[0].description == "Fetch TV Series Images #\(tvSeriesID)")
+            mockSpan.startChildCalledWith[0].description == "Fetch TV Series Images #\(tvSeriesID)"
+        )
     }
 
     @Test("images for TV series should set entity data on span")
@@ -201,7 +202,7 @@ struct DefaultTVSeriesRepositoryImagesTests {
     }
 
     @Test("images for TV series should throw on remote error")
-    func imagesForTVSeries_shouldThrowOnRemoteError() async throws {
+    func imagesForTVSeries_shouldThrowOnRemoteError() async {
         let tvSeriesID = 2020
         mockLocalDataSource.imagesForTVSeriesStub = .success(nil)
         mockRemoteDataSource.imagesForTVSeriesStub = .failure(.notFound)
@@ -226,7 +227,7 @@ struct DefaultTVSeriesRepositoryImagesTests {
 
     @Test("images for TV series should set error on span and finish with internal error on remote failure")
     func imagesForTVSeries_shouldSetErrorOnSpanAndFinishWithInternalErrorOnRemoteFailure()
-    async throws {
+    async {
         let tvSeriesID = 2121
         let mockSpan = MockSpan()
         mockLocalDataSource.imagesForTVSeriesStub = .success(nil)
@@ -255,7 +256,7 @@ struct DefaultTVSeriesRepositoryImagesTests {
     }
 
     @Test("images for TV series should throw on local cache error")
-    func imagesForTVSeries_shouldThrowOnLocalCacheError() async throws {
+    func imagesForTVSeries_shouldThrowOnLocalCacheError() async {
         let tvSeriesID = 2222
         mockLocalDataSource.imagesForTVSeriesStub = .failure(.unknown())
 
@@ -275,7 +276,7 @@ struct DefaultTVSeriesRepositoryImagesTests {
     }
 
     @Test("images for TV series should throw on local cache save error")
-    func imagesForTVSeries_shouldThrowOnLocalCacheSaveError() async throws {
+    func imagesForTVSeries_shouldThrowOnLocalCacheSaveError() async {
         let tvSeriesID = 2323
         let imageCollection = ImageCollection.mock(id: tvSeriesID)
         mockLocalDataSource.imagesForTVSeriesStub = .success(nil)

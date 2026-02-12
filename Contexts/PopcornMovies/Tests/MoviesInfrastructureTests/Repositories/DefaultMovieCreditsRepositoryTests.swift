@@ -7,9 +7,8 @@
 
 import Foundation
 import MoviesDomain
-import Testing
-
 @testable import MoviesInfrastructure
+import Testing
 
 @Suite("DefaultMovieCreditsRepository")
 struct DefaultMovieCreditsRepositoryTests {
@@ -85,7 +84,7 @@ struct DefaultMovieCreditsRepositoryTests {
     }
 
     @Test("credits throws not found when remote throws not found")
-    func creditsThrowsNotFoundWhenRemoteThrowsNotFound() async throws {
+    func creditsThrowsNotFoundWhenRemoteThrowsNotFound() async {
         mockLocalDataSource.creditsStub = .success(nil)
         mockRemoteDataSource.creditsStub = .failure(.notFound)
 
@@ -108,7 +107,7 @@ struct DefaultMovieCreditsRepositoryTests {
     }
 
     @Test("credits throws unauthorised when remote throws unauthorised")
-    func creditsThrowsUnauthorisedWhenRemoteThrowsUnauthorised() async throws {
+    func creditsThrowsUnauthorisedWhenRemoteThrowsUnauthorised() async {
         mockLocalDataSource.creditsStub = .success(nil)
         mockRemoteDataSource.creditsStub = .failure(.unauthorised)
 
@@ -131,7 +130,7 @@ struct DefaultMovieCreditsRepositoryTests {
     }
 
     @Test("credits throws unknown when remote throws unknown")
-    func creditsThrowsUnknownWhenRemoteThrowsUnknown() async throws {
+    func creditsThrowsUnknownWhenRemoteThrowsUnknown() async {
         let underlyingError = NSError(domain: "test", code: 123)
         mockLocalDataSource.creditsStub = .success(nil)
         mockRemoteDataSource.creditsStub = .failure(.unknown(underlyingError))
@@ -155,7 +154,7 @@ struct DefaultMovieCreditsRepositoryTests {
     }
 
     @Test("credits throws unknown when local data source throws persistence error")
-    func creditsThrowsUnknownWhenLocalThrowsPersistenceError() async throws {
+    func creditsThrowsUnknownWhenLocalThrowsPersistenceError() async {
         let underlyingError = NSError(domain: "test", code: 456)
         mockLocalDataSource.creditsStub = .failure(.persistence(underlyingError))
 

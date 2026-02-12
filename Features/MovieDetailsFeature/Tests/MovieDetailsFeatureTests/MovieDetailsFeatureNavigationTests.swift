@@ -7,9 +7,8 @@
 
 import ComposableArchitecture
 import Foundation
-import Testing
-
 @testable import MovieDetailsFeature
+import Testing
 
 @MainActor
 @Suite("MovieDetailsFeature navigate Tests")

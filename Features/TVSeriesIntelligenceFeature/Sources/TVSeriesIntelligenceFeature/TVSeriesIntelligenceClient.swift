@@ -32,8 +32,7 @@ extension TVSeriesIntelligenceClient: DependencyKey {
                 return mapper.map(tvSeries)
             },
             createSession: { tvSeriesID in
-                let session = try await createTVSeriesIntelligenceSession.execute(tvSeriesID: tvSeriesID)
-                return session
+                try await createTVSeriesIntelligenceSession.execute(tvSeriesID: tvSeriesID)
             }
         )
     }

@@ -157,7 +157,8 @@ extension MovieDetailsFeature {
     private func handleToggleMovieOnWatchlist(_ state: inout State) -> EffectOf<Self> {
         .run { [state, client] send in
             Self.logger.info(
-                "User toggling movie on watchlist [movieID: \(state.movieID, privacy: .private)]")
+                "User toggling movie on watchlist [movieID: \(state.movieID, privacy: .private)]"
+            )
 
             do {
                 try await client.toggleOnWatchlist(state.movieID)

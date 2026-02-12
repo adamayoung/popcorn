@@ -84,7 +84,8 @@ final class DefaultStreamMovieDetailsUseCase: StreamMovieDetailsUseCase {
             continuation.onTermination = { _ in
                 task.cancel()
                 Self.logger.debug(
-                    "Cancelled stream for MovieDetails [movieID: \(id, privacy: .private)]")
+                    "Cancelled stream for MovieDetails [movieID: \(id, privacy: .private)]"
+                )
             }
         }
     }

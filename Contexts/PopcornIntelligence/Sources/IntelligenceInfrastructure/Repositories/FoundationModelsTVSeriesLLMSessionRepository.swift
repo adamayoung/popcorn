@@ -64,12 +64,10 @@ final class FoundationModelsTVSeriesLLMSessionRepository: TVSeriesLLMSessionRepo
             instructions: instructions
         )
 
-        let llmSession = FoundationModelsLLMSession(
+        return FoundationModelsLLMSession(
             session: session
 //            observability: observability
         )
-
-        return llmSession
     }
 
 }

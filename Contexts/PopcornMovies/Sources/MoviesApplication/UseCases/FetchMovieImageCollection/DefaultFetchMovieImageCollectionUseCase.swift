@@ -36,11 +36,9 @@ final class DefaultFetchMovieImageCollectionUseCase: FetchMovieImageCollectionUs
         }
 
         let mapper = ImageCollectionDetailsMapper()
-        let imageCollectionDetails = mapper.map(
+        return mapper.map(
             imageCollection, imagesConfiguration: appConfiguration.images
         )
-
-        return imageCollectionDetails
     }
 
 }

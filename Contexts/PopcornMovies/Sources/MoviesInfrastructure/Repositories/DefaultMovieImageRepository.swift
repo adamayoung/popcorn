@@ -26,7 +26,8 @@ final class DefaultMovieImageRepository: MovieImageRepository {
     ) async throws(MovieImageRepositoryError) -> ImageCollection {
         do {
             if let cachedImageCollection = try await localDataSource.imageCollection(
-                forMovie: movieID) {
+                forMovie: movieID
+            ) {
                 return cachedImageCollection
             }
         } catch let error {

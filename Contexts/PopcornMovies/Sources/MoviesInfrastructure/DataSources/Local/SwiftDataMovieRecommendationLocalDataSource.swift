@@ -91,7 +91,8 @@ actor SwiftDataMovieRecommendationLocalDataSource: MovieRecommendationLocalDataS
         for (index, preview) in moviePreviews.enumerated() {
             let id = preview.id
             let descriptor = FetchDescriptor<MoviesMoviePreviewEntity>(
-                predicate: #Predicate { $0.movieID == id })
+                predicate: #Predicate { $0.movieID == id }
+            )
             let mapper = MoviePreviewMapper()
             let existing: MoviesMoviePreviewEntity?
             do {
@@ -135,7 +136,7 @@ actor SwiftDataMovieRecommendationLocalDataSource: MovieRecommendationLocalDataS
             sortBy: [SortDescriptor(\.page), SortDescriptor(\.sortIndex)]
         )
         descriptor.fetchLimit = limit
-        let stream = stream(for: descriptor) { entities -> [MoviePreview]? in
+        return stream(for: descriptor) { entities -> [MoviePreview]? in
             guard !entities.isEmpty else {
                 return nil
             }
@@ -145,8 +146,6 @@ actor SwiftDataMovieRecommendationLocalDataSource: MovieRecommendationLocalDataS
                 mapper.compactMap($0.movie)
             }
         }
-
-        return stream
     }
 
     func currentRecommendationsStreamPage(

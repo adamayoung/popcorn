@@ -6,19 +6,18 @@
 //
 
 import ComposableArchitecture
+@testable import ExploreFeature
 import SDWebImage
 import SnapshotTesting
 import SwiftUI
 import Testing
-
-@testable import ExploreFeature
 
 @Suite("ExploreViewSnapshotTests", .snapshots(record: .missing))
 @MainActor
 struct ExploreViewSnapshotTests {
 
     @Test
-    func exploreView() async throws {
+    func exploreView() {
         let view = NavigationStack {
             ExploreView(
                 store: Store(

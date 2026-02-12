@@ -7,11 +7,10 @@
 
 import CoreDomain
 import CoreDomainTestHelpers
+@testable import DiscoverApplication
 import DiscoverDomain
 import Foundation
 import Testing
-
-@testable import DiscoverApplication
 
 @Suite("DefaultFetchDiscoverMoviesUseCase")
 struct DefaultFetchDiscoverMoviesUseCaseTests {

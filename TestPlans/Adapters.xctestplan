@@ -14,30 +14,16 @@
   "testTargets" : [
     {
       "target" : {
-        "containerPath" : "container:Adapters\/Platform\/ObservabilityAdapters",
-        "identifier" : "ObservabilityAdaptersTests",
-        "name" : "ObservabilityAdaptersTests"
+        "containerPath" : "container:Adapters\/Contexts\/PopcornPlotRemixGameAdapters",
+        "identifier" : "PopcornPlotRemixGameAdaptersTests",
+        "name" : "PopcornPlotRemixGameAdaptersTests"
       }
     },
     {
       "target" : {
-        "containerPath" : "container:Adapters\/Contexts\/PopcornMoviesAdapters",
-        "identifier" : "PopcornMoviesAdaptersTests",
-        "name" : "PopcornMoviesAdaptersTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Adapters\/Contexts\/PopcornSearchAdapters",
-        "identifier" : "PopcornSearchAdaptersTests",
-        "name" : "PopcornSearchAdaptersTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Adapters\/Contexts\/PopcornTVSeriesAdapters",
-        "identifier" : "PopcornTVSeriesAdaptersTests",
-        "name" : "PopcornTVSeriesAdaptersTests"
+        "containerPath" : "container:Adapters\/Contexts\/PopcornIntelligenceAdapters",
+        "identifier" : "PopcornIntelligenceAdaptersTests",
+        "name" : "PopcornIntelligenceAdaptersTests"
       }
     },
     {
@@ -45,34 +31,6 @@
         "containerPath" : "container:Adapters\/Contexts\/PopcornDiscoverAdapters",
         "identifier" : "PopcornDiscoverAdaptersTests",
         "name" : "PopcornDiscoverAdaptersTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Adapters\/Platform\/FeatureAccessAdapters",
-        "identifier" : "FeatureAccessAdaptersTests",
-        "name" : "FeatureAccessAdaptersTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Adapters\/Contexts\/PopcornConfigurationAdapters",
-        "identifier" : "PopcornConfigurationAdaptersTests",
-        "name" : "PopcornConfigurationAdaptersTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Adapters\/Contexts\/PopcornGamesCatalogAdapters",
-        "identifier" : "PopcornGamesCatalogAdaptersTests",
-        "name" : "PopcornGamesCatalogAdaptersTests"
-      }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Adapters\/Contexts\/PopcornPlotRemixGameAdapters",
-        "identifier" : "PopcornPlotRemixGameAdaptersTests",
-        "name" : "PopcornPlotRemixGameAdaptersTests"
       }
     },
     {
@@ -87,6 +45,62 @@
         "containerPath" : "container:Adapters\/Contexts\/PopcornPeopleAdapters",
         "identifier" : "PopcornPeopleAdaptersTests",
         "name" : "PopcornPeopleAdaptersTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Adapters\/Contexts\/PopcornTVSeriesAdapters",
+        "identifier" : "PopcornTVSeriesAdaptersTests",
+        "name" : "PopcornTVSeriesAdaptersTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Adapters\/Contexts\/PopcornConfigurationAdapters",
+        "identifier" : "PopcornConfigurationAdaptersTests",
+        "name" : "PopcornConfigurationAdaptersTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Adapters\/Contexts\/PopcornSearchAdapters",
+        "identifier" : "PopcornSearchAdaptersTests",
+        "name" : "PopcornSearchAdaptersTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Adapters\/Contexts\/PopcornMoviesAdapters",
+        "identifier" : "PopcornMoviesAdaptersTests",
+        "name" : "PopcornMoviesAdaptersTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Adapters\/Contexts\/PopcornTrendingAdapters",
+        "identifier" : "PopcornTrendingAdaptersTests",
+        "name" : "PopcornTrendingAdaptersTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Adapters\/Platform\/ObservabilityAdapters",
+        "identifier" : "ObservabilityAdaptersTests",
+        "name" : "ObservabilityAdaptersTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Adapters\/Platform\/FeatureAccessAdapters",
+        "identifier" : "FeatureAccessAdaptersTests",
+        "name" : "FeatureAccessAdaptersTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Adapters\/Contexts\/PopcornGamesCatalogAdapters",
+        "identifier" : "PopcornGamesCatalogAdaptersTests",
+        "name" : "PopcornGamesCatalogAdaptersTests"
       }
     }
   ],

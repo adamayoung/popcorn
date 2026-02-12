@@ -18,6 +18,8 @@ final class PersonDetailsScreen: Screen {
 
 extension PersonDetailsScreen {
 
-    private var detailsView: XCUIElement { app.scrollViews["person-details.view"] }
+    private var detailsView: XCUIElement {
+        app.scrollViews["person-details.view"]
+    }
 
 }

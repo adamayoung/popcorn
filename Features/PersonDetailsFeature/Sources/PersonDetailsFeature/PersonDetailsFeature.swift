@@ -79,7 +79,8 @@ private extension PersonDetailsFeature {
     func handleFetchPerson(_ state: inout State) -> EffectOf<Self> {
         .run { [state, client] send in
             Self.logger.info(
-                "User fetching person [personID: \"\(state.personID, privacy: .private)\"]")
+                "User fetching person [personID: \"\(state.personID, privacy: .private)\"]"
+            )
 
             let person: Person
             do {

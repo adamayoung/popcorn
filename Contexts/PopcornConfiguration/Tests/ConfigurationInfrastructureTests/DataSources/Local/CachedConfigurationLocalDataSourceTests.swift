@@ -7,13 +7,12 @@
 
 import Caching
 import CachingTestHelpers
+@testable import ConfigurationInfrastructure
 import CoreDomain
 import CoreDomainTestHelpers
 import Foundation
 import ObservabilityTestHelpers
 import Testing
-
-@testable import ConfigurationInfrastructure
 
 @Suite("CachedConfigurationLocalDataSource")
 struct CachedConfigurationLocalDataSourceTests {
@@ -27,7 +26,7 @@ struct CachedConfigurationLocalDataSourceTests {
     }
 
     @Test("configuration returns nil when cache is empty")
-    func configurationReturnsNilWhenCacheIsEmpty() async throws {
+    func configurationReturnsNilWhenCacheIsEmpty() async {
         let dataSource = CachedConfigurationLocalDataSource(cache: mockCache)
 
         let result = await dataSource.configuration()
@@ -37,7 +36,7 @@ struct CachedConfigurationLocalDataSourceTests {
     }
 
     @Test("configuration returns cached value when available")
-    func configurationReturnsCachedValueWhenAvailable() async throws {
+    func configurationReturnsCachedValueWhenAvailable() async {
         let expectedConfiguration = AppConfiguration.mock()
         await mockCache.setItem(expectedConfiguration, forKey: .appConfiguration)
 
@@ -49,7 +48,7 @@ struct CachedConfigurationLocalDataSourceTests {
     }
 
     @Test("configuration uses correct cache key")
-    func configurationUsesCorrectCacheKey() async throws {
+    func configurationUsesCorrectCacheKey() async {
         let dataSource = CachedConfigurationLocalDataSource(cache: mockCache)
 
         _ = await dataSource.configuration()
@@ -60,7 +59,7 @@ struct CachedConfigurationLocalDataSourceTests {
     }
 
     @Test("configuration requests correct type from cache")
-    func configurationRequestsCorrectTypeFromCache() async throws {
+    func configurationRequestsCorrectTypeFromCache() async {
         let dataSource = CachedConfigurationLocalDataSource(cache: mockCache)
 
         _ = await dataSource.configuration()
@@ -71,7 +70,7 @@ struct CachedConfigurationLocalDataSourceTests {
     }
 
     @Test("setConfiguration stores value in cache")
-    func setConfigurationStoresValueInCache() async throws {
+    func setConfigurationStoresValueInCache() async {
         let configuration = AppConfiguration.mock()
 
         let dataSource = CachedConfigurationLocalDataSource(cache: mockCache)
@@ -83,7 +82,7 @@ struct CachedConfigurationLocalDataSourceTests {
     }
 
     @Test("setConfiguration allows retrieval of stored value")
-    func setConfigurationAllowsRetrievalOfStoredValue() async throws {
+    func setConfigurationAllowsRetrievalOfStoredValue() async {
         let configuration = AppConfiguration.mock()
 
         let dataSource = CachedConfigurationLocalDataSource(cache: mockCache)
@@ -95,7 +94,7 @@ struct CachedConfigurationLocalDataSourceTests {
     }
 
     @Test("configuration creates span with correct operation")
-    func configurationCreatesSpanWithCorrectOperation() async throws {
+    func configurationCreatesSpanWithCorrectOperation() async {
         let mockSpan = MockSpan()
         mockObservabilityProvider.currentSpanStub = mockSpan
         mockSpan.childSpanStub = mockSpan
@@ -114,7 +113,7 @@ struct CachedConfigurationLocalDataSourceTests {
     }
 
     @Test("configuration finishes span")
-    func configurationFinishesSpan() async throws {
+    func configurationFinishesSpan() async {
         let mockSpan = MockSpan()
         mockObservabilityProvider.currentSpanStub = mockSpan
         mockSpan.childSpanStub = mockSpan
@@ -130,7 +129,7 @@ struct CachedConfigurationLocalDataSourceTests {
     }
 
     @Test("setConfiguration creates span with correct operation")
-    func setConfigurationCreatesSpanWithCorrectOperation() async throws {
+    func setConfigurationCreatesSpanWithCorrectOperation() async {
         let configuration = AppConfiguration.mock()
         let mockSpan = MockSpan()
         mockObservabilityProvider.currentSpanStub = mockSpan
@@ -150,7 +149,7 @@ struct CachedConfigurationLocalDataSourceTests {
     }
 
     @Test("setConfiguration finishes span")
-    func setConfigurationFinishesSpan() async throws {
+    func setConfigurationFinishesSpan() async {
         let configuration = AppConfiguration.mock()
         let mockSpan = MockSpan()
         mockObservabilityProvider.currentSpanStub = mockSpan
@@ -167,7 +166,7 @@ struct CachedConfigurationLocalDataSourceTests {
     }
 
     @Test("configuration works without span")
-    func configurationWorksWithoutSpan() async throws {
+    func configurationWorksWithoutSpan() async {
         SpanContext.provider = nil
 
         let dataSource = CachedConfigurationLocalDataSource(cache: mockCache)
@@ -179,7 +178,7 @@ struct CachedConfigurationLocalDataSourceTests {
     }
 
     @Test("setConfiguration works without span")
-    func setConfigurationWorksWithoutSpan() async throws {
+    func setConfigurationWorksWithoutSpan() async {
         let configuration = AppConfiguration.mock()
         SpanContext.provider = nil
 

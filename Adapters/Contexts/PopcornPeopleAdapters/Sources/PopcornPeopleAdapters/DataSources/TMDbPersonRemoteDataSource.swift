@@ -28,9 +28,7 @@ final class TMDbPersonRemoteDataSource: PersonRemoteDataSource {
         }
 
         let mapper = PersonMapper()
-        let movie = mapper.map(tmdbPerson)
-
-        return movie
+        return mapper.map(tmdbPerson)
     }
 
 }

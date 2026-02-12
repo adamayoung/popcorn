@@ -42,7 +42,8 @@ actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDa
 
         if anyExpired {
             Self.logger.debug(
-                "SwiftData EXPIRED: PopularMovies(page: \(page, privacy: .public)) — deleting")
+                "SwiftData EXPIRED: PopularMovies(page: \(page, privacy: .public)) — deleting"
+            )
 
             let deleteDescriptor = FetchDescriptor<MoviesPopularMovieItemEntity>(
                 predicate: #Predicate { $0.page >= page }
@@ -70,7 +71,7 @@ actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDa
         let descriptor = FetchDescriptor<MoviesPopularMovieItemEntity>(
             sortBy: [SortDescriptor(\.page), SortDescriptor(\.sortIndex)]
         )
-        let stream = stream(for: descriptor) { entities -> [MoviePreview]? in
+        return stream(for: descriptor) { entities -> [MoviePreview]? in
             guard !entities.isEmpty else {
                 return nil
             }
@@ -80,8 +81,6 @@ actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDa
                 mapper.compactMap($0.movie)
             }
         }
-
-        return stream
     }
 
     func currentPopularStreamPage() async throws(PopularMovieLocalDataSourceError) -> Int? {
@@ -117,7 +116,8 @@ actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDa
         for (index, preview) in moviePreviews.enumerated() {
             let id = preview.id
             let descriptor = FetchDescriptor<MoviesMoviePreviewEntity>(
-                predicate: #Predicate { $0.movieID == id })
+                predicate: #Predicate { $0.movieID == id }
+            )
             let mapper = MoviePreviewMapper()
 
             let existing: MoviesMoviePreviewEntity?

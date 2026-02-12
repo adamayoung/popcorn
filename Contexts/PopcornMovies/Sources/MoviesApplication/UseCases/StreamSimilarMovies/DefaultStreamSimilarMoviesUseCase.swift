@@ -39,7 +39,8 @@ final class DefaultStreamSimilarMoviesUseCase: StreamSimilarMoviesUseCase {
         limit: Int?
     ) async -> AsyncThrowingStream<[MoviePreviewDetails], Error> {
         Self.logger.debug(
-            "Start streaming similar movies [toMovieID: \(movieID, privacy: .private)")
+            "Start streaming similar movies [toMovieID: \(movieID, privacy: .private)"
+        )
         let stream = await similarMovieRepository.similarStream(toMovie: movieID, limit: limit)
         return AsyncThrowingStream { continuation in
             let task = Task {
@@ -78,7 +79,8 @@ final class DefaultStreamSimilarMoviesUseCase: StreamSimilarMoviesUseCase {
 
             continuation.onTermination = { _ in
                 Self.logger.debug(
-                    "Similar movies stream terminated [toMovieID: \(movieID, privacy: .private)")
+                    "Similar movies stream terminated [toMovieID: \(movieID, privacy: .private)"
+                )
                 task.cancel()
             }
         }

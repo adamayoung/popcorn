@@ -7,9 +7,8 @@
 
 import Foundation
 import PlotRemixGameDomain
-import Testing
-
 @testable import PlotRemixGameFeature
+import Testing
 
 @Suite("MovieMapper Tests")
 struct MovieMapperTests {

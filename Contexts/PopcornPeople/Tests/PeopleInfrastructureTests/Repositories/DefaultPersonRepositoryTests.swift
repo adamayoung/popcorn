@@ -7,9 +7,8 @@
 
 import Foundation
 import PeopleDomain
-import Testing
-
 @testable import PeopleInfrastructure
+import Testing
 
 @Suite("DefaultPersonRepository")
 struct DefaultPersonRepositoryTests {
@@ -91,7 +90,7 @@ struct DefaultPersonRepositoryTests {
     // MARK: - Error Tests
 
     @Test("person throws notFound error when remote throws notFound")
-    func personThrowsNotFoundWhenRemoteThrowsNotFound() async throws {
+    func personThrowsNotFoundWhenRemoteThrowsNotFound() async {
         mockLocalDataSource.personStub = nil
         mockRemoteDataSource.personStub = .failure(.notFound)
 
@@ -114,7 +113,7 @@ struct DefaultPersonRepositoryTests {
     }
 
     @Test("person throws unauthorised error when remote throws unauthorised")
-    func personThrowsUnauthorisedWhenRemoteThrowsUnauthorised() async throws {
+    func personThrowsUnauthorisedWhenRemoteThrowsUnauthorised() async {
         mockLocalDataSource.personStub = nil
         mockRemoteDataSource.personStub = .failure(.unauthorised)
 
@@ -137,7 +136,7 @@ struct DefaultPersonRepositoryTests {
     }
 
     @Test("person throws unknown error when remote throws unknown")
-    func personThrowsUnknownWhenRemoteThrowsUnknown() async throws {
+    func personThrowsUnknownWhenRemoteThrowsUnknown() async {
         let underlyingError = NSError(domain: "test", code: 456)
         mockLocalDataSource.personStub = nil
         mockRemoteDataSource.personStub = .failure(.unknown(underlyingError))

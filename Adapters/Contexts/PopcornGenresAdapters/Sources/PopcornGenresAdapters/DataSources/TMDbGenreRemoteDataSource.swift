@@ -27,9 +27,7 @@ final class TMDbGenreRemoteDataSource: GenreRemoteDataSource {
         }
 
         let mapper = GenreMapper()
-        let genres = tmdbGenres.map(mapper.map)
-
-        return genres
+        return tmdbGenres.map(mapper.map)
     }
 
     func tvSeriesGenres() async throws(GenreRemoteDataSourceError) -> [GenresDomain.Genre] {
@@ -41,9 +39,7 @@ final class TMDbGenreRemoteDataSource: GenreRemoteDataSource {
         }
 
         let mapper = GenreMapper()
-        let genres = tmdbGenres.map(mapper.map)
-
-        return genres
+        return tmdbGenres.map(mapper.map)
     }
 
 }
