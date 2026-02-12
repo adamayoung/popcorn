@@ -9,9 +9,8 @@ import CoreDomainTestHelpers
 import Foundation
 import ObservabilityTestHelpers
 import Testing
-import TVSeriesDomain
-
 @testable import TVSeriesApplication
+import TVSeriesDomain
 
 @Suite("DefaultFetchTVSeriesDetailsUseCaseTests")
 struct DefaultFetchTVSeriesDetailsUseCaseTests {
@@ -77,9 +76,11 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
 
         #expect(mockSpan.startChildCallCount == 1)
         #expect(
-            mockSpan.startChildCalledWith[0].operation.value == SpanOperation.useCaseExecute.value)
+            mockSpan.startChildCalledWith[0].operation.value == SpanOperation.useCaseExecute.value
+        )
         #expect(
-            mockSpan.startChildCalledWith[0].description == "FetchTVSeriesDetailsUseCase.execute")
+            mockSpan.startChildCalledWith[0].description == "FetchTVSeriesDetailsUseCase.execute"
+        )
     }
 
     @Test("execute should set TV series ID on span")
@@ -137,7 +138,7 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
     }
 
     @Test("execute should throw FetchTVSeriesDetailsError on repository failure")
-    func execute_shouldThrowFetchTVSeriesDetailsErrorOnRepositoryFailure() async throws {
+    func execute_shouldThrowFetchTVSeriesDetailsErrorOnRepositoryFailure() async {
         let id = 200
 
         mockRepository.tvSeriesWithIDStub = .failure(.notFound)
@@ -158,7 +159,7 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
     }
 
     @Test("execute should set error on span and finish with internal error on repository failure")
-    func execute_shouldSetErrorOnSpanAndFinishWithInternalErrorOnRepositoryFailure() async throws {
+    func execute_shouldSetErrorOnSpanAndFinishWithInternalErrorOnRepositoryFailure() async {
         let id = 300
         let mockSpan = MockSpan()
 
@@ -189,7 +190,7 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
     }
 
     @Test("execute should throw FetchTVSeriesDetailsError on app configuration failure")
-    func execute_shouldThrowFetchTVSeriesDetailsErrorOnAppConfigurationFailure() async throws {
+    func execute_shouldThrowFetchTVSeriesDetailsErrorOnAppConfigurationFailure() async {
         let id = 400
         let tvSeries = TVSeries.mock(id: id)
         let imageCollection = ImageCollection.mock(id: id)

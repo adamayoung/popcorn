@@ -44,6 +44,14 @@ final class MockTVSeriesService: TVSeriesService, @unchecked Sendable {
         }
     }
 
+    func details(
+        forTVSeries tvSeriesID: TVSeries.ID,
+        appending: TVSeriesAppendOption,
+        language: String?
+    ) async throws -> TVSeriesDetailsResponse {
+        fatalError("Not implemented")
+    }
+
     func credits(forTVSeries tvSeriesID: TVSeries.ID, language: String?) async throws -> ShowCredits {
         fatalError("Not implemented")
     }
@@ -109,24 +117,6 @@ final class MockTVSeriesService: TVSeriesService, @unchecked Sendable {
         fatalError("Not implemented")
     }
 
-    func watchProviders(
-        forTVSeries tvSeriesID: TVSeries.ID
-    ) async throws -> [ShowWatchProvidersByCountry] {
-        fatalError("Not implemented")
-    }
-
-    func externalLinks(
-        forTVSeries tvSeriesID: TVSeries.ID
-    ) async throws -> TVSeriesExternalLinksCollection {
-        fatalError("Not implemented")
-    }
-
-    func contentRatings(
-        forTVSeries tvSeriesID: TVSeries.ID
-    ) async throws -> [ContentRating] {
-        fatalError("Not implemented")
-    }
-
     func airingToday(
         page: Int?,
         timezone: String?,
@@ -147,6 +137,89 @@ final class MockTVSeriesService: TVSeriesService, @unchecked Sendable {
         page: Int?,
         language: String?
     ) async throws -> TVSeriesPageableList {
+        fatalError("Not implemented")
+    }
+
+    func watchProviders(
+        forTVSeries tvSeriesID: TVSeries.ID
+    ) async throws -> [ShowWatchProvidersByCountry] {
+        fatalError("Not implemented")
+    }
+
+    func externalLinks(
+        forTVSeries tvSeriesID: TVSeries.ID
+    ) async throws -> TVSeriesExternalLinksCollection {
+        fatalError("Not implemented")
+    }
+
+    func contentRatings(
+        forTVSeries tvSeriesID: TVSeries.ID
+    ) async throws -> [ContentRating] {
+        fatalError("Not implemented")
+    }
+
+    func accountStates(forTVSeries tvSeriesID: TVSeries.ID, session: Session) async throws -> AccountStates {
+        fatalError("Not implemented")
+    }
+
+    func addRating(_ rating: Double, toTVSeries tvSeriesID: TVSeries.ID, session: Session) async throws {
+        fatalError("Not implemented")
+    }
+
+    func deleteRating(forTVSeries tvSeriesID: TVSeries.ID, session: Session) async throws {
+        fatalError("Not implemented")
+    }
+
+    func keywords(forTVSeries tvSeriesID: TVSeries.ID) async throws -> KeywordCollection {
+        fatalError("Not implemented")
+    }
+
+    func alternativeTitles(forTVSeries tvSeriesID: TVSeries.ID) async throws -> AlternativeTitleCollection {
+        fatalError("Not implemented")
+    }
+
+    func translations(
+        forTVSeries tvSeriesID: TVSeries.ID
+    ) async throws -> TranslationCollection<TVSeriesTranslationData> {
+        fatalError("Not implemented")
+    }
+
+    func lists(
+        forTVSeries tvSeriesID: TVSeries.ID,
+        page: Int?,
+        language: String?
+    ) async throws -> MediaListSummaryPageableList {
+        fatalError("Not implemented")
+    }
+
+    func changes(
+        forTVSeries tvSeriesID: TVSeries.ID,
+        startDate: Date?,
+        endDate: Date?,
+        page: Int?
+    ) async throws -> ChangeCollection {
+        fatalError("Not implemented")
+    }
+
+    func latest() async throws -> TVSeries {
+        fatalError("Not implemented")
+    }
+
+    func changes(
+        startDate: Date?,
+        endDate: Date?,
+        page: Int?
+    ) async throws -> ChangedIDCollection {
+        fatalError("Not implemented")
+    }
+
+    func screenedTheatrically(
+        forTVSeries tvSeriesID: TVSeries.ID
+    ) async throws -> ScreenedTheatricallyCollection {
+        fatalError("Not implemented")
+    }
+
+    func episodeGroups(forTVSeries tvSeriesID: TVSeries.ID) async throws -> TVEpisodeGroupCollection {
         fatalError("Not implemented")
     }
 

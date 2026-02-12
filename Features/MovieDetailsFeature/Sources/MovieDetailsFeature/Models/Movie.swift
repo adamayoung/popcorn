@@ -79,9 +79,11 @@ extension Movie {
             ],
             releaseDate: Date(timeIntervalSince1970: 1_748_390_400),
             posterURL: URL(
-                string: "https://image.tmdb.org/t/p/w780/dKL78O9zxczVgjtNcQ9UkbYLzqX.jpg"),
+                string: "https://image.tmdb.org/t/p/w780/dKL78O9zxczVgjtNcQ9UkbYLzqX.jpg"
+            ),
             backdropURL: URL(
-                string: "https://image.tmdb.org/t/p/w1280/docDyCJrhPoFXAckB1aOiIv9Mz0.jpg"),
+                string: "https://image.tmdb.org/t/p/w1280/docDyCJrhPoFXAckB1aOiIv9Mz0.jpg"
+            ),
             logoURL: URL(string: "https://image.tmdb.org/t/p/w500/qVFenxaKbLr76dSJN5qRMM82X2u.png"),
             budget: 100_000_000,
             revenue: 250_000_000,

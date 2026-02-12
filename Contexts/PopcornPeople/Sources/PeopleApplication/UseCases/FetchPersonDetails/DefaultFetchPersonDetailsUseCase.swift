@@ -35,9 +35,7 @@ final class DefaultFetchPersonDetailsUseCase: FetchPersonDetailsUseCase {
         }
 
         let mapper = PersonDetailsMapper()
-        let personDetails = mapper.map(person, imagesConfiguration: appConfiguration.images)
-
-        return personDetails
+        return mapper.map(person, imagesConfiguration: appConfiguration.images)
     }
 
 }

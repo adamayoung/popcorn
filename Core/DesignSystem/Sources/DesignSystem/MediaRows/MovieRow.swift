@@ -61,7 +61,8 @@ public struct MovieRow: View {
                 id: 550,
                 title: "Fight Club",
                 posterURL: URL(
-                    string: "https://image.tmdb.org/t/p/w500/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg")
+                    string: "https://image.tmdb.org/t/p/w500/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg"
+                )
             )
 
             MovieRow(

@@ -8,9 +8,8 @@
 import CoreDomain
 import Foundation
 import IntelligenceDomain
-import Testing
-
 @testable import IntelligenceInfrastructure
+import Testing
 
 @Suite("MovieCreditsToolMapper")
 struct MovieCreditsToolMapperTests {

@@ -39,11 +39,9 @@ final class DefaultSearchMediaUseCase: SearchMediaUseCase {
         }
 
         let mapper = MediaPreviewDetailsMapper()
-        let mediaPreviewDetails = mediaPreviews.map {
+        return mediaPreviews.map {
             mapper.map($0, imagesConfiguration: appConfiguration.images)
         }
-
-        return mediaPreviewDetails
     }
 
 }

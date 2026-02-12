@@ -6,13 +6,12 @@
 //
 
 import ConfigurationDomain
+@testable import ConfigurationInfrastructure
 import CoreDomain
 import CoreDomainTestHelpers
 import Foundation
 import ObservabilityTestHelpers
 import Testing
-
-@testable import ConfigurationInfrastructure
 
 @Suite("DefaultConfigurationRepository")
 struct DefaultConfigurationRepositoryTests {
@@ -78,7 +77,7 @@ struct DefaultConfigurationRepositoryTests {
     }
 
     @Test("configuration throws error when remote fails")
-    func configurationThrowsErrorWhenRemoteFails() async throws {
+    func configurationThrowsErrorWhenRemoteFails() async {
         mockLocalDataSource.configurationStub = nil
         mockRemoteDataSource.configurationStub = .failure(.unauthorised)
 

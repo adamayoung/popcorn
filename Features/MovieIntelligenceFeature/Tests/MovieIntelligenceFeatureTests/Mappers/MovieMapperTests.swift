@@ -7,11 +7,10 @@
 
 import CoreDomain
 import Foundation
+@testable import MovieIntelligenceFeature
 import MoviesApplication
 import MoviesDomain
 import Testing
-
-@testable import MovieIntelligenceFeature
 
 @Suite("MovieMapper Tests")
 struct MovieMapperTests {

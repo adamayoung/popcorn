@@ -6,11 +6,10 @@
 //
 
 import DiscoverDomain
+@testable import DiscoverInfrastructure
 import Foundation
 import ObservabilityTestHelpers
 import Testing
-
-@testable import DiscoverInfrastructure
 
 @Suite("DefaultDiscoverMovieRepository")
 struct DefaultDiscoverMovieRepositoryTests {
@@ -108,7 +107,7 @@ struct DefaultDiscoverMovieRepositoryTests {
     // MARK: - Error Tests
 
     @Test("movies throws error when local data source fails")
-    func moviesThrowsErrorWhenLocalDataSourceFails() async throws {
+    func moviesThrowsErrorWhenLocalDataSourceFails() async {
         let underlyingError = NSError(domain: "test", code: 123)
         mockLocalDataSource.moviesStub = .failure(.persistence(underlyingError))
 
@@ -131,7 +130,7 @@ struct DefaultDiscoverMovieRepositoryTests {
     }
 
     @Test("movies throws unauthorised error when remote throws unauthorised")
-    func moviesThrowsUnauthorisedErrorWhenRemoteThrowsUnauthorised() async throws {
+    func moviesThrowsUnauthorisedErrorWhenRemoteThrowsUnauthorised() async {
         mockLocalDataSource.moviesStub = .success(nil)
         mockRemoteDataSource.moviesStub = .failure(.unauthorised)
 
@@ -154,7 +153,7 @@ struct DefaultDiscoverMovieRepositoryTests {
     }
 
     @Test("movies throws unknown error when remote throws unknown")
-    func moviesThrowsUnknownErrorWhenRemoteThrowsUnknown() async throws {
+    func moviesThrowsUnknownErrorWhenRemoteThrowsUnknown() async {
         let underlyingError = NSError(domain: "test", code: 456)
         mockLocalDataSource.moviesStub = .success(nil)
         mockRemoteDataSource.moviesStub = .failure(.unknown(underlyingError))
@@ -178,7 +177,7 @@ struct DefaultDiscoverMovieRepositoryTests {
     }
 
     @Test("movies throws error when cache save fails")
-    func moviesThrowsErrorWhenCacheSaveFails() async throws {
+    func moviesThrowsErrorWhenCacheSaveFails() async {
         let remoteMovies = MoviePreview.mocks
         let saveError = NSError(domain: "test", code: 789)
         mockLocalDataSource.moviesStub = .success(nil)

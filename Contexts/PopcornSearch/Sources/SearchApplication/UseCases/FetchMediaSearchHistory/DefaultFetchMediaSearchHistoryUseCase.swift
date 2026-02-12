@@ -40,11 +40,9 @@ final class DefaultFetchMediaSearchHistoryUseCase: FetchMediaSearchHistoryUseCas
         let mediaPreviews = try await mediaPreviews(from: entries)
 
         let mapper = MediaPreviewDetailsMapper()
-        let mediaPreviewDetails = mediaPreviews.map {
+        return mediaPreviews.map {
             mapper.map($0, imagesConfiguration: appConfiguration.images)
         }
-
-        return mediaPreviewDetails
     }
 
 }
@@ -67,12 +65,14 @@ extension DefaultFetchMediaSearchHistoryUseCase {
 
                         case .tvSeries:
                             let tvSeriesPreview = try await self.mediaProvider.tvSeries(
-                                withID: entry.id)
+                                withID: entry.id
+                            )
                             return (entry.timestamp, MediaPreview.tvSeries(tvSeriesPreview))
 
                         case .person:
                             let personPreview = try await self.mediaProvider.person(
-                                withID: entry.id)
+                                withID: entry.id
+                            )
                             return (entry.timestamp, MediaPreview.person(personPreview))
                         }
                     }

@@ -6,10 +6,9 @@
 //
 
 import Foundation
+@testable import SearchApplication
 import SearchDomain
 import Testing
-
-@testable import SearchApplication
 
 @Suite("DefaultAddMediaSearchHistoryEntryUseCase")
 struct DefaultAddMediaSearchHistoryEntryUseCaseTests {
@@ -35,7 +34,7 @@ struct DefaultAddMediaSearchHistoryEntryUseCaseTests {
     }
 
     @Test("execute movieID throws unknown error when repository fails")
-    func executeMovieIDThrowsUnknownErrorWhenRepositoryFails() async throws {
+    func executeMovieIDThrowsUnknownErrorWhenRepositoryFails() async {
         let underlyingError = NSError(domain: "test", code: 123)
         mockRepository.saveMovieSearchHistoryEntryStub = .failure(.unknown(underlyingError))
 
@@ -72,7 +71,7 @@ struct DefaultAddMediaSearchHistoryEntryUseCaseTests {
     }
 
     @Test("execute tvSeriesID throws unknown error when repository fails")
-    func executeTVSeriesIDThrowsUnknownErrorWhenRepositoryFails() async throws {
+    func executeTVSeriesIDThrowsUnknownErrorWhenRepositoryFails() async {
         let underlyingError = NSError(domain: "test", code: 456)
         mockRepository.saveTVSeriesSearchHistoryEntryStub = .failure(.unknown(underlyingError))
 
@@ -109,7 +108,7 @@ struct DefaultAddMediaSearchHistoryEntryUseCaseTests {
     }
 
     @Test("execute personID throws unknown error when repository fails")
-    func executePersonIDThrowsUnknownErrorWhenRepositoryFails() async throws {
+    func executePersonIDThrowsUnknownErrorWhenRepositoryFails() async {
         let underlyingError = NSError(domain: "test", code: 789)
         mockRepository.savePersonSearchHistoryEntryStub = .failure(.unknown(underlyingError))
 

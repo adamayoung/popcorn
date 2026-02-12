@@ -171,7 +171,8 @@ public struct MediaSearchFeature: Sendable {
 
             case .searchResultsLoadFailed(let error):
                 Self.logger.error(
-                    "Failed searching: \(error.localizedDescription, privacy: .public)")
+                    "Failed searching: \(error.localizedDescription, privacy: .public)"
+                )
                 effect = .none
 
             case .navigate(.movieDetails(let movieID)):
@@ -241,7 +242,8 @@ extension MediaSearchFeature {
     private func handleSearchMedia(state: inout State) -> EffectOf<Self> {
         .run { [state, client] send in
             Self.logger.info(
-                "User searching for media [query: \"\(state.query, privacy: .private)\"]")
+                "User searching for media [query: \"\(state.query, privacy: .private)\"]"
+            )
 
             let results: [MediaPreview]
             do {
@@ -268,7 +270,8 @@ extension MediaSearchFeature {
     private func handleAddMovieSearchHistoryEntry(movieID: Int) -> EffectOf<Self> {
         .run { [client] _ in
             Self.logger.info(
-                "Adding movie to search history [movieID: \"\(movieID, privacy: .private)\"]")
+                "Adding movie to search history [movieID: \"\(movieID, privacy: .private)\"]"
+            )
             do {
                 try await client.addMovieSearchHistoryEntry(movieID)
             } catch let error {
@@ -297,7 +300,8 @@ extension MediaSearchFeature {
     private func handleAddPersonSearchHistoryEntry(personID: Int) -> EffectOf<Self> {
         .run { [client] _ in
             Self.logger.info(
-                "Adding person to search history [personID: \"\(personID, privacy: .private)\"]")
+                "Adding person to search history [personID: \"\(personID, privacy: .private)\"]"
+            )
             do {
                 try await client.addPersonSearchHistoryEntry(personID)
             } catch let error {

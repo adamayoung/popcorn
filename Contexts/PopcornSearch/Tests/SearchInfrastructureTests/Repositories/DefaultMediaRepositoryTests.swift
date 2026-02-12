@@ -7,9 +7,8 @@
 
 import Foundation
 import SearchDomain
-import Testing
-
 @testable import SearchInfrastructure
+import Testing
 
 @Suite("DefaultMediaRepository")
 struct DefaultMediaRepositoryTests {
@@ -50,7 +49,7 @@ struct DefaultMediaRepositoryTests {
     }
 
     @Test("search throws unauthorised error when remote throws unauthorised")
-    func searchThrowsUnauthorisedWhenRemoteThrowsUnauthorised() async throws {
+    func searchThrowsUnauthorisedWhenRemoteThrowsUnauthorised() async {
         mockRemoteDataSource.searchStub = .failure(.unauthorised)
 
         let repository = makeRepository()
@@ -72,7 +71,7 @@ struct DefaultMediaRepositoryTests {
     }
 
     @Test("search throws unknown error when remote throws unknown")
-    func searchThrowsUnknownWhenRemoteThrowsUnknown() async throws {
+    func searchThrowsUnknownWhenRemoteThrowsUnknown() async {
         let underlyingError = NSError(domain: "test", code: 123)
         mockRemoteDataSource.searchStub = .failure(.unknown(underlyingError))
 
@@ -113,7 +112,7 @@ struct DefaultMediaRepositoryTests {
     }
 
     @Test("mediaSearchHistory throws unknown error when local throws persistence error")
-    func mediaSearchHistoryThrowsUnknownWhenLocalThrowsPersistenceError() async throws {
+    func mediaSearchHistoryThrowsUnknownWhenLocalThrowsPersistenceError() async {
         let underlyingError = NSError(domain: "test", code: 456)
         mockLocalDataSource.mediaSearchHistoryStub = .failure(.persistence(underlyingError))
 
@@ -151,7 +150,7 @@ struct DefaultMediaRepositoryTests {
     }
 
     @Test("saveMovieSearchHistoryEntry throws unknown error when local fails")
-    func saveMovieSearchHistoryEntryThrowsUnknownWhenLocalFails() async throws {
+    func saveMovieSearchHistoryEntryThrowsUnknownWhenLocalFails() async {
         let underlyingError = NSError(domain: "test", code: 789)
         mockLocalDataSource.saveMovieSearchHistoryEntryStub = .failure(.persistence(underlyingError))
         let entry = MovieSearchHistoryEntry.mock()

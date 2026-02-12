@@ -29,9 +29,7 @@ actor SwiftDataMediaLocalDataSource: MediaLocalDataSource, SwiftDataFetchStreami
         }
 
         let mapper = MediaSearchHistoryEntryMapper()
-        let entries = entities.compactMap(mapper.map)
-
-        return entries
+        return entities.compactMap(mapper.map)
     }
 
     func movieSearchHistory() async throws(MediaLocalDataSourceError) -> [MovieSearchHistoryEntry] {
@@ -49,9 +47,7 @@ actor SwiftDataMediaLocalDataSource: MediaLocalDataSource, SwiftDataFetchStreami
         }
 
         let mapper = MovieSearchHistoryEntryMapper()
-        let entries = entities.compactMap(mapper.map)
-
-        return entries
+        return entities.compactMap(mapper.map)
     }
 
     func tvSeriesSearchHistory() async throws(MediaLocalDataSourceError) -> [TVSeriesSearchHistoryEntry] {
@@ -69,9 +65,7 @@ actor SwiftDataMediaLocalDataSource: MediaLocalDataSource, SwiftDataFetchStreami
         }
 
         let mapper = TVSeriesSearchHistoryEntryMapper()
-        let entries = entities.compactMap(mapper.map)
-
-        return entries
+        return entities.compactMap(mapper.map)
     }
 
     func personSearchHistory() async throws(MediaLocalDataSourceError) -> [PersonSearchHistoryEntry] {
@@ -89,9 +83,7 @@ actor SwiftDataMediaLocalDataSource: MediaLocalDataSource, SwiftDataFetchStreami
         }
 
         let mapper = PersonSearchHistoryEntryMapper()
-        let entries = entities.compactMap(mapper.map)
-
-        return entries
+        return entities.compactMap(mapper.map)
     }
 
     func saveMovieSearchHistoryEntry(_ entry: MovieSearchHistoryEntry) async throws(MediaLocalDataSourceError) {

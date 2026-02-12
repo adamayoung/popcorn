@@ -65,12 +65,10 @@ final class FoundationModelsMovieLLMSessionRepository: MovieLLMSessionRepository
             instructions: instructions
         )
 
-        let llmSession = FoundationModelsLLMSession(
+        return FoundationModelsLLMSession(
             session: session
 //            observability: observability
         )
-
-        return llmSession
     }
 
 }

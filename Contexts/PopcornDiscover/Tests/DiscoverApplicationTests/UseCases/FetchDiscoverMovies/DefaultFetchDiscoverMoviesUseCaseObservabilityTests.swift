@@ -7,12 +7,11 @@
 
 import CoreDomain
 import CoreDomainTestHelpers
+@testable import DiscoverApplication
 import DiscoverDomain
 import Foundation
 import ObservabilityTestHelpers
 import Testing
-
-@testable import DiscoverApplication
 
 @Suite("DefaultFetchDiscoverMoviesUseCase Observability")
 struct DefaultFetchDiscoverMoviesUseCaseObservabilityTests {
@@ -73,7 +72,7 @@ struct DefaultFetchDiscoverMoviesUseCaseObservabilityTests {
     }
 
     @Test("execute sets error on span and finishes with internal error on failure")
-    func executeSetsErrorOnSpanAndFinishesWithInternalErrorOnFailure() async throws {
+    func executeSetsErrorOnSpanAndFinishesWithInternalErrorOnFailure() async {
         let mockSpan = MockSpan()
         mockRepository.moviesStub = .failure(.unauthorised)
         mockGenreProvider.movieGenresStub = .success(Genre.mocks)

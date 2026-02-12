@@ -39,11 +39,9 @@ final class DefaultFetchTrendingPeopleUseCase: FetchTrendingPeopleUseCase {
         }
 
         let mapper = PersonPreviewDetailsMapper()
-        let personPreviewDetails = personPreviews.map {
+        return personPreviews.map {
             mapper.map($0, imagesConfiguration: appConfiguration.images)
         }
-
-        return personPreviewDetails
     }
 
 }

@@ -7,10 +7,9 @@
 
 import ComposableArchitecture
 import Foundation
+@testable import MovieDetailsFeature
 import TCAFoundation
 import Testing
-
-@testable import MovieDetailsFeature
 
 @MainActor
 @Suite("MovieDetailsFeature fetch Tests")

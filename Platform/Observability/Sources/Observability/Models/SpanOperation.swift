@@ -22,10 +22,10 @@ public struct SpanOperation: ExpressibleByStringLiteral, Sendable {
     public static let uiAction = SpanOperation("ui.action")
     public static let uiLoad = SpanOperation("ui.load")
 
-    // Client Layer
+    /// Client Layer
     public static let clientFetch = SpanOperation("client.get")
 
-    // Use Case Layer
+    /// Use Case Layer
     public static let useCaseExecute = SpanOperation("usecase.execute")
 
     // Repository Layer
@@ -42,7 +42,7 @@ public struct SpanOperation: ExpressibleByStringLiteral, Sendable {
     public static let providerGet = SpanOperation("provider.get")
     public static let providerSet = SpanOperation("provider.set")
 
-    // Infrastructure
+    /// Infrastructure
     public static let tmdbClient = SpanOperation("tmdb.client")
 
     public static let cacheGet = SpanOperation("cache.get")

@@ -22,7 +22,8 @@ final class TVSeriesLogoImageProviderAdapter: TVSeriesLogoImageProviding {
         let imageCollectionDetails: ImageCollectionDetails
         do {
             imageCollectionDetails = try await fetchTVSeriesImageCollectionUseCase.execute(
-                tvSeriesID: tvSeriesID)
+                tvSeriesID: tvSeriesID
+            )
         } catch let error {
             throw TVSeriesLogoImageProviderError(error)
         }

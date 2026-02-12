@@ -11,10 +11,9 @@ import CoreDomain
 import FeatureAccess
 import FeatureAccessTestHelpers
 import Foundation
+@testable import MovieDetailsFeature
 import MoviesApplication
 import Testing
-
-@testable import MovieDetailsFeature
 
 @Suite("MovieDetailsClient Tests")
 struct MovieDetailsClientTests {

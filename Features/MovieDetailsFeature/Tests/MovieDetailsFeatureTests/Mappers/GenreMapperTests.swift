@@ -6,10 +6,9 @@
 //
 
 import Foundation
+@testable import MovieDetailsFeature
 import MoviesDomain
 import Testing
-
-@testable import MovieDetailsFeature
 
 @Suite("GenreMapper Tests")
 struct GenreMapperTests {

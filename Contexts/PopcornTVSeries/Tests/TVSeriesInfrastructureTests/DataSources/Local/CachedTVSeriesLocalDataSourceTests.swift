@@ -11,7 +11,6 @@ import Foundation
 import ObservabilityTestHelpers
 import Testing
 import TVSeriesDomain
-
 @testable import TVSeriesInfrastructure
 
 @Suite("CachedTVSeriesLocalDataSource Integration Tests")
@@ -26,7 +25,7 @@ struct CachedTVSeriesLocalDataSourceTests {
     }
 
     @Test("works without span")
-    func worksWithoutSpan() async throws {
+    func worksWithoutSpan() async {
         let id = 1818
         let tvSeries = TVSeries.mock(id: id)
         let imageCollection = ImageCollection.mock(id: id)

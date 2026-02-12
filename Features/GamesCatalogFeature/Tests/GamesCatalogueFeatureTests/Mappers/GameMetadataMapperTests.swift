@@ -7,10 +7,9 @@
 
 import Foundation
 import GamesCatalogDomain
+@testable import GamesCatalogFeature
 import SwiftUI
 import Testing
-
-@testable import GamesCatalogFeature
 
 @Suite("GameMetadataMapper Tests")
 struct GameMetadataMapperTests {

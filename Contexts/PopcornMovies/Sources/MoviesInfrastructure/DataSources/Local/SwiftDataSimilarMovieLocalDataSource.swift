@@ -45,7 +45,8 @@ actor SwiftDataSimilarMovieLocalDataSource: SimilarMovieLocalDataSource, SwiftDa
 
         if anyExpired {
             Self.logger.trace(
-                "SwiftData EXPIRED: SimilarMovies(page: \(page, privacy: .public)) — deleting")
+                "SwiftData EXPIRED: SimilarMovies(page: \(page, privacy: .public)) — deleting"
+            )
             let deleteDescriptor = FetchDescriptor<MoviesSimilarMovieItemEntity>(
                 predicate: #Predicate { $0.page >= page }
             )
@@ -76,7 +77,7 @@ actor SwiftDataSimilarMovieLocalDataSource: SimilarMovieLocalDataSource, SwiftDa
             sortBy: [SortDescriptor(\.page), SortDescriptor(\.sortIndex)]
         )
         descriptor.fetchLimit = limit
-        let stream = stream(for: descriptor) { entities -> [MoviePreview]? in
+        return stream(for: descriptor) { entities -> [MoviePreview]? in
             guard !entities.isEmpty else {
                 return nil
             }
@@ -86,8 +87,6 @@ actor SwiftDataSimilarMovieLocalDataSource: SimilarMovieLocalDataSource, SwiftDa
                 mapper.compactMap($0.movie)
             }
         }
-
-        return stream
     }
 
     func currentSimilarStreamPage(
@@ -128,7 +127,8 @@ actor SwiftDataSimilarMovieLocalDataSource: SimilarMovieLocalDataSource, SwiftDa
         for (index, preview) in moviePreviews.enumerated() {
             let id = preview.id
             let descriptor = FetchDescriptor<MoviesMoviePreviewEntity>(
-                predicate: #Predicate { $0.movieID == id })
+                predicate: #Predicate { $0.movieID == id }
+            )
             let mapper = MoviePreviewMapper()
             let existing: MoviesMoviePreviewEntity?
             do { existing = try modelContext.fetch(descriptor).first } catch let error {

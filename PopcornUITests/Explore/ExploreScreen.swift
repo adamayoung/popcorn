@@ -58,11 +58,28 @@ final class ExploreScreen: Screen {
 
 extension ExploreScreen {
 
-    private var exploreView: XCUIElement { app.scrollViews["explore.view"] }
-    private var discoverMoviesCarousel: XCUIElement { app.scrollViews["explore.discover-movies.carousel"] }
-    private var trendingMoviesCarousel: XCUIElement { app.scrollViews["explore.trending-movies.carousel"] }
-    private var popularMoviesCarousel: XCUIElement { app.scrollViews["explore.popular-movies.carousel"] }
-    private var trendingTVSeriesCarousel: XCUIElement { app.scrollViews["explore.trending-tvseries.carousel"] }
-    private var trendingPeopleCarousel: XCUIElement { app.scrollViews["explore.trending-people.carousel"] }
+    private var exploreView: XCUIElement {
+        app.scrollViews["explore.view"]
+    }
+
+    private var discoverMoviesCarousel: XCUIElement {
+        app.scrollViews["explore.discover-movies.carousel"]
+    }
+
+    private var trendingMoviesCarousel: XCUIElement {
+        app.scrollViews["explore.trending-movies.carousel"]
+    }
+
+    private var popularMoviesCarousel: XCUIElement {
+        app.scrollViews["explore.popular-movies.carousel"]
+    }
+
+    private var trendingTVSeriesCarousel: XCUIElement {
+        app.scrollViews["explore.trending-tvseries.carousel"]
+    }
+
+    private var trendingPeopleCarousel: XCUIElement {
+        app.scrollViews["explore.trending-people.carousel"]
+    }
 
 }

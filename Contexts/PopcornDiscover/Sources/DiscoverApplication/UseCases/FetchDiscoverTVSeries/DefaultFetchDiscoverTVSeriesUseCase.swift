@@ -66,7 +66,7 @@ final class DefaultFetchDiscoverTVSeriesUseCase: FetchDiscoverTVSeriesUseCase {
         let logoURLSets = try await logos(for: moviePreviews)
 
         let mapper = TVSeriesPreviewDetailsMapper()
-        let tvSeriesPreviewDetails = moviePreviews.map {
+        return moviePreviews.map {
             mapper.map(
                 $0,
                 genresLookup: genresLookup,
@@ -74,8 +74,6 @@ final class DefaultFetchDiscoverTVSeriesUseCase: FetchDiscoverTVSeriesUseCase {
                 imagesConfiguration: appConfiguration.images
             )
         }
-
-        return tvSeriesPreviewDetails
     }
 
 }

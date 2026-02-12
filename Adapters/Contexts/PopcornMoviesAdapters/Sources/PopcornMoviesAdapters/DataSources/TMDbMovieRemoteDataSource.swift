@@ -27,9 +27,7 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
         }
 
         let mapper = MovieMapper()
-        let movie = mapper.map(tmdbMovie)
-
-        return movie
+        return mapper.map(tmdbMovie)
     }
 
     func imageCollection(
@@ -46,9 +44,7 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
         }
 
         let mapper = ImageCollectionMapper()
-        let imageCollection = mapper.map(tmdbImageCollection)
-
-        return imageCollection
+        return mapper.map(tmdbImageCollection)
     }
 
     func popular(page: Int) async throws(MovieRemoteDataSourceError) -> [MoviePreview] {
@@ -61,8 +57,7 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
         }
 
         let mapper = MoviePreviewMapper()
-        let movies = tmdbMovies.map(mapper.map)
-        return movies
+        return tmdbMovies.map(mapper.map)
     }
 
     func similar(
@@ -79,8 +74,7 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
         }
 
         let mapper = MoviePreviewMapper()
-        let movies = tmdbMovies.map(mapper.map)
-        return movies
+        return tmdbMovies.map(mapper.map)
     }
 
     func recommendations(
@@ -97,8 +91,7 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
         }
 
         let mapper = MoviePreviewMapper()
-        let movies = tmdbMovies.map(mapper.map)
-        return movies
+        return tmdbMovies.map(mapper.map)
     }
 
     func credits(forMovie movieID: Int) async throws(MovieRemoteDataSourceError) -> Credits {
@@ -110,8 +103,7 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
         }
 
         let mapper = CreditsMapper()
-        let credits = mapper.map(tmdbCredits)
-        return credits
+        return mapper.map(tmdbCredits)
     }
 
     func certification(forMovie movieID: Int) async throws(MovieRemoteDataSourceError) -> String {

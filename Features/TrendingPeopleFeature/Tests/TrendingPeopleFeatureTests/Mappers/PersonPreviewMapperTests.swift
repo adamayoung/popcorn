@@ -9,7 +9,6 @@ import CoreDomain
 import Foundation
 import Testing
 import TrendingApplication
-
 @testable import TrendingPeopleFeature
 
 @Suite("PersonPreviewMapper Tests")

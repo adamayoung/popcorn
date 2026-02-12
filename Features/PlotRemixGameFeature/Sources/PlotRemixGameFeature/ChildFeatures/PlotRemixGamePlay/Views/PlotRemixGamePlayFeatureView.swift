@@ -72,7 +72,6 @@ public struct PlotRemixGamePlayFeatureView: View {
 
 extension PlotRemixGamePlayFeatureView {
 
-    @ViewBuilder
     private func generatingBody(progress: Float) -> some View {
         HStack {
             ProgressView(value: progress) {
@@ -82,7 +81,6 @@ extension PlotRemixGamePlayFeatureView {
         }
     }
 
-    @ViewBuilder
     private func content(game: Game) -> some View {
         ForEach(game.questions) { question in
             VStack(spacing: 50) {

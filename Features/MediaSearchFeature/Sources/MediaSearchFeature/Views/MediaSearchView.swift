@@ -51,14 +51,12 @@ public struct MediaSearchView: View {
         .navigationTitle(Text("SEARCH", bundle: .module))
     }
 
-    @ViewBuilder
     private func genresContent(_ genres: [Genre]) -> some View {
         Section {
             Text("Genres...")
         }
     }
 
-    @ViewBuilder
     private func searchHistoryContent(_ media: [MediaPreview]) -> some View {
         Section {
             ForEach(media) { media in
@@ -69,7 +67,6 @@ public struct MediaSearchView: View {
         }
     }
 
-    @ViewBuilder
     private func searchResultsContent(_ results: [MediaPreview]) -> some View {
         Section {
             ForEach(results) { media in
@@ -78,7 +75,6 @@ public struct MediaSearchView: View {
         }
     }
 
-    @ViewBuilder
     private func noSearchResultsContent(_ query: String) -> some View {
         ContentUnavailableView(
             LocalizedStringResource("NO_RESULTS", bundle: .module),

@@ -9,9 +9,8 @@ import CoreDomainTestHelpers
 import Foundation
 import ObservabilityTestHelpers
 import Testing
-import TVSeriesDomain
-
 @testable import TVSeriesApplication
+import TVSeriesDomain
 
 @Suite("DefaultFetchTVSeriesImageCollectionUseCaseTests")
 struct DefaultFetchTVSeriesImageCollectionUseCaseTests {
@@ -74,10 +73,12 @@ struct DefaultFetchTVSeriesImageCollectionUseCaseTests {
 
         #expect(mockSpan.startChildCallCount == 1)
         #expect(
-            mockSpan.startChildCalledWith[0].operation.value == SpanOperation.useCaseExecute.value)
+            mockSpan.startChildCalledWith[0].operation.value == SpanOperation.useCaseExecute.value
+        )
         #expect(
             mockSpan.startChildCalledWith[0].description
-                == "FetchTVSeriesImageCollectionUseCase.execute")
+                == "FetchTVSeriesImageCollectionUseCase.execute"
+        )
     }
 
     @Test("execute should finish span with ok status on success")
@@ -105,7 +106,7 @@ struct DefaultFetchTVSeriesImageCollectionUseCaseTests {
     }
 
     @Test("execute should throw FetchTVSeriesImageCollectionError on repository failure")
-    func execute_shouldThrowFetchTVSeriesImageCollectionErrorOnRepositoryFailure() async throws {
+    func execute_shouldThrowFetchTVSeriesImageCollectionErrorOnRepositoryFailure() async {
         let id = 101
 
         mockRepository.imagesForTVSeriesStub = .failure(.notFound)
@@ -126,8 +127,9 @@ struct DefaultFetchTVSeriesImageCollectionUseCaseTests {
     }
 
     @Test(
-        "execute should set error on span and finish with internal error on repository failure")
-    func execute_shouldSetErrorOnSpanAndFinishWithInternalErrorOnRepositoryFailure() async throws {
+        "execute should set error on span and finish with internal error on repository failure"
+    )
+    func execute_shouldSetErrorOnSpanAndFinishWithInternalErrorOnRepositoryFailure() async {
         let id = 202
         let mockSpan = MockSpan()
 
@@ -159,7 +161,7 @@ struct DefaultFetchTVSeriesImageCollectionUseCaseTests {
 
     @Test("execute should throw FetchTVSeriesImageCollectionError on app configuration failure")
     func execute_shouldThrowFetchTVSeriesImageCollectionErrorOnAppConfigurationFailure()
-    async throws {
+    async {
         let id = 303
         let imageCollection = ImageCollection.mock(id: id)
         let mockSpan = MockSpan()

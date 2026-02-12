@@ -29,23 +29,56 @@ SENTRY_DSN = <your-sentry-dsn>           # Optional
 STATSIG_SDK_KEY = <your-statsig-key>     # Optional
 ```
 
-### Finding function definitions and call sites
+### Xcode MCP
 
-Use tool `xcode-index-mcp` if available. Use project name Popcorn. The tool can locate call sites of functions, and function definitions from call sites. If you need a filepath to make a request, use `rg` to find the file and `rg -n` to find the line number. Use the absolute path when requesting symbols from a file.
+When the Xcode MCP server (`xcode`) is available, prefer its tools for building, testing, file operations, and diagnostics. All Xcode MCP tools require a `tabIdentifier` — use `mcp__xcode__XcodeListWindows` to discover open workspaces. File paths use Xcode project navigator paths (e.g., `ProjectName/Sources/MyFile.swift`), not filesystem paths.
 
-### Build & Test (XcodeBuildMCP)
+### Build & Test
 
-Use slash commands or XcodeBuildMCP tools directly:
+Use slash commands or Xcode MCP tools directly:
 
 | Task | Slash Command | MCP Tool |
 |------|---------------|----------|
-| Build app | `/build` | `mcp__XcodeBuildMCP__build_sim` |
-| Build & run | `/run` | `mcp__XcodeBuildMCP__build_run_sim` |
-| Run tests | `/test` | `mcp__XcodeBuildMCP__test_sim` |
-| Run single test | `/test-single <name>` | `mcp__XcodeBuildMCP__swift_package_test` with filter |
-| Clean | `/clean` | `mcp__XcodeBuildMCP__clean` |
-| Build package | — | `mcp__XcodeBuildMCP__swift_package_build` |
-| Test package | — | `mcp__XcodeBuildMCP__swift_package_test` |
+| Build app | `/build` | `mcp__xcode__BuildProject` |
+| Run all tests | `/test` | `mcp__xcode__RunAllTests` |
+| Run specific tests | `/test-single <name>` | `mcp__xcode__RunSomeTests` with test specifiers |
+| Get build log | — | `mcp__xcode__GetBuildLog` (filter by severity, glob, pattern) |
+| List available tests | — | `mcp__xcode__GetTestList` |
+
+### Diagnostics & Issues
+
+| Task | MCP Tool |
+|------|----------|
+| List navigator issues | `mcp__xcode__XcodeListNavigatorIssues` (filter by severity, glob, pattern) |
+| Get file diagnostics | `mcp__xcode__XcodeRefreshCodeIssuesInFile` |
+
+### File Operations (Xcode Project-Aware)
+
+These operate on the Xcode project structure, automatically managing project membership:
+
+| Task | MCP Tool |
+|------|----------|
+| Read file | `mcp__xcode__XcodeRead` |
+| Write/create file | `mcp__xcode__XcodeWrite` (auto-adds to project) |
+| Edit file | `mcp__xcode__XcodeUpdate` |
+| List files | `mcp__xcode__XcodeLS` |
+| Find files by pattern | `mcp__xcode__XcodeGlob` |
+| Search file contents | `mcp__xcode__XcodeGrep` |
+| Create directory/group | `mcp__xcode__XcodeMakeDir` |
+| Move/rename/copy | `mcp__xcode__XcodeMV` |
+| Remove file/directory | `mcp__xcode__XcodeRM` |
+
+### Development Tools
+
+| Task | MCP Tool |
+|------|----------|
+| Search Apple docs | `mcp__xcode__DocumentationSearch` |
+| Execute code snippet | `mcp__xcode__ExecuteSnippet` (runs in context of a source file) |
+| Render SwiftUI preview | `mcp__xcode__RenderPreview` |
+
+### Finding function definitions and call sites
+
+Use tool `xcode-index-mcp` if available. Use project name Popcorn. The tool can locate call sites of functions, and function definitions from call sites. If you need a filepath to make a request, use `rg` to find the file and `rg -n` to find the line number. Use the absolute path when requesting symbols from a file.
 
 ### Formatting
 

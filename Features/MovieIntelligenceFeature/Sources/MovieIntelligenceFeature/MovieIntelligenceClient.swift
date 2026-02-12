@@ -32,8 +32,7 @@ extension MovieIntelligenceClient: DependencyKey {
                 return mapper.map(movie)
             },
             createSession: { movieID in
-                let session = try await createMovieIntelligenceSession.execute(movieID: movieID)
-                return session
+                try await createMovieIntelligenceSession.execute(movieID: movieID)
             }
         )
     }

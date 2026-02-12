@@ -10,7 +10,6 @@ import Foundation
 import ObservabilityTestHelpers
 import Testing
 import TVSeriesDomain
-
 @testable import TVSeriesInfrastructure
 
 @Suite("DefaultTVSeriesRepository Integration Tests")

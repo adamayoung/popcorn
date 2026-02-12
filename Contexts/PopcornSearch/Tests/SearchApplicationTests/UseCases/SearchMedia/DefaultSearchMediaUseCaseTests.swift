@@ -8,10 +8,9 @@
 import CoreDomain
 import CoreDomainTestHelpers
 import Foundation
+@testable import SearchApplication
 import SearchDomain
 import Testing
-
-@testable import SearchApplication
 
 @Suite("DefaultSearchMediaUseCase")
 struct DefaultSearchMediaUseCaseTests {
@@ -83,7 +82,7 @@ struct DefaultSearchMediaUseCaseTests {
     // MARK: - Repository Error Cases
 
     @Test("execute throws unauthorised error when repository throws unauthorised")
-    func executeThrowsUnauthorisedErrorWhenRepositoryThrowsUnauthorised() async throws {
+    func executeThrowsUnauthorisedErrorWhenRepositoryThrowsUnauthorised() async {
         mockRepository.searchStub = .failure(.unauthorised)
         mockAppConfigurationProvider.appConfigurationStub = .success(AppConfiguration.mock())
 
@@ -106,7 +105,7 @@ struct DefaultSearchMediaUseCaseTests {
     }
 
     @Test("execute throws unknown error when repository throws unknown")
-    func executeThrowsUnknownErrorWhenRepositoryThrowsUnknown() async throws {
+    func executeThrowsUnknownErrorWhenRepositoryThrowsUnknown() async {
         let underlyingError = NSError(domain: "test", code: 123)
         mockRepository.searchStub = .failure(.unknown(underlyingError))
         mockAppConfigurationProvider.appConfigurationStub = .success(AppConfiguration.mock())
@@ -132,7 +131,7 @@ struct DefaultSearchMediaUseCaseTests {
     // MARK: - App Configuration Error Cases
 
     @Test("execute throws unauthorised error when app config provider throws unauthorised")
-    func executeThrowsUnauthorisedErrorWhenAppConfigProviderThrowsUnauthorised() async throws {
+    func executeThrowsUnauthorisedErrorWhenAppConfigProviderThrowsUnauthorised() async {
         mockRepository.searchStub = .success(MediaPreview.mocks)
         mockAppConfigurationProvider.appConfigurationStub = .failure(.unauthorised)
 

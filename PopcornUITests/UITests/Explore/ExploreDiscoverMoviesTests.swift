@@ -10,27 +10,27 @@ import XCTest
 @MainActor
 final class ExploreDiscoverMoviesTests: PopcornUITestCase {
 
-    func testNavigateToFirstDiscoverMovie() throws {
+    func testNavigateToFirstDiscoverMovie() {
         let explore = ExploreScreen(app: app)
         explore.tapOnFirstDiscoverMovie()
     }
 
-    func testNavigateToFirstTrendingMovie() throws {
+    func testNavigateToFirstTrendingMovie() {
         let explore = ExploreScreen(app: app)
         explore.tapOnFirstTrendingMovie()
     }
 
-    func testNavigateToFirstPopularMovie() throws {
+    func testNavigateToFirstPopularMovie() {
         let explore = ExploreScreen(app: app)
         explore.tapOnFirstPopularMovie()
     }
 
-    func testNavigateToFirstTrendingTVSeries() throws {
+    func testNavigateToFirstTrendingTVSeries() {
         let explore = ExploreScreen(app: app)
         explore.tapOnFirstTrendingTVSeries()
     }
 
-    func testNavigateToFirstTrendingPerson() throws {
+    func testNavigateToFirstTrendingPerson() {
         let explore = ExploreScreen(app: app)
         explore.tapOnFirstTrendingPerson()
     }

@@ -44,7 +44,8 @@ extension AppRootClient: DependencyKey {
 
                 guard let environment = AppConfig.Sentry.environment else {
                     Self.logger.warning(
-                        "Sentry environment not configured. Disabling observability.")
+                        "Sentry environment not configured. Disabling observability."
+                    )
                     return
                 }
 
@@ -70,7 +71,8 @@ extension AppRootClient: DependencyKey {
 
                 guard let environment = AppConfig.Statsig.environment else {
                     Self.logger.warning(
-                        "Statsig environment not configured. Disabling feature flags.")
+                        "Statsig environment not configured. Disabling feature flags."
+                    )
                     return
                 }
 

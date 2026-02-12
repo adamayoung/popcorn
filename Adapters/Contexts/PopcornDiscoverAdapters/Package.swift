@@ -26,7 +26,7 @@ let package = Package(
         .package(path: "../../../Contexts/PopcornGenres"),
         .package(path: "../../../Contexts/PopcornConfiguration"),
         .package(path: "../../../Core/CoreDomain"),
-        .package(url: "https://github.com/adamayoung/TMDb.git", from: "15.0.0")
+        .package(url: "https://github.com/adamayoung/TMDb.git", from: "16.0.0")
     ],
 
     targets: [
@@ -46,7 +46,11 @@ let package = Package(
         ),
         .testTarget(
             name: "PopcornDiscoverAdaptersTests",
-            dependencies: ["PopcornDiscoverAdapters"]
+            dependencies: [
+                "PopcornDiscoverAdapters",
+                .product(name: "DiscoverInfrastructure", package: "PopcornDiscover"),
+                .product(name: "CoreDomainTestHelpers", package: "CoreDomain")
+            ]
         ),
 
         .target(

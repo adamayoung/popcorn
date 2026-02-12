@@ -42,11 +42,9 @@ final class DefaultFetchTrendingMoviesUseCase: FetchTrendingMoviesUseCase {
         }
 
         let mapper = MoviePreviewDetailsMapper()
-        let moviePreviewDetails = moviePreviews.map {
+        return moviePreviews.map {
             mapper.map($0, imagesConfiguration: appConfiguration.images)
         }
-
-        return moviePreviewDetails
     }
 
 }

@@ -17,13 +17,14 @@ struct TVSeriesCarousel: View {
 
     var tvSeries: [TVSeriesPreview]
     var type: CarouselType
+    var carouselID: String
     var transitionNamespace: Namespace.ID?
     var didSelectTVSeries: (TVSeriesPreview, String) -> Void
 
     var body: some View {
         Carousel {
             ForEach(Array(tvSeries.enumerated()), id: \.offset) { offset, tvSeries in
-                let transitionID = TransitionID(tvSeries: tvSeries, carouselType: type).value
+                let transitionID = TransitionID(tvSeries: tvSeries, context: carouselID).value
 
                 switch type {
                 case .backdrop:
@@ -61,7 +62,6 @@ struct TVSeriesCarousel: View {
         .contentMargins([.leading, .trailing], 16)
     }
 
-    @ViewBuilder
     private func cellLabel(title: String, index: Int) -> some View {
         HStack(alignment: .top, spacing: 15) {
             Text(verbatim: "\(index + 1)")
@@ -87,6 +87,7 @@ struct TVSeriesCarousel: View {
         TVSeriesCarousel(
             tvSeries: TVSeriesPreview.mocks,
             type: .backdrop,
+            carouselID: "tv-series-backdrops",
             transitionNamespace: transitionNamespace,
             didSelectTVSeries: { _, _ in }
         )
@@ -100,6 +101,7 @@ struct TVSeriesCarousel: View {
         TVSeriesCarousel(
             tvSeries: TVSeriesPreview.mocks,
             type: .poster,
+            carouselID: "tv-series-posters",
             transitionNamespace: transitionNamespace,
             didSelectTVSeries: { _, _ in }
         )

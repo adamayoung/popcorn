@@ -18,6 +18,8 @@ final class TVSeriesDetailsScreen: Screen {
 
 extension TVSeriesDetailsScreen {
 
-    private var detailsView: XCUIElement { app.scrollViews["tv-series-details.view"] }
+    private var detailsView: XCUIElement {
+        app.scrollViews["tv-series-details.view"]
+    }
 
 }

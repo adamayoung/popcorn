@@ -5,9 +5,8 @@
 //  Copyright © 2025 Adam Young.
 //
 
-import Testing
-
 @testable import TCAFoundation
+import Testing
 
 @Suite("ViewState")
 struct ViewStateTests {

@@ -29,7 +29,7 @@ public struct PosterCarouselCell<CellLabel: View>: View {
     /// The namespace for matched geometry transitions, if applicable.
     private var transitionNamespace: Namespace.ID?
 
-    /// Platform-specific width for the poster image (currently 150 on all platforms).
+    // Platform-specific width for the poster image (currently 150 on all platforms).
     #if os(macOS) || os(visionOS)
         private let width: CGFloat = 150
     #else

@@ -11,7 +11,6 @@ import Foundation
 import ObservabilityTestHelpers
 import Testing
 import TVSeriesDomain
-
 @testable import TVSeriesInfrastructure
 
 @Suite("CachedTVSeriesLocalDataSource TV Series Tests")
@@ -28,7 +27,7 @@ struct CachedTVSeriesLocalDataSourceTVSeriesTests {
     // MARK: - tvSeries(withID:) Tests
 
     @Test("tvSeries with ID should return cached TV series")
-    func tvSeriesWithID_shouldReturnCachedTVSeries() async throws {
+    func tvSeriesWithID_shouldReturnCachedTVSeries() async {
         let id = 123
         let expectedTVSeries = TVSeries.mock(id: id)
         let cacheKey = CacheKey("TVKit.TVInfrastructure.tv-series-\(id)")
@@ -45,7 +44,7 @@ struct CachedTVSeriesLocalDataSourceTVSeriesTests {
     }
 
     @Test("tvSeries with ID should return nil when not cached")
-    func tvSeriesWithID_shouldReturnNilWhenNotCached() async throws {
+    func tvSeriesWithID_shouldReturnNilWhenNotCached() async {
         let id = 456
         let dataSource = CachedTVSeriesLocalDataSource(cache: mockCache)
 
@@ -56,7 +55,7 @@ struct CachedTVSeriesLocalDataSourceTVSeriesTests {
     }
 
     @Test("tvSeries with ID should create span with correct operation")
-    func tvSeriesWithID_shouldCreateSpanWithCorrectOperation() async throws {
+    func tvSeriesWithID_shouldCreateSpanWithCorrectOperation() async {
         let id = 789
         let mockSpan = MockSpan()
         mockObservabilityProvider.currentSpanStub = mockSpan
@@ -71,12 +70,13 @@ struct CachedTVSeriesLocalDataSourceTVSeriesTests {
         #expect(mockSpan.startChildCallCount == 1)
         #expect(
             mockSpan.startChildCalledWith[0].operation.value
-                == SpanOperation.localDataSourceGet.value)
+                == SpanOperation.localDataSourceGet.value
+        )
         #expect(mockSpan.startChildCalledWith[0].description == "Get TV Series #\(id)")
     }
 
     @Test("tvSeries with ID should set entity data on span")
-    func tvSeriesWithID_shouldSetEntityDataOnSpan() async throws {
+    func tvSeriesWithID_shouldSetEntityDataOnSpan() async {
         let id = 101
         let mockSpan = MockSpan()
         mockObservabilityProvider.currentSpanStub = mockSpan
@@ -96,7 +96,7 @@ struct CachedTVSeriesLocalDataSourceTVSeriesTests {
     }
 
     @Test("tvSeries with ID should finish span")
-    func tvSeriesWithID_shouldFinishSpan() async throws {
+    func tvSeriesWithID_shouldFinishSpan() async {
         let id = 202
         let mockSpan = MockSpan()
         mockObservabilityProvider.currentSpanStub = mockSpan
@@ -112,7 +112,7 @@ struct CachedTVSeriesLocalDataSourceTVSeriesTests {
     }
 
     @Test("tvSeries with ID should use cache with correct key")
-    func tvSeriesWithID_shouldUseCacheWithCorrectKey() async throws {
+    func tvSeriesWithID_shouldUseCacheWithCorrectKey() async {
         let id = 303
         let expectedCacheKey = CacheKey("TVKit.TVInfrastructure.tv-series-\(id)")
 
@@ -128,7 +128,7 @@ struct CachedTVSeriesLocalDataSourceTVSeriesTests {
     // MARK: - setTVSeries(_:) Tests
 
     @Test("setTVSeries should store in cache")
-    func setTVSeries_shouldStoreInCache() async throws {
+    func setTVSeries_shouldStoreInCache() async {
         let tvSeries = TVSeries.mock(id: 404)
         let expectedCacheKey = CacheKey("TVKit.TVInfrastructure.tv-series-\(tvSeries.id)")
 
@@ -142,7 +142,7 @@ struct CachedTVSeriesLocalDataSourceTVSeriesTests {
     }
 
     @Test("setTVSeries should create span with correct operation")
-    func setTVSeries_shouldCreateSpanWithCorrectOperation() async throws {
+    func setTVSeries_shouldCreateSpanWithCorrectOperation() async {
         let tvSeries = TVSeries.mock(id: 505)
         let mockSpan = MockSpan()
         mockObservabilityProvider.currentSpanStub = mockSpan
@@ -157,13 +157,15 @@ struct CachedTVSeriesLocalDataSourceTVSeriesTests {
         #expect(mockSpan.startChildCallCount == 1)
         #expect(
             mockSpan.startChildCalledWith[0].operation.value
-                == SpanOperation.localDataSourceSet.value)
+                == SpanOperation.localDataSourceSet.value
+        )
         #expect(
-            mockSpan.startChildCalledWith[0].description == "Set TV Series #\(tvSeries.id)")
+            mockSpan.startChildCalledWith[0].description == "Set TV Series #\(tvSeries.id)"
+        )
     }
 
     @Test("setTVSeries should set entity data on span")
-    func setTVSeries_shouldSetEntityDataOnSpan() async throws {
+    func setTVSeries_shouldSetEntityDataOnSpan() async {
         let tvSeries = TVSeries.mock(id: 606)
         let mockSpan = MockSpan()
         mockObservabilityProvider.currentSpanStub = mockSpan
@@ -183,7 +185,7 @@ struct CachedTVSeriesLocalDataSourceTVSeriesTests {
     }
 
     @Test("setTVSeries should finish span")
-    func setTVSeries_shouldFinishSpan() async throws {
+    func setTVSeries_shouldFinishSpan() async {
         let tvSeries = TVSeries.mock(id: 707)
         let mockSpan = MockSpan()
         mockObservabilityProvider.currentSpanStub = mockSpan
@@ -199,7 +201,7 @@ struct CachedTVSeriesLocalDataSourceTVSeriesTests {
     }
 
     @Test("setTVSeries should use cache with correct key")
-    func setTVSeries_shouldUseCacheWithCorrectKey() async throws {
+    func setTVSeries_shouldUseCacheWithCorrectKey() async {
         let tvSeries = TVSeries.mock(id: 808)
         let expectedCacheKey = CacheKey("TVKit.TVInfrastructure.tv-series-\(tvSeries.id)")
 

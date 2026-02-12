@@ -11,7 +11,15 @@ import TMDb
 
 enum TMDbClientKey: DependencyKey {
 
-    static let liveValue = TMDbClient(apiKey: TMDbAPIKeyProvider.apiKey(), configuration: .system)
+    static let liveValue = TMDbClient(
+        apiKey: TMDbAPIKeyProvider.apiKey(),
+        configuration: .init(
+            defaultLanguage: Locale.current.language.minimalIdentifier,
+            defaultCountry: Locale.current.region?.identifier,
+            retry: .default,
+            cache: .default
+        )
+    )
     static let testValue = TMDbClient(apiKey: "test_tmdb_api_key")
     static let previewValue = TMDbClient(apiKey: "preview_tmdb_api_key")
 

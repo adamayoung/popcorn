@@ -27,7 +27,8 @@ public final class PopcornPeopleAdaptersFactory {
         let personRemoteDataSource = TMDbPersonRemoteDataSource(personService: personService)
 
         let appConfigurationProvider = AppConfigurationProviderAdapter(
-            fetchUseCase: fetchAppConfigurationUseCase)
+            fetchUseCase: fetchAppConfigurationUseCase
+        )
 
         return LivePopcornPeopleFactory(
             personRemoteDataSource: personRemoteDataSource,

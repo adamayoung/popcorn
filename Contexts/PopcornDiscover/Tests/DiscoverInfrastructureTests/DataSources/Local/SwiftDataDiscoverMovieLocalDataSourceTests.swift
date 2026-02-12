@@ -6,11 +6,10 @@
 //
 
 import DiscoverDomain
+@testable import DiscoverInfrastructure
 import Foundation
 import SwiftData
 import Testing
-
-@testable import DiscoverInfrastructure
 
 @Suite("SwiftDataDiscoverMovieLocalDataSource")
 struct SwiftDataDiscoverMovieLocalDataSourceTests {

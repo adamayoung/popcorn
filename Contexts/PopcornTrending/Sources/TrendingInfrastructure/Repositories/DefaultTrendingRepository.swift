@@ -19,25 +19,19 @@ final class DefaultTrendingRepository: TrendingRepository {
     func movies(
         page: Int
     ) async throws(TrendingRepositoryError) -> [MoviePreview] {
-        let movies = try await remoteDataSource.movies(page: page)
-
-        return movies
+        try await remoteDataSource.movies(page: page)
     }
 
     func tvSeries(
         page: Int
     ) async throws(TrendingRepositoryError) -> [TVSeriesPreview] {
-        let tvSeries = try await remoteDataSource.tvSeries(page: page)
-
-        return tvSeries
+        try await remoteDataSource.tvSeries(page: page)
     }
 
     func people(
         page: Int
     ) async throws(TrendingRepositoryError) -> [PersonPreview] {
-        let people = try await remoteDataSource.people(page: page)
-
-        return people
+        try await remoteDataSource.people(page: page)
     }
 
 }

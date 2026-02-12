@@ -23,7 +23,8 @@ let package = Package(
         .package(path: "../../../Contexts/PopcornMovies"),
         .package(path: "../../../Contexts/PopcornConfiguration"),
         .package(path: "../../../Core/CoreDomain"),
-        .package(url: "https://github.com/adamayoung/TMDb.git", from: "15.0.0")
+        .package(path: "../../../Platform/Observability"),
+        .package(url: "https://github.com/adamayoung/TMDb.git", from: "16.0.0")
     ],
 
     targets: [
@@ -40,7 +41,11 @@ let package = Package(
         ),
         .testTarget(
             name: "PopcornMoviesAdaptersTests",
-            dependencies: ["PopcornMoviesAdapters"]
+            dependencies: [
+                "PopcornMoviesAdapters",
+                .product(name: "CoreDomainTestHelpers", package: "CoreDomain"),
+                .product(name: "ObservabilityTestHelpers", package: "Observability")
+            ]
         ),
 
         .target(

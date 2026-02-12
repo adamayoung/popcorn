@@ -15,11 +15,12 @@ final class FoundationModelsSynopsisRiddleGenerator: SynopsisRiddleGenerating {
 
     private static let logger = Logger.plotRemixGameInfrastructure
 
-    // Cache instruction phrases to avoid repeated computation
+    /// Cache instruction phrases to avoid repeated computation
     private static let instructionPhrasesByTheme: [GameTheme: String] = Dictionary(
         uniqueKeysWithValues: GameTheme.allCases.map { theme in
             (theme, FoundationModelsSynopsisRiddleGenerator.instructionPhrase(for: theme))
-        })
+        }
+    )
 
     private let observability: any Observing
 

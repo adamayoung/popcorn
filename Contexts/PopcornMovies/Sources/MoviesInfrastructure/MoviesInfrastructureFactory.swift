@@ -37,9 +37,11 @@ package final class MoviesInfrastructureFactory {
             return try ModelContainer(for: schema, configurations: [config])
         } catch let error {
             logger.critical(
-                "Cannot configure ModelContainer: \(error.localizedDescription, privacy: .public)")
+                "Cannot configure ModelContainer: \(error.localizedDescription, privacy: .public)"
+            )
             fatalError(
-                "PopcornMovies: Cannot configure ModelContainer: \(error.localizedDescription)")
+                "PopcornMovies: Cannot configure ModelContainer: \(error.localizedDescription)"
+            )
         }
     }()
 

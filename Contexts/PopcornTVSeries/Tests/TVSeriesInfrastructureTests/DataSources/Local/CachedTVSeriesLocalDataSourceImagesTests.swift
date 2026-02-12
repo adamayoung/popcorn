@@ -11,7 +11,6 @@ import Foundation
 import ObservabilityTestHelpers
 import Testing
 import TVSeriesDomain
-
 @testable import TVSeriesInfrastructure
 
 @Suite("CachedTVSeriesLocalDataSource Images Tests")
@@ -28,7 +27,7 @@ struct CachedTVSeriesLocalDataSourceImagesTests {
     // MARK: - images(forTVSeries:) Tests
 
     @Test("images for TV series should return cached image collection")
-    func imagesForTVSeries_shouldReturnCachedImageCollection() async throws {
+    func imagesForTVSeries_shouldReturnCachedImageCollection() async {
         let tvSeriesID = 909
         let expectedImageCollection = ImageCollection.mock(id: tvSeriesID)
         let cacheKey = CacheKey("TVKit.TVInfrastructure.tv-series-\(tvSeriesID)-images")
@@ -43,7 +42,7 @@ struct CachedTVSeriesLocalDataSourceImagesTests {
     }
 
     @Test("images for TV series should return nil when not cached")
-    func imagesForTVSeries_shouldReturnNilWhenNotCached() async throws {
+    func imagesForTVSeries_shouldReturnNilWhenNotCached() async {
         let tvSeriesID = 1010
         let dataSource = CachedTVSeriesLocalDataSource(cache: mockCache)
 
@@ -54,7 +53,7 @@ struct CachedTVSeriesLocalDataSourceImagesTests {
     }
 
     @Test("images for TV series should create span with correct operation")
-    func imagesForTVSeries_shouldCreateSpanWithCorrectOperation() async throws {
+    func imagesForTVSeries_shouldCreateSpanWithCorrectOperation() async {
         let tvSeriesID = 1111
         let mockSpan = MockSpan()
         mockObservabilityProvider.currentSpanStub = mockSpan
@@ -69,14 +68,16 @@ struct CachedTVSeriesLocalDataSourceImagesTests {
         #expect(mockSpan.startChildCallCount == 1)
         #expect(
             mockSpan.startChildCalledWith[0].operation.value
-                == SpanOperation.localDataSourceGet.value)
+                == SpanOperation.localDataSourceGet.value
+        )
         #expect(
             mockSpan.startChildCalledWith[0].description
-                == "Get TV Series Image Collection #\(tvSeriesID)")
+                == "Get TV Series Image Collection #\(tvSeriesID)"
+        )
     }
 
     @Test("images for TV series should set entity data on span")
-    func imagesForTVSeries_shouldSetEntityDataOnSpan() async throws {
+    func imagesForTVSeries_shouldSetEntityDataOnSpan() async {
         let tvSeriesID = 1212
         let mockSpan = MockSpan()
         mockObservabilityProvider.currentSpanStub = mockSpan
@@ -96,7 +97,7 @@ struct CachedTVSeriesLocalDataSourceImagesTests {
     }
 
     @Test("images for TV series should finish span")
-    func imagesForTVSeries_shouldFinishSpan() async throws {
+    func imagesForTVSeries_shouldFinishSpan() async {
         let tvSeriesID = 1313
         let mockSpan = MockSpan()
         mockObservabilityProvider.currentSpanStub = mockSpan
@@ -114,7 +115,7 @@ struct CachedTVSeriesLocalDataSourceImagesTests {
     // MARK: - setImages(_:forTVSeries:) Tests
 
     @Test("setImages should store in cache")
-    func setImages_shouldStoreInCache() async throws {
+    func setImages_shouldStoreInCache() async {
         let tvSeriesID = 1414
         let imageCollection = ImageCollection.mock(id: tvSeriesID)
         let expectedCacheKey = CacheKey("TVKit.TVInfrastructure.tv-series-\(tvSeriesID)-images")
@@ -129,7 +130,7 @@ struct CachedTVSeriesLocalDataSourceImagesTests {
     }
 
     @Test("setImages should create span with correct operation")
-    func setImages_shouldCreateSpanWithCorrectOperation() async throws {
+    func setImages_shouldCreateSpanWithCorrectOperation() async {
         let tvSeriesID = 1515
         let imageCollection = ImageCollection.mock(id: tvSeriesID)
         let mockSpan = MockSpan()
@@ -145,14 +146,16 @@ struct CachedTVSeriesLocalDataSourceImagesTests {
         #expect(mockSpan.startChildCallCount == 1)
         #expect(
             mockSpan.startChildCalledWith[0].operation.value
-                == SpanOperation.localDataSourceSet.value)
+                == SpanOperation.localDataSourceSet.value
+        )
         #expect(
             mockSpan.startChildCalledWith[0].description
-                == "Set TV Series Image Collection #\(tvSeriesID)")
+                == "Set TV Series Image Collection #\(tvSeriesID)"
+        )
     }
 
     @Test("setImages should set entity data on span")
-    func setImages_shouldSetEntityDataOnSpan() async throws {
+    func setImages_shouldSetEntityDataOnSpan() async {
         let tvSeriesID = 1616
         let imageCollection = ImageCollection.mock(id: tvSeriesID)
         let mockSpan = MockSpan()
@@ -173,7 +176,7 @@ struct CachedTVSeriesLocalDataSourceImagesTests {
     }
 
     @Test("setImages should finish span")
-    func setImages_shouldFinishSpan() async throws {
+    func setImages_shouldFinishSpan() async {
         let tvSeriesID = 1717
         let imageCollection = ImageCollection.mock(id: tvSeriesID)
         let mockSpan = MockSpan()

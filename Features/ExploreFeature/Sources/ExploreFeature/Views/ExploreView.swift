@@ -67,13 +67,11 @@ public struct ExploreView: View {
 
 extension ExploreView {
 
-    @ViewBuilder
     private var loadingBody: some View {
         ProgressView()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    @ViewBuilder
     private func content(
         discoverMovies: [MoviePreview],
         trendingMovies: [MoviePreview],
@@ -116,6 +114,7 @@ extension ExploreView {
         MovieCarousel(
             movies: movies,
             type: .backdrop,
+            carouselID: "discover-movies",
             transitionNamespace: namespace,
             didSelectMovie: { movie, transitionID in
                 store.send(.navigate(.movieDetails(id: movie.id, transitionID: transitionID)))
@@ -138,6 +137,7 @@ extension ExploreView {
         MovieCarousel(
             movies: movies,
             type: .poster,
+            carouselID: "trending-movies",
             transitionNamespace: namespace,
             didSelectMovie: { movie, transitionID in
                 store.send(.navigate(.movieDetails(id: movie.id, transitionID: transitionID)))
@@ -160,6 +160,7 @@ extension ExploreView {
         MovieCarousel(
             movies: movies,
             type: .backdrop,
+            carouselID: "popular-movies",
             transitionNamespace: namespace,
             didSelectMovie: { movie, transitionID in
                 store.send(.navigate(.movieDetails(id: movie.id, transitionID: transitionID)))
@@ -182,6 +183,7 @@ extension ExploreView {
         TVSeriesCarousel(
             tvSeries: tvSeries,
             type: .poster,
+            carouselID: "trending-tv-series",
             transitionNamespace: namespace,
             didSelectTVSeries: { tvSeries, transitionID in
                 store.send(.navigate(.tvSeriesDetails(id: tvSeries.id, transitionID: transitionID)))
@@ -203,6 +205,7 @@ extension ExploreView {
 
         PersonCarousel(
             people: people,
+            carouselID: "trending-people",
             transitionNamespace: namespace,
             didSelectPerson: { person, transitionID in
                 store.send(.navigate(.personDetails(id: person.id, transitionID: transitionID)))

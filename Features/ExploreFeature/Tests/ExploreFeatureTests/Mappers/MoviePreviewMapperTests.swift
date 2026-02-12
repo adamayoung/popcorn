@@ -8,12 +8,11 @@
 import CoreDomain
 import DiscoverApplication
 import DiscoverDomain
+@testable import ExploreFeature
 import Foundation
 import MoviesApplication
 import Testing
 import TrendingApplication
-
-@testable import ExploreFeature
 
 @Suite("MoviePreviewMapper Tests")
 struct MoviePreviewMapperTests {

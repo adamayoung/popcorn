@@ -100,7 +100,8 @@ extension TVSeriesDetailsFeature {
     private func handleFetchTVSeries(_ state: inout State) -> EffectOf<Self> {
         .run { [state, client] send in
             Self.logger.info(
-                "User fetching TV series [tvSeriesID: \(state.tvSeriesID, privacy: .private)]")
+                "User fetching TV series [tvSeriesID: \(state.tvSeriesID, privacy: .private)]"
+            )
 
             let tvSeries: TVSeries
             do {

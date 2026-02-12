@@ -31,6 +31,7 @@ final class TMDbDiscoverRemoteDataSource: DiscoverRemoteDataSource {
         do {
             tmdbMovies = try await discoverService.movies(
                 filter: filterMapper.compactMap(filter),
+                sortedBy: nil,
                 page: page,
                 language: "en"
             ).results
@@ -55,6 +56,7 @@ final class TMDbDiscoverRemoteDataSource: DiscoverRemoteDataSource {
         do {
             tmdbTVSeries = try await discoverService.tvSeries(
                 filter: filterMapper.compactMap(filter),
+                sortedBy: nil,
                 page: page,
                 language: "en"
             ).results
@@ -71,20 +73,16 @@ final class TMDbDiscoverRemoteDataSource: DiscoverRemoteDataSource {
 private extension DiscoverRemoteDataSourceError {
 
     init(_ error: Error) {
-        guard let error = error as? TMDbError else {
+        guard let tmdbError = error as? TMDbError else {
             self = .unknown(error)
             return
         }
 
-        self.init(error)
-    }
-
-    init(_ error: TMDbError) {
-        switch error {
+        switch tmdbError {
         case .unauthorised:
             self = .unauthorised
         default:
-            self = .unknown(error)
+            self = .unknown(tmdbError)
         }
     }
 

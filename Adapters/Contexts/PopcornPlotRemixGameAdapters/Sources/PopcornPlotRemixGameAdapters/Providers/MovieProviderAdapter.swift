@@ -42,7 +42,7 @@ public struct MovieProviderAdapter: MovieProviding {
         }
 
         let mapper = MovieMapper()
-        let movies = moviePreviewDetails
+        return moviePreviewDetails
             .indices
             .shuffled()
             .prefix(limit)
@@ -50,8 +50,6 @@ public struct MovieProviderAdapter: MovieProviding {
                 let movie = moviePreviewDetails[$0]
                 return mapper.map(movie)
             }
-
-        return movies
     }
 
     public func randomSimilarMovies(
@@ -66,7 +64,7 @@ public struct MovieProviderAdapter: MovieProviding {
         }
 
         let mapper = MovieMapper()
-        let movies = moviePreviewDetails
+        return moviePreviewDetails
             .indices
             .shuffled()
             .prefix(limit)
@@ -74,8 +72,6 @@ public struct MovieProviderAdapter: MovieProviding {
                 let movie = moviePreviewDetails[$0]
                 return mapper.map(movie)
             }
-
-        return movies
     }
 
 }

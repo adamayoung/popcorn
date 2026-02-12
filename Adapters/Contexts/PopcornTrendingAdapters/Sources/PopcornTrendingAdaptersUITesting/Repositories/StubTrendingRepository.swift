@@ -76,7 +76,7 @@ extension StubTrendingRepository {
         )
     ]
 
-    // TV Series that match IDs from TVSeriesUITesting.StubTVSeriesRepository
+    /// TV Series that match IDs from TVSeriesUITesting.StubTVSeriesRepository
     static let trendingTVSeries: [TVSeriesPreview] = [
         TVSeriesPreview(
             id: 66732,

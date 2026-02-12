@@ -5,10 +5,9 @@
 //  Copyright © 2025 Adam Young.
 //
 
+@testable import MovieCastAndCrewFeature
 import TCAFoundation
 import Testing
-
-@testable import MovieCastAndCrewFeature
 
 @Suite("MovieCastAndCrewFeature")
 struct MovieCastAndCrewFeatureTests {

@@ -1,5 +1,5 @@
 {
-  "originHash" : "6a84155277469ca7ea99410d2f5b3483ced0d560da38f824088481cc6b244d9f",
+  "originHash" : "93fd6598e14764753b1d772b3c798218b5628d138002450ba1c14214fd53c0da",
   "pins" : [
     {
       "identity" : "combine-schedulers",
@@ -168,8 +168,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/adamayoung/TMDb.git",
       "state" : {
-        "revision" : "5bafbc6fd1b192ded4865cc059891f36c3f9ba3e",
-        "version" : "15.0.1"
+        "revision" : "d02d7ffa33aba2bd0fac28bc73d33bbf298e33c3",
+        "version" : "16.0.0"
       }
     },
     {

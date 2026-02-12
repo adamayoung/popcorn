@@ -129,7 +129,8 @@ extension PlotRemixGameFeature {
     private func handleFetchGameMetadata(_ state: inout State) -> EffectOf<Self> {
         .run { [state, client] send in
             Self.logger.info(
-                "User fetching game metadata [gameID: \(state.gameID, privacy: .private)]")
+                "User fetching game metadata [gameID: \(state.gameID, privacy: .private)]"
+            )
 
             let metadata: GameMetadata
             do {

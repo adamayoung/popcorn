@@ -7,11 +7,10 @@
 
 import CoreDomain
 import CoreDomainTestHelpers
+@testable import DiscoverApplication
 import DiscoverDomain
 import Foundation
 import Testing
-
-@testable import DiscoverApplication
 
 @Suite("DefaultFetchDiscoverMoviesUseCase Error Cases")
 struct DefaultFetchDiscoverMoviesUseCaseErrorTests {
@@ -29,7 +28,7 @@ struct DefaultFetchDiscoverMoviesUseCaseErrorTests {
     }
 
     @Test("execute throws unauthorised error when repository throws unauthorised")
-    func executeThrowsUnauthorisedErrorWhenRepositoryThrowsUnauthorised() async throws {
+    func executeThrowsUnauthorisedErrorWhenRepositoryThrowsUnauthorised() async {
         mockRepository.moviesStub = .failure(.unauthorised)
         mockGenreProvider.movieGenresStub = .success(Genre.mocks)
         mockAppConfigurationProvider.appConfigurationStub = .success(AppConfiguration.mock())
@@ -53,7 +52,7 @@ struct DefaultFetchDiscoverMoviesUseCaseErrorTests {
     }
 
     @Test("execute throws unknown error when repository throws unknown")
-    func executeThrowsUnknownErrorWhenRepositoryThrowsUnknown() async throws {
+    func executeThrowsUnknownErrorWhenRepositoryThrowsUnknown() async {
         let underlyingError = NSError(domain: "test", code: 123)
         mockRepository.moviesStub = .failure(.unknown(underlyingError))
         mockGenreProvider.movieGenresStub = .success(Genre.mocks)
@@ -78,7 +77,7 @@ struct DefaultFetchDiscoverMoviesUseCaseErrorTests {
     }
 
     @Test("execute throws error when genre provider fails")
-    func executeThrowsErrorWhenGenreProviderFails() async throws {
+    func executeThrowsErrorWhenGenreProviderFails() async {
         mockRepository.moviesStub = .success(MoviePreview.mocks)
         mockGenreProvider.movieGenresStub = .failure(.unauthorised)
         mockAppConfigurationProvider.appConfigurationStub = .success(AppConfiguration.mock())
@@ -102,7 +101,7 @@ struct DefaultFetchDiscoverMoviesUseCaseErrorTests {
     }
 
     @Test("execute throws error when app configuration provider fails")
-    func executeThrowsErrorWhenAppConfigurationProviderFails() async throws {
+    func executeThrowsErrorWhenAppConfigurationProviderFails() async {
         mockRepository.moviesStub = .success(MoviePreview.mocks)
         mockGenreProvider.movieGenresStub = .success(Genre.mocks)
         mockAppConfigurationProvider.appConfigurationStub = .failure(.unauthorised)

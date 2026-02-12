@@ -35,7 +35,8 @@ actor SwiftDataMovieImageLocalDataSource: MovieImageLocalDataSource, SwiftDataFe
 
         guard let entity else {
             Self.logger.debug(
-                "SwiftData MISS: ImageCollection(movie-id: \(movieID, privacy: .public))")
+                "SwiftData MISS: ImageCollection(movie-id: \(movieID, privacy: .public))"
+            )
             return nil
         }
 
@@ -60,11 +61,9 @@ actor SwiftDataMovieImageLocalDataSource: MovieImageLocalDataSource, SwiftDataFe
         let descriptor = FetchDescriptor<MoviesImageCollectionEntity>(
             predicate: #Predicate { $0.movieID == movieID }
         )
-        let stream = stream(for: descriptor) {
+        return stream(for: descriptor) {
             ImageCollectionMapper().compactMap($0.first)
         }
-
-        return stream
     }
 
     func setImageCollection(

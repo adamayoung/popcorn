@@ -33,13 +33,15 @@ extension MoviePreview {
                 id: 1,
                 title: "The Running Man",
                 posterURL: URL(
-                    string: "https://image.tmdb.org/t/p/w780/dKL78O9zxczVgjtNcQ9UkbYLzqX.jpg")
+                    string: "https://image.tmdb.org/t/p/w780/dKL78O9zxczVgjtNcQ9UkbYLzqX.jpg"
+                )
             ),
             MoviePreview(
                 id: 2,
                 title: "Black Phone 2",
                 posterURL: URL(
-                    string: "https://image.tmdb.org/t/p/w780/xUWUODKPIilQoFUzjHM6wKJkP3Y.jpg")
+                    string: "https://image.tmdb.org/t/p/w780/xUWUODKPIilQoFUzjHM6wKJkP3Y.jpg"
+                )
             )
         ]
     }

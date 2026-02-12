@@ -63,7 +63,6 @@ extension GamesCatalogView {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    @ViewBuilder
     private func content(games: [GameMetadata]) -> some View {
         LazyVGrid(columns: [.init(), .init()]) {
             ForEach(games) { game in

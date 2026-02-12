@@ -25,7 +25,7 @@ let package = Package(
         .package(path: "../../../Contexts/PopcornTVSeries"),
         .package(path: "../../../Contexts/PopcornConfiguration"),
         .package(path: "../../../Core/CoreDomain"),
-        .package(url: "https://github.com/adamayoung/TMDb.git", from: "15.0.0")
+        .package(url: "https://github.com/adamayoung/TMDb.git", from: "16.0.0")
     ],
 
     targets: [
@@ -49,6 +49,20 @@ let package = Package(
                 .product(name: "TrendingApplication", package: "PopcornTrending"),
                 .product(name: "TrendingDomain", package: "PopcornTrending"),
                 "CoreDomain"
+            ]
+        ),
+
+        .testTarget(
+            name: "PopcornTrendingAdaptersTests",
+            dependencies: [
+                "PopcornTrendingAdapters",
+                .product(name: "TrendingDomain", package: "PopcornTrending"),
+                .product(name: "TrendingInfrastructure", package: "PopcornTrending"),
+                .product(name: "MoviesApplication", package: "PopcornMovies"),
+                .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
+                .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),
+                "CoreDomain",
+                "TMDb"
             ]
         )
     ]

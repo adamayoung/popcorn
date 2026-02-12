@@ -6,11 +6,10 @@
 //
 
 import CoreDomain
+@testable import ExploreFeature
 import Foundation
 import Testing
 import TrendingApplication
-
-@testable import ExploreFeature
 
 @Suite("PersonPreviewMapper Tests")
 struct PersonPreviewMapperTests {

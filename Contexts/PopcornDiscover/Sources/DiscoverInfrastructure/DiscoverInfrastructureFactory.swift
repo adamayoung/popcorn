@@ -32,7 +32,8 @@ package final class DiscoverInfrastructureFactory {
                 "Cannot configure CloudKit ModelContainer: \(error.localizedDescription, privacy: .public)"
             )
             fatalError(
-                "PopcornDiscover: Cannot configure ModelContainer: \(error.localizedDescription)")
+                "PopcornDiscover: Cannot configure ModelContainer: \(error.localizedDescription)"
+            )
         }
     }()
 
