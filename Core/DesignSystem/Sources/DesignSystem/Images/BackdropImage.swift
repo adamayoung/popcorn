@@ -27,11 +27,12 @@ public struct BackdropImage: View {
     /// The URL of the logo image to overlay on the backdrop, if available.
     private var logoURL: URL?
 
-    /// Creates a new backdrop image view.
-    ///
-    /// - Parameters:
-    ///   - url: The URL of the backdrop image to display.
-    ///   - logoURL: The URL of the logo image to overlay. Defaults to `nil`.
+    /// Whether to detect and align to the focal point of the image.
+    private var detectFocalPoint = false
+
+    @State private var focalOffset: CGSize = .zero
+    @State private var focalPointResolved = false
+
     public init(
         url: URL?,
         logoURL: URL? = nil
@@ -41,13 +42,20 @@ public struct BackdropImage: View {
     }
 
     public var body: some View {
-        // Uses GeometryReader to fill available space while maintaining aspect ratio
         GeometryReader { proxy in
-            WebImage(url: url, options: .forceTransition)
+            WebImage(url: url, options: detectFocalPoint ? [] : .forceTransition)
+                .onSuccess { image, _, _ in
+                    if detectFocalPoint, !focalPointResolved {
+                        analyzeImage(image, frameSize: proxy.size)
+                    }
+                }
                 .resizable()
                 .scaledToFill()
                 .aspectRatio(Self.aspectRatio, contentMode: .fill)
+                .offset(focalOffset)
                 .frame(width: proxy.size.width, height: proxy.size.height, alignment: .center)
+                .clipped()
+                .opacity(imageOpacity)
                 .background(Color.secondary.opacity(0.1))
                 .overlay(alignment: .bottom) {
                     if let logoURL {
@@ -59,6 +67,23 @@ public struct BackdropImage: View {
                     }
                 }
         }
+    }
+
+    /// Enables focal point detection on the backdrop image.
+    ///
+    /// When enabled, the image is analyzed using Vision framework face detection
+    /// (with saliency fallback) to find the most important region. The visible
+    /// portion of the image is then shifted to center on that region, while
+    /// ensuring the image always fully covers the frame.
+    ///
+    /// The image is kept hidden until analysis completes so the user only ever
+    /// sees the image at its final focal-point-aligned position.
+    ///
+    /// - Returns: A `BackdropImage` with focal point detection enabled.
+    public func focalPointAlignment() -> BackdropImage {
+        var copy = self
+        copy.detectFocalPoint = true
+        return copy
     }
 
     /// Sets the backdrop image height and automatically calculates the width to maintain aspect ratio.
@@ -75,6 +100,51 @@ public struct BackdropImage: View {
     /// - Returns: A view with the specified width and calculated height.
     public func backdropWidth(_ width: CGFloat) -> some View {
         frame(width: width, height: width / Self.aspectRatio)
+    }
+
+}
+
+// MARK: - Focal Point Analysis
+
+extension BackdropImage {
+
+    /// Image opacity: always visible when not detecting focal point,
+    /// hidden until analysis resolves when detecting.
+    private var imageOpacity: Double {
+        detectFocalPoint ? (focalPointResolved ? 1 : 0) : 1
+    }
+
+    private func analyzeImage(_ image: SDWebImageSwiftUI.PlatformImage, frameSize: CGSize) {
+        guard let url else {
+            focalPointResolved = true
+            return
+        }
+
+        let cgImage: CGImage?
+        #if canImport(UIKit)
+            cgImage = image.cgImage
+        #elseif canImport(AppKit)
+            cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil)
+        #endif
+
+        guard let cgImage else {
+            focalPointResolved = true
+            return
+        }
+
+        let imageSize = CGSize(width: cgImage.width, height: cgImage.height)
+
+        Task {
+            let point = await FocalPointAnalyzer.shared.focalPoint(for: cgImage, url: url)
+            let offset = point.map { focalPointOffset(focalPoint: $0, imageSize: imageSize, frameSize: frameSize) }
+
+            await MainActor.run {
+                if let offset { focalOffset = offset }
+                withAnimation(.easeIn(duration: 0.3)) {
+                    focalPointResolved = true
+                }
+            }
+        }
     }
 
 }

@@ -4,8 +4,9 @@ description: Code reviewer subagent to be used to review code changes when asked
 model: inherit
 permissionMode: auto  # Code review is primarily read-only analysis
 skills:
-  - swift-concurrency:swift-concurrency
-  - swiftui-expert:swiftui-expert-skill
+  - swift-concurrency
+  - swiftui-expert-skill
+  - swift-testing-expert
 ---
 
 # Claude Subagent: Code Reviewer (Popcorn)

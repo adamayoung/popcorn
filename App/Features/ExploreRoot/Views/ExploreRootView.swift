@@ -41,6 +41,7 @@ struct ExploreRootView: View {
                 movieCastAndCrew(store: store)
             }
         }
+        #if !os(macOS)
         .fullScreenCover(
             item: $store.scope(
                 state: \.movieIntelligence,
@@ -57,6 +58,24 @@ struct ExploreRootView: View {
         ) { store in
             TVSeriesChatView(store: store)
         }
+        #else
+        .sheet(
+            item: $store.scope(
+                state: \.movieIntelligence,
+                action: \.movieIntelligence
+            )
+        ) { store in
+            MovieChatView(store: store)
+        }
+        .sheet(
+            item: $store.scope(
+                state: \.tvSeriesIntelligence,
+                action: \.tvSeriesIntelligence
+            )
+        ) { store in
+            TVSeriesChatView(store: store)
+        }
+        #endif
     }
 
     @ViewBuilder

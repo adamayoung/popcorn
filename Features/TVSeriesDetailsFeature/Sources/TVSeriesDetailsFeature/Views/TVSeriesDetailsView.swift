@@ -98,6 +98,7 @@ extension TVSeriesDetailsView {
     @ViewBuilder
     private func header(tvSeries: TVSeries) -> some View {
         BackdropImage(url: tvSeries.backdropURL)
+            .focalPointAlignment()
             .flexibleHeaderContent(height: 600)
         #if os(macOS)
             .backgroundExtensionEffect()

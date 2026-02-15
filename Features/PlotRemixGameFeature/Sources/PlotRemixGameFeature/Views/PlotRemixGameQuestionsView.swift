@@ -19,7 +19,9 @@ struct PlotRemixGameQuestionsView: View {
                 }
             }
         }
+        #if os(iOS)
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+        #endif
     }
 }
 

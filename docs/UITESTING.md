@@ -67,8 +67,8 @@ Adapters/Contexts/PopcornMoviesAdapters/
 # Via slash command
 /test
 
-# Via XcodeBuildMCP
-mcp__XcodeBuildMCP__test_sim
+# Via Xcode MCP
+mcp__xcode__RunAllTests
 ```
 
 ## Writing UI Tests

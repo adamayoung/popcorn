@@ -25,6 +25,7 @@ struct GamesRootView: View {
                 transitionNamespace: namespace
             )
         }
+        #if !os(macOS)
         .fullScreenCover(
             store: store.scope(
                 state: \.$plotRemixGame,
@@ -33,6 +34,16 @@ struct GamesRootView: View {
         ) { store in
             PlotRemixGameView(store: store, transitionNamespace: namespace)
         }
+        #else
+        .sheet(
+            store: store.scope(
+                state: \.$plotRemixGame,
+                action: \.plotRemixGame
+            )
+        ) { store in
+            PlotRemixGameView(store: store, transitionNamespace: namespace)
+        }
+        #endif
     }
 
 }

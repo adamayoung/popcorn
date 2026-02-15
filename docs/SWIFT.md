@@ -274,10 +274,9 @@ struct Movie: Sendable {
     let title: String
 }
 
-// Classes need explicit conformance
+// Classes use Mutex for thread-safe mutable state
 final class MovieCache: Sendable {
-    private let lock = NSLock()
-    private var cache: [Int: Movie] = [:]
+    private let cache = Mutex<[Int: Movie]>([:])
 }
 
 // Actors are implicitly Sendable

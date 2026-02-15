@@ -36,6 +36,7 @@ extension MovieDetailsContentView {
 
     private var header: some View {
         BackdropImage(url: movie.backdropURL)
+            .focalPointAlignment()
             .flexibleHeaderContent(height: 600)
         #if os(macOS)
             .backgroundExtensionEffect()
@@ -50,7 +51,8 @@ extension MovieDetailsContentView {
             VStack {
                 HStack {
                     if let genres = movie.genres {
-                        Text("\(genres.map(\.name).joined(separator: " ∙ "))")
+                        Text("\(genres.prefix(4).map(\.name).joined(separator: " ∙ "))")
+                            .multilineTextAlignment(.center)
                     }
                 }
 
