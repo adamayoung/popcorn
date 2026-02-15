@@ -9,10 +9,17 @@
     }
   ],
   "defaultOptions" : {
+    "testExecutionOrdering" : "random",
     "testTimeoutsEnabled" : true
   },
   "testTargets" : [
-
+    {
+      "target" : {
+        "containerPath" : "container:Features\/ExploreFeature",
+        "identifier" : "ExploreFeatureSnapshotTests",
+        "name" : "ExploreFeatureSnapshotTests"
+      }
+    }
   ],
   "version" : 1
 }
