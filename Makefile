@@ -48,6 +48,14 @@ ifneq ($(CLEAN),0)
 endif
 	$(XCODEBUILD) build $(XCODEBUILD_FLAGS) 2>&1 | $(XCSIFT) $(XCSIFT_FLAGS)
 
+.PHONY: build-for-testing
+build-for-testing:
+ifneq ($(CLEAN),0)
+	rm -rf $(RESULT_BUNDLE)
+	$(XCODEBUILD) clean -scheme $(SCHEME) 2>&1 | $(XCSIFT) $(XCSIFT_FLAGS)
+endif
+	$(XCODEBUILD) build-for-testing $(XCODEBUILD_FLAGS) 2>&1 | $(XCSIFT) $(XCSIFT_FLAGS)
+
 .PHONY: test
 test:
 ifneq ($(CLEAN),0)

@@ -40,6 +40,7 @@ Use slash commands or Xcode MCP tools directly:
 | Task | Slash Command | MCP Tool |
 |------|---------------|----------|
 | Build app | `/build` | `mcp__xcode__BuildProject` |
+| Build for testing | `make build-for-testing` | — |
 | Run all tests | `/test` | `mcp__xcode__RunAllTests` |
 | Run specific tests | `/test-single <name>` | `mcp__xcode__RunSomeTests` with test specifiers |
 | Get build log | — | `mcp__xcode__GetBuildLog` (filter by severity, glob, pattern) |
@@ -94,7 +95,7 @@ Use tool `xcode-index-mcp` if available. Use project name Popcorn. The tool can 
 Before creating a pull request, **always** verify:
 
 1. Run `/format` and `/lint` — no violations
-2. Run `/build` — build succeeds
+2. Run `/build-for-testing` — build succeeds with no warnings (warnings are errors)
 3. Run `/test` — all tests pass
 4. PR title follows gitmoji format: `<gitmoji> <description>` (see [GIT.md](docs/GIT.md))
 
