@@ -26,19 +26,22 @@ public struct MovieDetailsFeature: Sendable {
 
         var isWatchlistEnabled: Bool
         var isIntelligenceEnabled: Bool
+        var isBackdropFocalPointEnabled: Bool
 
         public init(
             movieID: Int,
             transitionID: String? = nil,
             viewState: ViewState<ViewSnapshot> = .initial,
             isWatchlistEnabled: Bool = false,
-            isIntelligenceEnabled: Bool = false
+            isIntelligenceEnabled: Bool = false,
+            isBackdropFocalPointEnabled: Bool = false
         ) {
             self.movieID = movieID
             self.transitionID = transitionID
             self.viewState = viewState
             self.isWatchlistEnabled = isWatchlistEnabled
             self.isIntelligenceEnabled = isIntelligenceEnabled
+            self.isBackdropFocalPointEnabled = isBackdropFocalPointEnabled
         }
     }
 
@@ -93,6 +96,7 @@ public struct MovieDetailsFeature: Sendable {
             case .updateFeatureFlags:
                 state.isWatchlistEnabled = (try? client.isWatchlistEnabled()) ?? false
                 state.isIntelligenceEnabled = (try? client.isIntelligenceEnabled()) ?? false
+                state.isBackdropFocalPointEnabled = (try? client.isBackdropFocalPointEnabled()) ?? false
                 return .none
 
             case .fetch:

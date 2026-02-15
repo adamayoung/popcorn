@@ -97,12 +97,21 @@ extension TVSeriesDetailsView {
 
     @ViewBuilder
     private func header(tvSeries: TVSeries) -> some View {
-        BackdropImage(url: tvSeries.backdropURL)
-            .focalPointAlignment()
+        backdropImage(url: tvSeries.backdropURL)
             .flexibleHeaderContent(height: 600)
         #if os(macOS)
             .backgroundExtensionEffect()
         #endif
+    }
+
+    @ViewBuilder
+    private func backdropImage(url: URL?) -> some View {
+        let image = BackdropImage(url: url)
+        if store.isBackdropFocalPointEnabled {
+            image.focalPointAlignment()
+        } else {
+            image
+        }
     }
 
     private func headerOverlay(tvSeries: TVSeries) -> some View {

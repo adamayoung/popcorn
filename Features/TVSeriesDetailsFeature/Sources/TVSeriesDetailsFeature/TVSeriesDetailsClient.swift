@@ -17,6 +17,7 @@ struct TVSeriesDetailsClient: Sendable {
     var fetchTVSeries: @Sendable (Int) async throws -> TVSeries
 
     var isIntelligenceEnabled: @Sendable () throws -> Bool
+    var isBackdropFocalPointEnabled: @Sendable () throws -> Bool
 
 }
 
@@ -48,6 +49,9 @@ extension TVSeriesDetailsClient: DependencyKey {
             },
             isIntelligenceEnabled: {
                 featureFlags.isEnabled(.tvSeriesIntelligence)
+            },
+            isBackdropFocalPointEnabled: {
+                featureFlags.isEnabled(.backdropFocalPoint)
             }
         )
     }
@@ -58,6 +62,9 @@ extension TVSeriesDetailsClient: DependencyKey {
                 TVSeries.mock
             },
             isIntelligenceEnabled: {
+                true
+            },
+            isBackdropFocalPointEnabled: {
                 true
             }
         )

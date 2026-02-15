@@ -90,6 +90,7 @@ extension MovieDetailsView {
             recommendedMovies: snapshot.recommendedMovies,
             castMembers: snapshot.castMembers,
             crewMembers: snapshot.crewMembers,
+            isBackdropFocalPointEnabled: store.isBackdropFocalPointEnabled,
             didSelectPerson: { personID in
                 store.send(.navigate(.personDetails(id: personID)))
             },
