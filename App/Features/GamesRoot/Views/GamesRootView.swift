@@ -36,13 +36,13 @@ struct GamesRootView: View {
         }
         #else
         .sheet(
-            store: store.scope(
-                state: \.$plotRemixGame,
-                action: \.plotRemixGame
-            )
-        ) { store in
-            PlotRemixGameView(store: store, transitionNamespace: namespace)
-        }
+                    store: store.scope(
+                        state: \.$plotRemixGame,
+                        action: \.plotRemixGame
+                    )
+                ) { store in
+                    PlotRemixGameView(store: store, transitionNamespace: namespace)
+                }
         #endif
     }
 

@@ -60,21 +60,21 @@ struct ExploreRootView: View {
         }
         #else
         .sheet(
-            item: $store.scope(
-                state: \.movieIntelligence,
-                action: \.movieIntelligence
-            )
-        ) { store in
-            MovieChatView(store: store)
-        }
-        .sheet(
-            item: $store.scope(
-                state: \.tvSeriesIntelligence,
-                action: \.tvSeriesIntelligence
-            )
-        ) { store in
-            TVSeriesChatView(store: store)
-        }
+                    item: $store.scope(
+                        state: \.movieIntelligence,
+                        action: \.movieIntelligence
+                    )
+                ) { store in
+                    MovieChatView(store: store)
+                }
+                .sheet(
+                    item: $store.scope(
+                        state: \.tvSeriesIntelligence,
+                        action: \.tvSeriesIntelligence
+                    )
+                ) { store in
+                    TVSeriesChatView(store: store)
+                }
         #endif
     }
 
