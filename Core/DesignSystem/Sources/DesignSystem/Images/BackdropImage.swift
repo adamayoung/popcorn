@@ -49,6 +49,11 @@ public struct BackdropImage: View {
                         analyzeImage(image, frameSize: proxy.size)
                     }
                 }
+                .onFailure { _ in
+                    if detectFocalPoint, !focalPointResolved {
+                        focalPointResolved = true
+                    }
+                }
                 .resizable()
                 .scaledToFill()
                 .aspectRatio(Self.aspectRatio, contentMode: .fill)
