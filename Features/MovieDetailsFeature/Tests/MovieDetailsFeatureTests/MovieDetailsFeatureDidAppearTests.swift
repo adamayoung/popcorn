@@ -23,6 +23,7 @@ struct MovieDetailsFeatureDidAppearTests {
         } withDependencies: {
             $0.movieDetailsClient.isWatchlistEnabled = { true }
             $0.movieDetailsClient.isIntelligenceEnabled = { false }
+            $0.movieDetailsClient.isBackdropFocalPointEnabled = { true }
         }
 
         await store.send(.didAppear)
@@ -30,6 +31,7 @@ struct MovieDetailsFeatureDidAppearTests {
         await store.receive(\.updateFeatureFlags) {
             $0.isWatchlistEnabled = true
             $0.isIntelligenceEnabled = false
+            $0.isBackdropFocalPointEnabled = true
         }
     }
 

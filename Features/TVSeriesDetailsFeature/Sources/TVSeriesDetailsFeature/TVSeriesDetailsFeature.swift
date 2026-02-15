@@ -18,7 +18,7 @@ public struct TVSeriesDetailsFeature: Sendable {
     @Dependency(\.tvSeriesDetailsClient) private var client
 
     @ObservableState
-    public struct State: Sendable {
+    public struct State: Sendable, Equatable {
         var tvSeriesID: Int
         public let transitionID: String?
         public var viewState: ViewState<ViewSnapshot>

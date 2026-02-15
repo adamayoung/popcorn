@@ -181,7 +181,7 @@ Detailed guides: [SWIFT.md](docs/SWIFT.md) · [SWIFTUI.md](docs/SWIFTUI.md) · [
 
 **SwiftData**: No `@Attribute(.unique)` · Optional/defaulted properties · Optional relationships · Never expose `@Model` outside Infrastructure
 
-**TCA**: `@Reducer` + `@ObservableState` · `StackState` navigation · `@Dependency` injection
+**TCA**: `@Reducer` + `@ObservableState` · `StackState` navigation · `@Dependency` injection · When adding or removing feature flags in a Client/Reducer, always update the corresponding `*FeatureFlagsTests` (all existing tests and add new ones for the flag)
 
 ### SwiftLint Attributes
 
