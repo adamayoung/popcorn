@@ -29,17 +29,19 @@ public struct TVSeriesChatView: View {
             )
             .navigationTitle(store.tvSeries?.name ?? "")
             .navigationSubtitle(store.tvSeries?.tagline ?? "")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button(role: .close) {
-                        dismiss()
+            #if os(iOS)
+                .navigationBarTitleDisplayMode(.inline)
+            #endif
+                .toolbar {
+                    ToolbarItem {
+                        Button(role: .close) {
+                            dismiss()
+                        }
                     }
                 }
-            }
-            .task {
-                store.send(.startSession)
-            }
+                .task {
+                    store.send(.startSession)
+                }
         }
     }
 

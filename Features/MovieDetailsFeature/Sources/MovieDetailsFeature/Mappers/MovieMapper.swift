@@ -13,13 +13,21 @@ struct MovieMapper {
     private let genreMapper = GenreMapper()
 
     func map(_ movieDetails: MovieDetails) -> Movie {
-        Movie(
+        let genres: [Genre]? = {
+            guard let genres = movieDetails.genres else {
+                return nil
+            }
+
+            return genres.map(genreMapper.map)
+        }()
+
+        return Movie(
             id: movieDetails.id,
             title: movieDetails.title,
             tagline: movieDetails.tagline,
             overview: movieDetails.overview,
             runtime: movieDetails.runtime,
-            genres: movieDetails.genres?.map(genreMapper.map),
+            genres: genres,
             releaseDate: movieDetails.releaseDate,
             posterURL: movieDetails.posterURLSet?.detail,
             backdropURL: movieDetails.backdropURLSet?.full,

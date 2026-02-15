@@ -14,6 +14,7 @@ struct MovieDetailsContentView: View {
     var recommendedMovies: [MoviePreview]
     var castMembers: [CastMember]
     var crewMembers: [CrewMember]
+    var isBackdropFocalPointEnabled: Bool
     var didSelectPerson: (_ personID: Int) -> Void
     var didSelectMovie: (_ movieID: Int) -> Void
     var navigateToCastAndCrew: (_ movieID: Int) -> Void
@@ -35,11 +36,21 @@ struct MovieDetailsContentView: View {
 extension MovieDetailsContentView {
 
     private var header: some View {
-        BackdropImage(url: movie.backdropURL)
+        backdropImage
             .flexibleHeaderContent(height: 600)
         #if os(macOS)
             .backgroundExtensionEffect()
         #endif
+    }
+
+    @ViewBuilder
+    private var backdropImage: some View {
+        let image = BackdropImage(url: movie.backdropURL)
+        if isBackdropFocalPointEnabled {
+            image.focalPointAlignment()
+        } else {
+            image
+        }
     }
 
     private var headerOverlay: some View {
@@ -50,7 +61,8 @@ extension MovieDetailsContentView {
             VStack {
                 HStack {
                     if let genres = movie.genres {
-                        Text("\(genres.map(\.name).joined(separator: " ∙ "))")
+                        Text("\(genres.prefix(4).map(\.name).joined(separator: " ∙ "))")
+                            .multilineTextAlignment(.center)
                     }
                 }
 
@@ -165,6 +177,7 @@ extension MovieDetailsContentView {
             recommendedMovies: MoviePreview.mocks,
             castMembers: CastMember.mocks,
             crewMembers: CrewMember.mocks,
+            isBackdropFocalPointEnabled: true,
             didSelectPerson: { _ in },
             didSelectMovie: { _ in },
             navigateToCastAndCrew: { _ in }

@@ -58,7 +58,7 @@ public struct PlotRemixGameView: View {
                 store.send(.fetchMetadata)
             }
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
+                ToolbarItem {
                     Button(role: .close) {
                         store.send(.close)
                     }

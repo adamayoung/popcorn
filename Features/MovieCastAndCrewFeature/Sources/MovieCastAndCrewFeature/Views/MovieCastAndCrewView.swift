@@ -85,7 +85,9 @@ public struct MovieCastAndCrewView: View {
                 }
             }
         }
+        #if os(iOS)
         .listStyle(.insetGrouped)
+        #endif
     }
 
 }

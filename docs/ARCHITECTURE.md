@@ -152,19 +152,14 @@ Local data sources use SwiftData with actor isolation:
 
 ```swift
 // DataSources/Local/SwiftDataMovieLocalDataSource.swift
+@ModelActor
 public actor SwiftDataMovieLocalDataSource: MovieLocalDataSource {
-    private let modelContainer: ModelContainer
-
-    public init(modelContainer: ModelContainer) {
-        self.modelContainer = modelContainer
-    }
 
     public func movie(withID id: Int) async throws -> Movie? {
-        let context = ModelContext(modelContainer)
-        let predicate = #Predicate<MovieEntity> { $0.id == id }
+        let predicate = #Predicate<MovieEntity> { $0.movieID == id }
         let descriptor = FetchDescriptor(predicate: predicate)
 
-        guard let entity = try context.fetch(descriptor).first else {
+        guard let entity = try modelContext.fetch(descriptor).first else {
             return nil
         }
 
@@ -172,10 +167,9 @@ public actor SwiftDataMovieLocalDataSource: MovieLocalDataSource {
     }
 
     public func setMovie(_ movie: Movie) async throws {
-        let context = ModelContext(modelContainer)
         let entity = MovieEntityMapper().mapToEntity(movie)
-        context.insert(entity)
-        try context.save()
+        modelContext.insert(entity)
+        try modelContext.save()
     }
 }
 ```

@@ -7,6 +7,7 @@
 
 import AppDependencies
 import ComposableArchitecture
+import DesignSystem
 import Foundation
 
 @Reducer
@@ -101,16 +102,17 @@ extension AppRootFeature {
 
     private func handleSetup() -> EffectOf<Self> {
         .run { [appRootClient] send in
+            FocalPointAnalyzer.warmUp()
+
             do {
                 async let observability: Void = appRootClient.setupObservability()
                 async let featureFlags: Void = appRootClient.setupFeatureFlags()
 
                 _ = try await (observability, featureFlags)
+                await send(.setupComplete)
             } catch let error {
                 await send(.setupFailed(error))
             }
-
-            await send(.setupComplete)
         }
     }
 

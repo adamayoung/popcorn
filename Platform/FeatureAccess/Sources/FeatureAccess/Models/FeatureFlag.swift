@@ -32,4 +32,7 @@ public enum FeatureFlag: String, Sendable, CaseIterable {
 
     /// App Wide
     case watchlist
+
+    /// Artwork
+    case backdropFocalPoint = "backdrop_focal_point"
 }

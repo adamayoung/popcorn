@@ -28,17 +28,19 @@ public struct MovieChatView: View {
                 isThinking: store.isThinking
             )
             .navigationTitle(store.movie?.title ?? "")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button(role: .close) {
-                        dismiss()
+            #if os(iOS)
+                .navigationBarTitleDisplayMode(.inline)
+            #endif
+                .toolbar {
+                    ToolbarItem {
+                        Button(role: .close) {
+                            dismiss()
+                        }
                     }
                 }
-            }
-            .task {
-                store.send(.startSession)
-            }
+                .task {
+                    store.send(.startSession)
+                }
         }
     }
 

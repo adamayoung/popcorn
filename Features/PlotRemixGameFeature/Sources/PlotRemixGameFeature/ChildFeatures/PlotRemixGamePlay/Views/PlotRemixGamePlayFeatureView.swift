@@ -25,7 +25,9 @@ public struct PlotRemixGamePlayFeatureView: View {
                         content(game: snapshot.game)
                     }
                 }
+                #if os(iOS)
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                #endif
 
                 Rectangle()
                     .fill(.clear)
@@ -59,7 +61,7 @@ public struct PlotRemixGamePlayFeatureView: View {
             }
             .task { store.send(.generate) }
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
+                ToolbarItem {
                     Button(role: .close) {
                         store.send(.close)
                     }

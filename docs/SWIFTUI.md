@@ -126,7 +126,7 @@ struct CardStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
             .padding()
-            .background(Color(.systemBackground))
+            .background(.background)
             .clipShape(.rect(cornerRadius: 12))
             .shadow(radius: 4)
     }

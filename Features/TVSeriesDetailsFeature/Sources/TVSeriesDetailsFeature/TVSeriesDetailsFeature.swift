@@ -18,22 +18,25 @@ public struct TVSeriesDetailsFeature: Sendable {
     @Dependency(\.tvSeriesDetailsClient) private var client
 
     @ObservableState
-    public struct State: Sendable {
+    public struct State: Sendable, Equatable {
         var tvSeriesID: Int
         public let transitionID: String?
         public var viewState: ViewState<ViewSnapshot>
         public var isIntelligenceEnabled: Bool
+        public var isBackdropFocalPointEnabled: Bool
 
         public init(
             tvSeriesID: Int,
             transitionID: String? = nil,
             viewState: ViewState<ViewSnapshot> = .initial,
-            isIntelligenceEnabled: Bool = false
+            isIntelligenceEnabled: Bool = false,
+            isBackdropFocalPointEnabled: Bool = false
         ) {
             self.tvSeriesID = tvSeriesID
             self.transitionID = transitionID
             self.viewState = viewState
             self.isIntelligenceEnabled = isIntelligenceEnabled
+            self.isBackdropFocalPointEnabled = isBackdropFocalPointEnabled
         }
     }
 
@@ -70,6 +73,7 @@ public struct TVSeriesDetailsFeature: Sendable {
 
             case .updateFeatureFlags:
                 state.isIntelligenceEnabled = (try? client.isIntelligenceEnabled()) ?? false
+                state.isBackdropFocalPointEnabled = (try? client.isBackdropFocalPointEnabled()) ?? false
                 return .none
 
             case .fetch:

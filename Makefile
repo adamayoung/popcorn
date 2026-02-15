@@ -1,5 +1,6 @@
 TARGET ?= Popcorn
 TEST_TARGET ?= PopcornTests
+TEST_PLAN ?= PopcornUnitTests
 SCHEME ?= $(TARGET)
 PLATFORM ?= ios
 DESTINATION ?= 'platform=iOS Simulator,name=iPhone 17,OS=26.2'
@@ -47,6 +48,14 @@ ifneq ($(CLEAN),0)
 	$(XCODEBUILD) clean -scheme $(SCHEME) 2>&1 | $(XCSIFT) $(XCSIFT_FLAGS)
 endif
 	$(XCODEBUILD) build $(XCODEBUILD_FLAGS) 2>&1 | $(XCSIFT) $(XCSIFT_FLAGS)
+
+.PHONY: build-for-testing
+build-for-testing:
+ifneq ($(CLEAN),0)
+	rm -rf $(RESULT_BUNDLE)
+	$(XCODEBUILD) clean -scheme $(SCHEME) 2>&1 | $(XCSIFT) $(XCSIFT_FLAGS)
+endif
+	$(XCODEBUILD) build-for-testing $(XCODEBUILD_FLAGS) -testPlan $(TEST_PLAN) 2>&1 | $(XCSIFT) $(XCSIFT_FLAGS)
 
 .PHONY: test
 test:

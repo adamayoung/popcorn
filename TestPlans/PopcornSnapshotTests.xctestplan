@@ -1,0 +1,25 @@
+{
+  "configurations" : [
+    {
+      "id" : "157E13D5-F7F6-48E3-9A6B-C12D475DB923",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testExecutionOrdering" : "random",
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:Features\/ExploreFeature",
+        "identifier" : "ExploreFeatureSnapshotTests",
+        "name" : "ExploreFeatureSnapshotTests"
+      }
+    }
+  ],
+  "version" : 1
+}

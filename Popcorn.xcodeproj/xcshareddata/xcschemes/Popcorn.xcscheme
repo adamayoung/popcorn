@@ -30,26 +30,14 @@
       shouldUseLaunchSchemeArgsEnv = "YES">
       <TestPlans>
          <TestPlanReference
-            reference = "container:TestPlans/Contexts.xctestplan">
-         </TestPlanReference>
-         <TestPlanReference
-            reference = "container:TestPlans/Features.xctestplan">
-         </TestPlanReference>
-         <TestPlanReference
             reference = "container:TestPlans/PopcornUITests.xctestplan">
-         </TestPlanReference>
-         <TestPlanReference
-            reference = "container:TestPlans/Core.xctestplan">
-         </TestPlanReference>
-         <TestPlanReference
-            reference = "container:TestPlans/Platform.xctestplan">
-         </TestPlanReference>
-         <TestPlanReference
-            reference = "container:TestPlans/Adapters.xctestplan">
          </TestPlanReference>
          <TestPlanReference
             reference = "container:TestPlans/PopcornUnitTests.xctestplan"
             default = "YES">
+         </TestPlanReference>
+         <TestPlanReference
+            reference = "container:TestPlans/PopcornSnapshotTests.xctestplan">
          </TestPlanReference>
       </TestPlans>
       <Testables>

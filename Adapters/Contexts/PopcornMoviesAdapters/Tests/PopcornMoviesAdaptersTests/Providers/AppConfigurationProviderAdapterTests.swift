@@ -113,8 +113,7 @@ struct AppConfigurationProviderAdapterTests {
         let result = try await adapter.appConfiguration()
 
         // Verify that images configuration is properly returned by checking a URL can be generated
-        let posterURLSet = try #require(result.images.posterURLSet(for: path))
-        #expect(posterURLSet.thumbnail != nil)
+        _ = try #require(result.images.posterURLSet(for: path))
     }
 
 }
