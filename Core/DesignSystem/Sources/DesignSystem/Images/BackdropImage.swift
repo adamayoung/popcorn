@@ -71,6 +71,11 @@ public struct BackdropImage: View {
                             .padding(.bottom, proxy.size.height / 10)
                     }
                 }
+                .onAppear {
+                    if detectFocalPoint, url == nil {
+                        focalPointResolved = true
+                    }
+                }
         }
     }
 
