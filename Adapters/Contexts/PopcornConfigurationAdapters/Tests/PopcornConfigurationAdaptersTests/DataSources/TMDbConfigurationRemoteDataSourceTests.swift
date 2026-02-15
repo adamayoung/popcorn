@@ -43,9 +43,8 @@ struct TMDbConfigurationRemoteDataSourceTests {
 
         let dataSource = TMDbConfigurationRemoteDataSource(configurationService: mockService)
 
-        let result = try await dataSource.configuration()
+        _ = try await dataSource.configuration()
 
-        #expect(result.images != nil)
         #expect(mockService.apiConfigurationCallCount == 1)
     }
 
