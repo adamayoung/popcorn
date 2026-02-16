@@ -31,7 +31,7 @@ let package = Package(
         ),
         .testTarget(
             name: "FeatureAccessTests",
-            dependencies: ["FeatureAccess"]
+            dependencies: ["FeatureAccess", "FeatureAccessTestHelpers"]
         )
     ]
 )

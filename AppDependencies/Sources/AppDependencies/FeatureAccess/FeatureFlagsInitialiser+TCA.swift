@@ -13,7 +13,7 @@ enum FeatureFlagsInitialiserKey: DependencyKey {
 
     static var liveValue: any FeatureFlagInitialising {
         @Dependency(\.featureAccessFactory) var featureAccessFactory
-        return featureAccessFactory.makeService()
+        return featureAccessFactory.featureFlagService
     }
 
 }

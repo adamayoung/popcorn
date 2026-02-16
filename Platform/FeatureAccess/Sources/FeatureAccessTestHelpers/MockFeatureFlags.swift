@@ -8,7 +8,8 @@
 import FeatureAccess
 import Foundation
 
-public final class MockFeatureFlags: FeatureFlagging, FeatureFlagInitialising, @unchecked Sendable {
+public final class MockFeatureFlags: FeatureFlagging, FeatureFlagOverriding, FeatureFlagInitialising,
+@unchecked Sendable {
 
     public var isInitialised: Bool
 
@@ -18,13 +19,25 @@ public final class MockFeatureFlags: FeatureFlagging, FeatureFlagInitialising, @
 
     public var isEnabledCallCount = 0
     public private(set) var isEnabledCalledWithFlags: [FeatureFlag] = []
-    public private(set) var isEnabledCalledWithKeys: [String] = []
 
     public var enabledFlags: Set<FeatureFlag>
     public var enabledKeys: Set<String>
 
     public var isEnabledFlagStub: ((FeatureFlag) -> Bool)?
-    public var isEnabledKeyStub: ((String) -> Bool)?
+
+    public var actualValueCallCount = 0
+    public private(set) var actualValueCalledWithFlags: [FeatureFlag] = []
+    public var actualValueStub: ((FeatureFlag) -> Bool)?
+
+    public var setOverrideValueCallCount = 0
+    public private(set) var setOverrideValueCalledWith: [(Bool, FeatureFlag)] = []
+
+    public var overrideValueCallCount = 0
+    public private(set) var overrideValueCalledWithFlags: [FeatureFlag] = []
+    public var overrideValueStub: ((FeatureFlag) -> Bool?)?
+
+    public var removeOverrideCallCount = 0
+    public private(set) var removeOverrideCalledWithFlags: [FeatureFlag] = []
 
     public init(
         isInitialised: Bool = false,
@@ -59,19 +72,43 @@ public final class MockFeatureFlags: FeatureFlagging, FeatureFlagInitialising, @
             return true
         }
 
-        return enabledKeys.contains(flag.rawValue)
+        return enabledKeys.contains(flag.id)
     }
 
-    public func isEnabled(_ key: some StringProtocol) -> Bool {
-        let key = key.description
-        isEnabledCallCount += 1
-        isEnabledCalledWithKeys.append(key)
+    public func actualValue(for flag: FeatureFlag) -> Bool {
+        actualValueCallCount += 1
+        actualValueCalledWithFlags.append(flag)
 
-        if let isEnabledKeyStub {
-            return isEnabledKeyStub(key)
+        if let actualValueStub {
+            return actualValueStub(flag)
         }
 
-        return enabledKeys.contains(key)
+        if enabledFlags.contains(flag) {
+            return true
+        }
+
+        return enabledKeys.contains(flag.id)
+    }
+
+    public func setOverrideValue(_ value: Bool, for flag: FeatureFlag) {
+        setOverrideValueCallCount += 1
+        setOverrideValueCalledWith.append((value, flag))
+    }
+
+    public func overrideValue(for flag: FeatureFlag) -> Bool? {
+        overrideValueCallCount += 1
+        overrideValueCalledWithFlags.append(flag)
+
+        if let overrideValueStub {
+            return overrideValueStub(flag)
+        }
+
+        return nil
+    }
+
+    public func removeOverride(for flag: FeatureFlag) {
+        removeOverrideCallCount += 1
+        removeOverrideCalledWithFlags.append(flag)
     }
 
     public func reset() {
@@ -80,11 +117,19 @@ public final class MockFeatureFlags: FeatureFlagging, FeatureFlagInitialising, @
         startError = nil
         isEnabledCallCount = 0
         isEnabledCalledWithFlags.removeAll()
-        isEnabledCalledWithKeys.removeAll()
         enabledFlags.removeAll()
         enabledKeys.removeAll()
         isEnabledFlagStub = nil
-        isEnabledKeyStub = nil
+        actualValueCallCount = 0
+        actualValueCalledWithFlags.removeAll()
+        actualValueStub = nil
+        setOverrideValueCallCount = 0
+        setOverrideValueCalledWith.removeAll()
+        overrideValueCallCount = 0
+        overrideValueCalledWithFlags.removeAll()
+        overrideValueStub = nil
+        removeOverrideCallCount = 0
+        removeOverrideCalledWithFlags.removeAll()
         isInitialised = false
     }
 

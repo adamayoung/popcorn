@@ -18,13 +18,9 @@ struct FeatureAccessAdaptersFactoryTests {
         let factory = FeatureAccessAdaptersFactory()
         let featureFlagsFactory = factory.makeFeatureFlagsFactory()
 
-        let service = featureFlagsFactory.makeService()
+        let service = featureFlagsFactory.featureFlagService
 
-        // The service should conform to both FeatureFlagging and FeatureFlagInitialising
-        let _: any FeatureFlagging = service
-        let _: any FeatureFlagInitialising = service
-
-        #expect(true)
+        #expect(!service.isInitialised)
     }
 
 }

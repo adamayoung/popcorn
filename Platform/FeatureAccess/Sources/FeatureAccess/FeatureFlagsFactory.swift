@@ -11,12 +11,11 @@ public final class FeatureFlagsFactory {
 
     private let provider: any FeatureFlagProviding
 
+    public lazy var featureFlagService: some FeatureFlagging & FeatureFlagOverriding & FeatureFlagInitialising =
+        FeatureFlagService(featureFlagProvider: provider, userDefaults: .standard)
+
     public init(provider: some FeatureFlagProviding) {
         self.provider = provider
-    }
-
-    public func makeService() -> some FeatureFlagging & FeatureFlagInitialising {
-        FeatureFlagService(provider: provider)
     }
 
 }
