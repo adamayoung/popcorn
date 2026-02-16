@@ -8,7 +8,7 @@
 import Foundation
 
 /// A feature flag that controls access to a specific feature in the app.
-public struct FeatureFlag: Identifiable, Equatable, Sendable {
+public struct FeatureFlag: Identifiable, Hashable, Sendable {
 
     /// The unique identifier for the feature flag.
     public let id: String

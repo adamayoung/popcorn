@@ -59,7 +59,7 @@ public final class MockFeatureFlags: FeatureFlagging, FeatureFlagInitialising, @
             return true
         }
 
-        return enabledKeys.contains(flag.rawValue)
+        return enabledKeys.contains(flag.id)
     }
 
     public func isEnabled(_ key: some StringProtocol) -> Bool {
