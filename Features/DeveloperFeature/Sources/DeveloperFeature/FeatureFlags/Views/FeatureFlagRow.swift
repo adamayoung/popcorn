@@ -43,6 +43,9 @@ struct FeatureFlagRow: View {
         .onChange(of: override) { _, newValue in
             updateFeatureValueOverride(featureFlag, newValue)
         }
+        .onChange(of: featureFlag.override) { _, newValue in
+            override = newValue
+        }
     }
 
 }

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-#if os(iOS)
+#if os(iOS) && DEBUG
     import UIKit
 
     extension UIDevice {

@@ -72,7 +72,6 @@ public struct FeatureFlagsFeature: Sendable {
                 return .none
 
             case .setFeatureFlagOverride(let featureFlag, let override):
-                state.viewState = .loading
                 return .concatenate(
                     handleUpdateFeatureFlagOverride(featureFlag: featureFlag, override: override),
                     handleFetchAll()

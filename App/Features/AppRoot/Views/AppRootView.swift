@@ -7,7 +7,9 @@
 
 import ComposableArchitecture
 import DesignSystem
-import DeveloperFeature
+#if DEBUG
+    import DeveloperFeature
+#endif
 import SwiftUI
 
 struct AppRootView: View {
@@ -25,14 +27,16 @@ struct AppRootView: View {
                 ProgressView()
             }
         }
+        #if DEBUG
         .sheet(
-            item: $store.scope(
-                state: \.developer,
-                action: \.developer
-            )
-        ) { store in
-            DeveloperView(store: store)
-        }
+                item: $store.scope(
+                    state: \.developer,
+                    action: \.developer
+                )
+            ) { store in
+                DeveloperView(store: store)
+            }
+        #endif
         #if DEBUG && os(iOS)
         .onShake {
             store.send(.navigate(.developer))

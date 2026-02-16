@@ -19,23 +19,23 @@ struct FeatureFlagsFactoryTests {
         self.factory = FeatureFlagsFactory(provider: provider)
     }
 
-    @Test("makeFeatureFlagService returns a FeatureFlagService")
-    func makeFeatureFlagServiceReturnsService() {
-        let service = factory.makeFeatureFlagService()
+    @Test("featureFlagService returns a FeatureFlagService")
+    func featureFlagServiceReturnsService() {
+        let service = factory.featureFlagService
 
         #expect(!service.isInitialised)
     }
 
-    @Test("makeFeatureFlagService returns service that reports isEnabled")
-    func makeFeatureFlagServiceReportsIsEnabled() {
-        let service = factory.makeFeatureFlagService()
+    @Test("featureFlagService returns service that reports isEnabled")
+    func featureFlagServiceReportsIsEnabled() {
+        let service = factory.featureFlagService
 
         #expect(service.isEnabled(.explore) == false)
     }
 
-    @Test("makeFeatureFlagService returns service that supports overrides")
-    func makeFeatureFlagServiceSupportsOverrides() {
-        let service = factory.makeFeatureFlagService()
+    @Test("featureFlagService returns service that supports overrides")
+    func featureFlagServiceSupportsOverrides() {
+        let service = factory.featureFlagService
 
         #expect(service.overrideValue(for: .explore) == nil)
     }

@@ -13,7 +13,7 @@ enum FeatureFlagsOverrideKey: DependencyKey {
 
     static var liveValue: any FeatureFlagging & FeatureFlagOverriding {
         @Dependency(\.featureAccessFactory) var featureAccessFactory
-        return featureAccessFactory.makeFeatureFlagService()
+        return featureAccessFactory.featureFlagService
     }
 
 }

@@ -11,6 +11,7 @@ import OSLog
 struct FeatureFlagService: FeatureFlagging, FeatureFlagOverriding, FeatureFlagInitialising {
 
     private static let logger = Logger.featureFlags
+    private static let overrideKeyPrefix = "featureFlagOverride."
 
     var isInitialised: Bool {
         featureFlagProvider.isInitialized
@@ -67,19 +68,24 @@ extension FeatureFlagService {
     }
 
     func setOverrideValue(_ value: Bool, for flag: FeatureFlag) {
-        userDefaults.set(value, forKey: flag.id)
+        userDefaults.set(value, forKey: overrideKey(for: flag))
     }
 
     func overrideValue(for flag: FeatureFlag) -> Bool? {
-        guard userDefaults.object(forKey: flag.id) != nil else {
+        let key = overrideKey(for: flag)
+        guard userDefaults.object(forKey: key) != nil else {
             return nil
         }
 
-        return userDefaults.bool(forKey: flag.id)
+        return userDefaults.bool(forKey: key)
     }
 
     func removeOverride(for flag: FeatureFlag) {
-        userDefaults.removeObject(forKey: flag.id)
+        userDefaults.removeObject(forKey: overrideKey(for: flag))
+    }
+
+    private func overrideKey(for flag: FeatureFlag) -> String {
+        Self.overrideKeyPrefix + flag.id
     }
 
 }

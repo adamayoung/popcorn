@@ -13,7 +13,7 @@ enum FeatureFlagsKey: DependencyKey {
 
     static var liveValue: any FeatureFlagging {
         @Dependency(\.featureAccessFactory) var featureAccessFactory
-        return featureAccessFactory.makeFeatureFlagService()
+        return featureAccessFactory.featureFlagService
     }
 
 }

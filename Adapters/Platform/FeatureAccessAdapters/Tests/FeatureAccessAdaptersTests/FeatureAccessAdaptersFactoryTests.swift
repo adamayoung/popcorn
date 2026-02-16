@@ -18,7 +18,7 @@ struct FeatureAccessAdaptersFactoryTests {
         let factory = FeatureAccessAdaptersFactory()
         let featureFlagsFactory = factory.makeFeatureFlagsFactory()
 
-        let service = featureFlagsFactory.makeFeatureFlagService()
+        let service = featureFlagsFactory.featureFlagService
 
         #expect(!service.isInitialised)
     }

@@ -114,8 +114,9 @@ struct FeatureFlagServiceTests {
     func setOverrideValueStoresInUserDefaults() {
         service.setOverrideValue(true, for: .games)
 
-        #expect(userDefaults.object(forKey: FeatureFlag.games.id) != nil)
-        #expect(userDefaults.bool(forKey: FeatureFlag.games.id) == true)
+        let key = "featureFlagOverride.\(FeatureFlag.games.id)"
+        #expect(userDefaults.object(forKey: key) != nil)
+        #expect(userDefaults.bool(forKey: key) == true)
     }
 
     @Test("overrideValue returns nil when no override set")

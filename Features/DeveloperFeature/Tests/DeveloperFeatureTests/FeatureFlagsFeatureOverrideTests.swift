@@ -47,9 +47,7 @@ struct FeatureFlagsFeatureOverrideTests {
             $0.featureFlagsClient.fetchFeatureFlags = { updatedFlags }
         }
 
-        await store.send(.setFeatureFlagOverride(Self.testFlag, .enabled)) {
-            $0.viewState = .loading
-        }
+        await store.send(.setFeatureFlagOverride(Self.testFlag, .enabled))
         #expect(receivedValue == true)
 
         let expectedSnapshot = FeatureFlagsFeature.ViewSnapshot(featureFlags: updatedFlags)
@@ -74,9 +72,7 @@ struct FeatureFlagsFeatureOverrideTests {
             $0.featureFlagsClient.fetchFeatureFlags = { updatedFlags }
         }
 
-        await store.send(.setFeatureFlagOverride(Self.testFlag, .disabled)) {
-            $0.viewState = .loading
-        }
+        await store.send(.setFeatureFlagOverride(Self.testFlag, .disabled))
         #expect(receivedValue == false)
 
         let expectedSnapshot = FeatureFlagsFeature.ViewSnapshot(featureFlags: updatedFlags)
@@ -103,9 +99,7 @@ struct FeatureFlagsFeatureOverrideTests {
             $0.featureFlagsClient.fetchFeatureFlags = { updatedFlags }
         }
 
-        await store.send(.setFeatureFlagOverride(Self.testFlag, .default)) {
-            $0.viewState = .loading
-        }
+        await store.send(.setFeatureFlagOverride(Self.testFlag, .default))
         #expect(wasCalled == true)
         #expect(receivedValue == nil)
 

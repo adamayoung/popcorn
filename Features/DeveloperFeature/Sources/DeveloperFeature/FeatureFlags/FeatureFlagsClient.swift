@@ -9,7 +9,6 @@ import AppDependencies
 import ComposableArchitecture
 import FeatureAccess
 import Foundation
-import OSLog
 
 @DependencyClient
 struct FeatureFlagsClient: Sendable {
