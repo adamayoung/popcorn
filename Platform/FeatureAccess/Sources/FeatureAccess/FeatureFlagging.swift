@@ -13,6 +13,6 @@ public protocol FeatureFlagging: Sendable {
 
     func isEnabled(_ flag: FeatureFlag) -> Bool
 
-    func isEnabled(_ key: some StringProtocol) -> Bool
+//    func isEnabled(_ key: some StringProtocol) -> Bool
 
 }

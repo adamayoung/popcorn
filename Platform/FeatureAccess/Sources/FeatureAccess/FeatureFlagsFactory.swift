@@ -15,8 +15,8 @@ public final class FeatureFlagsFactory {
         self.provider = provider
     }
 
-    public func makeService() -> some FeatureFlagging & FeatureFlagInitialising {
-        FeatureFlagService(provider: provider)
+    public func makeFeatureFlagService() -> some FeatureFlagging & FeatureFlagOverriding & FeatureFlagInitialising {
+        FeatureFlagService(featureFlagProvider: provider, userDefaults: .standard)
     }
 
 }

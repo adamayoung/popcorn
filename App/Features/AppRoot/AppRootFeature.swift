@@ -8,6 +8,7 @@
 import AppDependencies
 import ComposableArchitecture
 import DesignSystem
+import DeveloperFeature
 import Foundation
 
 @Reducer
@@ -21,6 +22,7 @@ struct AppRootFeature {
         var explore = ExploreRootFeature.State()
         var games = GamesRootFeature.State()
         var search = SearchRootFeature.State()
+        @Presents var developer: DeveloperFeature.State?
 
         var isExploreEnabled: Bool = false
         var isGamesEnabled: Bool = false
@@ -54,6 +56,12 @@ struct AppRootFeature {
         case explore(ExploreRootFeature.Action)
         case games(GamesRootFeature.Action)
         case search(SearchRootFeature.Action)
+        case developer(PresentationAction<DeveloperFeature.Action>)
+        case navigate(Navigation)
+    }
+
+    enum Navigation: Equatable, Hashable {
+        case developer
     }
 
     var body: some Reducer<State, Action> {
@@ -86,6 +94,12 @@ struct AppRootFeature {
                 state.isReady = true
                 return .none
 
+            case .navigate(.developer):
+                if state.developer == nil {
+                    state.developer = DeveloperFeature.State()
+                }
+                return .none
+
             default:
                 return .none
             }
@@ -94,6 +108,7 @@ struct AppRootFeature {
         Scope(state: \.explore, action: \.explore) { ExploreRootFeature() }
         Scope(state: \.games, action: \.games) { GamesRootFeature() }
         Scope(state: \.search, action: \.search) { SearchRootFeature() }
+            .ifLet(\.$developer, action: \.developer) { DeveloperFeature() }
     }
 
 }

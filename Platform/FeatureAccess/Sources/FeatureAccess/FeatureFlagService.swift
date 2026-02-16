@@ -8,27 +8,36 @@
 import Foundation
 import OSLog
 
-struct FeatureFlagService: FeatureFlagging, FeatureFlagInitialising {
+struct FeatureFlagService: FeatureFlagging, FeatureFlagOverriding, FeatureFlagInitialising {
 
     private static let logger = Logger.featureFlags
 
     var isInitialised: Bool {
-        provider.isInitialized
+        featureFlagProvider.isInitialized
     }
 
-    private let provider: any FeatureFlagProviding
+    private let featureFlagProvider: any FeatureFlagProviding
+    private nonisolated(unsafe) let userDefaults: UserDefaults
 
-    init(provider: some FeatureFlagProviding) {
-        self.provider = provider
+    init(
+        featureFlagProvider: some FeatureFlagProviding,
+        userDefaults: UserDefaults
+    ) {
+        self.featureFlagProvider = featureFlagProvider
+        self.userDefaults = userDefaults
     }
+}
+
+extension FeatureFlagService {
 
     func start(_ config: FeatureFlagsConfiguration) async throws {
-        try await provider.start(config)
+        try await featureFlagProvider.start(config)
 
         var flagStatuses: [String] = []
-        for featureFlag in FeatureFlag.allCases {
-            let value = isEnabled(featureFlag)
-            flagStatuses.append("\(featureFlag.rawValue): \(value)")
+        for flag in FeatureFlag.allFlags {
+            let value = featureFlagProvider.isEnabled(flag.id)
+            let overrideValue = overrideValue(for: flag)
+            flagStatuses.append("\(flag.id): \(overrideValue ?? value)\(overrideValue != nil ? " (overridden)" : "")")
         }
         flagStatuses.sort()
 
@@ -37,12 +46,40 @@ struct FeatureFlagService: FeatureFlagging, FeatureFlagInitialising {
         )
     }
 
+}
+
+extension FeatureFlagService {
+
     func isEnabled(_ flag: FeatureFlag) -> Bool {
-        provider.isEnabled(flag.rawValue)
+        if let overrideValue = overrideValue(for: flag) {
+            return overrideValue
+        }
+
+        return actualValue(for: flag)
     }
 
-    func isEnabled(_ key: some StringProtocol) -> Bool {
-        provider.isEnabled(key.description)
+}
+
+extension FeatureFlagService {
+
+    func actualValue(for flag: FeatureFlag) -> Bool {
+        featureFlagProvider.isEnabled(flag.id)
+    }
+
+    func setOverrideValue(_ value: Bool, for flag: FeatureFlag) {
+        userDefaults.set(value, forKey: flag.id)
+    }
+
+    func overrideValue(for flag: FeatureFlag) -> Bool? {
+        guard userDefaults.object(forKey: flag.id) != nil else {
+            return nil
+        }
+
+        return userDefaults.bool(forKey: flag.id)
+    }
+
+    func removeOverride(for flag: FeatureFlag) {
+        userDefaults.removeObject(forKey: flag.id)
     }
 
 }

@@ -6,6 +6,8 @@
 //
 
 import ComposableArchitecture
+import DesignSystem
+import DeveloperFeature
 import SwiftUI
 
 struct AppRootView: View {
@@ -23,9 +25,22 @@ struct AppRootView: View {
                 ProgressView()
             }
         }
-        .task {
-            store.send(.didAppear)
+        .sheet(
+            item: $store.scope(
+                state: \.developer,
+                action: \.developer
+            )
+        ) { store in
+            DeveloperView(store: store)
         }
+        #if DEBUG
+        .onShake {
+                store.send(.navigate(.developer))
+            }
+        #endif
+            .task {
+                    store.send(.didAppear)
+                }
     }
 
     private var content: some View {
