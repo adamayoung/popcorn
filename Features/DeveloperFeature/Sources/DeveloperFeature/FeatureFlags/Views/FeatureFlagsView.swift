@@ -97,8 +97,6 @@ extension FeatureFlagsView {
 }
 
 #Preview("Loading") {
-    @Previewable @Namespace var namespace
-
     NavigationStack {
         FeatureFlagsView(
             store: Store(

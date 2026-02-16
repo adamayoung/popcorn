@@ -45,7 +45,7 @@ extension FeatureFlag {
             FeatureFlag(
                 id: "feature_flag_2",
                 name: "Feature Flag 2",
-                description: "Description of Feature Flag 3",
+                description: "Description of Feature Flag 2",
                 value: false,
                 override: .default
             ),

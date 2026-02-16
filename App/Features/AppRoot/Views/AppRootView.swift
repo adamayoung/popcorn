@@ -33,14 +33,14 @@ struct AppRootView: View {
         ) { store in
             DeveloperView(store: store)
         }
-        #if DEBUG
+        #if DEBUG && os(iOS)
         .onShake {
             store.send(.navigate(.developer))
         }
         #endif
         .task {
-            store.send(.didAppear)
-        }
+                store.send(.didAppear)
+            }
     }
 
     private var content: some View {

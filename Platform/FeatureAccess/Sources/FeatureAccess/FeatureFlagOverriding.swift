@@ -5,7 +5,7 @@
 //  Copyright © 2025 Adam Young.
 //
 
-public protocol FeatureFlagOverriding {
+public protocol FeatureFlagOverriding: Sendable {
 
     func actualValue(for flag: FeatureFlag) -> Bool
 

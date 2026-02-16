@@ -11,10 +11,7 @@ import Foundation
 import OSLog
 import TCAFoundation
 
-/// A feature that manages the exploration of various media content including movies, TV series, and people.
-///
-/// This feature aggregates multiple content sources (discover, trending, popular) into a single view,
-/// allowing users to explore and navigate to detailed views of different media types.
+/// A feature that manages the display and override of feature flags in the developer menu.
 @Reducer
 public struct FeatureFlagsFeature: Sendable {
 
@@ -27,7 +24,7 @@ public struct FeatureFlagsFeature: Sendable {
     /// Tracks the current view state and provides computed properties for loading and ready states.
     @ObservableState
     public struct State {
-        /// The current view state of the explore feature.
+        /// The current view state of the feature flags screen.
         public var viewState: ViewState<ViewSnapshot>
 
         public init(viewState: ViewState<ViewSnapshot> = .initial) {
@@ -63,10 +60,6 @@ public struct FeatureFlagsFeature: Sendable {
         Reduce { state, action in
             switch action {
             case .load:
-                guard !state.viewState.isReady else {
-                    return .none
-                }
-
                 state.viewState = .loading
                 return handleFetchAll()
 
@@ -79,7 +72,11 @@ public struct FeatureFlagsFeature: Sendable {
                 return .none
 
             case .setFeatureFlagOverride(let featureFlag, let override):
-                return handleUpdateFeatureFlagOverride(featureFlag: featureFlag, override: override)
+                state.viewState = .loading
+                return .concatenate(
+                    handleUpdateFeatureFlagOverride(featureFlag: featureFlag, override: override),
+                    handleFetchAll()
+                )
             }
         }
     }
@@ -90,7 +87,7 @@ extension FeatureFlagsFeature {
 
     private func handleFetchAll() -> EffectOf<Self> {
         .run { [client] send in
-            Self.logger.info("User fetching explore content")
+            Self.logger.info("User fetching feature flags")
 
             let featureFlags: [FeatureFlag]
             do {

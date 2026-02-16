@@ -50,9 +50,7 @@ public struct DeveloperView: View {
 #Preview {
     DeveloperView(
         store: Store(
-            initialState: DeveloperFeature.State(
-//                viewState: .loading
-            ),
+            initialState: DeveloperFeature.State(),
             reducer: { EmptyReducer() }
         )
     )

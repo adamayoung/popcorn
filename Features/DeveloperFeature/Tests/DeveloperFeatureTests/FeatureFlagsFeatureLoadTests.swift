@@ -64,17 +64,35 @@ struct FeatureFlagsFeatureLoadTests {
         }
     }
 
-    @Test("load when already ready does nothing")
-    func loadWhenAlreadyReadyDoesNothing() async {
-        let snapshot = FeatureFlagsFeature.ViewSnapshot(featureFlags: [])
+    @Test("load when already ready reloads feature flags")
+    func loadWhenAlreadyReadyReloads() async {
+        let existingSnapshot = FeatureFlagsFeature.ViewSnapshot(featureFlags: [])
+        let updatedFlags: [FeatureFlag] = [
+            FeatureFlag(
+                id: "flag_1",
+                name: "Flag 1",
+                description: "Description",
+                value: true,
+                override: .enabled
+            )
+        ]
 
         let store = TestStore(
-            initialState: FeatureFlagsFeature.State(viewState: .ready(snapshot))
+            initialState: FeatureFlagsFeature.State(viewState: .ready(existingSnapshot))
         ) {
             FeatureFlagsFeature()
+        } withDependencies: {
+            $0.featureFlagsClient.fetchFeatureFlags = { updatedFlags }
         }
 
-        await store.send(.load)
+        await store.send(.load) {
+            $0.viewState = .loading
+        }
+
+        let expectedSnapshot = FeatureFlagsFeature.ViewSnapshot(featureFlags: updatedFlags)
+        await store.receive(\.loaded) {
+            $0.viewState = .ready(expectedSnapshot)
+        }
     }
 
     @Test("loaded sets viewState to ready with snapshot")

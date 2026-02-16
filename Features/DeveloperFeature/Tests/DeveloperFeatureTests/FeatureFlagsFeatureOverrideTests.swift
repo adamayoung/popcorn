@@ -8,6 +8,7 @@
 import ComposableArchitecture
 @testable import DeveloperFeature
 import Foundation
+import TCAFoundation
 import Testing
 
 @MainActor
@@ -22,9 +23,18 @@ struct FeatureFlagsFeatureOverrideTests {
         override: .default
     )
 
+    private static let updatedTestFlag = FeatureFlag(
+        id: "test_flag",
+        name: "Test Flag",
+        description: "A test flag",
+        value: true,
+        override: .enabled
+    )
+
     @Test("setFeatureFlagOverride with enabled calls client with true")
     func setFeatureFlagOverrideEnabledCallsClientWithTrue() async {
         var receivedValue: Bool?
+        let updatedFlags = [Self.updatedTestFlag]
 
         let store = TestStore(
             initialState: FeatureFlagsFeature.State()
@@ -34,15 +44,24 @@ struct FeatureFlagsFeatureOverrideTests {
             $0.featureFlagsClient.updateFeatureFlagValue = { _, value in
                 receivedValue = value
             }
+            $0.featureFlagsClient.fetchFeatureFlags = { updatedFlags }
         }
 
-        await store.send(.setFeatureFlagOverride(Self.testFlag, .enabled))
+        await store.send(.setFeatureFlagOverride(Self.testFlag, .enabled)) {
+            $0.viewState = .loading
+        }
         #expect(receivedValue == true)
+
+        let expectedSnapshot = FeatureFlagsFeature.ViewSnapshot(featureFlags: updatedFlags)
+        await store.receive(\.loaded) {
+            $0.viewState = .ready(expectedSnapshot)
+        }
     }
 
     @Test("setFeatureFlagOverride with disabled calls client with false")
     func setFeatureFlagOverrideDisabledCallsClientWithFalse() async {
         var receivedValue: Bool?
+        let updatedFlags = [Self.testFlag]
 
         let store = TestStore(
             initialState: FeatureFlagsFeature.State()
@@ -52,16 +71,25 @@ struct FeatureFlagsFeatureOverrideTests {
             $0.featureFlagsClient.updateFeatureFlagValue = { _, value in
                 receivedValue = value
             }
+            $0.featureFlagsClient.fetchFeatureFlags = { updatedFlags }
         }
 
-        await store.send(.setFeatureFlagOverride(Self.testFlag, .disabled))
+        await store.send(.setFeatureFlagOverride(Self.testFlag, .disabled)) {
+            $0.viewState = .loading
+        }
         #expect(receivedValue == false)
+
+        let expectedSnapshot = FeatureFlagsFeature.ViewSnapshot(featureFlags: updatedFlags)
+        await store.receive(\.loaded) {
+            $0.viewState = .ready(expectedSnapshot)
+        }
     }
 
     @Test("setFeatureFlagOverride with default calls client with nil")
     func setFeatureFlagOverrideDefaultCallsClientWithNil() async {
         var receivedValue: Bool?
         var wasCalled = false
+        let updatedFlags = [Self.testFlag]
 
         let store = TestStore(
             initialState: FeatureFlagsFeature.State()
@@ -72,11 +100,19 @@ struct FeatureFlagsFeatureOverrideTests {
                 wasCalled = true
                 receivedValue = value
             }
+            $0.featureFlagsClient.fetchFeatureFlags = { updatedFlags }
         }
 
-        await store.send(.setFeatureFlagOverride(Self.testFlag, .default))
+        await store.send(.setFeatureFlagOverride(Self.testFlag, .default)) {
+            $0.viewState = .loading
+        }
         #expect(wasCalled == true)
         #expect(receivedValue == nil)
+
+        let expectedSnapshot = FeatureFlagsFeature.ViewSnapshot(featureFlags: updatedFlags)
+        await store.receive(\.loaded) {
+            $0.viewState = .ready(expectedSnapshot)
+        }
     }
 
 }

@@ -40,8 +40,8 @@ struct FeatureFlagRow: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
-        .task(id: override) {
-            updateFeatureValueOverride(featureFlag, override)
+        .onChange(of: override) { _, newValue in
+            updateFeatureValueOverride(featureFlag, newValue)
         }
     }
 
