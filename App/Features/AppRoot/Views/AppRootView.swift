@@ -35,12 +35,12 @@ struct AppRootView: View {
         }
         #if DEBUG
         .onShake {
-                store.send(.navigate(.developer))
-            }
+            store.send(.navigate(.developer))
+        }
         #endif
-            .task {
-                    store.send(.didAppear)
-                }
+        .task {
+            store.send(.didAppear)
+        }
     }
 
     private var content: some View {
