@@ -3,6 +3,7 @@
 
 # Xcode build products
 build/
+!.claude/skills/build/
 DerivedData/
 DerivedDataMCP/
 

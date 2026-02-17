@@ -47,7 +47,11 @@ let package = Package(
         ),
         .testTarget(
             name: "MovieIntelligenceFeatureTests",
-            dependencies: ["MovieIntelligenceFeature"]
+            dependencies: [
+                "MovieIntelligenceFeature",
+                .product(name: "MoviesDomain", package: "PopcornMovies"),
+                .product(name: "ObservabilityTestHelpers", package: "Observability")
+            ]
         )
     ]
 )

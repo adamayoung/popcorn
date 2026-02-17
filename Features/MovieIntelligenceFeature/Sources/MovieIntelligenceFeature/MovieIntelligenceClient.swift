@@ -2,19 +2,18 @@
 //  MovieIntelligenceClient.swift
 //  MovieIntelligenceFeature
 //
-//  Copyright © 2025 Adam Young.
+//  Copyright © 2026 Adam Young.
 //
 
 import AppDependencies
 import ComposableArchitecture
 import Foundation
 import IntelligenceDomain
-import MoviesDomain
 
 @DependencyClient
 struct MovieIntelligenceClient: Sendable {
 
-    var fetchMovie: @Sendable (_ id: Int) async throws -> Movie
+    var fetchMovie: @Sendable (_ id: Int) async throws -> IntelligenceDomain.Movie
     var createSession: @Sendable (_ movieID: Int) async throws -> LLMSession
 
 }

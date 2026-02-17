@@ -2,7 +2,7 @@
 //  CreateTVSeriesIntelligenceSessionUseCase.swift
 //  Popcorn
 //
-//  Copyright © 2025 Adam Young.
+//  Copyright © 2026 Adam Young.
 //
 
 import Foundation
@@ -11,6 +11,7 @@ import IntelligenceDomain
 ///
 /// Use case for creating an intelligence session for a specific TV series
 ///
+/// Defines the ``CreateTVSeriesIntelligenceSessionUseCase`` contract.
 public protocol CreateTVSeriesIntelligenceSessionUseCase: Sendable {
 
     ///

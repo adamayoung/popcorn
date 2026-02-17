@@ -17,4 +17,4 @@
 --disable redundantLetError
 --disable unusedArguments
 
---header \n {file}\n Popcorn\n\n Copyright © 2025 Adam Young.\n
+--header \n {file}\n Popcorn\n\n Copyright © 2026 Adam Young.\n

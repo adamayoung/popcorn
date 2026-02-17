@@ -2,11 +2,12 @@
 //  MovieLLMSessionRepository.swift
 //  Popcorn
 //
-//  Copyright © 2025 Adam Young.
+//  Copyright © 2026 Adam Young.
 //
 
 import Foundation
 
+/// Defines the ``MovieLLMSessionRepository`` contract.
 public protocol MovieLLMSessionRepository: Sendable {
 
     func session(
@@ -15,6 +16,7 @@ public protocol MovieLLMSessionRepository: Sendable {
 
 }
 
+/// Represents the ``MovieLLMSessionRepositoryError`` values.
 public enum MovieLLMSessionRepositoryError: Error {
 
     case movieNotFound

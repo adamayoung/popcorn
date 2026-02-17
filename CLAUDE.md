@@ -33,6 +33,32 @@ STATSIG_SDK_KEY = <your-statsig-key>     # Optional
 
 When the Xcode MCP server (`xcode`) is available, prefer its tools for building, testing, file operations, and diagnostics. All Xcode MCP tools require a `tabIdentifier` — use `mcp__xcode__XcodeListWindows` to discover open workspaces. File paths use Xcode project navigator paths (e.g., `ProjectName/Sources/MyFile.swift`), not filesystem paths.
 
+### TMDb MCP
+
+When the TMDb MCP server (`tmdb`) is available, use it to look up real movie, TV series, and person data. This is the authoritative source for all TMDb-related questions — prefer it over web searches or training knowledge.
+
+| Task | MCP Tool |
+|------|----------|
+| Movie details | `mcp__tmdb__movie_details` |
+| Movie credits | `mcp__tmdb__movie_credits` |
+| Movie keywords | `mcp__tmdb__movie_keywords` |
+| Search movies | `mcp__tmdb__search_movie` |
+| TV series details | `mcp__tmdb__tv_series_details` |
+| TV series credits | `mcp__tmdb__tv_series_credits` |
+| TV season details | `mcp__tmdb__tv_season_details` |
+| TV episode details | `mcp__tmdb__tv_episode_details` |
+| Search TV series | `mcp__tmdb__search_tv` |
+| Person details | `mcp__tmdb__person_details` |
+| Person movie credits | `mcp__tmdb__person_movie_credits` |
+| Person TV credits | `mcp__tmdb__person_tv_credits` |
+| Search people | `mcp__tmdb__search_person` |
+| Search all | `mcp__tmdb__search_multi` |
+| Trending movies | `mcp__tmdb__trending_movies` |
+| Trending TV | `mcp__tmdb__trending_tv` |
+| Trending people | `mcp__tmdb__trending_people` |
+| Discover movies | `mcp__tmdb__discover_movie` |
+| Discover TV | `mcp__tmdb__discover_tv` |
+
 ### Build & Test
 
 Use slash commands or Xcode MCP tools directly:
@@ -40,11 +66,16 @@ Use slash commands or Xcode MCP tools directly:
 | Task | Slash Command | MCP Tool |
 |------|---------------|----------|
 | Build app | `/build` | `mcp__xcode__BuildProject` |
-| Build for testing | `make build-for-testing` | — |
+| Build for testing | `/build-for-testing` | — |
 | Run all tests | `/test` | `mcp__xcode__RunAllTests` |
 | Run specific tests | `/test-single <name>` | `mcp__xcode__RunSomeTests` with test specifiers |
+| Build single package | `/build-package` | — |
+| Build single package for testing | `/build-package-for-testing` | — |
+| Test single package | `/test-package` | `mcp__xcode__RunSomeTests` with test specifiers |
 | Get build log | — | `mcp__xcode__GetBuildLog` (filter by severity, glob, pattern) |
 | List available tests | — | `mcp__xcode__GetTestList` |
+
+Use the `-package` variants when working on a single Swift package — they run `swift build`/`swift test` directly in the package directory, which is faster than building the entire app.
 
 ### Diagnostics & Issues
 
@@ -108,7 +139,7 @@ This prevents CI failures and ensures code quality before review.
 | `App/PopcornApp.swift` | App entry point, creates root store |
 | `App/Features/AppRoot/AppRootFeature.swift` | Root TCA reducer, tab management |
 | `App/Features/AppRoot/AppRootClient.swift` | App initialization (observability, feature flags) |
-| `AppDependencies/` | All dependency wiring for TCA |
+| `AppDependencies/` | Central DI hub — registers all use cases as TCA `DependencyKey`s, wires adapters to contexts |
 
 ## Contexts (Business Domains)
 
@@ -143,62 +174,80 @@ This prevents CI failures and ensures code quality before review.
 | `MovieCastAndCrewFeature` | Full cast/crew list |
 | `GamesCatalogFeature` | Games tab |
 | `PlotRemixGameFeature` | Plot remix game UI |
+| `DeveloperFeature` | Developer menu, feature flag overrides |
+
+## Adapters (External Service Bridges)
+
+**Context Adapters** — bridge TMDb API to domain interfaces. Each exposes a `*UITesting` module with stubs.
+
+| Adapter | Bridges To |
+|---------|-----------|
+| `PopcornMoviesAdapters` | PopcornMovies ↔ TMDb |
+| `PopcornTVSeriesAdapters` | PopcornTVSeries ↔ TMDb |
+| `PopcornPeopleAdapters` | PopcornPeople ↔ TMDb |
+| `PopcornSearchAdapters` | PopcornSearch ↔ TMDb (depends on Movies/TVSeries/People adapters) |
+| `PopcornDiscoverAdapters` | PopcornDiscover ↔ TMDb |
+| `PopcornTrendingAdapters` | PopcornTrending ↔ TMDb |
+| `PopcornIntelligenceAdapters` | PopcornIntelligence ↔ Movies/TVSeries contexts (no external API) |
+| `PopcornConfigurationAdapters` | PopcornConfiguration ↔ TMDb |
+| `PopcornGenresAdapters` | PopcornGenres ↔ TMDb |
+| `PopcornGamesCatalogAdapters` | PopcornGamesCatalog ↔ FeatureAccess |
+| `PopcornPlotRemixGameAdapters` | PopcornPlotRemixGame ↔ TMDb |
+
+**Platform Adapters** — bridge platform concerns to third-party SDKs.
+
+| Adapter | Bridges To |
+|---------|-----------|
+| `ObservabilityAdapters` | Observability ↔ Sentry |
+| `FeatureAccessAdapters` | FeatureAccess ↔ Statsig |
+
+## Core (Shared Foundation)
+
+| Package | Purpose |
+|---------|---------|
+| `CoreDomain` | Shared domain primitives (also provides `CoreDomainTestHelpers`) |
+| `DesignSystem` | Shared UI components, styles, image loading (SDWebImageSwiftUI) |
+| `TCAFoundation` | Shared TCA utilities and extensions |
+
+## Platform (Cross-Cutting Concerns)
+
+| Package | Purpose |
+|---------|---------|
+| `Caching` | In-memory caching with TTL, provides `CachingTestHelpers` |
+| `Observability` | Logging, analytics, error reporting interfaces, provides `ObservabilityTestHelpers` |
+| `FeatureAccess` | Feature flag interfaces and evaluation |
+| `DataPersistenceInfrastructure` | SwiftData persistence protocols |
 
 ## Architecture
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed patterns, examples, and step-by-step workflows for adding use cases, screens, features, and contexts.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for layer structure, use case patterns, and step-by-step workflows.
 
-### Layer Structure
+## TMDb Domain Model Mapping
 
-Each context in `Contexts/` has 4 layers:
+See [docs/TMDB_MAPPING.md](docs/TMDB_MAPPING.md) for the complete TMDb type reference and mapping pipeline.
 
-```
-PopcornMovies/Sources/
-├── MoviesDomain/        # Entities, repository protocols (NO dependencies)
-├── MoviesApplication/   # Use case implementations
-├── MoviesInfrastructure/# SwiftData, API adapters
-└── MoviesComposition/   # Factory that wires it together
-```
+## External Dependencies
 
-### Use Case File Structure
-
-```
-MoviesApplication/UseCases/FetchMovieDetails/
-├── FetchMovieDetailsUseCase.swift        # Protocol
-├── DefaultFetchMovieDetailsUseCase.swift # Implementation
-└── FetchMovieDetailsUseCaseError.swift   # Errors
-```
+| Dependency | Version | Used By |
+|------------|---------|---------|
+| swift-composable-architecture | 1.23+ | All Features, AppDependencies |
+| TMDb | 16.0+ | Context Adapters |
+| SDWebImageSwiftUI | 3.0+ | DesignSystem |
+| sentry-cocoa | 8.57+ | ObservabilityAdapters |
+| statsig-kit | 1.55+ | FeatureAccessAdapters |
+| swift-snapshot-testing | 1.18+ | ExploreFeature (snapshot tests) |
 
 ## Code Style
 
 Detailed guides: [SWIFT.md](docs/SWIFT.md) · [SWIFTUI.md](docs/SWIFTUI.md) · [SWIFTDATA.md](docs/SWIFTDATA.md) · [TCA.md](docs/TCA.md) · [GIT.md](docs/GIT.md) · [UITESTING.md](docs/UITESTING.md)
 
-### Quick Reference
+### Project-Specific Rules
 
-**Swift**: `@Observable` needs `@MainActor` · **No force unwraps (`!`) anywhere, including tests** — use `try #require()` for unwrapping optionals in tests · `Task.sleep(for:)` · `localizedStandardContains()`
-
-**SwiftUI**: `foregroundStyle()` · `clipShape(.rect(cornerRadius:))` · `Tab` API · `@Observable` · `NavigationStack`
-
-**SwiftData**: No `@Attribute(.unique)` · Optional/defaulted properties · Optional relationships · Never expose `@Model` outside Infrastructure
-
-**TCA**: `@Reducer` + `@ObservableState` · `StackState` navigation · `@Dependency` injection · When adding or removing feature flags in a Client/Reducer, always update the corresponding `*FeatureFlagsTests` (all existing tests and add new ones for the flag)
+- When adding or removing feature flags in a Client/Reducer, always update the corresponding `*FeatureFlagsTests` (all existing tests and add new ones for the flag)
 
 ### SwiftLint Attributes
 
 ```yaml
 always_on_same_line: @Dependency, @Environment, @State, @Binding, @testable
 always_on_line_above: @ViewBuilder
-```
-
-## Directory Structure
-
-```
-App/                    # Root app, scenes, AppRootFeature
-Features/               # TCA feature packages
-Contexts/               # Business domain packages
-Adapters/               # Bridges contexts to external APIs
-Platform/               # Caching, DataPersistence, Observability, FeatureAccess
-Core/                   # DesignSystem, CoreDomain
-AppDependencies/        # Central TCA dependency composition
-Configs/                # Build settings, secrets
 ```

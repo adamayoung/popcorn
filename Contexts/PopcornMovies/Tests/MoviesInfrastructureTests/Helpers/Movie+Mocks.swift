@@ -2,7 +2,7 @@
 //  Movie+Mocks.swift
 //  PopcornMovies
 //
-//  Copyright © 2025 Adam Young.
+//  Copyright © 2026 Adam Young.
 //
 
 import Foundation
@@ -14,6 +14,8 @@ extension Movie {
         id: Int = 1,
         title: String = "Test Movie",
         tagline: String? = "Test Tagline",
+        originalTitle: String? = "Test Movie",
+        originalLanguage: String? = "en",
         overview: String = "Test Overview",
         runtime: Int? = 120,
         genres: [Genre]? = Genre.mocks,
@@ -22,12 +24,26 @@ extension Movie {
         backdropPath: URL? = URL(string: "https://example.com/backdrop.jpg"),
         budget: Double? = 100_000_000,
         revenue: Double? = 500_000_000,
-        homepageURL: URL? = URL(string: "https://example.com/movie")
+        homepageURL: URL? = URL(string: "https://example.com/movie"),
+        imdbID: String? = "tt0000001",
+        status: MovieStatus? = .released,
+        productionCompanies: [ProductionCompany]? = nil,
+        productionCountries: [ProductionCountry]? = nil,
+        spokenLanguages: [SpokenLanguage]? = nil,
+        originCountry: [String]? = ["US"],
+        belongsToCollection: MovieCollection? = nil,
+        popularity: Double? = 10.0,
+        voteAverage: Double? = 7.5,
+        voteCount: Int? = 1000,
+        hasVideo: Bool? = false,
+        isAdultOnly: Bool? = false
     ) -> Movie {
         Movie(
             id: id,
             title: title,
             tagline: tagline,
+            originalTitle: originalTitle,
+            originalLanguage: originalLanguage,
             overview: overview,
             runtime: runtime,
             genres: genres,
@@ -36,7 +52,19 @@ extension Movie {
             backdropPath: backdropPath,
             budget: budget,
             revenue: revenue,
-            homepageURL: homepageURL
+            homepageURL: homepageURL,
+            imdbID: imdbID,
+            status: status,
+            productionCompanies: productionCompanies,
+            productionCountries: productionCountries,
+            spokenLanguages: spokenLanguages,
+            originCountry: originCountry,
+            belongsToCollection: belongsToCollection,
+            popularity: popularity,
+            voteAverage: voteAverage,
+            voteCount: voteCount,
+            hasVideo: hasVideo,
+            isAdultOnly: isAdultOnly
         )
     }
 

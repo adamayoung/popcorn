@@ -2,11 +2,12 @@
 //  CreditsProviding.swift
 //  Popcorn
 //
-//  Copyright © 2025 Adam Young.
+//  Copyright © 2026 Adam Young.
 //
 
 import Foundation
 
+/// Defines the ``CreditsProviding`` contract.
 public protocol CreditsProviding: Sendable {
 
     func credits(forMovie movieID: Int) async throws(CreditsProviderError) -> Credits
@@ -15,6 +16,7 @@ public protocol CreditsProviding: Sendable {
 
 }
 
+/// Represents the ``CreditsProviderError`` values.
 public enum CreditsProviderError: Error {
 
     case notFound

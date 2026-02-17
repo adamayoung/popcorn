@@ -1,0 +1,245 @@
+# Reducers
+
+## When to use this reference
+
+Use this file when creating new TCA features, composing child reducers, defining state and actions, or understanding the `@Reducer` macro.
+
+## @Reducer macro
+
+The `@Reducer` macro generates conformance boilerplate. Apply it to a struct containing `State`, `Action`, and `body`. It auto-applies `@CasePathable` to Action enums.
+
+**Note:** `@Reducer(state: .equatable)` and similar parameterized forms are **hard-deprecated in TCA 1.23.0**. Apply `Equatable` conformance directly on State instead.
+
+```swift
+@Reducer
+struct CounterFeature: Sendable {
+    @ObservableState
+    struct State: Sendable, Equatable {
+        var count = 0
+    }
+
+    enum Action: Sendable {
+        case decrementButtonTapped
+        case incrementButtonTapped
+    }
+
+    var body: some ReducerOf<Self> {
+        Reduce { state, action in
+            switch action {
+            case .decrementButtonTapped:
+                state.count -= 1
+                return .none
+
+            case .incrementButtonTapped:
+                state.count += 1
+                return .none
+            }
+        }
+    }
+}
+```
+
+## @ObservableState
+
+Apply `@ObservableState` to all `State` structs. This enables fine-grained observation — views only re-render when accessed properties change.
+
+- Replaces the old `Equatable`-based diffing and `WithViewStore` pattern.
+- State must still be a value type (struct).
+- Nested state structs also need `@ObservableState`.
+
+```swift
+@ObservableState
+struct State: Sendable, Equatable {
+    var title: String = ""
+    var items: IdentifiedArrayOf<Item> = []
+    var isLoading: Bool = false
+}
+```
+
+## Action enum
+
+Actions are plain enums. The `@Reducer` macro auto-applies `@CasePathable` for key path access.
+
+```swift
+enum Action: Sendable {
+    case viewAppeared
+    case dataLoaded(Result<[Item], Error>)
+    case child(ChildFeature.Action)
+    case path(StackActionOf<Path>)
+}
+```
+
+### Delegate actions pattern
+
+Use delegate actions for child-to-parent communication:
+
+```swift
+// In child
+enum Action: Sendable {
+    case delegate(Delegate)
+
+    enum Delegate: Sendable {
+        case itemSelected(Item.ID)
+    }
+}
+
+// In parent
+case .child(.delegate(.itemSelected(let id))):
+    state.selectedID = id
+    return .none
+```
+
+### View actions pattern
+
+Use `@ViewAction` to separate view concerns from internal logic:
+
+```swift
+@Reducer
+struct Feature: Sendable {
+    // ...
+    @CasePathable
+    enum Action: Sendable, ViewAction {
+        case view(View)
+        // internal actions...
+
+        enum View: Sendable {
+            case appeared
+            case buttonTapped
+        }
+    }
+}
+
+// In view
+@ViewAction(for: Feature.self)
+struct FeatureView: View {
+    @Bindable var store: StoreOf<Feature>
+
+    var body: some View {
+        Button("Tap") { send(.buttonTapped) }
+            .onAppear { send(.appeared) }
+    }
+}
+```
+
+## Body and Reduce
+
+The `body` property uses a result builder to compose reducers:
+
+```swift
+var body: some ReducerOf<Self> {
+    BindingReducer()          // Process bindings first
+
+    Reduce { state, action in
+        switch action {
+        // ...
+        }
+    }
+
+    Scope(state: \.child, action: \.child) {
+        ChildFeature()
+    }
+}
+```
+
+Reducers in the body run top-to-bottom. Place `BindingReducer()` before `Reduce` so binding state is updated before your logic runs. Place child `Scope` reducers after `Reduce` if the parent needs to intercept child actions first.
+
+## Returning effects from Reduce
+
+- `.none` — no side effects
+- `.run { send in ... }` — async effect (primary pattern)
+- `.send(.action)` — synchronous re-entry (use sparingly)
+- See `effects.md` for full effect reference
+
+## Composition
+
+### Scope (embed child reducer)
+
+```swift
+Scope(state: \.settings, action: \.settings) {
+    SettingsFeature()
+}
+```
+
+### ForEach (collection of child features)
+
+```swift
+// State
+var items: IdentifiedArrayOf<ItemFeature.State> = []
+
+// Body
+Reduce { state, action in ... }
+    .forEach(\.items, action: \.items) {
+        ItemFeature()
+    }
+```
+
+### ifLet (optional child — tree-based navigation)
+
+```swift
+// Body
+Reduce { state, action in ... }
+    .ifLet(\.$destination, action: \.destination)
+```
+
+### forEach (stack-based navigation)
+
+```swift
+// Body
+Reduce { state, action in ... }
+    .forEach(\.path, action: \.path)
+```
+
+## Helper methods (avoid action ping-pong)
+
+Extract shared logic into private methods instead of sending internal actions:
+
+```swift
+@Reducer
+struct Feature: Sendable {
+    // ...
+    var body: some ReducerOf<Self> {
+        Reduce { state, action in
+            switch action {
+            case .refreshButtonTapped:
+                return fetchData(state: &state)
+            case .viewAppeared:
+                guard !state.hasLoaded else { return .none }
+                return fetchData(state: &state)
+            // ...
+            }
+        }
+    }
+
+    private func fetchData(state: inout State) -> EffectOf<Self> {
+        state.isLoading = true
+        return .run { send in
+            // ...
+        }
+    }
+}
+```
+
+`EffectOf<Self>` is a TCA typealias for `Effect<Self.Action>`. Prefer it in helper methods — it stays correct if the Action type is renamed or the method is moved.
+
+## Overriding child dependencies
+
+Override a dependency for a specific child reducer:
+
+```swift
+Scope(state: \.child, action: \.child) {
+    ChildFeature()
+        .dependency(\.apiClient, .mock)
+}
+```
+
+## Do / Don't
+
+- Do use `@Reducer` macro on all reducer structs.
+- Do apply `@ObservableState` to all State types.
+- Do make State and Action `Sendable`.
+- Do use delegate actions for child-to-parent communication.
+- Do extract shared logic into helper methods.
+- Don't use `WithViewStore` or `ViewStore` (deprecated).
+- Don't access `state` directly in effect closures — capture specific values.
+- Don't send actions just to share logic between action handlers — use helper methods.
+- Don't put async work directly in `Reduce` body — use `.run` effects.

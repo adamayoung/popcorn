@@ -2,7 +2,7 @@
 //  MockFetchTVSeriesDetailsUseCase.swift
 //  PopcornSearchAdapters
 //
-//  Copyright © 2025 Adam Young.
+//  Copyright © 2026 Adam Young.
 //
 
 import Foundation

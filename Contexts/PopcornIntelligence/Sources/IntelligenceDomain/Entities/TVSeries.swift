@@ -2,7 +2,7 @@
 //  TVSeries.swift
 //  Popcorn
 //
-//  Copyright © 2025 Adam Young.
+//  Copyright © 2026 Adam Young.
 //
 
 import Foundation
@@ -22,11 +22,13 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
     /// The TV series' name.
     public let name: String
 
+    /// The TV series' tagline.
     public let tagline: String?
 
     /// A brief description or summary of the TV series.
     public let overview: String
 
+    /// The number of seasons in the TV series.
     public let numberOfSeasons: Int
 
     /// URL path to the TV series' poster image.

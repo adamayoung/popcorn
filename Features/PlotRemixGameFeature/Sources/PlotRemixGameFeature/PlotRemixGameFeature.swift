@@ -2,7 +2,7 @@
 //  PlotRemixGameFeature.swift
 //  PlotRemixGameFeature
 //
-//  Copyright © 2025 Adam Young.
+//  Copyright © 2026 Adam Young.
 //
 
 import AppDependencies

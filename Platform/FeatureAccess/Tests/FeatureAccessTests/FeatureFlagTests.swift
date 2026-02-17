@@ -2,7 +2,7 @@
 //  FeatureFlagTests.swift
 //  FeatureAccess
 //
-//  Copyright © 2025 Adam Young.
+//  Copyright © 2026 Adam Young.
 //
 
 @testable import FeatureAccess

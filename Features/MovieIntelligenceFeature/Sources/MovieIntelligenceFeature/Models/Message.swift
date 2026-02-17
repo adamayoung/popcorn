@@ -2,7 +2,7 @@
 //  Message.swift
 //  MovieIntelligenceFeature
 //
-//  Copyright © 2025 Adam Young.
+//  Copyright © 2026 Adam Young.
 //
 
 import DesignSystem
@@ -40,6 +40,22 @@ public struct Message: ChatMessage {
             content: .text(textContent),
             timestamp: timestamp
         )
+    }
+
+}
+
+public extension Message {
+
+    /// `id` and `timestamp` are auto-generated identity metadata and are excluded from equality
+    /// so that TCA state assertions can match messages by role and content without caring about
+    /// the specific UUID or creation time. SwiftUI view identity uses `Identifiable.id`, not `==`.
+    static func == (lhs: Message, rhs: Message) -> Bool {
+        lhs.role == rhs.role && lhs.content == rhs.content
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(role)
+        hasher.combine(content)
     }
 
 }
