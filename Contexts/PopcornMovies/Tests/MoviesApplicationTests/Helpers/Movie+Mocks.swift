@@ -18,10 +18,10 @@ extension Movie {
         originalLanguage: String? = "en",
         overview: String = "Test Overview",
         runtime: Int? = 120,
-        genres: [Genre]? = Genre.mocks,
+        genres: [Genre]? = nil,
         releaseDate: Date? = Date(timeIntervalSince1970: 0),
-        posterPath: URL? = URL(string: "https://example.com/poster.jpg"),
-        backdropPath: URL? = URL(string: "https://example.com/backdrop.jpg"),
+        posterPath: URL? = URL(string: "/poster.jpg"),
+        backdropPath: URL? = URL(string: "/backdrop.jpg"),
         budget: Double? = 100_000_000,
         revenue: Double? = 500_000_000,
         homepageURL: URL? = URL(string: "https://example.com/movie"),
@@ -67,14 +67,5 @@ extension Movie {
             isAdultOnly: isAdultOnly
         )
     }
-
-}
-
-extension Genre {
-
-    static let mocks: [Genre] = [
-        Genre(id: 28, name: "Action"),
-        Genre(id: 12, name: "Adventure")
-    ]
 
 }

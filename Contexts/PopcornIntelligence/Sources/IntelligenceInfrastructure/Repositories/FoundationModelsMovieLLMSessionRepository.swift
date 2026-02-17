@@ -55,7 +55,7 @@ final class FoundationModelsMovieLLMSessionRepository: MovieLLMSessionRepository
         The focus of the conversation is the movie '\(movie.title)'.
         The conversation **MUST** focus on the movie '\(movie.title)'.
 
-        Keep responses concise and focused on the information requested.
+        Keep responses concise and focused on the information requested. Don't reply with preamble.
 
         You should have a pleasant nature and act like the movie's director.
         """

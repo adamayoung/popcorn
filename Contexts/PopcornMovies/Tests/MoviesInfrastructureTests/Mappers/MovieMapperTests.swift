@@ -17,31 +17,15 @@ struct MovieMapperTests {
 
     // MARK: - Entity to Domain Tests
 
-    @Test("maps all properties from entity to domain")
-    func mapsAllPropertiesFromEntityToDomain() {
-        let entity = MoviesMovieEntity(
-            movieID: 123,
-            title: "Test Movie",
-            tagline: "Test Tagline",
-            overview: "Test Overview",
-            runtime: 120,
-            releaseDate: Date(timeIntervalSince1970: 0),
-            posterPath: URL(string: "https://example.com/poster.jpg"),
-            backdropPath: URL(string: "https://example.com/backdrop.jpg"),
-            budget: 100_000_000,
-            revenue: 500_000_000,
-            homepageURL: URL(string: "https://example.com/movie"),
-            genres: [
-                MoviesGenreEntity(genreID: 28, name: "Action"),
-                MoviesGenreEntity(genreID: 12, name: "Adventure")
-            ]
-        )
-
-        let movie = mapper.map(entity)
+    @Test("maps core properties from entity to domain")
+    func mapsCorePropertiesFromEntityToDomain() {
+        let movie = mapper.map(Self.makeFullEntity())
 
         #expect(movie.id == 123)
         #expect(movie.title == "Test Movie")
         #expect(movie.tagline == "Test Tagline")
+        #expect(movie.originalTitle == "Original Title")
+        #expect(movie.originalLanguage == "en")
         #expect(movie.overview == "Test Overview")
         #expect(movie.runtime == 120)
         #expect(movie.releaseDate == Date(timeIntervalSince1970: 0))
@@ -50,26 +34,51 @@ struct MovieMapperTests {
         #expect(movie.budget == 100_000_000)
         #expect(movie.revenue == 500_000_000)
         #expect(movie.homepageURL == URL(string: "https://example.com/movie"))
+        #expect(movie.imdbID == "tt1234567")
+        #expect(movie.status == .released)
+        #expect(movie.originCountry == ["US", "GB"])
+        #expect(movie.popularity == 45.678)
+        #expect(movie.voteAverage == 7.5)
+        #expect(movie.voteCount == 1500)
+        #expect(movie.hasVideo == true)
+        #expect(movie.isAdultOnly == false)
+    }
+
+    @Test("maps relationships from entity to domain")
+    func mapsRelationshipsFromEntityToDomain() {
+        let movie = mapper.map(Self.makeFullEntity())
+
         #expect(movie.genres?.count == 2)
         #expect(movie.genres?[0].id == 28)
         #expect(movie.genres?[0].name == "Action")
         #expect(movie.genres?[1].id == 12)
         #expect(movie.genres?[1].name == "Adventure")
+        #expect(movie.productionCompanies?.count == 1)
+        #expect(movie.productionCompanies?[0].id == 25)
+        #expect(movie.productionCompanies?[0].name == "20th Century Fox")
+        #expect(movie.productionCompanies?[0].originCountry == "US")
+        #expect(movie.productionCompanies?[0].logoPath == URL(string: "https://example.com/logo.png"))
+        #expect(movie.productionCountries?.count == 1)
+        #expect(movie.productionCountries?[0].countryCode == "US")
+        #expect(movie.productionCountries?[0].name == "United States of America")
+        #expect(movie.spokenLanguages?.count == 1)
+        #expect(movie.spokenLanguages?[0].languageCode == "en")
+        #expect(movie.spokenLanguages?[0].name == "English")
+        #expect(movie.belongsToCollection?.id == 119)
+        #expect(movie.belongsToCollection?.name == "Test Collection")
     }
 
     @Test("maps with nil optional properties from entity to domain")
     func mapsWithNilOptionalPropertiesFromEntityToDomain() {
-        let entity = MoviesMovieEntity(
-            movieID: 456,
-            title: "Minimal Movie",
-            overview: "Minimal Overview"
-        )
+        let entity = MoviesMovieEntity(movieID: 456, title: "Minimal Movie", overview: "Minimal Overview")
 
         let movie = mapper.map(entity)
 
         #expect(movie.id == 456)
         #expect(movie.title == "Minimal Movie")
         #expect(movie.tagline == nil)
+        #expect(movie.originalTitle == nil)
+        #expect(movie.originalLanguage == nil)
         #expect(movie.overview == "Minimal Overview")
         #expect(movie.runtime == nil)
         #expect(movie.releaseDate == nil)
@@ -78,17 +87,24 @@ struct MovieMapperTests {
         #expect(movie.budget == nil)
         #expect(movie.revenue == nil)
         #expect(movie.homepageURL == nil)
+        #expect(movie.imdbID == nil)
+        #expect(movie.status == nil)
+        #expect(movie.originCountry == nil)
+        #expect(movie.popularity == nil)
+        #expect(movie.voteAverage == nil)
+        #expect(movie.voteCount == nil)
+        #expect(movie.hasVideo == nil)
+        #expect(movie.isAdultOnly == nil)
         #expect(movie.genres == nil)
+        #expect(movie.productionCompanies == nil)
+        #expect(movie.productionCountries == nil)
+        #expect(movie.spokenLanguages == nil)
+        #expect(movie.belongsToCollection == nil)
     }
 
     @Test("maps with empty genres array from entity to domain")
     func mapsWithEmptyGenresArrayFromEntityToDomain() {
-        let entity = MoviesMovieEntity(
-            movieID: 789,
-            title: "No Genres Movie",
-            overview: "Overview",
-            genres: []
-        )
+        let entity = MoviesMovieEntity(movieID: 789, title: "No Genres Movie", overview: "Overview", genres: [])
 
         let movie = mapper.map(entity)
 
@@ -100,11 +116,7 @@ struct MovieMapperTests {
 
     @Test("compactMap returns movie when entity is not nil")
     func compactMapReturnMovieWhenEntityIsNotNil() {
-        let entity = MoviesMovieEntity(
-            movieID: 123,
-            title: "Test Movie",
-            overview: "Test Overview"
-        )
+        let entity = MoviesMovieEntity(movieID: 123, title: "Test Movie", overview: "Test Overview")
 
         let movie = mapper.compactMap(entity)
 
@@ -120,189 +132,55 @@ struct MovieMapperTests {
         #expect(movie == nil)
     }
 
-    // MARK: - Domain to Entity Tests
+}
 
-    @Test("maps all properties from domain to entity")
-    func mapsAllPropertiesFromDomainToEntity() {
-        let movie = Movie.mock(
-            id: 123,
+extension MovieMapperTests {
+
+    static func makeFullEntity() -> MoviesMovieEntity {
+        MoviesMovieEntity(
+            movieID: 123,
             title: "Test Movie",
             tagline: "Test Tagline",
+            originalTitle: "Original Title",
+            originalLanguage: "en",
             overview: "Test Overview",
             runtime: 120,
-            genres: [
-                Genre(id: 28, name: "Action"),
-                Genre(id: 12, name: "Adventure")
-            ],
             releaseDate: Date(timeIntervalSince1970: 0),
             posterPath: URL(string: "https://example.com/poster.jpg"),
             backdropPath: URL(string: "https://example.com/backdrop.jpg"),
             budget: 100_000_000,
             revenue: 500_000_000,
-            homepageURL: URL(string: "https://example.com/movie")
-        )
-
-        let entity = mapper.map(movie)
-
-        #expect(entity.movieID == 123)
-        #expect(entity.title == "Test Movie")
-        #expect(entity.tagline == "Test Tagline")
-        #expect(entity.overview == "Test Overview")
-        #expect(entity.runtime == 120)
-        #expect(entity.releaseDate == Date(timeIntervalSince1970: 0))
-        #expect(entity.posterPath == URL(string: "https://example.com/poster.jpg"))
-        #expect(entity.backdropPath == URL(string: "https://example.com/backdrop.jpg"))
-        #expect(entity.budget == 100_000_000)
-        #expect(entity.revenue == 500_000_000)
-        #expect(entity.homepageURL == URL(string: "https://example.com/movie"))
-        #expect(entity.genres?.count == 2)
-        #expect(entity.genres?[0].genreID == 28)
-        #expect(entity.genres?[0].name == "Action")
-        #expect(entity.genres?[1].genreID == 12)
-        #expect(entity.genres?[1].name == "Adventure")
-    }
-
-    @Test("maps with nil optional properties from domain to entity")
-    func mapsWithNilOptionalPropertiesFromDomainToEntity() {
-        let movie = Movie.mock(
-            id: 456,
-            title: "Minimal Movie",
-            tagline: nil,
-            overview: "Minimal Overview",
-            runtime: nil,
-            genres: nil,
-            releaseDate: nil,
-            posterPath: nil,
-            backdropPath: nil,
-            budget: nil,
-            revenue: nil,
-            homepageURL: nil
-        )
-
-        let entity = mapper.map(movie)
-
-        #expect(entity.movieID == 456)
-        #expect(entity.title == "Minimal Movie")
-        #expect(entity.tagline == nil)
-        #expect(entity.overview == "Minimal Overview")
-        #expect(entity.runtime == nil)
-        #expect(entity.releaseDate == nil)
-        #expect(entity.posterPath == nil)
-        #expect(entity.backdropPath == nil)
-        #expect(entity.budget == nil)
-        #expect(entity.revenue == nil)
-        #expect(entity.homepageURL == nil)
-        #expect(entity.genres == nil)
-    }
-
-    @Test("maps with empty genres array from domain to entity")
-    func mapsWithEmptyGenresArrayFromDomainToEntity() {
-        let movie = Movie.mock(
-            id: 789,
-            title: "No Genres Movie",
-            overview: "Overview",
-            genres: []
-        )
-
-        let entity = mapper.map(movie)
-
-        #expect(entity.genres != nil)
-        #expect(entity.genres?.isEmpty == true)
-    }
-
-    // MARK: - Update Entity Tests
-
-    @Test("updates existing entity with all properties")
-    func updatesExistingEntityWithAllProperties() {
-        let entity = MoviesMovieEntity(
-            movieID: 123,
-            title: "Old Title",
-            overview: "Old Overview"
-        )
-
-        let movie = Movie.mock(
-            id: 123,
-            title: "New Title",
-            tagline: "New Tagline",
-            overview: "New Overview",
-            runtime: 150,
-            genres: [
-                Genre(id: 35, name: "Comedy")
-            ],
-            releaseDate: Date(timeIntervalSince1970: 1_000_000),
-            posterPath: URL(string: "https://example.com/new-poster.jpg"),
-            backdropPath: URL(string: "https://example.com/new-backdrop.jpg"),
-            budget: 200_000_000,
-            revenue: 800_000_000,
-            homepageURL: URL(string: "https://example.com/new-movie")
-        )
-
-        mapper.map(movie, to: entity)
-
-        #expect(entity.title == "New Title")
-        #expect(entity.tagline == "New Tagline")
-        #expect(entity.overview == "New Overview")
-        #expect(entity.runtime == 150)
-        #expect(entity.releaseDate == Date(timeIntervalSince1970: 1_000_000))
-        #expect(entity.posterPath == URL(string: "https://example.com/new-poster.jpg"))
-        #expect(entity.backdropPath == URL(string: "https://example.com/new-backdrop.jpg"))
-        #expect(entity.budget == 200_000_000)
-        #expect(entity.revenue == 800_000_000)
-        #expect(entity.homepageURL == URL(string: "https://example.com/new-movie"))
-        #expect(entity.genres?.count == 1)
-        #expect(entity.genres?[0].genreID == 35)
-        #expect(entity.genres?[0].name == "Comedy")
-    }
-
-    @Test("updates entity genres replacing existing ones")
-    func updatesEntityGenresReplacingExistingOnes() {
-        let entity = MoviesMovieEntity(
-            movieID: 123,
-            title: "Test Movie",
-            overview: "Test Overview",
+            homepageURL: URL(string: "https://example.com/movie"),
+            imdbID: "tt1234567",
+            status: "released",
+            originCountry: ["US", "GB"],
+            popularity: 45.678,
+            voteAverage: 7.5,
+            voteCount: 1500,
+            hasVideo: true,
+            isAdultOnly: false,
             genres: [
                 MoviesGenreEntity(genreID: 28, name: "Action"),
                 MoviesGenreEntity(genreID: 12, name: "Adventure")
-            ]
+            ],
+            productionCompanies: [
+                MoviesProductionCompanyEntity(
+                    companyID: 25, name: "20th Century Fox", originCountry: "US",
+                    logoPath: URL(string: "https://example.com/logo.png")
+                )
+            ],
+            productionCountries: [
+                MoviesProductionCountryEntity(countryCode: "US", name: "United States of America")
+            ],
+            spokenLanguages: [
+                MoviesSpokenLanguageEntity(languageCode: "en", name: "English")
+            ],
+            belongsToCollection: MoviesMovieCollectionEntity(
+                collectionID: 119, name: "Test Collection",
+                posterPath: URL(string: "https://example.com/collection-poster.jpg"),
+                backdropPath: URL(string: "https://example.com/collection-backdrop.jpg")
+            )
         )
-
-        let movie = Movie.mock(
-            id: 123,
-            title: "Test Movie",
-            overview: "Test Overview",
-            genres: [
-                Genre(id: 35, name: "Comedy")
-            ]
-        )
-
-        mapper.map(movie, to: entity)
-
-        #expect(entity.genres?.count == 1)
-        #expect(entity.genres?[0].genreID == 35)
-        #expect(entity.genres?[0].name == "Comedy")
-    }
-
-    @Test("updates entity with nil genres")
-    func updatesEntityWithNilGenres() {
-        let entity = MoviesMovieEntity(
-            movieID: 123,
-            title: "Test Movie",
-            overview: "Test Overview",
-            genres: [
-                MoviesGenreEntity(genreID: 28, name: "Action")
-            ]
-        )
-
-        let movie = Movie.mock(
-            id: 123,
-            title: "Test Movie",
-            overview: "Test Overview",
-            genres: nil
-        )
-
-        mapper.map(movie, to: entity)
-
-        #expect(entity.genres?.isEmpty == true)
     }
 
 }

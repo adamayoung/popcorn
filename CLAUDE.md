@@ -40,7 +40,7 @@ Use slash commands or Xcode MCP tools directly:
 | Task | Slash Command | MCP Tool |
 |------|---------------|----------|
 | Build app | `/build` | `mcp__xcode__BuildProject` |
-| Build for testing | `make build-for-testing` | — |
+| Build for testing | `/build-for-testing` | — |
 | Run all tests | `/test` | `mcp__xcode__RunAllTests` |
 | Run specific tests | `/test-single <name>` | `mcp__xcode__RunSomeTests` with test specifiers |
 | Get build log | — | `mcp__xcode__GetBuildLog` (filter by severity, glob, pattern) |
@@ -169,9 +169,30 @@ MoviesApplication/UseCases/FetchMovieDetails/
 └── FetchMovieDetailsUseCaseError.swift   # Errors
 ```
 
+## TMDb Domain Model Mapping
+
+See [docs/TMDB_MAPPING.md](docs/TMDB_MAPPING.md) for the complete TMDb type reference, mapping pipeline, code patterns, and step-by-step workflows for creating or updating domain models from TMDb.
+
+DocC documentation: <https://adamayoung.github.io/TMDb/documentation/tmdb/>
+
+### Mapping Pipeline (4 layers)
+
+```
+TMDb SDK → [Adapter Mapper] → Domain Entity → [Infra Mapper] → SwiftData Entity
+Domain Entity → [App Mapper] → Application Model (*Details, ImageURLSet?)
+```
+
+### Key Mapping Patterns
+
+- **Optional array**: `dto.array?.map(subMapper.map)`
+- **Optional single value**: `dto.value.map(subMapper.map)` (uses `Optional.map`)
+- **Optional enum**: `dto.status.map(enumMapper.map)` / `entity.status.flatMap { Enum(rawValue: $0) }`
+- **Required from optional**: `dto.overview ?? ""`
+- **Enum to SwiftData**: store as `.rawValue` (String), convert back with `init(rawValue:)`
+
 ## Code Style
 
-Detailed guides: [SWIFT.md](docs/SWIFT.md) · [SWIFTUI.md](docs/SWIFTUI.md) · [SWIFTDATA.md](docs/SWIFTDATA.md) · [TCA.md](docs/TCA.md) · [GIT.md](docs/GIT.md) · [UITESTING.md](docs/UITESTING.md)
+Detailed guides: [SWIFT.md](docs/SWIFT.md) · [SWIFTUI.md](docs/SWIFTUI.md) · [SWIFTDATA.md](docs/SWIFTDATA.md) · [TCA.md](docs/TCA.md) · [GIT.md](docs/GIT.md) · [UITESTING.md](docs/UITESTING.md) · [TMDB_MAPPING.md](docs/TMDB_MAPPING.md)
 
 ### Quick Reference
 

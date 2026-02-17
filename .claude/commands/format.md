@@ -1,8 +1,7 @@
 ---
-description: Run swiftlint and swiftformat
+description: Format code with swiftlint and swiftformat
 ---
 
 # Format code
 
-- Delete all .build and .spm directorys in all Swift Package directories
-- Run `swiftlint --fix .` and `swiftformat .` from the project root to check code style and fix issues.
+Run `make format` from the project root to clean SPM caches and fix code style issues.
