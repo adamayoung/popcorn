@@ -32,9 +32,9 @@ struct MovieToolMovie: PromptRepresentable, Equatable {
     @Guide(description: "This is the backdrop URL of the movie.")
     let backdropPath: String?
     @Guide(description: "This is the production budget of the movie in USD.")
-    let budget: Double?
+    let budget: Int?
     @Guide(description: "This is the box office revenue of the movie in USD.")
-    let revenue: Double?
+    let revenue: Int?
     @Guide(description: "This is the homepage URL of the movie.")
     let homepageURL: String?
     @Guide(description: "This is the IMDb ID of the movie.")

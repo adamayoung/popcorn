@@ -22,13 +22,7 @@ struct MovieToolMapper {
             genres: movie.genres?.map { genre in
                 MovieToolGenre(id: genre.id, name: genre.name)
             },
-            releaseDate: {
-                guard let releaseDate = movie.releaseDate else {
-                    return nil
-                }
-
-                return releaseDate.formatted()
-            }(),
+            releaseDate: movie.releaseDate.map { $0.formatted(Date.ISO8601FormatStyle().year().month().day()) },
             posterPath: movie.posterPath?.absoluteString,
             backdropPath: movie.backdropPath?.absoluteString,
             budget: movie.budget,

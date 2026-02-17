@@ -127,11 +127,11 @@ extension MovieMapperTests {
         let posterURLSet: ImageURLSet
         let backdropURLSet: ImageURLSet
         let homepageURL: URL
-        let genres: [Genre]
-        let productionCompanies: [ProductionCompany]
-        let productionCountries: [ProductionCountry]
-        let spokenLanguages: [SpokenLanguage]
-        let belongsToCollection: MovieCollection
+        let inputGenres: [MoviesDomain.Genre]
+        let inputProductionCompanies: [MoviesDomain.ProductionCompany]
+        let inputProductionCountries: [MoviesDomain.ProductionCountry]
+        let inputSpokenLanguages: [MoviesDomain.SpokenLanguage]
+        let inputBelongsToCollection: MoviesDomain.MovieCollection
     }
 
     private func makeImageURLSet(path: String) throws -> ImageURLSet {
@@ -146,7 +146,7 @@ extension MovieMapperTests {
 
     private func makeFullMovieFixture() throws -> FullMovieFixture {
         let basic = try makeBasicFixtureValues()
-        let nested = try makeNestedFixtureValues()
+        let nested = try makeNestedInputValues()
 
         let movieDetails = MovieDetails(
             id: 550,
@@ -184,11 +184,11 @@ extension MovieMapperTests {
             posterURLSet: basic.posterURLSet,
             backdropURLSet: basic.backdropURLSet,
             homepageURL: basic.homepageURL,
-            genres: nested.genres,
-            productionCompanies: nested.productionCompanies,
-            productionCountries: nested.productionCountries,
-            spokenLanguages: nested.spokenLanguages,
-            belongsToCollection: nested.belongsToCollection
+            inputGenres: nested.genres,
+            inputProductionCompanies: nested.productionCompanies,
+            inputProductionCountries: nested.productionCountries,
+            inputSpokenLanguages: nested.spokenLanguages,
+            inputBelongsToCollection: nested.belongsToCollection
         )
     }
 
@@ -206,40 +206,36 @@ extension MovieMapperTests {
         )
     }
 
-    private func makeNestedFixtureValues() throws -> (
-        genres: [Genre],
-        productionCompanies: [ProductionCompany],
-        productionCountries: [ProductionCountry],
-        spokenLanguages: [SpokenLanguage],
-        belongsToCollection: MovieCollection
+    private func makeNestedInputValues() throws -> (
+        genres: [MoviesDomain.Genre],
+        productionCompanies: [MoviesDomain.ProductionCompany],
+        productionCountries: [MoviesDomain.ProductionCountry],
+        spokenLanguages: [MoviesDomain.SpokenLanguage],
+        belongsToCollection: MoviesDomain.MovieCollection
     ) {
         let companyLogoURL = try #require(URL(string: "https://example.com/logo.png"))
         let collectionPosterURL = try #require(URL(string: "https://example.com/collection-poster.png"))
         let collectionBackdropURL = try #require(URL(string: "https://example.com/collection-backdrop.png"))
 
-        let genres = [Genre(id: 18, name: "Drama")]
-        let productionCompanies = [
-            ProductionCompany(id: 508, name: "Regency Enterprises", originCountry: "US", logoPath: companyLogoURL)
-        ]
-        let productionCountries = [ProductionCountry(countryCode: "US", name: "United States of America")]
-        let spokenLanguages = [SpokenLanguage(languageCode: "en", name: "English")]
-        let belongsToCollection = MovieCollection(
-            id: 100,
-            name: "Collection",
-            posterPath: collectionPosterURL,
-            backdropPath: collectionBackdropURL
-        )
-
         return (
-            genres: genres,
-            productionCompanies: productionCompanies,
-            productionCountries: productionCountries,
-            spokenLanguages: spokenLanguages,
-            belongsToCollection: belongsToCollection
+            genres: [MoviesDomain.Genre(id: 18, name: "Drama")],
+            productionCompanies: [
+                MoviesDomain.ProductionCompany(
+                    id: 508, name: "Regency Enterprises", originCountry: "US", logoPath: companyLogoURL
+                )
+            ],
+            productionCountries: [MoviesDomain.ProductionCountry(countryCode: "US", name: "United States of America")],
+            spokenLanguages: [MoviesDomain.SpokenLanguage(languageCode: "en", name: "English")],
+            belongsToCollection: MoviesDomain.MovieCollection(
+                id: 100,
+                name: "Collection",
+                posterPath: collectionPosterURL,
+                backdropPath: collectionBackdropURL
+            )
         )
     }
 
-    private func assertFullMovieResult(_ result: Movie, fixture: FullMovieFixture) {
+    private func assertFullMovieResult(_ result: IntelligenceDomain.Movie, fixture: FullMovieFixture) {
         #expect(result.id == 550)
         #expect(result.title == "Fight Club")
         #expect(result.tagline == "Mischief. Mayhem. Soap.")
@@ -247,7 +243,7 @@ extension MovieMapperTests {
         #expect(result.originalLanguage == "en")
         #expect(result.overview == "A ticking-time-bomb insomniac and a slippery soap salesman...")
         #expect(result.runtime == 139)
-        #expect(result.genres == fixture.genres)
+        #expect(result.genres == fixture.inputGenres.map { IntelligenceDomain.Genre(id: $0.id, name: $0.name) })
         #expect(result.releaseDate == fixture.releaseDate)
         #expect(result.posterPath == fixture.posterURLSet.path)
         #expect(result.backdropPath == fixture.backdropURLSet.path)
@@ -256,11 +252,28 @@ extension MovieMapperTests {
         #expect(result.homepageURL == fixture.homepageURL)
         #expect(result.imdbID == "tt0137523")
         #expect(result.status == .released)
-        #expect(result.productionCompanies == fixture.productionCompanies)
-        #expect(result.productionCountries == fixture.productionCountries)
-        #expect(result.spokenLanguages == fixture.spokenLanguages)
+        #expect(
+            result.productionCompanies == fixture.inputProductionCompanies.map {
+                IntelligenceDomain.ProductionCompany(id: $0.id, name: $0.name, originCountry: $0.originCountry)
+            }
+        )
+        #expect(
+            result.productionCountries == fixture.inputProductionCountries.map {
+                IntelligenceDomain.ProductionCountry(countryCode: $0.countryCode, name: $0.name)
+            }
+        )
+        #expect(
+            result.spokenLanguages == fixture.inputSpokenLanguages.map {
+                IntelligenceDomain.SpokenLanguage(languageCode: $0.languageCode, name: $0.name)
+            }
+        )
         #expect(result.originCountry == ["US"])
-        #expect(result.belongsToCollection == fixture.belongsToCollection)
+        #expect(
+            result.belongsToCollection == IntelligenceDomain.MovieCollection(
+                id: fixture.inputBelongsToCollection.id,
+                name: fixture.inputBelongsToCollection.name
+            )
+        )
         #expect(result.popularity == 61.416)
         #expect(result.voteAverage == 8.4)
         #expect(result.voteCount == 28000)

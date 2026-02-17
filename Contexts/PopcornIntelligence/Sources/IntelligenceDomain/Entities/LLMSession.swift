@@ -15,9 +15,9 @@ public protocol LLMSession: Sendable {
 }
 
 /// Represents the ``LLMSessionError`` values.
-public enum LLMSessionError: LocalizedError {
+public enum LLMSessionError: LocalizedError, Equatable, Sendable {
 
-    case toolCallFailed(Error?)
+    case toolCallFailed(String?)
 
     case exceededContextWindowSize(message: String?)
     case assetsUnavailable(message: String?)
@@ -29,12 +29,12 @@ public enum LLMSessionError: LocalizedError {
     case concurrentRequests(message: String?)
     case refusal(message: String?)
 
-    case unknown(Error? = nil)
+    case unknown(String? = nil)
 
-    public var localizedDescription: String {
+    public var errorDescription: String? {
         switch self {
-        case .toolCallFailed(let error):
-            "Tool call failed: \(error?.localizedDescription ?? "Unknown error")"
+        case .toolCallFailed(let message):
+            "Tool call failed: \(message ?? "Unknown error")"
         case .exceededContextWindowSize(let message):
             "Exceeded context window size: \(message ?? "Unknown")"
         case .assetsUnavailable(let message):
@@ -53,8 +53,8 @@ public enum LLMSessionError: LocalizedError {
             "Concurrent requests: \(message ?? "Unknown")"
         case .refusal(let message):
             "Refusal: \(message ?? "Unknown")"
-        case .unknown(let error):
-            "Unknown error: \(error?.localizedDescription ?? "Unknown")"
+        case .unknown(let message):
+            "Unknown error: \(message ?? "Unknown")"
         }
     }
 

@@ -147,6 +147,12 @@ private extension MovieIntelligenceFeature {
                 Self.logger.error("Failed to send prompt: \(error.localizedDescription)")
                 await send(.sendPromptFailed(error))
                 return
+            } catch {
+                let sessionError = LLMSessionError.unknown(error.localizedDescription)
+                observability.capture(error: error)
+                Self.logger.error("Unexpected error sending prompt: \(error.localizedDescription)")
+                await send(.sendPromptFailed(sessionError))
+                return
             }
 
             await send(.responseReceived(response))

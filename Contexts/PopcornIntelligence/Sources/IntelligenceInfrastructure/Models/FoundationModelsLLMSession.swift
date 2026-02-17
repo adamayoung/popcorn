@@ -8,7 +8,6 @@
 import Foundation
 import FoundationModels
 import IntelligenceDomain
-import Observability
 import OSLog
 
 final class FoundationModelsLLMSession: IntelligenceDomain.LLMSession {
@@ -16,14 +15,9 @@ final class FoundationModelsLLMSession: IntelligenceDomain.LLMSession {
     private static let logger = Logger.intelligenceInfrastructure
 
     private let session: LanguageModelSession
-//    private let observability: any Observing
 
-    init(
-        session: LanguageModelSession
-//        observability: some Observing
-    ) {
+    init(session: LanguageModelSession) {
         self.session = session
-//        self.observability = observability
     }
 
     func respond(to prompt: String) async throws(LLMSessionError) -> String {
@@ -31,32 +25,14 @@ final class FoundationModelsLLMSession: IntelligenceDomain.LLMSession {
         do {
             response = try await session.respond(to: prompt)
         } catch let error as LanguageModelSession.ToolCallError {
-//            observability.capture(
-//                error: error,
-//                extras: [
-//                    "tool_name": error.tool.name,
-//                    "underlying_error": error.underlyingError.localizedDescription,
-//                    "message": prompt
-//                ]
-//            )
             Self.logger.error(
                 "Tool call failed: \(error.tool.name, privacy: .public), error: \(error.localizedDescription, privacy: .public)"
             )
-
             throw LLMSessionError(error)
         } catch let error as LanguageModelSession.GenerationError {
-//            observability.capture(
-//                error: error,
-//                extras: [
-//                    "underlying_error": error.localizedDescription,
-//                    "message": prompt
-//                ]
-//            )
             Self.logger.error("Response generation failed: \(error.localizedDescription)")
-
             throw LLMSessionError(error)
         } catch let error {
-//            observability.capture(error: error)
             Self.logger.error("Session response failed: \(error.localizedDescription)")
             throw LLMSessionError(error)
         }
@@ -68,12 +44,12 @@ final class FoundationModelsLLMSession: IntelligenceDomain.LLMSession {
 
 extension LLMSessionError {
 
-    init(_ error: Error?) {
-        self = .unknown(error)
+    init(_ error: Error) {
+        self = .unknown(error.localizedDescription)
     }
 
-    init(_ error: LanguageModelSession.ToolCallError?) {
-        self = .toolCallFailed(error)
+    init(_ error: LanguageModelSession.ToolCallError) {
+        self = .toolCallFailed(error.localizedDescription)
     }
 
     init(_ error: LanguageModelSession.GenerationError) {
@@ -97,7 +73,7 @@ extension LLMSessionError {
         case .refusal(_, let context):
             self = .refusal(message: context.debugDescription)
         @unknown default:
-            self = .unknown(error)
+            self = .unknown(error.localizedDescription)
         }
     }
 

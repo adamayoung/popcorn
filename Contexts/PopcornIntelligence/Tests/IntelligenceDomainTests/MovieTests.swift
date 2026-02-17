@@ -7,7 +7,6 @@
 
 import Foundation
 @testable import IntelligenceDomain
-import MoviesDomain
 import Testing
 
 @Suite("IntelligenceDomain.Movie Tests")
@@ -63,16 +62,16 @@ extension MovieTests {
         let posterPath: URL
         let backdropPath: URL
         let homepageURL: URL
-        let genres: [Genre]
-        let productionCompanies: [ProductionCompany]
-        let productionCountries: [ProductionCountry]
-        let spokenLanguages: [SpokenLanguage]
-        let belongsToCollection: MovieCollection
+        let genres: [IntelligenceDomain.Genre]
+        let productionCompanies: [IntelligenceDomain.ProductionCompany]
+        let productionCountries: [IntelligenceDomain.ProductionCountry]
+        let spokenLanguages: [IntelligenceDomain.SpokenLanguage]
+        let belongsToCollection: IntelligenceDomain.MovieCollection
     }
 
     private func makeFullMovieFixture() throws -> FullMovieFixture {
         let basic = try makeBasicFixtureValues()
-        let nested = try makeNestedFixtureValues()
+        let nested = makeNestedFixtureValues()
 
         let movie = IntelligenceDomain.Movie(
             id: 550,
@@ -131,36 +130,19 @@ extension MovieTests {
         )
     }
 
-    private func makeNestedFixtureValues() throws -> (
-        genres: [Genre],
-        productionCompanies: [ProductionCompany],
-        productionCountries: [ProductionCountry],
-        spokenLanguages: [SpokenLanguage],
-        belongsToCollection: MovieCollection
+    private func makeNestedFixtureValues() -> (
+        genres: [IntelligenceDomain.Genre],
+        productionCompanies: [IntelligenceDomain.ProductionCompany],
+        productionCountries: [IntelligenceDomain.ProductionCountry],
+        spokenLanguages: [IntelligenceDomain.SpokenLanguage],
+        belongsToCollection: IntelligenceDomain.MovieCollection
     ) {
-        let companyLogoPath = try #require(URL(string: "https://example.com/logo.png"))
-        let collectionPosterPath = try #require(URL(string: "https://example.com/collection-poster.png"))
-        let collectionBackdropPath = try #require(URL(string: "https://example.com/collection-backdrop.png"))
-
-        let genres = [Genre(id: 1, name: "Action")]
-        let productionCompanies = [
-            ProductionCompany(id: 2, name: "Studio", originCountry: "US", logoPath: companyLogoPath)
-        ]
-        let productionCountries = [ProductionCountry(countryCode: "US", name: "United States")]
-        let spokenLanguages = [SpokenLanguage(languageCode: "en", name: "English")]
-        let belongsToCollection = MovieCollection(
-            id: 3,
-            name: "Collection",
-            posterPath: collectionPosterPath,
-            backdropPath: collectionBackdropPath
-        )
-
-        return (
-            genres: genres,
-            productionCompanies: productionCompanies,
-            productionCountries: productionCountries,
-            spokenLanguages: spokenLanguages,
-            belongsToCollection: belongsToCollection
+        (
+            genres: [Genre(id: 1, name: "Action")],
+            productionCompanies: [ProductionCompany(id: 2, name: "Studio", originCountry: "US")],
+            productionCountries: [ProductionCountry(countryCode: "US", name: "United States")],
+            spokenLanguages: [SpokenLanguage(languageCode: "en", name: "English")],
+            belongsToCollection: MovieCollection(id: 3, name: "Collection")
         )
     }
 

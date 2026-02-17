@@ -8,7 +8,6 @@
 import Foundation
 import FoundationModels
 import IntelligenceDomain
-import Observability
 import OSLog
 
 final class FoundationModelsMovieLLMSessionRepository: MovieLLMSessionRepository {
@@ -19,16 +18,10 @@ final class FoundationModelsMovieLLMSessionRepository: MovieLLMSessionRepository
 
     private let movieProvider: any MovieProviding
     private let movieToolDataSource: any MovieToolDataSource
-//    private let observability: any Observing
 
-    init(
-        movieProvider: some MovieProviding,
-        movieToolDataSource: some MovieToolDataSource
-//        observability: some Observing
-    ) {
+    init(movieProvider: some MovieProviding, movieToolDataSource: some MovieToolDataSource) {
         self.movieProvider = movieProvider
         self.movieToolDataSource = movieToolDataSource
-//        self.observability = observability
     }
 
     func session(forMovie movieID: Int) async throws(MovieLLMSessionRepositoryError) -> any LLMSession {
@@ -54,10 +47,7 @@ final class FoundationModelsMovieLLMSessionRepository: MovieLLMSessionRepository
             instructions: instructions
         )
 
-        return FoundationModelsLLMSession(
-            session: session
-//            observability: observability
-        )
+        return FoundationModelsLLMSession(session: session)
     }
 
 }
