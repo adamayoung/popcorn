@@ -8,7 +8,6 @@
 import Foundation
 import IntelligenceDomain
 @testable import IntelligenceInfrastructure
-import MoviesDomain
 import Testing
 
 @Suite("MovieToolMapper")
@@ -73,9 +72,6 @@ extension MovieToolMapperTests {
         let posterPath = try #require(URL(string: "https://image.tmdb.org/t/p/original/poster.jpg"))
         let backdropPath = try #require(URL(string: "https://image.tmdb.org/t/p/original/backdrop.jpg"))
         let homepageURL = try #require(URL(string: "https://example.com/movie"))
-        let companyLogoPath = try #require(URL(string: "https://example.com/company-logo.png"))
-        let collectionPosterPath = try #require(URL(string: "https://example.com/collection-poster.png"))
-        let collectionBackdropPath = try #require(URL(string: "https://example.com/collection-backdrop.png"))
 
         let movie = IntelligenceDomain.Movie(
             id: 123,
@@ -95,17 +91,12 @@ extension MovieToolMapperTests {
             imdbID: "tt0133093",
             status: .released,
             productionCompanies: [
-                ProductionCompany(id: 4, name: "Warner Bros.", originCountry: "US", logoPath: companyLogoPath)
+                ProductionCompany(id: 4, name: "Warner Bros.", originCountry: "US")
             ],
             productionCountries: [ProductionCountry(countryCode: "US", name: "United States")],
             spokenLanguages: [SpokenLanguage(languageCode: "en", name: "English")],
             originCountry: ["US"],
-            belongsToCollection: MovieCollection(
-                id: 5,
-                name: "The Matrix Collection",
-                posterPath: collectionPosterPath,
-                backdropPath: collectionBackdropPath
-            ),
+            belongsToCollection: MovieCollection(id: 5, name: "The Matrix Collection"),
             popularity: 82.5,
             voteAverage: 8.7,
             voteCount: 24500,

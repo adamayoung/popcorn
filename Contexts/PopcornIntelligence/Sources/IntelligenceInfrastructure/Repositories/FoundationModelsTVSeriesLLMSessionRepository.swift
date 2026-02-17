@@ -19,16 +19,13 @@ final class FoundationModelsTVSeriesLLMSessionRepository: TVSeriesLLMSessionRepo
 
     private let tvSeriesProvider: any TVSeriesProviding
     private let tvSeriesToolDataSource: any TVSeriesToolDataSource
-//    private let observability: any Observing
 
     init(
         tvSeriesProvider: some TVSeriesProviding,
         tvSeriesToolDataSource: some TVSeriesToolDataSource
-//        observability: some Observing
     ) {
         self.tvSeriesProvider = tvSeriesProvider
         self.tvSeriesToolDataSource = tvSeriesToolDataSource
-//        self.observability = observability
     }
 
     func session(forTVSeries tvSeriesID: Int) async throws(TVSeriesLLMSessionRepositoryError) -> any LLMSession {
@@ -53,10 +50,7 @@ final class FoundationModelsTVSeriesLLMSessionRepository: TVSeriesLLMSessionRepo
             instructions: instructions
         )
 
-        return FoundationModelsLLMSession(
-            session: session
-//            observability: observability
-        )
+        return FoundationModelsLLMSession(session: session)
     }
 
 }

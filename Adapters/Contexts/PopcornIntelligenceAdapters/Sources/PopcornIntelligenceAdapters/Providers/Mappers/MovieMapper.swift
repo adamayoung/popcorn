@@ -8,7 +8,6 @@
 import Foundation
 import IntelligenceDomain
 import MoviesApplication
-import MoviesDomain
 
 struct MovieMapper {
 
@@ -29,7 +28,16 @@ struct MovieMapper {
             revenue: movieDetails.revenue.map { Int($0) },
             homepageURL: movieDetails.homepageURL,
             imdbID: movieDetails.imdbID,
-            status: movieDetails.status.flatMap { MovieStatus(rawValue: $0.rawValue) },
+            status: movieDetails.status.map { status in
+                switch status {
+                case .rumoured: .rumoured
+                case .planned: .planned
+                case .inProduction: .inProduction
+                case .postProduction: .postProduction
+                case .released: .released
+                case .cancelled: .cancelled
+                }
+            },
             productionCompanies: movieDetails.productionCompanies?.map {
                 ProductionCompany(id: $0.id, name: $0.name, originCountry: $0.originCountry)
             },

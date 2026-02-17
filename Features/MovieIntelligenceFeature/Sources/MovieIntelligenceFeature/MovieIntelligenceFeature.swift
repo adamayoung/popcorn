@@ -22,20 +22,20 @@ public struct MovieIntelligenceFeature: Sendable {
     @Dependency(\.observability) private var observability
 
     @ObservableState
-    public struct State: Sendable {
+    public struct State: Equatable, Sendable {
         let movieID: Int
-        var movie: Movie?
+        var movie: IntelligenceDomain.Movie?
         var session: (any LLMSession)?
         var isThinking: Bool
-        var error: Error?
+        var error: LLMSessionError?
         var messages: [Message]
 
         public init(
             movieID: Int,
-            movie: Movie? = nil,
+            movie: IntelligenceDomain.Movie? = nil,
             session: (any LLMSession)? = nil,
             isThinking: Bool = false,
-            error: Error? = nil,
+            error: LLMSessionError? = nil,
             messages: [Message] = []
         ) {
             self.movieID = movieID
@@ -49,8 +49,8 @@ public struct MovieIntelligenceFeature: Sendable {
 
     public enum Action {
         case startSession
-        case sessionStarted(Movie, LLMSession)
-        case sessionStartFailed(Error)
+        case sessionStarted(IntelligenceDomain.Movie, LLMSession)
+        case sessionStartFailed(LLMSessionError)
         case sendPrompt(String)
         case responseReceived(String)
         case sendPromptFailed(LLMSessionError)
@@ -99,12 +99,26 @@ public struct MovieIntelligenceFeature: Sendable {
                 state.isThinking = false
                 state.error = error
 
-                let message = Message(role: .assistant, textContent: error.localizedDescription)
+                let message = Message(role: .assistant, textContent: "I couldn't respond to that. Please try again.")
                 state.messages.append(message)
 
                 return .none
             }
         }
+    }
+
+}
+
+public extension MovieIntelligenceFeature.State {
+
+    /// `session` is a protocol existential and cannot be meaningfully compared,
+    /// so it is excluded from equality. `movie` is identified by `movieID` and
+    /// does not change after session start, so it is also excluded.
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.movieID == rhs.movieID
+            && lhs.isThinking == rhs.isThinking
+            && lhs.error == rhs.error
+            && lhs.messages == rhs.messages
     }
 
 }
@@ -116,15 +130,21 @@ private extension MovieIntelligenceFeature {
             async let movieTask = client.fetchMovie(id: state.movieID)
             async let sessionTask = client.createSession(movieID: state.movieID)
 
-            let movie: Movie
-            let session: LLMSession
+            let movie: IntelligenceDomain.Movie
+            let session: any LLMSession
             do {
                 movie = try await movieTask
                 session = try await sessionTask
-            } catch let error {
+            } catch let error as LLMSessionError {
                 observability.capture(error: error)
                 Self.logger.error("Failed to start session: \(error.localizedDescription)")
                 await send(.sessionStartFailed(error))
+                return
+            } catch {
+                let sessionError = LLMSessionError.unknown(error.localizedDescription)
+                observability.capture(error: error)
+                Self.logger.error("Failed to start session: \(error.localizedDescription)")
+                await send(.sessionStartFailed(sessionError))
                 return
             }
 
@@ -148,6 +168,8 @@ private extension MovieIntelligenceFeature {
                 await send(.sendPromptFailed(error))
                 return
             } catch {
+                // Typed throws are erased when calling through an `any LLMSession` existential,
+                // so this catch handles any unexpected errors from concrete implementations.
                 let sessionError = LLMSessionError.unknown(error.localizedDescription)
                 observability.capture(error: error)
                 Self.logger.error("Unexpected error sending prompt: \(error.localizedDescription)")

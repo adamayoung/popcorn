@@ -9,6 +9,7 @@ import ComposableArchitecture
 import Foundation
 import IntelligenceDomain
 @testable import MovieIntelligenceFeature
+import ObservabilityTestHelpers
 import Testing
 
 @Suite("MovieIntelligenceFeature Tests")
@@ -20,9 +21,9 @@ struct MovieIntelligenceFeatureTests {
         let store = TestStore(initialState: MovieIntelligenceFeature.State(movieID: 1)) {
             MovieIntelligenceFeature()
         } withDependencies: {
-            $0.movieIntelligenceClient.fetchMovie = { _ in Movie(id: 1, title: "Alien") }
+            $0.movieIntelligenceClient.fetchMovie = { _ in Movie(id: 1, title: "Alien", overview: "") }
             $0.movieIntelligenceClient.createSession = { _ in MockLLMSession() }
-            $0.observability = .noop
+            $0.observability = MockObservability()
         }
         store.exhaustivity = .off
 
@@ -37,11 +38,10 @@ struct MovieIntelligenceFeatureTests {
         let store = TestStore(initialState: MovieIntelligenceFeature.State(movieID: 1)) {
             MovieIntelligenceFeature()
         } withDependencies: {
-            $0.observability = .noop
+            $0.observability = MockObservability()
         }
 
-        struct FetchError: Error {}
-        let error = FetchError()
+        let error = LLMSessionError.unknown("Failed to start session")
 
         await store.send(.sessionStartFailed(error)) {
             $0.isThinking = false
@@ -56,7 +56,7 @@ struct MovieIntelligenceFeatureTests {
         let store = TestStore(initialState: MovieIntelligenceFeature.State(movieID: 1)) {
             MovieIntelligenceFeature()
         } withDependencies: {
-            $0.observability = .noop
+            $0.observability = MockObservability()
         }
 
         await store.send(.responseReceived("Hello!")) {
@@ -74,7 +74,7 @@ struct MovieIntelligenceFeatureTests {
         ) {
             MovieIntelligenceFeature()
         } withDependencies: {
-            $0.observability = .noop
+            $0.observability = MockObservability()
         }
         store.exhaustivity = .off
 
@@ -90,7 +90,7 @@ struct MovieIntelligenceFeatureTests {
         let store = TestStore(initialState: MovieIntelligenceFeature.State(movieID: 1)) {
             MovieIntelligenceFeature()
         } withDependencies: {
-            $0.observability = .noop
+            $0.observability = MockObservability()
         }
 
         let error = LLMSessionError.guardrailViolation(message: "Content not allowed")
@@ -98,7 +98,7 @@ struct MovieIntelligenceFeatureTests {
         await store.send(.sendPromptFailed(error)) {
             $0.isThinking = false
             $0.error = error
-            $0.messages = [Message(role: .assistant, textContent: error.localizedDescription)]
+            $0.messages = [Message(role: .assistant, textContent: "I couldn't respond to that. Please try again.")]
         }
     }
 

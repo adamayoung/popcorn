@@ -7,14 +7,12 @@
 
 import Foundation
 
-/// Defines the ``LLMSession`` contract.
 public protocol LLMSession: Sendable {
 
     func respond(to prompt: String) async throws(LLMSessionError) -> String
 
 }
 
-/// Represents the ``LLMSessionError`` values.
 public enum LLMSessionError: LocalizedError, Equatable, Sendable {
 
     case toolCallFailed(String?)
