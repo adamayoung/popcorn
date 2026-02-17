@@ -33,6 +33,32 @@ STATSIG_SDK_KEY = <your-statsig-key>     # Optional
 
 When the Xcode MCP server (`xcode`) is available, prefer its tools for building, testing, file operations, and diagnostics. All Xcode MCP tools require a `tabIdentifier` — use `mcp__xcode__XcodeListWindows` to discover open workspaces. File paths use Xcode project navigator paths (e.g., `ProjectName/Sources/MyFile.swift`), not filesystem paths.
 
+### TMDb MCP
+
+When the TMDb MCP server (`tmdb`) is available, use it to look up real movie, TV series, and person data. This is the authoritative source for all TMDb-related questions — prefer it over web searches or training knowledge.
+
+| Task | MCP Tool |
+|------|----------|
+| Movie details | `mcp__tmdb__movie_details` |
+| Movie credits | `mcp__tmdb__movie_credits` |
+| Movie keywords | `mcp__tmdb__movie_keywords` |
+| Search movies | `mcp__tmdb__search_movie` |
+| TV series details | `mcp__tmdb__tv_series_details` |
+| TV series credits | `mcp__tmdb__tv_series_credits` |
+| TV season details | `mcp__tmdb__tv_season_details` |
+| TV episode details | `mcp__tmdb__tv_episode_details` |
+| Search TV series | `mcp__tmdb__search_tv` |
+| Person details | `mcp__tmdb__person_details` |
+| Person movie credits | `mcp__tmdb__person_movie_credits` |
+| Person TV credits | `mcp__tmdb__person_tv_credits` |
+| Search people | `mcp__tmdb__search_person` |
+| Search all | `mcp__tmdb__search_multi` |
+| Trending movies | `mcp__tmdb__trending_movies` |
+| Trending TV | `mcp__tmdb__trending_tv` |
+| Trending people | `mcp__tmdb__trending_people` |
+| Discover movies | `mcp__tmdb__discover_movie` |
+| Discover TV | `mcp__tmdb__discover_tv` |
+
 ### Build & Test
 
 Use slash commands or Xcode MCP tools directly:

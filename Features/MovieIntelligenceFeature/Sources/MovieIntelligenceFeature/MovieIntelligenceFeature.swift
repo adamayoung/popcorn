@@ -25,7 +25,7 @@ public struct MovieIntelligenceFeature: Sendable {
     public struct State: Sendable {
         let movieID: Int
         var movie: Movie?
-        var session: LLMSession?
+        var session: (any LLMSession)?
         var isThinking: Bool
         var error: Error?
         var messages: [Message]
@@ -33,7 +33,7 @@ public struct MovieIntelligenceFeature: Sendable {
         public init(
             movieID: Int,
             movie: Movie? = nil,
-            session: LLMSession? = nil,
+            session: (any LLMSession)? = nil,
             isThinking: Bool = false,
             error: Error? = nil,
             messages: [Message] = []
@@ -53,7 +53,7 @@ public struct MovieIntelligenceFeature: Sendable {
         case sessionStartFailed(Error)
         case sendPrompt(String)
         case responseReceived(String)
-        case sendPromptFailed(Error)
+        case sendPromptFailed(LLMSessionError)
     }
 
     public init() {}
@@ -98,6 +98,10 @@ public struct MovieIntelligenceFeature: Sendable {
             case .sendPromptFailed(let error):
                 state.isThinking = false
                 state.error = error
+
+                let message = Message(role: .assistant, textContent: error.localizedDescription)
+                state.messages.append(message)
+
                 return .none
             }
         }
@@ -138,7 +142,7 @@ private extension MovieIntelligenceFeature {
             let response: String
             do {
                 response = try await session.respond(to: prompt)
-            } catch let error {
+            } catch let error as LLMSessionError {
                 observability.capture(error: error)
                 Self.logger.error("Failed to send prompt: \(error.localizedDescription)")
                 await send(.sendPromptFailed(error))

@@ -76,8 +76,29 @@ extension LLMSessionError {
         self = .toolCallFailed(error)
     }
 
-    init(_ error: LanguageModelSession.GenerationError?) {
-        self = .generatorFailed(error)
+    init(_ error: LanguageModelSession.GenerationError) {
+        switch error {
+        case .exceededContextWindowSize(let context):
+            self = .exceededContextWindowSize(message: context.debugDescription)
+        case .assetsUnavailable(let context):
+            self = .assetsUnavailable(message: context.debugDescription)
+        case .guardrailViolation(let context):
+            self = .guardrailViolation(message: context.debugDescription)
+        case .unsupportedGuide(let context):
+            self = .unsupportedGuide(message: context.debugDescription)
+        case .unsupportedLanguageOrLocale(let context):
+            self = .unsupportedLanguageOrLocale(message: context.debugDescription)
+        case .decodingFailure(let context):
+            self = .decodingFailure(message: context.debugDescription)
+        case .rateLimited(let context):
+            self = .rateLimited(message: context.debugDescription)
+        case .concurrentRequests(let context):
+            self = .concurrentRequests(message: context.debugDescription)
+        case .refusal(_, let context):
+            self = .refusal(message: context.debugDescription)
+        @unknown default:
+            self = .unknown(error)
+        }
     }
 
 }

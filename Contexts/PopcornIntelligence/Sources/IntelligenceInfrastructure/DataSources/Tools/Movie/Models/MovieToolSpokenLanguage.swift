@@ -2,7 +2,7 @@
 //  MovieToolSpokenLanguage.swift
 //  Popcorn
 //
-//  Copyright © 2026 Adam Young.
+//  Copyright © 2025 Adam Young.
 //
 
 import FoundationModels

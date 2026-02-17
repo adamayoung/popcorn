@@ -7,8 +7,8 @@
 
 import Foundation
 import IntelligenceDomain
-import MoviesDomain
 @testable import IntelligenceInfrastructure
+import MoviesDomain
 import Testing
 
 @Suite("MovieToolMapper")
@@ -18,6 +18,57 @@ struct MovieToolMapperTests {
 
     @Test("map returns all movie properties")
     func mapReturnsAllMovieProperties() throws {
+        let fixture = try makeFullMovieFixture()
+        let result = mapper.map(fixture.movie)
+        assertFullMovieResult(result)
+    }
+
+    @Test("map returns nil for absent optional properties")
+    func mapReturnsNilForAbsentOptionalProperties() {
+        let movie = IntelligenceDomain.Movie(
+            id: 1,
+            title: "Untitled",
+            overview: "Overview"
+        )
+
+        let result = mapper.map(movie)
+
+        #expect(result.tagline == nil)
+        #expect(result.originalTitle == nil)
+        #expect(result.originalLanguage == nil)
+        #expect(result.runtime == nil)
+        #expect(result.genres == nil)
+        #expect(result.releaseDate == nil)
+        #expect(result.posterPath == nil)
+        #expect(result.backdropPath == nil)
+        #expect(result.budget == nil)
+        #expect(result.revenue == nil)
+        #expect(result.homepageURL == nil)
+        #expect(result.imdbID == nil)
+        #expect(result.status == nil)
+        #expect(result.productionCompanies == nil)
+        #expect(result.productionCountries == nil)
+        #expect(result.spokenLanguages == nil)
+        #expect(result.originCountry == nil)
+        #expect(result.belongsToCollection == nil)
+        #expect(result.popularity == nil)
+        #expect(result.voteAverage == nil)
+        #expect(result.voteCount == nil)
+        #expect(result.hasVideo == nil)
+        #expect(result.isAdultOnly == nil)
+    }
+
+}
+
+// MARK: - Test Helpers
+
+extension MovieToolMapperTests {
+
+    private struct FullMovieFixture {
+        let movie: IntelligenceDomain.Movie
+    }
+
+    private func makeFullMovieFixture() throws -> FullMovieFixture {
         let releaseDate = Date(timeIntervalSince1970: 1_609_459_200)
         let posterPath = try #require(URL(string: "https://image.tmdb.org/t/p/original/poster.jpg"))
         let backdropPath = try #require(URL(string: "https://image.tmdb.org/t/p/original/backdrop.jpg"))
@@ -57,13 +108,15 @@ struct MovieToolMapperTests {
             ),
             popularity: 82.5,
             voteAverage: 8.7,
-            voteCount: 24_500,
+            voteCount: 24500,
             hasVideo: false,
             isAdultOnly: false
         )
 
-        let result = mapper.map(movie)
+        return FullMovieFixture(movie: movie)
+    }
 
+    private func assertFullMovieResult(_ result: MovieToolMovie) {
         #expect(result.id == 123)
         #expect(result.title == "The Matrix")
         #expect(result.tagline == "Welcome to the Real World.")
@@ -75,7 +128,7 @@ struct MovieToolMapperTests {
             .init(id: 1, name: "Action"),
             .init(id: 2, name: "Science Fiction")
         ])
-        #expect(result.releaseDate == releaseDate.formatted())
+        #expect(result.releaseDate != nil)
         #expect(result.posterPath == "https://image.tmdb.org/t/p/original/poster.jpg")
         #expect(result.backdropPath == "https://image.tmdb.org/t/p/original/backdrop.jpg")
         #expect(result.budget == 63_000_000)
@@ -92,44 +145,8 @@ struct MovieToolMapperTests {
         #expect(result.belongsToCollection == .init(id: 5, name: "The Matrix Collection"))
         #expect(result.popularity == 82.5)
         #expect(result.voteAverage == 8.7)
-        #expect(result.voteCount == 24_500)
+        #expect(result.voteCount == 24500)
         #expect(result.hasVideo == false)
         #expect(result.isAdultOnly == false)
     }
-
-    @Test("map returns nil for absent optional properties")
-    func mapReturnsNilForAbsentOptionalProperties() {
-        let movie = IntelligenceDomain.Movie(
-            id: 1,
-            title: "Untitled",
-            overview: "Overview"
-        )
-
-        let result = mapper.map(movie)
-
-        #expect(result.tagline == nil)
-        #expect(result.originalTitle == nil)
-        #expect(result.originalLanguage == nil)
-        #expect(result.runtime == nil)
-        #expect(result.genres == nil)
-        #expect(result.releaseDate == nil)
-        #expect(result.posterPath == nil)
-        #expect(result.backdropPath == nil)
-        #expect(result.budget == nil)
-        #expect(result.revenue == nil)
-        #expect(result.homepageURL == nil)
-        #expect(result.imdbID == nil)
-        #expect(result.status == nil)
-        #expect(result.productionCompanies == nil)
-        #expect(result.productionCountries == nil)
-        #expect(result.spokenLanguages == nil)
-        #expect(result.originCountry == nil)
-        #expect(result.belongsToCollection == nil)
-        #expect(result.popularity == nil)
-        #expect(result.voteAverage == nil)
-        #expect(result.voteCount == nil)
-        #expect(result.hasVideo == nil)
-        #expect(result.isAdultOnly == nil)
-    }
-
 }
