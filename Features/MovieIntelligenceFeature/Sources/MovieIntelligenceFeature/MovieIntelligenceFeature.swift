@@ -126,9 +126,9 @@ public extension MovieIntelligenceFeature.State {
 private extension MovieIntelligenceFeature {
 
     func handleStartSession(_ state: inout State) -> EffectOf<Self> {
-        .run { [state, client] send in
-            async let movieTask = client.fetchMovie(id: state.movieID)
-            async let sessionTask = client.createSession(movieID: state.movieID)
+        .run { [movieID = state.movieID, client] send in
+            async let movieTask = client.fetchMovie(id: movieID)
+            async let sessionTask = client.createSession(movieID: movieID)
 
             let movie: IntelligenceDomain.Movie
             let session: any LLMSession
@@ -153,9 +153,10 @@ private extension MovieIntelligenceFeature {
     }
 
     func handleSendPrompt(_ state: inout State, prompt: String) -> EffectOf<Self> {
-        .run { [state] send in
-            guard let session = state.session else {
+        .run { [session = state.session] send in
+            guard let session else {
                 Self.logger.warning("No current session")
+                await send(.sendPromptFailed(.unknown("Session not available")))
                 return
             }
 

@@ -20,8 +20,8 @@ public struct Movie: Identifiable, Equatable, Sendable {
     public let releaseDate: Date?
     public let posterPath: URL?
     public let backdropPath: URL?
-    public let budget: Int?
-    public let revenue: Int?
+    public let budget: Double?
+    public let revenue: Double?
     public let homepageURL: URL?
     public let imdbID: String?
     public let status: MovieStatus?
@@ -48,8 +48,8 @@ public struct Movie: Identifiable, Equatable, Sendable {
         releaseDate: Date? = nil,
         posterPath: URL? = nil,
         backdropPath: URL? = nil,
-        budget: Int? = nil,
-        revenue: Int? = nil,
+        budget: Double? = nil,
+        revenue: Double? = nil,
         homepageURL: URL? = nil,
         imdbID: String? = nil,
         status: MovieStatus? = nil,

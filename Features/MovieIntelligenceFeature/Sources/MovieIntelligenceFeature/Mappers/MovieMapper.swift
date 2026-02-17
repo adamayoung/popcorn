@@ -24,8 +24,8 @@ struct MovieMapper {
             releaseDate: movieDetails.releaseDate,
             posterPath: movieDetails.posterURLSet?.path,
             backdropPath: movieDetails.backdropURLSet?.path,
-            budget: movieDetails.budget.map { Int($0) },
-            revenue: movieDetails.revenue.map { Int($0) },
+            budget: movieDetails.budget,
+            revenue: movieDetails.revenue,
             homepageURL: movieDetails.homepageURL,
             imdbID: movieDetails.imdbID,
             status: movieDetails.status.map { status in

@@ -27,7 +27,11 @@ package final class MoviesInfrastructureFactory {
             CastMemberEntity.self,
             CrewMemberEntity.self,
             MoviesMovieCertificationEntity.self,
-            MoviesGenreEntity.self
+            MoviesGenreEntity.self,
+            MoviesProductionCompanyEntity.self,
+            MoviesProductionCountryEntity.self,
+            MoviesSpokenLanguageEntity.self,
+            MoviesMovieCollectionEntity.self
         ])
 
         let storeURL = URL.documentsDirectory.appending(path: "popcorn-movies.sqlite")
