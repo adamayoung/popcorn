@@ -2,7 +2,7 @@
 //  ViewStateError.swift
 //  Popcorn
 //
-//  Copyright © 2025 Adam Young.
+//  Copyright © 2026 Adam Young.
 //
 
 /// An equatable error type for use with ``ViewState``.
