@@ -8,16 +8,21 @@ Popcorn is a modular SwiftUI application for browsing movies and TV series acros
 - Shared app services for configuration, feature flags, observability, caching, and data persistence.
 
 ## Architecture
-- **Features**: Swift packages under `Features/` house TCA reducers, views, and clients for vertical slices such as Explore, Search, and Games.
+- **Features**: Swift packages under `Features/` house TCA reducers, views, and clients for vertical slices such as Explore, Search, Games, and Developer tools.
 - **Contexts**: Domain, application, and infrastructure layers under `Contexts/` define contracts, use cases, repositories, and data sources for media data and supporting services.
-- **Adapters**: Glue code in `Adapters/` wires contexts into feature dependencies, exposing concrete implementations to TCA reducers.
-- **App shell**: The root app in `App/` sets up configuration, dependency injection, and navigation scaffolding across platforms using SwiftUI scenes.
-- **Design system**: Reusable UI components live in `Core/DesignSystem`, providing consistent visuals for images, carousels, typography, and theming.
+- **Adapters**: Bridge code in `Adapters/` connects contexts to external APIs (TMDb, Sentry, Statsig), with each context adapter exposing a `*UITesting` module with stubs.
+- **Core**: Shared foundations in `Core/` — `CoreDomain` for shared domain primitives, `DesignSystem` for reusable UI components and theming, and `TCAFoundation` for shared TCA utilities.
+- **Platform**: Cross-cutting concerns in `Platform/` — `Caching` (in-memory with TTL), `Observability` (logging, analytics, error reporting), `FeatureAccess` (feature flag interfaces), and `DataPersistenceInfrastructure` (SwiftData persistence).
+- **AppDependencies**: Central dependency injection hub that registers all use cases as TCA `DependencyKey`s and wires adapters to contexts.
+- **App shell**: The root app in `App/` sets up configuration and navigation scaffolding across platforms using SwiftUI scenes.
 
 ## Third-Party Libraries
-- **The Composable Architecture (TCA)** for reducer-driven state management and dependency injection.
-- **SDWebImageSwiftUI** powering asynchronous poster, backdrop, and profile image rendering.
-- **TMDb Swift SDK** supplying movie and TV metadata, imagery, and discovery endpoints.
-- **Statsig** for remote feature-flag evaluation that gates tabs and experiences.
-- **Sentry** for observability and crash/error reporting.
-- **SwiftData** for local caching and persistence through the data persistence infrastructure.
+
+| Dependency | Version | Purpose |
+|------------|---------|---------|
+| [swift-composable-architecture](https://github.com/pointfreeco/swift-composable-architecture) | 1.23+ | Reducer-driven state management and dependency injection |
+| [TMDb](https://github.com/adamayoung/TMDb) | 16.0+ | Movie and TV metadata, imagery, and discovery endpoints |
+| [SDWebImageSwiftUI](https://github.com/SDWebImage/SDWebImageSwiftUI) | 3.0+ | Asynchronous poster, backdrop, and profile image rendering |
+| [sentry-cocoa](https://github.com/getsentry/sentry-cocoa) | 8.57+ | Observability and crash/error reporting |
+| [statsig-kit](https://github.com/nicktmro/statsig-kit) | 1.55+ | Remote feature-flag evaluation |
+| [swift-snapshot-testing](https://github.com/pointfreeco/swift-snapshot-testing) | 1.18+ | Snapshot tests for UI components |

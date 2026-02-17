@@ -43,8 +43,13 @@ Use slash commands or Xcode MCP tools directly:
 | Build for testing | `/build-for-testing` | — |
 | Run all tests | `/test` | `mcp__xcode__RunAllTests` |
 | Run specific tests | `/test-single <name>` | `mcp__xcode__RunSomeTests` with test specifiers |
+| Build single package | `/build-package` | — |
+| Build single package for testing | `/build-package-for-testing` | — |
+| Test single package | `/test-package` | `mcp__xcode__RunSomeTests` with test specifiers |
 | Get build log | — | `mcp__xcode__GetBuildLog` (filter by severity, glob, pattern) |
 | List available tests | — | `mcp__xcode__GetTestList` |
+
+Use the `-package` variants when working on a single Swift package — they run `swift build`/`swift test` directly in the package directory, which is faster than building the entire app.
 
 ### Diagnostics & Issues
 
@@ -108,7 +113,7 @@ This prevents CI failures and ensures code quality before review.
 | `App/PopcornApp.swift` | App entry point, creates root store |
 | `App/Features/AppRoot/AppRootFeature.swift` | Root TCA reducer, tab management |
 | `App/Features/AppRoot/AppRootClient.swift` | App initialization (observability, feature flags) |
-| `AppDependencies/` | All dependency wiring for TCA |
+| `AppDependencies/` | Central DI hub — registers all use cases as TCA `DependencyKey`s, wires adapters to contexts |
 
 ## Contexts (Business Domains)
 
@@ -143,6 +148,49 @@ This prevents CI failures and ensures code quality before review.
 | `MovieCastAndCrewFeature` | Full cast/crew list |
 | `GamesCatalogFeature` | Games tab |
 | `PlotRemixGameFeature` | Plot remix game UI |
+| `DeveloperFeature` | Developer menu, feature flag overrides |
+
+## Adapters (External Service Bridges)
+
+**Context Adapters** — bridge TMDb API to domain interfaces. Each exposes a `*UITesting` module with stubs.
+
+| Adapter | Bridges To |
+|---------|-----------|
+| `PopcornMoviesAdapters` | PopcornMovies ↔ TMDb |
+| `PopcornTVSeriesAdapters` | PopcornTVSeries ↔ TMDb |
+| `PopcornPeopleAdapters` | PopcornPeople ↔ TMDb |
+| `PopcornSearchAdapters` | PopcornSearch ↔ TMDb (depends on Movies/TVSeries/People adapters) |
+| `PopcornDiscoverAdapters` | PopcornDiscover ↔ TMDb |
+| `PopcornTrendingAdapters` | PopcornTrending ↔ TMDb |
+| `PopcornIntelligenceAdapters` | PopcornIntelligence ↔ Movies/TVSeries contexts (no external API) |
+| `PopcornConfigurationAdapters` | PopcornConfiguration ↔ TMDb |
+| `PopcornGenresAdapters` | PopcornGenres ↔ TMDb |
+| `PopcornGamesCatalogAdapters` | PopcornGamesCatalog ↔ FeatureAccess |
+| `PopcornPlotRemixGameAdapters` | PopcornPlotRemixGame ↔ TMDb |
+
+**Platform Adapters** — bridge platform concerns to third-party SDKs.
+
+| Adapter | Bridges To |
+|---------|-----------|
+| `ObservabilityAdapters` | Observability ↔ Sentry |
+| `FeatureAccessAdapters` | FeatureAccess ↔ Statsig |
+
+## Core (Shared Foundation)
+
+| Package | Purpose |
+|---------|---------|
+| `CoreDomain` | Shared domain primitives (also provides `CoreDomainTestHelpers`) |
+| `DesignSystem` | Shared UI components, styles, image loading (SDWebImageSwiftUI) |
+| `TCAFoundation` | Shared TCA utilities and extensions |
+
+## Platform (Cross-Cutting Concerns)
+
+| Package | Purpose |
+|---------|---------|
+| `Caching` | In-memory caching with TTL, provides `CachingTestHelpers` |
+| `Observability` | Logging, analytics, error reporting interfaces, provides `ObservabilityTestHelpers` |
+| `FeatureAccess` | Feature flag interfaces and evaluation |
+| `DataPersistenceInfrastructure` | SwiftData persistence protocols |
 
 ## Architecture
 
@@ -151,6 +199,17 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for layer structure, use case p
 ## TMDb Domain Model Mapping
 
 See [docs/TMDB_MAPPING.md](docs/TMDB_MAPPING.md) for the complete TMDb type reference and mapping pipeline.
+
+## External Dependencies
+
+| Dependency | Version | Used By |
+|------------|---------|---------|
+| swift-composable-architecture | 1.23+ | All Features, AppDependencies |
+| TMDb | 16.0+ | Context Adapters |
+| SDWebImageSwiftUI | 3.0+ | DesignSystem |
+| sentry-cocoa | 8.57+ | ObservabilityAdapters |
+| statsig-kit | 1.55+ | FeatureAccessAdapters |
+| swift-snapshot-testing | 1.18+ | ExploreFeature (snapshot tests) |
 
 ## Code Style
 
