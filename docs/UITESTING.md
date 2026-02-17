@@ -1,5 +1,7 @@
 # UI Testing
 
+For generic Swift Testing guidance (expectations, traits, parameterized tests), use the `swift-testing-expert` skill. Use `/write-ui-test` to generate UI tests with stub data. This file covers **project-specific** patterns only.
+
 This guide covers how to write and maintain UI tests in Popcorn.
 
 ## Architecture Overview

@@ -146,82 +146,23 @@ This prevents CI failures and ensures code quality before review.
 
 ## Architecture
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for detailed patterns, examples, and step-by-step workflows for adding use cases, screens, features, and contexts.
-
-### Layer Structure
-
-Each context in `Contexts/` has 4 layers:
-
-```
-PopcornMovies/Sources/
-├── MoviesDomain/        # Entities, repository protocols (NO dependencies)
-├── MoviesApplication/   # Use case implementations
-├── MoviesInfrastructure/# SwiftData, API adapters
-└── MoviesComposition/   # Factory that wires it together
-```
-
-### Use Case File Structure
-
-```
-MoviesApplication/UseCases/FetchMovieDetails/
-├── FetchMovieDetailsUseCase.swift        # Protocol
-├── DefaultFetchMovieDetailsUseCase.swift # Implementation
-└── FetchMovieDetailsUseCaseError.swift   # Errors
-```
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for layer structure, use case patterns, and step-by-step workflows.
 
 ## TMDb Domain Model Mapping
 
 See [docs/TMDB_MAPPING.md](docs/TMDB_MAPPING.md) for the complete TMDb type reference and mapping pipeline.
 
-Use `/update-domain-model` to add properties to an existing model, or `/create-domain-model` to create a new one.
-
-DocC documentation: <https://adamayoung.github.io/TMDb/documentation/tmdb/>
-
-### Mapping Pipeline (4 layers)
-
-```
-TMDb SDK → [Adapter Mapper] → Domain Entity → [Infra Mapper] → SwiftData Entity
-Domain Entity → [App Mapper] → Application Model (*Details, ImageURLSet?)
-```
-
-### Key Mapping Patterns
-
-- **Optional array**: `dto.array?.map(subMapper.map)`
-- **Optional single value**: `dto.value.map(subMapper.map)` (uses `Optional.map`)
-- **Optional enum**: `dto.status.map(enumMapper.map)` / `entity.status.flatMap { Enum(rawValue: $0) }`
-- **Required from optional**: `dto.overview ?? ""`
-- **Enum to SwiftData**: store as `.rawValue` (String), convert back with `init(rawValue:)`
-
 ## Code Style
 
-Detailed guides: [SWIFT.md](docs/SWIFT.md) · [SWIFTUI.md](docs/SWIFTUI.md) · [SWIFTDATA.md](docs/SWIFTDATA.md) · [TCA.md](docs/TCA.md) · [GIT.md](docs/GIT.md) · [UITESTING.md](docs/UITESTING.md) · [TMDB_MAPPING.md](docs/TMDB_MAPPING.md)
+Detailed guides: [SWIFT.md](docs/SWIFT.md) · [SWIFTUI.md](docs/SWIFTUI.md) · [SWIFTDATA.md](docs/SWIFTDATA.md) · [TCA.md](docs/TCA.md) · [GIT.md](docs/GIT.md) · [UITESTING.md](docs/UITESTING.md)
 
-### Quick Reference
+### Project-Specific Rules
 
-**Swift**: `@Observable` needs `@MainActor` · **No force unwraps (`!`) anywhere, including tests** — use `try #require()` for unwrapping optionals in tests · `Task.sleep(for:)` · `localizedStandardContains()`
-
-**SwiftUI**: `foregroundStyle()` · `clipShape(.rect(cornerRadius:))` · `Tab` API · `@Observable` · `NavigationStack`
-
-**SwiftData**: No `@Attribute(.unique)` · Optional/defaulted properties · Optional relationships · Never expose `@Model` outside Infrastructure
-
-**TCA**: `@Reducer` + `@ObservableState` · `StackState` navigation · `@Dependency` injection · When adding or removing feature flags in a Client/Reducer, always update the corresponding `*FeatureFlagsTests` (all existing tests and add new ones for the flag)
+- When adding or removing feature flags in a Client/Reducer, always update the corresponding `*FeatureFlagsTests` (all existing tests and add new ones for the flag)
 
 ### SwiftLint Attributes
 
 ```yaml
 always_on_same_line: @Dependency, @Environment, @State, @Binding, @testable
 always_on_line_above: @ViewBuilder
-```
-
-## Directory Structure
-
-```
-App/                    # Root app, scenes, AppRootFeature
-Features/               # TCA feature packages
-Contexts/               # Business domain packages
-Adapters/               # Bridges contexts to external APIs
-Platform/               # Caching, DataPersistence, Observability, FeatureAccess
-Core/                   # DesignSystem, CoreDomain
-AppDependencies/        # Central TCA dependency composition
-Configs/                # Build settings, secrets
 ```

@@ -1,5 +1,7 @@
 # Architecture
 
+Use `/add-context`, `/add-feature`, `/add-use-case`, or `/add-screen` for guided scaffolding of new architectural components.
+
 Popcorn follows Clean Architecture with Domain-Driven Design, using The Composable Architecture (TCA) for state management.
 
 ## Directory Structure

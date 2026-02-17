@@ -1,5 +1,7 @@
 # TMDb Domain Model Mapping Guide
 
+Use `/create-domain-model` to create a new domain model from TMDb, or `/update-domain-model` to add properties to an existing one.
+
 This guide documents how to create and update domain models from TMDb SDK types. It covers the complete mapping pipeline, TMDb type reference, and step-by-step workflows.
 
 ## TMDb Documentation

@@ -1,5 +1,7 @@
 # Agent guide for Swift
 
+For generic Swift Concurrency guidance (async/await, actors, Sendable, isolation), use the `swift-concurrency` skill. This file covers **project-specific** rules only.
+
 This repository uses Swift 6.2 with strict concurrency. Follow these guidelines for modern, safe API usage.
 
 **Platform Targets**: iOS 26.0+, macOS 26.0+, visionOS 2.0+

@@ -1,315 +1,93 @@
-# Agent guide for TCA
+# Project TCA Conventions
 
-Use TCA 1.23+.
+For generic TCA guidance, use the `tca-expert` skill. This file covers **project-specific** patterns only.
 
-## Feature Structure
+## Navigation Pattern
 
-- **State**: Immutable struct with `@ObservableState`
-- **Action**: Enum of all possible user/system actions
-- **Reducer**: Pure function transforming State via Actions
-- **Dependencies**: Injected via `@Dependency`
-
-## Reducer Definition
+Features use a `Navigation` enum (not delegate actions) for child-to-parent navigation. The parent intercepts and handles navigation in its `Reduce`:
 
 ```swift
-@Reducer
-struct MovieDetailsFeature: Sendable {
-    @Dependency(\.movieDetailsClient) private var client
+// Child feature
+public enum Action: Sendable {
+    case navigate(Navigation)
+}
 
-    @ObservableState
-    struct State: Sendable {
-        let movieID: Int
-        var movie: Movie?
-        var isLoading = false
-        var error: Error?
-    }
+public enum Navigation: Equatable, Hashable, Sendable {
+    case personDetails(id: Int)
+    case intelligence(id: Int)
+}
 
-    enum Action: Sendable {
-        case didAppear
-        case fetch
-        case loaded(Movie)
-        case failed(Error)
-        case navigate(Navigation)
-    }
+// .navigate actions return .none — parent handles them
+case .navigate:
+    return .none
+```
 
-    enum Navigation: Equatable, Hashable {
-        case personDetails(id: Int)
-    }
+## ViewState Pattern
 
-    var body: some Reducer<State, Action> {
-        Reduce { state, action in
-            switch action {
-            case .didAppear:
-                return .send(.fetch)
+Features use a `ViewState` enum for loading lifecycle:
 
-            case .fetch:
-                state.isLoading = true
-                return .run { [movieID = state.movieID] send in
-                    let movie = try await client.fetchMovie(id: movieID)
-                    await send(.loaded(movie))
-                } catch: { error, send in
-                    await send(.failed(error))
-                }
-
-            case .loaded(let movie):
-                state.isLoading = false
-                state.movie = movie
-                return .none
-
-            case .failed(let error):
-                state.isLoading = false
-                state.error = error
-                return .none
-
-            case .navigate:
-                return .none  // Handled by parent
-            }
-        }
-    }
+```swift
+public enum ViewState: Sendable, Equatable {
+    case initial
+    case loading
+    case ready(ViewSnapshot)
+    case error(ErrorMessage)
 }
 ```
 
-## Dependency Client
+The `didAppear` action guards on `.initial` before triggering a fetch:
 
 ```swift
-@DependencyClient
-struct MovieDetailsClient: Sendable {
-    var fetchMovie: @Sendable (_ id: Int) async throws -> Movie
-    var fetchCredits: @Sendable (_ movieID: Int) async throws -> Credits
-    var toggleOnWatchlist: @Sendable (_ movieID: Int) async throws -> Void
-    var isWatchlistEnabled: @Sendable () throws -> Bool
-}
+case .didAppear:
+    guard case .initial = state.viewState else { return .none }
+    return .send(.fetch)
+```
 
+## Client Wiring
+
+Clients wire use cases from `AppDependencies` via `@Dependency` inside `liveValue`, using feature-specific mappers:
+
+```swift
 extension MovieDetailsClient: DependencyKey {
     static var liveValue: MovieDetailsClient {
         @Dependency(\.fetchMovieDetails) var fetchMovieDetails
-        @Dependency(\.featureFlags) var featureFlags
 
         return MovieDetailsClient(
             fetchMovie: { id in
                 let details = try await fetchMovieDetails.execute(id: id)
                 return MovieMapper().map(details)
-            },
-            fetchCredits: { movieID in
-                // ...
-            },
-            toggleOnWatchlist: { movieID in
-                // ...
-            },
-            isWatchlistEnabled: {
-                featureFlags.isEnabled(.watchlist)
             }
         )
     }
-
-    static var previewValue: MovieDetailsClient {
-        MovieDetailsClient(
-            fetchMovie: { _ in .mock },
-            fetchCredits: { _ in .mock },
-            toggleOnWatchlist: { _ in },
-            isWatchlistEnabled: { true }
-        )
-    }
-}
-
-extension DependencyValues {
-    var movieDetailsClient: MovieDetailsClient {
-        get { self[MovieDetailsClient.self] }
-        set { self[MovieDetailsClient.self] = newValue }
-    }
 }
 ```
 
-## Reducer Composition with Scope
+## Root Feature Composition
+
+Root tab features compose stack navigation, child scopes, and modal presentation together:
 
 ```swift
-@Reducer
-struct ExploreRootFeature: Sendable {
-    @ObservableState
-    struct State: Sendable {
-        var path = StackState<Path.State>()
-        var explore = ExploreFeature.State()
-        @Presents var movieIntelligence: MovieIntelligenceFeature.State?
+var body: some Reducer<State, Action> {
+    Scope(state: \.explore, action: \.explore) {
+        ExploreFeature()
     }
 
-    enum Action: Sendable {
-        case explore(ExploreFeature.Action)
-        case path(StackActionOf<Path>)
-        case movieIntelligence(PresentationAction<MovieIntelligenceFeature.Action>)
+    Reduce { state, action in
+        // Handle navigation from children
     }
-
-    @Reducer
-    enum Path {
-        case movieDetails(MovieDetailsFeature)
-        case personDetails(PersonDetailsFeature)
-    }
-
-    var body: some Reducer<State, Action> {
-        // Scope child reducer to parent state/action
-        Scope(state: \.explore, action: \.explore) {
-            ExploreFeature()
-        }
-
-        Reduce { state, action in
-            switch action {
-            // Handle navigation from child
-            case .explore(.navigate(.movieDetails(let id))):
-                state.path.append(.movieDetails(MovieDetailsFeature.State(movieID: id)))
-                return .none
-
-            // Handle navigation within stack
-            case .path(.element(_, .movieDetails(.navigate(.personDetails(let id))))):
-                state.path.append(.personDetails(PersonDetailsFeature.State(personID: id)))
-                return .none
-
-            // Present modal
-            case .path(.element(_, .movieDetails(.navigate(.intelligence(let id))))):
-                state.movieIntelligence = MovieIntelligenceFeature.State(movieID: id)
-                return .none
-
-            default:
-                return .none
-            }
-        }
-        // Stack navigation
-        .forEach(\.path, action: \.path)
-        // Modal presentation
-        .ifLet(\.$movieIntelligence, action: \.movieIntelligence) {
-            MovieIntelligenceFeature()
-        }
+    .forEach(\.path, action: \.path)
+    .ifLet(\.$modalFeature, action: \.modalFeature) {
+        ModalFeature()
     }
 }
 ```
 
-## Navigation Patterns
+## Visibility
 
-### Stack Navigation
-
-```swift
-@ObservableState
-struct State {
-    var path = StackState<Path.State>()
-}
-
-// Push to stack
-state.path.append(.movieDetails(MovieDetailsFeature.State(movieID: id)))
-
-// Pop from stack
-state.path.removeLast()
-```
-
-### Modal/Sheet Presentation
-
-```swift
-@ObservableState
-struct State {
-    @Presents var sheet: SheetFeature.State?
-}
-
-// Present
-state.sheet = SheetFeature.State()
-
-// Dismiss
-state.sheet = nil
-```
-
-## View Integration
-
-```swift
-struct ExploreRootView: View {
-    @Bindable var store: StoreOf<ExploreRootFeature>
-
-    var body: some View {
-        NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
-            ExploreView(store: store.scope(state: \.explore, action: \.explore))
-        } destination: { store in
-            switch store.case {
-            case .movieDetails(let store):
-                MovieDetailsView(store: store)
-            case .personDetails(let store):
-                PersonDetailsView(store: store)
-            }
-        }
-        .sheet(item: $store.scope(state: \.movieIntelligence, action: \.movieIntelligence)) { store in
-            MovieIntelligenceView(store: store)
-        }
-    }
-}
-```
-
-## Testing with TestStore
-
-```swift
-import Testing
-import ComposableArchitecture
-
-@Test
-func fetchMovieDetails() async {
-    let store = TestStore(
-        initialState: MovieDetailsFeature.State(movieID: 123)
-    ) {
-        MovieDetailsFeature()
-    } withDependencies: {
-        $0.movieDetailsClient.fetchMovie = { id in
-            #expect(id == 123)
-            return Movie(id: 123, title: "Test Movie", overview: "Overview")
-        }
-    }
-
-    await store.send(.fetch) {
-        $0.isLoading = true
-    }
-
-    await store.receive(\.loaded) {
-        $0.isLoading = false
-        $0.movie = Movie(id: 123, title: "Test Movie", overview: "Overview")
-    }
-}
-
-@Test
-func fetchMovieDetailsFailure() async {
-    struct TestError: Error, Equatable {}
-
-    let store = TestStore(
-        initialState: MovieDetailsFeature.State(movieID: 123)
-    ) {
-        MovieDetailsFeature()
-    } withDependencies: {
-        $0.movieDetailsClient.fetchMovie = { _ in
-            throw TestError()
-        }
-    }
-
-    await store.send(.fetch) {
-        $0.isLoading = true
-    }
-
-    await store.receive(\.failed) {
-        $0.isLoading = false
-        $0.error = TestError()
-    }
-}
-
-@Test
-func navigationToPersonDetails() async {
-    let store = TestStore(
-        initialState: MovieDetailsFeature.State(movieID: 123)
-    ) {
-        MovieDetailsFeature()
-    }
-
-    await store.send(.navigate(.personDetails(id: 456)))
-    // Parent handles navigation - no state change in this reducer
-}
-```
-
-## State Management
-
-- Use TCA stores for feature-level state
-- Use `@State` for view-local, ephemeral state only
-- Avoid `@StateObject` - TCA handles object lifecycle
+- Features are `public struct` and `Sendable`.
+- State, Action, ViewState, Navigation, and ErrorMessage are all `public`.
+- Clients are `internal` (only used within the feature package).
 
 ## Resources
 
 - [TCA Documentation](https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture)
-- [TCA SwiftUI Integration](https://pointfreeco.github.io/swift-composable-architecture/main/documentation/composablearchitecture/swiftui)

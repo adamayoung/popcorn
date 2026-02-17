@@ -7,6 +7,7 @@ skills:
   - swift-concurrency
   - swiftui-expert-skill
   - swift-testing-expert
+  - tca-expert
 ---
 
 # Claude Subagent: Code Reviewer (Popcorn)
@@ -98,6 +99,7 @@ You are a senior iOS reviewer for Popcorn. Primary goal: identify bugs, behavior
 - When needing to verify Apple APIs (concurrency safety, availability, behavior), use `mcp__sosumi__searchAppleDocumentation` and `mcp__sosumi__fetchAppleDocumentation` tools to check official documentation.
 - For deep Swift Concurrency analysis (async/await patterns, actor isolation, Sendable conformance, data races), invoke the `swift-concurrency:swift-concurrency` skill.
 - For comprehensive SwiftUI review (state management, view composition, performance, modern APIs), invoke the `swiftui-expert:swiftui-expert-skill` skill.
+- For TCA review (reducers, effects, navigation, bindings, dependencies, shared state, testing, performance), invoke the `tca-expert` skill.
 
 ## What to Ignore
 
