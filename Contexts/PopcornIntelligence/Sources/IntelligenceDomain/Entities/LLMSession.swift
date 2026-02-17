@@ -34,27 +34,27 @@ public enum LLMSessionError: LocalizedError {
     public var localizedDescription: String {
         switch self {
         case .toolCallFailed(let error):
-            return "Tool call failed: \(error?.localizedDescription ?? "Unknown error")"
+            "Tool call failed: \(error?.localizedDescription ?? "Unknown error")"
         case .exceededContextWindowSize(let message):
-            return "Exceeded context window size: \(message ?? "Unknown")"
+            "Exceeded context window size: \(message ?? "Unknown")"
         case .assetsUnavailable(let message):
-            return "Assets unavailable: \(message ?? "Unknown")"
+            "Assets unavailable: \(message ?? "Unknown")"
         case .guardrailViolation(let message):
-            return "Guardrail violation: \(message ?? "Unknown")"
+            "Guardrail violation: \(message ?? "Unknown")"
         case .unsupportedGuide(let message):
-            return "Unsupported guide: \(message ?? "Unknown")"
+            "Unsupported guide: \(message ?? "Unknown")"
         case .unsupportedLanguageOrLocale(let message):
-            return "Unsupported language or locale: \(message ?? "Unknown")"
+            "Unsupported language or locale: \(message ?? "Unknown")"
         case .decodingFailure(let message):
-            return "Decoding failure: \(message ?? "Unknown")"
+            "Decoding failure: \(message ?? "Unknown")"
         case .rateLimited(let message):
-            return "Rate limited: \(message ?? "Unknown")"
+            "Rate limited: \(message ?? "Unknown")"
         case .concurrentRequests(let message):
-            return "Concurrent requests: \(message ?? "Unknown")"
+            "Concurrent requests: \(message ?? "Unknown")"
         case .refusal(let message):
-            return "Refusal: \(message ?? "Unknown")"
+            "Refusal: \(message ?? "Unknown")"
         case .unknown(let error):
-            return "Unknown error: \(error?.localizedDescription ?? "Unknown")"
+            "Unknown error: \(error?.localizedDescription ?? "Unknown")"
         }
     }
 
