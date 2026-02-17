@@ -1,4 +1,5 @@
 ---
+name: test
 description: Run all unit tests
 ---
 

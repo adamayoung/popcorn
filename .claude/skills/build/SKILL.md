@@ -1,4 +1,5 @@
 ---
+name: build
 description: Build the project
 ---
 

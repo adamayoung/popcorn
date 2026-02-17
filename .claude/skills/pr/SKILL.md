@@ -1,4 +1,5 @@
 ---
+name: pr
 description: Create a pull request
 ---
 

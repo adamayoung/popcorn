@@ -1,4 +1,5 @@
 ---
+name: lint
 description: Lint code with swiftlint and swiftformat
 ---
 

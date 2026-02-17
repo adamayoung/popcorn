@@ -171,7 +171,9 @@ MoviesApplication/UseCases/FetchMovieDetails/
 
 ## TMDb Domain Model Mapping
 
-See [docs/TMDB_MAPPING.md](docs/TMDB_MAPPING.md) for the complete TMDb type reference, mapping pipeline, code patterns, and step-by-step workflows for creating or updating domain models from TMDb.
+See [docs/TMDB_MAPPING.md](docs/TMDB_MAPPING.md) for the complete TMDb type reference and mapping pipeline.
+
+Use `/update-domain-model` to add properties to an existing model, or `/create-domain-model` to create a new one.
 
 DocC documentation: <https://adamayoung.github.io/TMDb/documentation/tmdb/>
 

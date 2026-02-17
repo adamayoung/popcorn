@@ -538,131 +538,13 @@ struct PopcornApp: App {
 
 ## Common Workflows
 
-### Add a Use Case to Existing Context
+Use the corresponding skills for step-by-step guides:
+- `/add-use-case` — Add a use case to an existing context
+- `/add-screen` — Add a screen to an existing feature
+- `/add-feature` — Create a new TCA feature package
+- `/add-context` — Create a new business domain context
 
-1. Create directory:
-   ```
-   Contexts/PopcornMovies/Sources/MoviesApplication/UseCases/NewUseCase/
-   ```
-
-2. Add three files:
-   - `NewUseCase.swift` - Protocol definition
-   - `DefaultNewUseCase.swift` - Implementation
-   - `NewUseCaseError.swift` - Error type
-
-3. Add factory method to `MoviesApplicationFactory`:
-   ```swift
-   func makeNewUseCase() -> some NewUseCase {
-       DefaultNewUseCase(movieRepository: movieRepository)
-   }
-   ```
-
-4. Expose in `MoviesComposition/PopcornMoviesFactory`:
-   ```swift
-   public func makeNewUseCase() -> some NewUseCase {
-       applicationFactory.makeNewUseCase()
-   }
-   ```
-
-5. Add TCA dependency in `AppDependencies/Movies/NewUseCase+TCA.swift`:
-   ```swift
-   enum NewUseCaseKey: DependencyKey {
-       static var liveValue: any NewUseCase {
-           @Dependency(\.moviesFactory) var moviesFactory
-           return moviesFactory.makeNewUseCase()
-       }
-   }
-
-   public extension DependencyValues {
-       var newUseCase: any NewUseCase {
-           get { self[NewUseCaseKey.self] }
-           set { self[NewUseCaseKey.self] = newValue }
-       }
-   }
-   ```
-
-### Add a Screen to Existing Feature
-
-1. Add state case to parent's `Path` enum:
-   ```swift
-   @Reducer
-   enum Path {
-       case existingScreen(ExistingFeature)
-       case newScreen(NewScreenFeature)  // Add this
-   }
-   ```
-
-2. Add navigation handling in parent reducer:
-   ```swift
-   case .existingScreen(.navigate(.newScreen(let id))):
-       state.path.append(.newScreen(NewScreenFeature.State(id: id)))
-       return .none
-   ```
-
-3. Wire view in `navigationDestination`:
-   ```swift
-   } destination: { store in
-       switch store.case {
-       case .existingScreen(let store):
-           ExistingView(store: store)
-       case .newScreen(let store):
-           NewScreenView(store: store)
-       }
-   }
-   ```
-
-### Add a New Feature Package
-
-1. Create package structure:
-   ```
-   Features/NewFeature/
-   ├── Package.swift
-   ├── Sources/NewFeature/
-   │   ├── NewFeature.swift      # Reducer
-   │   ├── NewFeatureClient.swift # Dependencies
-   │   ├── Views/
-   │   │   └── NewFeatureView.swift
-   │   ├── Models/
-   │   └── Mappers/
-   └── Tests/NewFeatureTests/
-   ```
-
-2. Package.swift dependencies:
-   ```swift
-   dependencies: [
-       .package(path: "../../AppDependencies"),
-       .package(path: "../../Core/DesignSystem"),
-   ]
-   ```
-
-3. Create reducer with `State`, `Action`, `body`
-
-4. Create client bridging to AppDependencies
-
-5. Add to parent feature's `Path` enum and wire navigation
-
-### Add a New Context
-
-1. Create context package:
-   ```
-   Contexts/PopcornNewContext/
-   ├── Package.swift
-   ├── Sources/
-   │   ├── NewContextDomain/
-   │   ├── NewContextApplication/
-   │   ├── NewContextInfrastructure/
-   │   └── NewContextComposition/
-   └── Tests/
-   ```
-
-2. Create adapters:
-   ```
-   Adapters/Contexts/PopcornNewContextAdapters/
-   ```
-
-3. Wire in AppDependencies:
-   - Add package dependency
-   - Create `AppDependencies/NewContext/` with TCA dependency extensions
+For cross-context communication patterns, see the section below.
 
 ### Cross-Context Communication
 

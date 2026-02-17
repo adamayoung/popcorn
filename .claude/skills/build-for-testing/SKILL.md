@@ -1,4 +1,5 @@
 ---
+name: build-for-testing
 description: Build the project for testing
 ---
 

@@ -1,4 +1,5 @@
 ---
+name: format
 description: Format code with swiftlint and swiftformat
 ---
 

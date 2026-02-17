@@ -461,108 +461,13 @@ Rules:
 - Optional properties have non-nil defaults (so callers only override what they test)
 - For `@Model` types, use `static func` factories, NOT `static let` (concurrency safety)
 
-## Workflow: Adding Properties to an Existing Domain Model
+## Workflows
 
-### Step 1: Identify missing properties
+For step-by-step workflows, use the corresponding skills:
+- `/update-domain-model` — Add properties to an existing domain model
+- `/create-domain-model` — Create a new domain model from TMDb
 
-Compare the TMDb type reference (above) with the current domain entity.
-
-### Step 2: Domain Layer — new supporting entities (if needed)
-
-For new complex types (enums, structs), create domain entities:
-- `Contexts/Popcorn<X>/Sources/<X>Domain/Entities/<NewType>.swift`
-
-### Step 3: Domain Layer — update main entity
-
-Add properties to the struct, init, and init defaults:
-- `Contexts/Popcorn<X>/Sources/<X>Domain/Entities/<Name>.swift`
-
-### Step 4: Adapter Layer — new sub-mappers (TDD)
-
-For each new complex type, write tests first then implement:
-- Test: `Adapters/.../Tests/.../Mappers/<NewType>MapperTests.swift`
-- Source: `Adapters/.../Sources/.../Mappers/<NewType>Mapper.swift`
-
-### Step 5: Adapter Layer — update main mapper (TDD)
-
-Update tests then implementation:
-- Test: `Adapters/.../Tests/.../Mappers/<Name>MapperTests.swift`
-- Source: `Adapters/.../Sources/.../Mappers/<Name>Mapper.swift`
-
-### Step 6: Infrastructure Layer — new SwiftData entities (if needed)
-
-For new complex types that need persistence:
-- `Contexts/Popcorn<X>/Sources/<X>Infrastructure/DataSources/Local/Models/<Context><NewType>Entity.swift`
-
-### Step 7: Infrastructure Layer — update main entity
-
-Add properties and relationships:
-- `Contexts/Popcorn<X>/Sources/<X>Infrastructure/DataSources/Local/Models/<Context><Name>Entity.swift`
-
-### Step 8: Infrastructure Layer — update mapper (TDD)
-
-Update all 3 methods (entity→domain, domain→entity, update-in-place) with tests:
-- Test: `Contexts/.../Tests/<X>InfrastructureTests/Mappers/<Name>MapperTests.swift`
-- Source: `Contexts/.../Sources/<X>Infrastructure/DataSources/Local/Mappers/<Name>Mapper.swift`
-
-### Step 9: Application Layer — update model and mapper
-
-- Model: `Contexts/Popcorn<X>/Sources/<X>Application/Models/<Name>Details.swift`
-- Mapper: `Contexts/Popcorn<X>/Sources/<X>Application/Mappers/<Name>DetailsMapper.swift`
-- Test: `Contexts/.../Tests/<X>ApplicationTests/Mappers/<Name>DetailsMapperTests.swift`
-
-### Step 10: Update test helpers
-
-Update `<Name>+Mocks.swift` in all test targets that use it.
-
-### Step 11: Verify
-
-Run the full pre-PR checklist: `/format`, `/lint`, `/build`, `/test`
-
-## Workflow: Creating a New Domain Model from TMDb
-
-### Step 1: Create domain entity
-
-- File: `Contexts/Popcorn<X>/Sources/<X>Domain/Entities/<Name>.swift`
-- Conforms to: `Identifiable, Equatable, Sendable`
-
-### Step 2: Create adapter mapper (TDD)
-
-- Test: `Adapters/.../Tests/.../Mappers/<Name>MapperTests.swift`
-- Source: `Adapters/.../Sources/.../Mappers/<Name>Mapper.swift`
-
-### Step 3: Create SwiftData entity
-
-- File: `Contexts/Popcorn<X>/Sources/<X>Infrastructure/DataSources/Local/Models/<Context><Name>Entity.swift`
-- Conforms to: `Equatable, ModelExpirable`
-
-### Step 4: Create infrastructure mapper (TDD)
-
-- Test: `Contexts/.../Tests/<X>InfrastructureTests/Mappers/<Name>MapperTests.swift`
-- Source: `Contexts/.../Sources/<X>Infrastructure/DataSources/Local/Mappers/<Name>Mapper.swift`
-- Implement all 3 methods: entity→domain, domain→entity, update-in-place
-
-### Step 5: Create application model
-
-- File: `Contexts/Popcorn<X>/Sources/<X>Application/Models/<Name>Details.swift`
-- Replace `URL?` paths with `ImageURLSet?`
-
-### Step 6: Create application mapper (TDD)
-
-- Test: `Contexts/.../Tests/<X>ApplicationTests/Mappers/<Name>DetailsMapperTests.swift`
-- Source: `Contexts/.../Sources/<X>Application/Mappers/<Name>DetailsMapper.swift`
-
-### Step 7: Create test helpers
-
-- `<Name>+Mocks.swift` in each test target that needs it
-
-### Step 8: Wire into data sources, repositories, use cases
-
-Follow the workflows in [ARCHITECTURE.md](ARCHITECTURE.md).
-
-### Step 9: Verify
-
-Run the full pre-PR checklist: `/format`, `/lint`, `/build`, `/test`
+These skills include the code patterns and file conventions from this guide.
 
 ## Common Pitfalls
 

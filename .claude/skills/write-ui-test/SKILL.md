@@ -1,4 +1,5 @@
 ---
+name: write-ui-test
 description: Write UI tests with stub data
 ---
 
@@ -15,14 +16,90 @@ Ask the user for:
 
 ## Architecture Overview
 
+UI tests run against stub data instead of real API calls. This is achieved through:
+
+1. **Launch argument detection**: The app checks for `-uitest` to switch to test dependencies
+2. **Stub factories**: Each context has a `UITest*Factory` that uses stub repositories
+3. **Stub repositories**: Return deterministic, hardcoded data for testing
+
 ```
-XCUITest (PopcornUITests/)
-    ↓
-App launched with -uitest flag
-    ↓
-UITestDependencies configures stub factories
-    ↓
-Stub repositories return deterministic data
++-----------------------+     +--------------------------------+
+|   XCUITest            |---->|  App (launched with -uitest)   |
+|   PopcornUITests/     |     +--------------------------------+
++-----------------------+                   |
+                                            v
+                              +-----------------------------+
+                              | UITestDependencies          |
+                              | configures stub factories   |
+                              +-----------------------------+
+                                            |
+                                            v
+                              +-----------------------------+
+                              | UITest*Factory              |
+                              | (in *AdaptersUITesting)     |
+                              +-----------------------------+
+                                            |
+                                            v
+                              +-----------------------------+
+                              | Stub*Repository             |
+                              | returns hardcoded data      |
+                              +-----------------------------+
+```
+
+## Directory Structure
+
+```
+PopcornUITests/                           # XCUITest target
++-- PopcornUITestCase.swift               # Base test case
++-- Screen.swift                          # Base screen object
++-- Explore/                              # Screen objects by feature
+|   +-- ExploreScreen.swift
+|   +-- MovieDetailsScreen.swift
+|   +-- ...
++-- UITests/                              # Test cases
+    +-- Explore/
+        +-- ExploreDiscoverMoviesTests.swift
+
+Adapters/Contexts/PopcornMoviesAdapters/
++-- Sources/
+|   +-- PopcornMoviesAdapters/            # Production adapters
+|   +-- PopcornMoviesAdaptersUITesting/   # UI test stubs
+|       +-- UITestPopcornMoviesFactory.swift
+|       +-- Repositories/
+|       |   +-- StubMovieRepository.swift
+|       |   +-- ...
+|       +-- Providers/
+|           +-- StubAppConfigurationProvider.swift
++-- Package.swift
+```
+
+## App Configuration
+
+The app detects UI testing mode via launch arguments:
+
+```swift
+// App/PopcornApp.swift
+
+@main
+struct PopcornApp: App {
+
+    init() {
+        let isUITesting = CommandLine.arguments.contains("-uitest")
+
+        if isUITesting {
+            _store = StateObject(wrappedValue: Store(
+                initialState: AppRootFeature.State()
+            ) {
+                AppRootFeature()
+            } withDependencies: {
+                UITestDependencies.configure(&$0)
+            })
+        } else {
+            // Production store setup
+        }
+    }
+
+}
 ```
 
 ## Steps
@@ -154,7 +231,7 @@ extension Stub{Entity}Repository {
 }
 ```
 
-### 5. Update UITest Factory (if new stubs)
+### 5. Create UITest Factory (if new stubs)
 
 In `UITestPopcorn{Context}Factory.swift`:
 
@@ -172,26 +249,57 @@ public final class UITestPopcorn{Context}Factory: Popcorn{Context}Factory {
 }
 ```
 
-### 6. Register in UITestDependencies (if new factory)
+### 6. Update Package.swift (if new UITesting target)
+
+Add the UITesting target to the adapter's Package.swift:
+
+```swift
+products: [
+    .library(name: "PopcornMoviesAdapters", targets: ["PopcornMoviesAdapters"]),
+    .library(name: "PopcornMoviesAdaptersUITesting", targets: ["PopcornMoviesAdaptersUITesting"])
+],
+
+targets: [
+    .target(
+        name: "PopcornMoviesAdaptersUITesting",
+        dependencies: [
+            .product(name: "MoviesComposition", package: "PopcornMovies"),
+            .product(name: "MoviesApplication", package: "PopcornMovies"),
+            .product(name: "MoviesDomain", package: "PopcornMovies"),
+            "CoreDomain"
+        ]
+    )
+]
+```
+
+### 7. Register in UITestDependencies (if new factory)
 
 In `AppDependencies/UITesting/UITestDependencies.swift`:
 
 ```swift
+import PopcornMoviesAdaptersUITesting
+
 public enum UITestDependencies {
 
     public static func configure(_ dependencies: inout DependencyValues) {
-        dependencies.{context}Factory = UITestPopcorn{Context}Factory()
+        dependencies.moviesFactory = UITestPopcornMoviesFactory()
         // Other factories
     }
 
 }
 ```
 
+## Visibility Requirements
+
+`*ApplicationFactory` classes in the Application layer are marked `public` (not `package`) to support UI testing. This allows the Adapters layer's `*AdaptersUITesting` modules to instantiate them with stub repositories.
+
 ## Best Practices
 
 ### Stub Data
 - Use realistic but deterministic values
 - Include edge cases (long text, missing fields)
+- Store static data in extensions on stub classes
+- Use real TMDb IDs when possible for consistency
 - Use consistent IDs across related stubs
 
 ### Screen Objects
@@ -205,6 +313,7 @@ public enum UITestDependencies {
 - Descriptive names: `testMovieDetailsDisplaysOverview`
 - Wait for elements: `element.waitForExistence(timeout: 5)`
 - Use `scrollTo()` before tapping off-screen elements
+- Take screenshots on failure (handled by base class)
 
 ### Accessibility Identifiers
 - Add to all interactive and assertable elements

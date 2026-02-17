@@ -1,4 +1,5 @@
 ---
+name: add-feature
 description: Create a new TCA feature package
 ---
 

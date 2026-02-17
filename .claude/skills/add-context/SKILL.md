@@ -1,4 +1,5 @@
 ---
+name: add-context
 description: Create a new business domain context
 ---
 
