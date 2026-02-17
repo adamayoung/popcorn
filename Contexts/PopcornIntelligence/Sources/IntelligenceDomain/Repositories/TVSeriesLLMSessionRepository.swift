@@ -7,6 +7,7 @@
 
 import Foundation
 
+/// Defines the ``TVSeriesLLMSessionRepository`` contract.
 public protocol TVSeriesLLMSessionRepository: Sendable {
 
     func session(
@@ -15,6 +16,7 @@ public protocol TVSeriesLLMSessionRepository: Sendable {
 
 }
 
+/// Represents the ``TVSeriesLLMSessionRepositoryError`` values.
 public enum TVSeriesLLMSessionRepositoryError: Error {
 
     case tvSeriesNotFound

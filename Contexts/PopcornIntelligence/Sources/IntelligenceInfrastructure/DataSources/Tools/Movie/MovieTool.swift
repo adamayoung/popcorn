@@ -32,19 +32,7 @@ final class MovieTool: Tool {
         let movieID: Int
     }
 
-    @Generable
-    struct Movie: PromptRepresentable {
-        @Guide(description: "This is the ID of the movie.")
-        let id: Int
-        @Guide(description: "This is the title of the movie.")
-        let title: String
-        @Guide(description: "This is an overview of the movie.")
-        let overview: String
-        @Guide(description: "This is the release date of the movie.")
-        let releaseDate: String?
-    }
-
-    func call(arguments: Arguments) async throws -> Movie {
+    func call(arguments: Arguments) async throws -> MovieToolMovie {
         let movie = try await movieProvider.movie(withID: arguments.movieID)
         let mapper = MovieToolMapper()
         return mapper.map(movie)

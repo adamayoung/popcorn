@@ -8,6 +8,7 @@
 import Foundation
 import IntelligenceApplication
 
+/// Defines the ``PopcornIntelligenceFactory`` contract.
 public protocol PopcornIntelligenceFactory: Sendable {
 
     func makeCreateMovieIntelligenceSessionUseCase() -> CreateMovieIntelligenceSessionUseCase

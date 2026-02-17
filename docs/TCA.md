@@ -4,7 +4,7 @@ For generic TCA guidance, use the `tca-expert` skill. This file covers **project
 
 ## Navigation Pattern
 
-Features use a `Navigation` enum (not delegate actions) for child-to-parent navigation. The parent intercepts and handles navigation in its `Reduce`:
+Features use a `Navigation` enum (not delegate actions) for child-to-parent navigation. This replaces the standard TCA delegate actions pattern described in the `tca-expert` skill. The child always returns `.none` for `.navigate` actions — the parent intercepts and handles them (e.g. pushing to `state.path`):
 
 ```swift
 // Child feature
@@ -19,6 +19,11 @@ public enum Navigation: Equatable, Hashable, Sendable {
 
 // .navigate actions return .none — parent handles them
 case .navigate:
+    return .none
+
+// Parent intercepts .navigate actions and pushes to the path
+case .movieDetails(.navigate(.personDetails(let id))):
+    state.path.append(.personDetails(PersonDetailsFeature.State(id: id)))
     return .none
 ```
 

@@ -14,25 +14,33 @@ import Foundation
 /// and associated imagery paths. This is the core domain entity used throughout
 /// the TV series context for representing series data.
 ///
+/// Represents ``TVSeries``.
 public struct TVSeries: Identifiable, Equatable, Sendable {
 
     /// The unique identifier for the TV series.
+    /// The ``id`` value.
     public let id: Int
 
     /// The TV series' name.
+    /// The ``name`` value.
     public let name: String
 
+    /// The ``tagline`` value.
     public let tagline: String?
 
     /// A brief description or summary of the TV series.
+    /// The ``overview`` value.
     public let overview: String
 
+    /// The ``numberOfSeasons`` value.
     public let numberOfSeasons: Int
 
     /// URL path to the TV series' poster image.
+    /// The ``posterPath`` value.
     public let posterPath: URL?
 
     /// URL path to the TV series' backdrop image.
+    /// The ``backdropPath`` value.
     public let backdropPath: URL?
 
     ///
@@ -45,6 +53,7 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
     ///   - posterPath: URL path to the poster image. Defaults to `nil`.
     ///   - backdropPath: URL path to the backdrop image. Defaults to `nil`.
     ///
+    /// Creates a new instance.
     public init(
         id: Int,
         name: String,

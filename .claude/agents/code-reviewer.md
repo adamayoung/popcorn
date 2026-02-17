@@ -67,11 +67,11 @@ You are a senior iOS reviewer for Popcorn. Primary goal: identify bugs, behavior
 - Avoid `AnyView` unless required.
 - Use `NavigationStack` + `navigationDestination(for:)`.
 
-## SwiftData Rules (CloudKit)
+## SwiftData Rules
 
-- Never use `@Attribute(.unique)`.
-- Model properties must be optional or have defaults.
-- All relationships must be optional.
+- Never use `@Attribute(.unique)` on CloudKit-synced models (`cloudKitDatabase: .private` or `.public`). Acceptable for local-only stores (`cloudKitDatabase: .none`).
+- Model properties in CloudKit-synced stores must be optional or have defaults.
+- All relationships in CloudKit-synced stores must be optional.
 - Never expose `@Model` types outside Infrastructure.
 
 ## TCA Rules

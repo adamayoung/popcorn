@@ -8,6 +8,7 @@
 import Foundation
 import FoundationModels
 
+/// Defines the ``MovieToolDataSource`` contract.
 public protocol MovieToolDataSource: Sendable {
 
     func movie() -> any Tool

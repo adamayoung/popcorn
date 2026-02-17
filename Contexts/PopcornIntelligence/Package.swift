@@ -23,6 +23,7 @@ let package = Package(
 
     dependencies: [
         .package(path: "../../Core/CoreDomain"),
+        .package(path: "../PopcornMovies"),
         .package(path: "../../Platform/Observability")
     ],
 
@@ -54,7 +55,8 @@ let package = Package(
         .target(
             name: "IntelligenceDomain",
             dependencies: [
-                "CoreDomain"
+                "CoreDomain",
+                .product(name: "MoviesDomain", package: "PopcornMovies")
             ]
         ),
         .testTarget(

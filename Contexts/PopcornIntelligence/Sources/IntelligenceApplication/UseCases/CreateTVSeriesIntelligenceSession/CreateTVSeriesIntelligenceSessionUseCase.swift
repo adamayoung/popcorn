@@ -11,6 +11,7 @@ import IntelligenceDomain
 ///
 /// Use case for creating an intelligence session for a specific TV series
 ///
+/// Defines the ``CreateTVSeriesIntelligenceSessionUseCase`` contract.
 public protocol CreateTVSeriesIntelligenceSessionUseCase: Sendable {
 
     ///

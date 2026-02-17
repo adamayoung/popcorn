@@ -8,16 +8,25 @@
 import CoreDomain
 import Foundation
 
+/// Represents ``CastMember``.
 public struct CastMember: Identifiable, Equatable, Sendable {
 
+    /// The ``id`` value.
     public let id: String
+    /// The ``personID`` value.
     public let personID: Int
+    /// The ``characterName`` value.
     public let characterName: String
+    /// The ``personName`` value.
     public let personName: String
+    /// The ``profilePath`` value.
     public let profilePath: URL?
+    /// The ``gender`` value.
     public let gender: Gender
+    /// The ``order`` value.
     public let order: Int
 
+    /// Creates a new instance.
     public init(
         id: String,
         personID: Int,

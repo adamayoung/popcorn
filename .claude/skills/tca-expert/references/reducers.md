@@ -210,7 +210,7 @@ struct Feature: Sendable {
         }
     }
 
-    private func fetchData(state: inout State) -> Effect<Action> {
+    private func fetchData(state: inout State) -> EffectOf<Self> {
         state.isLoading = true
         return .run { send in
             // ...
@@ -218,6 +218,8 @@ struct Feature: Sendable {
     }
 }
 ```
+
+`EffectOf<Self>` is a TCA typealias for `Effect<Self.Action>`. Prefer it in helper methods — it stays correct if the Action type is renamed or the method is moved.
 
 ## Overriding child dependencies
 

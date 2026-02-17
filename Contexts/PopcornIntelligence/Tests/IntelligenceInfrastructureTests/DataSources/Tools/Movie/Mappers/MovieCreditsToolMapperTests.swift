@@ -102,4 +102,37 @@ struct MovieCreditsToolMapperTests {
         #expect(result.crew.isEmpty)
     }
 
+    @Test("map returns empty cast and crew when limit is zero")
+    func mapReturnsEmptyWhenLimitIsZero() {
+        let credits = Credits.mock(
+            cast: [CastMember.mock(id: "cast-1", personID: 1, characterName: "Hero", personName: "Actor")],
+            crew: [CrewMember.mock(id: "crew-1", personID: 2, personName: "Director", job: "Director")]
+        )
+
+        let result = mapper.map(credits, limit: 0)
+
+        #expect(result.cast.isEmpty)
+        #expect(result.crew.isEmpty)
+    }
+
+    @Test("map returns all cast and crew when limit exceeds available items")
+    func mapReturnsAllWhenLimitExceedsAvailableItems() {
+        let cast = [
+            CastMember.mock(id: "cast-1", personID: 100, characterName: "Hero", personName: "Actor One"),
+            CastMember.mock(id: "cast-2", personID: 101, characterName: "Villain", personName: "Actor Two")
+        ]
+        let crew = [
+            CrewMember.mock(id: "crew-1", personID: 200, personName: "Director One", job: "Director")
+        ]
+        let credits = Credits.mock(cast: cast, crew: crew)
+
+        let result = mapper.map(credits, limit: 99)
+
+        #expect(result.cast.count == 2)
+        #expect(result.crew.count == 1)
+        #expect(result.cast[0].id == "cast-1")
+        #expect(result.cast[1].id == "cast-2")
+        #expect(result.crew[0].id == "crew-1")
+    }
+
 }

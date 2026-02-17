@@ -9,6 +9,7 @@ import CoreDomain
 import Foundation
 import IntelligenceDomain
 import MoviesApplication
+import MoviesDomain
 @testable import PopcornIntelligenceAdapters
 import Testing
 
@@ -22,16 +23,50 @@ struct MovieMapperTests {
         let releaseDate = Date(timeIntervalSince1970: 939_686_400)
         let posterURLSet = try makeImageURLSet(path: "poster.jpg")
         let backdropURLSet = try makeImageURLSet(path: "backdrop.jpg")
+        let homepageURL = try #require(URL(string: "https://example.com/movie"))
+        let companyLogoURL = try #require(URL(string: "https://example.com/logo.png"))
+        let collectionPosterURL = try #require(URL(string: "https://example.com/collection-poster.png"))
+        let collectionBackdropURL = try #require(URL(string: "https://example.com/collection-backdrop.png"))
+        let genres = [Genre(id: 18, name: "Drama")]
+        let productionCompanies = [
+            ProductionCompany(id: 508, name: "Regency Enterprises", originCountry: "US", logoPath: companyLogoURL)
+        ]
+        let productionCountries = [ProductionCountry(countryCode: "US", name: "United States of America")]
+        let spokenLanguages = [SpokenLanguage(languageCode: "en", name: "English")]
+        let belongsToCollection = MovieCollection(
+            id: 100,
+            name: "Collection",
+            posterPath: collectionPosterURL,
+            backdropPath: collectionBackdropURL
+        )
 
         let movieDetails = MovieDetails(
             id: 550,
             title: "Fight Club",
             tagline: "Mischief. Mayhem. Soap.",
+            originalTitle: "Fight Club Original",
+            originalLanguage: "en",
             overview: "A ticking-time-bomb insomniac and a slippery soap salesman...",
             runtime: 139,
+            genres: genres,
             releaseDate: releaseDate,
             posterURLSet: posterURLSet,
             backdropURLSet: backdropURLSet,
+            budget: 63_000_000,
+            revenue: 100_853_753,
+            homepageURL: homepageURL,
+            imdbID: "tt0137523",
+            status: .released,
+            productionCompanies: productionCompanies,
+            productionCountries: productionCountries,
+            spokenLanguages: spokenLanguages,
+            originCountry: ["US"],
+            belongsToCollection: belongsToCollection,
+            popularity: 61.416,
+            voteAverage: 8.4,
+            voteCount: 28_000,
+            hasVideo: false,
+            isAdultOnly: false,
             isOnWatchlist: false
         )
 
@@ -39,10 +74,30 @@ struct MovieMapperTests {
 
         #expect(result.id == 550)
         #expect(result.title == "Fight Club")
+        #expect(result.tagline == "Mischief. Mayhem. Soap.")
+        #expect(result.originalTitle == "Fight Club Original")
+        #expect(result.originalLanguage == "en")
         #expect(result.overview == "A ticking-time-bomb insomniac and a slippery soap salesman...")
+        #expect(result.runtime == 139)
+        #expect(result.genres == genres)
         #expect(result.releaseDate == releaseDate)
         #expect(result.posterPath == posterURLSet.path)
         #expect(result.backdropPath == backdropURLSet.path)
+        #expect(result.budget == 63_000_000)
+        #expect(result.revenue == 100_853_753)
+        #expect(result.homepageURL == homepageURL)
+        #expect(result.imdbID == "tt0137523")
+        #expect(result.status == .released)
+        #expect(result.productionCompanies == productionCompanies)
+        #expect(result.productionCountries == productionCountries)
+        #expect(result.spokenLanguages == spokenLanguages)
+        #expect(result.originCountry == ["US"])
+        #expect(result.belongsToCollection == belongsToCollection)
+        #expect(result.popularity == 61.416)
+        #expect(result.voteAverage == 8.4)
+        #expect(result.voteCount == 28_000)
+        #expect(result.hasVideo == false)
+        #expect(result.isAdultOnly == false)
     }
 
     @Test("Maps with nil optional properties")
@@ -65,6 +120,26 @@ struct MovieMapperTests {
         #expect(result.releaseDate == nil)
         #expect(result.posterPath == nil)
         #expect(result.backdropPath == nil)
+        #expect(result.tagline == nil)
+        #expect(result.originalTitle == nil)
+        #expect(result.originalLanguage == nil)
+        #expect(result.runtime == nil)
+        #expect(result.genres == nil)
+        #expect(result.budget == nil)
+        #expect(result.revenue == nil)
+        #expect(result.homepageURL == nil)
+        #expect(result.imdbID == nil)
+        #expect(result.status == nil)
+        #expect(result.productionCompanies == nil)
+        #expect(result.productionCountries == nil)
+        #expect(result.spokenLanguages == nil)
+        #expect(result.originCountry == nil)
+        #expect(result.belongsToCollection == nil)
+        #expect(result.popularity == nil)
+        #expect(result.voteAverage == nil)
+        #expect(result.voteCount == nil)
+        #expect(result.hasVideo == nil)
+        #expect(result.isAdultOnly == nil)
     }
 
     @Test("Maps poster path correctly from URLSet")
