@@ -7,12 +7,14 @@
 
 public protocol FeatureFlagOverriding: Sendable {
 
-    func actualValue(for flag: FeatureFlag) -> Bool
+    func actualValue(for featureFlag: FeatureFlag) -> Bool
 
-    func setOverrideValue(_ value: Bool, for flag: FeatureFlag)
+    func setOverrideValue(_ value: Bool, for featureFlag: FeatureFlag)
 
-    func overrideValue(for flag: FeatureFlag) -> Bool?
+    func overrideValue(for featureFlag: FeatureFlag) -> Bool?
 
-    func removeOverride(for flag: FeatureFlag)
+    func removeOverride(for featureFlag: FeatureFlag)
+
+    func removeAllOverrides()
 
 }

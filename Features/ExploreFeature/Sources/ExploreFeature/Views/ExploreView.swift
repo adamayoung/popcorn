@@ -189,7 +189,7 @@ extension ExploreView {
                 store.send(.navigate(.tvSeriesDetails(id: tvSeries.id, transitionID: transitionID)))
             }
         )
-        .accessibilityIdentifier("explore.trending-tvseries.carousel")
+        .accessibilityIdentifier("explore.trending-tv-series.carousel")
     }
 
     @ViewBuilder

@@ -34,6 +34,7 @@ public struct MediaSearchView: View {
                 EmptyView()
             }
         }
+        .accessibilityIdentifier("media-search.view")
         .overlay {
             if case .noSearchResults(let snapshot) = store.viewState {
                 noSearchResultsContent(snapshot.query)

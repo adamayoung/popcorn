@@ -12,6 +12,8 @@ public protocol MovieWatchlistLocalDataSource: Sendable, Actor {
 
     func movies() async throws(MovieWatchlistLocalDataSourceError) -> Set<WatchlistMovie>
 
+    func moviesStream() async -> AsyncThrowingStream<Set<WatchlistMovie>, Error>
+
     func isOnWatchlist(
         movieID id: Int
     ) async throws(MovieWatchlistLocalDataSourceError) -> Bool

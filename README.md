@@ -10,7 +10,7 @@ Popcorn is a modular SwiftUI application for browsing movies and TV series acros
 ## Architecture
 - **Features**: Swift packages under `Features/` house TCA reducers, views, and clients for vertical slices such as Explore, Search, Games, and Developer tools.
 - **Contexts**: Domain, application, and infrastructure layers under `Contexts/` define contracts, use cases, repositories, and data sources for media data and supporting services.
-- **Adapters**: Bridge code in `Adapters/` connects contexts to external APIs (TMDb, Sentry, Statsig), with each context adapter exposing a `*UITesting` module with stubs.
+- **Adapters**: Bridge code in `Adapters/` connects contexts to external APIs (TMDb, Sentry, Statsig).
 - **Core**: Shared foundations in `Core/` — `CoreDomain` for shared domain primitives, `DesignSystem` for reusable UI components and theming, and `TCAFoundation` for shared TCA utilities.
 - **Platform**: Cross-cutting concerns in `Platform/` — `Caching` (in-memory with TTL), `Observability` (logging, analytics, error reporting), `FeatureAccess` (feature flag interfaces), and `DataPersistenceInfrastructure` (SwiftData persistence).
 - **AppDependencies**: Central dependency injection hub that registers all use cases as TCA `DependencyKey`s and wires adapters to contexts.

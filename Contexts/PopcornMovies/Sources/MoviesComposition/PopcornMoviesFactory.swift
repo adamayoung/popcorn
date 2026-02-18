@@ -32,4 +32,8 @@ public protocol PopcornMoviesFactory: Sendable {
 
     func makeFetchMovieCreditsUseCase() -> FetchMovieCreditsUseCase
 
+    func makeStreamWatchlistMoviesUseCase() -> StreamWatchlistMoviesUseCase
+
+    func makeFetchWatchlistMoviesUseCase() -> FetchWatchlistMoviesUseCase
+
 }

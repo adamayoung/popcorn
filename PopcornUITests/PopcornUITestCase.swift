@@ -12,6 +12,10 @@ class PopcornUITestCase: XCTestCase {
 
     var app: XCUIApplication!
 
+    var featureFlags: [String: Bool] {
+        [:]
+    }
+
     @MainActor
     override func setUp() async throws {
         try await super.setUp()
@@ -20,7 +24,9 @@ class PopcornUITestCase: XCTestCase {
             XCUIDevice.shared.orientation = .portrait
         #endif
         app = XCUIApplication()
-        app.launchArguments = ["-uitest"]
+        for (flagID, value) in featureFlags {
+            app.launchArguments += ["-featureFlagOverride.\(flagID)", value ? "1" : "0"]
+        }
         app.launch()
     }
 

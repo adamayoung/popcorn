@@ -77,6 +77,10 @@ public struct PersonDetailsView: View {
         }
         .padding(.horizontal)
         .padding(.bottom)
+        .navigationTitle(person.name)
+        #if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
+        #endif
     }
 
 }

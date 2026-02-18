@@ -40,6 +40,8 @@ struct MovieCarousel: View {
                             cellLabel(title: movie.title, index: offset)
                         }
                     }
+                    .accessibilityIdentifier("explore.\(carouselID).movie.\(offset)")
+                    .accessibilityLabel(movie.title)
                     .buttonStyle(.plain)
                     .fixedSize(horizontal: true, vertical: false)
 
@@ -55,6 +57,8 @@ struct MovieCarousel: View {
                             cellLabel(title: movie.title, index: offset)
                         }
                     }
+                    .accessibilityIdentifier("explore.\(carouselID).movie.\(offset)")
+                    .accessibilityLabel(movie.title)
                     .buttonStyle(.plain)
                     .fixedSize(horizontal: true, vertical: false)
                 }

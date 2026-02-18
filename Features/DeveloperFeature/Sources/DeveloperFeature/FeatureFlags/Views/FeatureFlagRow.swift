@@ -24,7 +24,11 @@ struct FeatureFlagRow: View {
     }
 
     var body: some View {
-        VStack(alignment: .trailing) {
+        HStack {
+            Image(systemName: featureFlag.isEnabled ? "lightswitch.on" : "lightswitch.off")
+                .contentTransition(.symbolEffect(.replace))
+                .foregroundStyle(featureFlag.isEnabled ? .green : .red)
+
             Picker(featureFlag.name, selection: $override) {
                 Text("DEFAULT", bundle: .module)
                     .tag(FeatureFlagOverrideState.default)
@@ -35,10 +39,7 @@ struct FeatureFlagRow: View {
                 Text("DISABLED", bundle: .module)
                     .tag(FeatureFlagOverrideState.disabled)
             }
-
-            Text(featureFlag.value ? "DEFAULT_ENABLED" : "DEFAULT_DISABLED", bundle: .module)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            .font(.headline)
         }
         .onChange(of: override) { _, newValue in
             updateFeatureValueOverride(featureFlag, newValue)

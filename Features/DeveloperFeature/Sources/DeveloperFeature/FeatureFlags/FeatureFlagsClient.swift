@@ -15,6 +15,7 @@ struct FeatureFlagsClient: Sendable {
 
     var fetchFeatureFlags: @Sendable () async throws -> [FeatureFlag]
     var updateFeatureFlagValue: @Sendable (FeatureFlag, Bool?) -> Void
+    var removeAllOverrides: @Sendable () -> Void
 
 }
 
@@ -44,6 +45,9 @@ extension FeatureFlagsClient: DependencyKey {
                 }
 
                 featureFlags.setOverrideValue(value, for: featureFlag)
+            },
+            removeAllOverrides: {
+                featureFlags.removeAllOverrides()
             }
         )
     }
@@ -51,7 +55,8 @@ extension FeatureFlagsClient: DependencyKey {
     static var previewValue: FeatureFlagsClient {
         FeatureFlagsClient(
             fetchFeatureFlags: { FeatureFlag.mocks },
-            updateFeatureFlagValue: { _, _ in }
+            updateFeatureFlagValue: { _, _ in },
+            removeAllOverrides: {}
         )
     }
 

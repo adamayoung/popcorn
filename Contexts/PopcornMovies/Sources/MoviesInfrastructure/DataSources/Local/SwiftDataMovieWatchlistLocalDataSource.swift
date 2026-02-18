@@ -33,6 +33,17 @@ SwiftDataFetchStreaming {
         return Set(watchlistMovies)
     }
 
+    func moviesStream() async -> AsyncThrowingStream<Set<WatchlistMovie>, Error> {
+        let descriptor = FetchDescriptor<MoviesWatchlistMovieEntity>(
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+
+        let mapper = WatchlistMovieMapper()
+        return stream(for: descriptor) { entities in
+            Set(entities.compactMap(mapper.map))
+        }
+    }
+
     func isOnWatchlist(movieID id: Int) async throws(MovieWatchlistLocalDataSourceError) -> Bool {
         var descriptor = FetchDescriptor<MoviesWatchlistMovieEntity>(
             predicate: #Predicate { $0.movieID == id },

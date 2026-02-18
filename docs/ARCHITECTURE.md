@@ -90,7 +90,7 @@ public final class MoviesApplicationFactory {
 }
 ```
 
-> **Note:** `*ApplicationFactory` classes are marked `public` (not `package`) to support UI testing. The Adapters layer contains `*AdaptersUITesting` modules that instantiate these factories with stub repositories, enabling isolated UI tests without network dependencies.
+> **Note:** `*ApplicationFactory` classes use `package` visibility, consumed only by their sibling Composition targets within the same Swift package.
 
 ### Infrastructure Layer
 

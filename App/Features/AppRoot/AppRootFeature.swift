@@ -22,6 +22,7 @@ struct AppRootFeature {
     struct State {
         var selectedTab: Tab = .explore
         var explore = ExploreRootFeature.State()
+        var watchlist = WatchlistRootFeature.State()
         var games = GamesRootFeature.State()
         var search = SearchRootFeature.State()
         #if DEBUG
@@ -29,6 +30,7 @@ struct AppRootFeature {
         #endif
 
         var isExploreEnabled: Bool = false
+        var isWatchlistEnabled: Bool = false
         var isGamesEnabled: Bool = false
         var isSearchEnabled: Bool = false
 
@@ -39,12 +41,14 @@ struct AppRootFeature {
 
     enum Tab {
         case explore
+        case watchlist
         case games
         case search
 
         var id: String {
             switch self {
             case .explore: "popcorn.tab.explore"
+            case .watchlist: "popcorn.tab.watchlist"
             case .games: "popcorn.tab.games"
             case .search: "popcorn.tab.search"
             }
@@ -58,6 +62,7 @@ struct AppRootFeature {
         case setupFailed(Error)
         case updateFeatureFlags
         case explore(ExploreRootFeature.Action)
+        case watchlist(WatchlistRootFeature.Action)
         case games(GamesRootFeature.Action)
         case search(SearchRootFeature.Action)
         #if DEBUG
@@ -97,6 +102,7 @@ struct AppRootFeature {
 
             case .updateFeatureFlags:
                 state.isExploreEnabled = (try? appRootClient.isExploreEnabled()) ?? false
+                state.isWatchlistEnabled = (try? appRootClient.isWatchlistEnabled()) ?? false
                 state.isGamesEnabled = (try? appRootClient.isGamesEnabled()) ?? false
                 state.isSearchEnabled = (try? appRootClient.isSearchEnabled()) ?? false
                 state.isReady = true
@@ -119,6 +125,7 @@ struct AppRootFeature {
         #endif
 
         Scope(state: \.explore, action: \.explore) { ExploreRootFeature() }
+        Scope(state: \.watchlist, action: \.watchlist) { WatchlistRootFeature() }
         Scope(state: \.games, action: \.games) { GamesRootFeature() }
         Scope(state: \.search, action: \.search) { SearchRootFeature() }
     }

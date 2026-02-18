@@ -4,6 +4,9 @@ TEST_PLAN ?= PopcornUnitTests
 SCHEME ?= $(TARGET)
 PLATFORM ?= ios
 DESTINATION ?= 'platform=iOS Simulator,name=iPhone 17,OS=26.2'
+DESTINATION_MACOS ?= 'platform=macOS'
+SNAPSHOT_TEST_PLAN ?= PopcornSnapshotTests
+UI_TEST_PLAN ?= PopcornUITests
 DERIVED_DATA ?= DerivedData
 RESULT_BUNDLE ?= $(DERIVED_DATA)/Result.xcresult
 CLEAN ?= 0
@@ -14,6 +17,7 @@ ENV_FILE ?= .env
 
 XCODEBUILD = set -o pipefail && NSUnbufferedIO=YES xcodebuild
 XCODEBUILD_FLAGS = -scheme $(SCHEME) -destination $(DESTINATION) -parallelizeTargets
+XCODEBUILD_FLAGS_MACOS = -scheme $(SCHEME) -destination $(DESTINATION_MACOS) -parallelizeTargets
 XCSIFT = xcsift -f toon
 XCSIFT_BUILD = $(XCSIFT) --Werror
 
@@ -64,13 +68,70 @@ ifneq ($(CLEAN),0)
 	$(XCODEBUILD) clean -scheme $(SCHEME) 2>&1 | $(XCSIFT)
 endif
 	rm -rf $(RESULT_BUNDLE)
-	$(XCODEBUILD) build-for-testing $(XCODEBUILD_FLAGS) -only-testing $(TEST_TARGET) 2>&1 | $(XCSIFT_BUILD)
-	$(XCODEBUILD) test-without-building $(XCODEBUILD_FLAGS) -only-testing $(TEST_TARGET) 2>&1 | $(XCSIFT)
+	$(XCODEBUILD) build-for-testing $(XCODEBUILD_FLAGS) -testPlan $(TEST_PLAN) 2>&1 | $(XCSIFT_BUILD)
+	$(XCODEBUILD) test-without-building $(XCODEBUILD_FLAGS) -testPlan $(TEST_PLAN) 2>&1 | $(XCSIFT)
 
-.PHONY: build-ios
-build-ios:
-	$(XCODEBUILD) build $(XCODEBUILD_FLAGS) PLATFORM=ios DESTINATION='$(DESTINATION)' 2>&1 | $(XCSIFT_BUILD)
+.PHONY: build-macos
+build-macos:
+	rm -rf $(RESULT_BUNDLE)
+ifneq ($(CLEAN),0)
+	$(XCODEBUILD) clean -scheme $(SCHEME) 2>&1 | $(XCSIFT)
+endif
+	$(XCODEBUILD) build $(XCODEBUILD_FLAGS_MACOS) 2>&1 | $(XCSIFT_BUILD)
 
-.PHONY: test-ios
-test-ios:
-	$(XCODEBUILD) test $(XCODEBUILD_FLAGS) PLATFORM=ios DESTINATION='$(DESTINATION)' 2>&1 | $(XCSIFT)
+.PHONY: build-for-testing-macos
+build-for-testing-macos:
+ifneq ($(CLEAN),0)
+	rm -rf $(RESULT_BUNDLE)
+	$(XCODEBUILD) clean -scheme $(SCHEME) 2>&1 | $(XCSIFT)
+endif
+	$(XCODEBUILD) build-for-testing $(XCODEBUILD_FLAGS_MACOS) -testPlan $(TEST_PLAN) 2>&1 | $(XCSIFT_BUILD)
+
+.PHONY: test-macos
+test-macos:
+ifneq ($(CLEAN),0)
+	rm -rf $(RESULT_BUNDLE)
+	$(XCODEBUILD) clean -scheme $(SCHEME) 2>&1 | $(XCSIFT)
+endif
+	rm -rf $(RESULT_BUNDLE)
+	$(XCODEBUILD) build-for-testing $(XCODEBUILD_FLAGS_MACOS) -testPlan $(TEST_PLAN) 2>&1 | $(XCSIFT_BUILD)
+	$(XCODEBUILD) test-without-building $(XCODEBUILD_FLAGS_MACOS) -testPlan $(TEST_PLAN) 2>&1 | $(XCSIFT)
+
+# Usage:
+#   make test-snapshots                                                                        — run all snapshot tests
+#   make test-snapshots TEST_CLASS=ExploreFeatureSnapshotTests/ExploreViewTests                 — run all tests in a test class
+#   make test-snapshots TEST_CLASS=ExploreFeatureSnapshotTests/ExploreViewTests/testSnapshot    — run a single test
+.PHONY: test-snapshots
+test-snapshots:
+ifneq ($(CLEAN),0)
+	rm -rf $(RESULT_BUNDLE)
+	$(XCODEBUILD) clean -scheme $(SCHEME) 2>&1 | $(XCSIFT)
+endif
+	rm -rf $(RESULT_BUNDLE)
+ifdef TEST_CLASS
+	$(XCODEBUILD) build-for-testing $(XCODEBUILD_FLAGS) -testPlan $(SNAPSHOT_TEST_PLAN) 2>&1 | $(XCSIFT_BUILD)
+	$(XCODEBUILD) test-without-building $(XCODEBUILD_FLAGS) -testPlan $(SNAPSHOT_TEST_PLAN) -only-testing $(TEST_CLASS) 2>&1 | $(XCSIFT)
+else
+	$(XCODEBUILD) build-for-testing $(XCODEBUILD_FLAGS) -testPlan $(SNAPSHOT_TEST_PLAN) 2>&1 | $(XCSIFT_BUILD)
+	$(XCODEBUILD) test-without-building $(XCODEBUILD_FLAGS) -testPlan $(SNAPSHOT_TEST_PLAN) 2>&1 | $(XCSIFT)
+endif
+
+# Usage:
+#   make test-ui                                          — run all UI tests
+#   make test-ui TEST_CLASS=PopcornUITests/ExploreTests   — run all tests in a test class
+#   make test-ui TEST_CLASS=PopcornUITests/ExploreTests/testLaunch — run a single test
+.PHONY: test-ui
+test-ui:
+ifneq ($(CLEAN),0)
+	rm -rf $(RESULT_BUNDLE)
+	$(XCODEBUILD) clean -scheme $(SCHEME) 2>&1 | $(XCSIFT)
+endif
+	rm -rf $(RESULT_BUNDLE)
+ifdef TEST_CLASS
+	$(XCODEBUILD) build-for-testing $(XCODEBUILD_FLAGS) -testPlan $(UI_TEST_PLAN) 2>&1 | $(XCSIFT_BUILD)
+	$(XCODEBUILD) test-without-building $(XCODEBUILD_FLAGS) -testPlan $(UI_TEST_PLAN) -only-testing $(TEST_CLASS) 2>&1 | $(XCSIFT)
+else
+	$(XCODEBUILD) build-for-testing $(XCODEBUILD_FLAGS) -testPlan $(UI_TEST_PLAN) 2>&1 | $(XCSIFT_BUILD)
+	$(XCODEBUILD) test-without-building $(XCODEBUILD_FLAGS) -testPlan $(UI_TEST_PLAN) 2>&1 | $(XCSIFT)
+endif
+

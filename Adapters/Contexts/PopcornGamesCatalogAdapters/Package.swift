@@ -15,8 +15,7 @@ let package = Package(
     ],
 
     products: [
-        .library(name: "PopcornGamesCatalogAdapters", targets: ["PopcornGamesCatalogAdapters"]),
-        .library(name: "PopcornGamesCatalogAdaptersUITesting", targets: ["PopcornGamesCatalogAdaptersUITesting"])
+        .library(name: "PopcornGamesCatalogAdapters", targets: ["PopcornGamesCatalogAdapters"])
     ],
 
     dependencies: [
@@ -37,15 +36,6 @@ let package = Package(
             dependencies: [
                 "PopcornGamesCatalogAdapters",
                 .product(name: "FeatureAccessTestHelpers", package: "FeatureAccess")
-            ]
-        ),
-
-        .target(
-            name: "PopcornGamesCatalogAdaptersUITesting",
-            dependencies: [
-                .product(name: "GamesCatalogComposition", package: "PopcornGamesCatalog"),
-                .product(name: "GamesCatalogApplication", package: "PopcornGamesCatalog"),
-                .product(name: "GamesCatalogDomain", package: "PopcornGamesCatalog")
             ]
         )
     ]

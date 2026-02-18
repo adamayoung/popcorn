@@ -14,6 +14,7 @@ import MoviesApplication
 struct MovieDetailsClient: Sendable {
 
     var fetchMovie: @Sendable (_ id: Int) async throws -> Movie
+    var streamMovie: @Sendable (_ id: Int) async throws -> AsyncThrowingStream<Movie?, Error>
     var fetchRecommendedMovies: @Sendable (_ movieID: Int) async throws -> [MoviePreview]
     var fetchCredits: @Sendable (_ movieID: Int) async throws -> Credits
     var toggleOnWatchlist: @Sendable (_ movieID: Int) async throws -> Void
@@ -28,6 +29,7 @@ extension MovieDetailsClient: DependencyKey {
 
     static var liveValue: MovieDetailsClient {
         @Dependency(\.fetchMovieDetails) var fetchMovieDetails
+        @Dependency(\.streamMovieDetails) var streamMovieDetails
         @Dependency(\.fetchMovieRecommendations) var fetchMovieRecommendations
         @Dependency(\.fetchMovieCredits) var fetchMovieCredits
         @Dependency(\.toggleWatchlistMovie) var toggleWatchlistMovie
@@ -38,6 +40,24 @@ extension MovieDetailsClient: DependencyKey {
                 let movie = try await fetchMovieDetails.execute(id: id)
                 let mapper = MovieMapper()
                 return mapper.map(movie)
+            },
+            streamMovie: { id in
+                let movieStream = await streamMovieDetails.stream(id: id)
+                return AsyncThrowingStream<Movie?, Error> { continuation in
+                    let task = Task {
+                        let mapper = MovieMapper()
+                        for try await movie in movieStream {
+                            guard let movie else {
+                                continuation.yield(nil)
+                                continue
+                            }
+
+                            continuation.yield(mapper.map(movie))
+                        }
+                        continuation.finish()
+                    }
+                    continuation.onTermination = { _ in task.cancel() }
+                }
             },
             fetchRecommendedMovies: { movieID in
                 let movies = try await fetchMovieRecommendations.execute(movieID: movieID)
@@ -68,6 +88,12 @@ extension MovieDetailsClient: DependencyKey {
         MovieDetailsClient(
             fetchMovie: { _ in
                 Movie.mock
+            },
+            streamMovie: { _ in
+                AsyncThrowingStream<Movie?, Error> { continuation in
+                    continuation.yield(Movie.mock)
+                    continuation.finish()
+                }
             },
             fetchRecommendedMovies: { _ in
                 MoviePreview.mocks

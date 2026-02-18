@@ -11,6 +11,7 @@ import DesignSystem
     import DeveloperFeature
 #endif
 import SwiftUI
+import WatchlistFeature
 
 struct AppRootView: View {
 
@@ -63,6 +64,24 @@ struct AppRootView: View {
                     )
                 }
                 .customizationID(AppRootFeature.Tab.explore.id)
+                .accessibilityIdentifier("app.tabview.explore")
+            }
+
+            if store.isWatchlistEnabled {
+                Tab(
+                    "WATCHLIST",
+                    systemImage: "eye",
+                    value: AppRootFeature.Tab.watchlist
+                ) {
+                    WatchlistRootView(
+                        store: store.scope(
+                            state: \.watchlist,
+                            action: \.watchlist
+                        )
+                    )
+                }
+                .customizationID(AppRootFeature.Tab.watchlist.id)
+                .accessibilityIdentifier("app.tabview.watchlist")
             }
 
             if store.isGamesEnabled {
@@ -79,6 +98,7 @@ struct AppRootView: View {
                     )
                 }
                 .customizationID(AppRootFeature.Tab.games.id)
+                .accessibilityIdentifier("app.tabview.games")
             }
 
             if store.isSearchEnabled {
@@ -96,16 +116,18 @@ struct AppRootView: View {
                     )
                 }
                 .customizationID(AppRootFeature.Tab.search.id)
+                .accessibilityIdentifier("app.tabview.search")
             }
         }
+        .accessibilityIdentifier("app.tabview")
         #if !os(macOS)
-        .tabViewStyle(.sidebarAdaptable)
-        .tabViewCustomization($customization)
+            .tabViewStyle(.sidebarAdaptable)
+            .tabViewCustomization($customization)
         #else
-        .tabViewStyle(.sidebarAdaptable)
-        .tabViewCustomization($customization)
+            .tabViewStyle(.sidebarAdaptable)
+            .tabViewCustomization($customization)
         #endif
-        .minimizeTabBar()
+            .minimizeTabBar()
     }
 
     private func errorView(with error: Error) -> some View {

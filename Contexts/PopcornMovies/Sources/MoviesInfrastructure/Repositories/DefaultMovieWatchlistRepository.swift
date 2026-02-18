@@ -27,6 +27,10 @@ final class DefaultMovieWatchlistRepository: MovieWatchlistRepository {
         return watchlistMovies
     }
 
+    func moviesStream() async -> AsyncThrowingStream<Set<WatchlistMovie>, Error> {
+        await localDataSource.moviesStream()
+    }
+
     func isOnWatchlist(movieID id: Int) async throws(MovieWatchlistRepositoryError) -> Bool {
         do { return try await localDataSource.isOnWatchlist(movieID: id) } catch let error {
             throw MovieWatchlistRepositoryError(error)

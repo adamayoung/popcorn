@@ -15,8 +15,7 @@ let package = Package(
     ],
 
     products: [
-        .library(name: "PopcornSearchAdapters", targets: ["PopcornSearchAdapters"]),
-        .library(name: "PopcornSearchAdaptersUITesting", targets: ["PopcornSearchAdaptersUITesting"])
+        .library(name: "PopcornSearchAdapters", targets: ["PopcornSearchAdapters"])
     ],
 
     dependencies: [
@@ -53,16 +52,6 @@ let package = Package(
             dependencies: [
                 "PopcornSearchAdapters",
                 .product(name: "CoreDomainTestHelpers", package: "CoreDomain")
-            ]
-        ),
-
-        .target(
-            name: "PopcornSearchAdaptersUITesting",
-            dependencies: [
-                .product(name: "SearchComposition", package: "PopcornSearch"),
-                .product(name: "SearchApplication", package: "PopcornSearch"),
-                .product(name: "SearchDomain", package: "PopcornSearch"),
-                "CoreDomain"
             ]
         )
     ]

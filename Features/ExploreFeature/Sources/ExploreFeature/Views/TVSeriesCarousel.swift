@@ -39,6 +39,8 @@ struct TVSeriesCarousel: View {
                             cellLabel(title: tvSeries.name, index: offset)
                         }
                     }
+                    .accessibilityIdentifier("explore.\(carouselID).tv-series.\(offset)")
+                    .accessibilityLabel(tvSeries.name)
                     .buttonStyle(.plain)
                     .fixedSize(horizontal: true, vertical: false)
 
@@ -54,6 +56,8 @@ struct TVSeriesCarousel: View {
                             cellLabel(title: tvSeries.name, index: offset)
                         }
                     }
+                    .accessibilityIdentifier("explore.\(carouselID).tv-series.\(offset)")
+                    .accessibilityLabel(tvSeries.name)
                     .buttonStyle(.plain)
                     .fixedSize(horizontal: true, vertical: false)
                 }

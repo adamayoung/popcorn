@@ -8,7 +8,7 @@
 import DiscoverDomain
 import Foundation
 
-public final class DiscoverApplicationFactory: Sendable {
+package final class DiscoverApplicationFactory: Sendable {
 
     private let discoverMovieRepository: any DiscoverMovieRepository
     private let discoverTVSeriesRepository: any DiscoverTVSeriesRepository
@@ -17,7 +17,7 @@ public final class DiscoverApplicationFactory: Sendable {
     private let movieLogoImageProvider: any MovieLogoImageProviding
     private let tvSeriesLogoImageProvider: any TVSeriesLogoImageProviding
 
-    public init(
+    package init(
         discoverMovieRepository: some DiscoverMovieRepository,
         discoverTVSeriesRepository: some DiscoverTVSeriesRepository,
         genreProvider: some GenreProviding,
@@ -33,7 +33,7 @@ public final class DiscoverApplicationFactory: Sendable {
         self.tvSeriesLogoImageProvider = tvSeriesLogoImageProvider
     }
 
-    public func makeFetchDiscoverMoviesUseCase() -> some FetchDiscoverMoviesUseCase {
+    package func makeFetchDiscoverMoviesUseCase() -> some FetchDiscoverMoviesUseCase {
         DefaultFetchDiscoverMoviesUseCase(
             repository: discoverMovieRepository,
             genreProvider: genreProvider,
@@ -42,7 +42,7 @@ public final class DiscoverApplicationFactory: Sendable {
         )
     }
 
-    public func makeFetchDiscoverTVSeriesUseCase() -> some FetchDiscoverTVSeriesUseCase {
+    package func makeFetchDiscoverTVSeriesUseCase() -> some FetchDiscoverTVSeriesUseCase {
         DefaultFetchDiscoverTVSeriesUseCase(
             repository: discoverTVSeriesRepository,
             genreProvider: genreProvider,

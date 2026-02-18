@@ -50,6 +50,9 @@ extension MoviePreview {
                 title: "Black Phone 2",
                 posterURL: URL(
                     string: "https://image.tmdb.org/t/p/w780/xUWUODKPIilQoFUzjHM6wKJkP3Y.jpg"
+                ),
+                backdropURL: URL(
+                    string: "https://image.tmdb.org/t/p/w1280/6zKjoOOb3OZnZuiHtQZn4Kd69Gq.jpg"
                 )
             )
         ]

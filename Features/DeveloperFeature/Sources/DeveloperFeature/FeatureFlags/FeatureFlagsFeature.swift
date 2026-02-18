@@ -52,6 +52,8 @@ public struct FeatureFlagsFeature: Sendable {
         case loadFailed(ViewStateError)
 
         case setFeatureFlagOverride(FeatureFlag, FeatureFlagOverrideState)
+
+        case resetAllOverrides
     }
 
     public init() {}
@@ -74,6 +76,12 @@ public struct FeatureFlagsFeature: Sendable {
             case .setFeatureFlagOverride(let featureFlag, let override):
                 return .concatenate(
                     handleUpdateFeatureFlagOverride(featureFlag: featureFlag, override: override),
+                    handleFetchAll()
+                )
+
+            case .resetAllOverrides:
+                return .concatenate(
+                    handleResetAllOverrides(),
                     handleFetchAll()
                 )
             }
@@ -110,6 +118,12 @@ extension FeatureFlagsFeature {
     ) -> EffectOf<Self> {
         .run { [client] _ in
             client.updateFeatureFlagValue(featureFlag, override.value)
+        }
+    }
+
+    private func handleResetAllOverrides() -> EffectOf<Self> {
+        .run { [client] _ in
+            client.removeAllOverrides()
         }
     }
 

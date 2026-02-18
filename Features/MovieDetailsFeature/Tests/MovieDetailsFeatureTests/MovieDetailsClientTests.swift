@@ -34,6 +34,7 @@ struct MovieDetailsClientTests {
 
         let client = withDependencies {
             $0.fetchMovieDetails = MockFetchMovieDetailsUseCase(movieDetails: movieDetails)
+            $0.streamMovieDetails = MockStreamMovieDetailsUseCase()
             $0.fetchMovieRecommendations = MockFetchMovieRecommendationsUseCase(movies: [])
             $0.fetchMovieCredits = MockFetchMovieCreditsUseCase(credits: nil)
             $0.toggleWatchlistMovie = MockToggleWatchlistMovieUseCase()
@@ -52,6 +53,49 @@ struct MovieDetailsClientTests {
         #expect(result.isOnWatchlist == false)
     }
 
+    // MARK: - streamMovie Tests
+
+    @Test("streamMovie streams use case results and maps them")
+    func streamMovieStreamsUseCaseAndMapsResults() async throws {
+        let movieID = 798_645
+        let movieDetails = MoviesApplication.MovieDetails(
+            id: movieID,
+            title: "The Running Man",
+            overview: "A thrilling action movie.",
+            isOnWatchlist: false
+        )
+        let updatedMovieDetails = MoviesApplication.MovieDetails(
+            id: movieID,
+            title: "The Running Man",
+            overview: "A thrilling action movie.",
+            isOnWatchlist: true
+        )
+
+        let client = withDependencies {
+            $0.fetchMovieDetails = MockFetchMovieDetailsUseCase(movieDetails: nil)
+            $0.streamMovieDetails = MockStreamMovieDetailsUseCase(
+                movieDetails: [movieDetails, updatedMovieDetails]
+            )
+            $0.fetchMovieRecommendations = MockFetchMovieRecommendationsUseCase(movies: [])
+            $0.fetchMovieCredits = MockFetchMovieCreditsUseCase(credits: nil)
+            $0.toggleWatchlistMovie = MockToggleWatchlistMovieUseCase()
+            $0.featureFlags = MockFeatureFlags(enabledFlags: [.watchlist, .movieIntelligence])
+        } operation: {
+            MovieDetailsClient.liveValue
+        }
+
+        let stream = try await client.streamMovie(movieID)
+        var results: [Movie] = []
+        for try await movie in stream {
+            guard let movie else { continue }
+            results.append(movie)
+        }
+
+        #expect(results.count == 2)
+        #expect(results[0].isOnWatchlist == false)
+        #expect(results[1].isOnWatchlist == true)
+    }
+
     // MARK: - fetchRecommendedMovies Tests
 
     @Test("fetchRecommendedMovies calls use case and maps result")
@@ -65,6 +109,7 @@ struct MovieDetailsClientTests {
 
         let client = withDependencies {
             $0.fetchMovieDetails = MockFetchMovieDetailsUseCase(movieDetails: nil)
+            $0.streamMovieDetails = MockStreamMovieDetailsUseCase()
             $0.fetchMovieRecommendations = MockFetchMovieRecommendationsUseCase(movies: recommendations)
             $0.fetchMovieCredits = MockFetchMovieCreditsUseCase(credits: nil)
             $0.toggleWatchlistMovie = MockToggleWatchlistMovieUseCase()
@@ -95,6 +140,7 @@ struct MovieDetailsClientTests {
 
         let client = withDependencies {
             $0.fetchMovieDetails = MockFetchMovieDetailsUseCase(movieDetails: nil)
+            $0.streamMovieDetails = MockStreamMovieDetailsUseCase()
             $0.fetchMovieRecommendations = MockFetchMovieRecommendationsUseCase(movies: recommendations)
             $0.fetchMovieCredits = MockFetchMovieCreditsUseCase(credits: nil)
             $0.toggleWatchlistMovie = MockToggleWatchlistMovieUseCase()
@@ -141,6 +187,7 @@ struct MovieDetailsClientTests {
 
         let client = withDependencies {
             $0.fetchMovieDetails = MockFetchMovieDetailsUseCase(movieDetails: nil)
+            $0.streamMovieDetails = MockStreamMovieDetailsUseCase()
             $0.fetchMovieRecommendations = MockFetchMovieRecommendationsUseCase(movies: [])
             $0.fetchMovieCredits = MockFetchMovieCreditsUseCase(credits: creditsDetails)
             $0.toggleWatchlistMovie = MockToggleWatchlistMovieUseCase()
@@ -170,6 +217,7 @@ struct MovieDetailsClientTests {
 
         let client = withDependencies {
             $0.fetchMovieDetails = MockFetchMovieDetailsUseCase(movieDetails: nil)
+            $0.streamMovieDetails = MockStreamMovieDetailsUseCase()
             $0.fetchMovieRecommendations = MockFetchMovieRecommendationsUseCase(movies: [])
             $0.fetchMovieCredits = MockFetchMovieCreditsUseCase(credits: nil)
             $0.toggleWatchlistMovie = mockToggle
@@ -190,6 +238,7 @@ struct MovieDetailsClientTests {
     func isWatchlistEnabledReturnsTrue() throws {
         let client = withDependencies {
             $0.fetchMovieDetails = MockFetchMovieDetailsUseCase(movieDetails: nil)
+            $0.streamMovieDetails = MockStreamMovieDetailsUseCase()
             $0.fetchMovieRecommendations = MockFetchMovieRecommendationsUseCase(movies: [])
             $0.fetchMovieCredits = MockFetchMovieCreditsUseCase(credits: nil)
             $0.toggleWatchlistMovie = MockToggleWatchlistMovieUseCase()
@@ -207,6 +256,7 @@ struct MovieDetailsClientTests {
     func isWatchlistEnabledReturnsFalse() throws {
         let client = withDependencies {
             $0.fetchMovieDetails = MockFetchMovieDetailsUseCase(movieDetails: nil)
+            $0.streamMovieDetails = MockStreamMovieDetailsUseCase()
             $0.fetchMovieRecommendations = MockFetchMovieRecommendationsUseCase(movies: [])
             $0.fetchMovieCredits = MockFetchMovieCreditsUseCase(credits: nil)
             $0.toggleWatchlistMovie = MockToggleWatchlistMovieUseCase()
@@ -226,6 +276,7 @@ struct MovieDetailsClientTests {
     func isIntelligenceEnabledReturnsTrue() throws {
         let client = withDependencies {
             $0.fetchMovieDetails = MockFetchMovieDetailsUseCase(movieDetails: nil)
+            $0.streamMovieDetails = MockStreamMovieDetailsUseCase()
             $0.fetchMovieRecommendations = MockFetchMovieRecommendationsUseCase(movies: [])
             $0.fetchMovieCredits = MockFetchMovieCreditsUseCase(credits: nil)
             $0.toggleWatchlistMovie = MockToggleWatchlistMovieUseCase()
@@ -243,6 +294,7 @@ struct MovieDetailsClientTests {
     func isIntelligenceEnabledReturnsFalse() throws {
         let client = withDependencies {
             $0.fetchMovieDetails = MockFetchMovieDetailsUseCase(movieDetails: nil)
+            $0.streamMovieDetails = MockStreamMovieDetailsUseCase()
             $0.fetchMovieRecommendations = MockFetchMovieRecommendationsUseCase(movies: [])
             $0.fetchMovieCredits = MockFetchMovieCreditsUseCase(credits: nil)
             $0.toggleWatchlistMovie = MockToggleWatchlistMovieUseCase()

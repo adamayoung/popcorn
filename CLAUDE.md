@@ -178,7 +178,7 @@ This prevents CI failures and ensures code quality before review.
 
 ## Adapters (External Service Bridges)
 
-**Context Adapters** — bridge TMDb API to domain interfaces. Each exposes a `*UITesting` module with stubs.
+**Context Adapters** — bridge TMDb API to domain interfaces.
 
 | Adapter | Bridges To |
 |---------|-----------|
