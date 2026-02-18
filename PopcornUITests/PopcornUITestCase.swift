@@ -24,7 +24,6 @@ class PopcornUITestCase: XCTestCase {
             XCUIDevice.shared.orientation = .portrait
         #endif
         app = XCUIApplication()
-        app.launchArguments = ["-uitest"]
         for (flagID, value) in featureFlags {
             app.launchArguments += ["-featureFlagOverride.\(flagID)", value ? "1" : "0"]
         }

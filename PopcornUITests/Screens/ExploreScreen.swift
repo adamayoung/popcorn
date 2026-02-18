@@ -14,43 +14,73 @@ final class ExploreScreen: Screen {
         view
     }
 
-    @discardableResult
-    func tapOnFirstDiscoverMovie() -> MovieDetailsScreen {
+    func discoverMovieTitle(index: Int = 0) -> String {
         scrollTo(discoverMoviesCarousel)
         XCTAssertTrue(discoverMoviesCarousel.waitForExistence(timeout: 2))
-        discoverMovie(at: 0).tap()
-        return MovieDetailsScreen(app: app)
+        return discoverMovie(at: index).label
     }
 
-    @discardableResult
-    func tapOnFirstTrendingMovie() -> MovieDetailsScreen {
+    func trendingMovieTitle(index: Int = 0) -> String {
         scrollTo(trendingMoviesCarousel)
         XCTAssertTrue(trendingMoviesCarousel.waitForExistence(timeout: 2))
-        trendingMoviesCarousel.buttons.firstMatch.tap()
-        return MovieDetailsScreen(app: app)
+        return trendingMovie(at: index).label
     }
 
-    @discardableResult
-    func tapOnFirstPopularMovie() -> MovieDetailsScreen {
+    func popularMovieTitle(index: Int = 0) -> String {
         scrollTo(popularMoviesCarousel)
         XCTAssertTrue(popularMoviesCarousel.waitForExistence(timeout: 2))
-        popularMoviesCarousel.buttons.firstMatch.tap()
+        return popularMovie(at: index).label
+    }
+
+    func trendingTVSeriesName(index: Int = 0) -> String {
+        scrollTo(trendingTVSeriesCarousel)
+        XCTAssertTrue(trendingTVSeriesCarousel.waitForExistence(timeout: 2))
+        return trendingTVSeries(at: index).label
+    }
+
+    func trendingPersonName(index: Int = 0) -> String {
+        scrollTo(trendingPeopleCarousel)
+        XCTAssertTrue(trendingPeopleCarousel.waitForExistence(timeout: 2))
+        return trendingPerson(at: index).label
+    }
+
+    @discardableResult
+    func tapOnDiscoverMovie(index: Int = 0) -> MovieDetailsScreen {
+        scrollTo(discoverMoviesCarousel)
+        XCTAssertTrue(discoverMoviesCarousel.waitForExistence(timeout: 2))
+        discoverMovie(at: index).tap()
         return MovieDetailsScreen(app: app)
     }
 
     @discardableResult
-    func tapOnFirstTrendingTVSeries() -> TVSeriesDetailsScreen {
+    func tapOnTrendingMovie(index: Int = 0) -> MovieDetailsScreen {
+        scrollTo(trendingMoviesCarousel)
+        XCTAssertTrue(trendingMoviesCarousel.waitForExistence(timeout: 2))
+        trendingMovie(at: index).tap()
+        return MovieDetailsScreen(app: app)
+    }
+
+    @discardableResult
+    func tapOnPopularMovie(index: Int = 0) -> MovieDetailsScreen {
+        scrollTo(popularMoviesCarousel)
+        XCTAssertTrue(popularMoviesCarousel.waitForExistence(timeout: 2))
+        popularMovie(at: index).tap()
+        return MovieDetailsScreen(app: app)
+    }
+
+    @discardableResult
+    func tapOnTrendingTVSeries(index: Int = 0) -> TVSeriesDetailsScreen {
         scrollTo(trendingTVSeriesCarousel)
         XCTAssertTrue(trendingTVSeriesCarousel.waitForExistence(timeout: 2))
-        trendingTVSeriesCarousel.buttons.firstMatch.tap()
+        trendingTVSeries(at: index).tap()
         return TVSeriesDetailsScreen(app: app)
     }
 
     @discardableResult
-    func tapOnFirstTrendingPerson() -> PersonDetailsScreen {
+    func tapOnTrendingPerson(index: Int = 0) -> PersonDetailsScreen {
         scrollTo(trendingPeopleCarousel)
         XCTAssertTrue(trendingPeopleCarousel.waitForExistence(timeout: 2))
-        trendingPeopleCarousel.buttons.firstMatch.tap()
+        trendingPerson(at: index).tap()
         return PersonDetailsScreen(app: app)
     }
 
@@ -74,16 +104,32 @@ extension ExploreScreen {
         app.scrollViews["explore.trending-movies.carousel"]
     }
 
+    private func trendingMovie(at index: Int) -> XCUIElement {
+        trendingMoviesCarousel.buttons["explore.trending-movies.movie.\(index)"]
+    }
+
     private var popularMoviesCarousel: XCUIElement {
         app.scrollViews["explore.popular-movies.carousel"]
     }
 
+    private func popularMovie(at index: Int) -> XCUIElement {
+        popularMoviesCarousel.buttons["explore.popular-movies.movie.\(index)"]
+    }
+
     private var trendingTVSeriesCarousel: XCUIElement {
-        app.scrollViews["explore.trending-tvseries.carousel"]
+        app.scrollViews["explore.trending-tv-series.carousel"]
+    }
+
+    private func trendingTVSeries(at index: Int) -> XCUIElement {
+        trendingTVSeriesCarousel.buttons["explore.trending-tv-series.tv-series.\(index)"]
     }
 
     private var trendingPeopleCarousel: XCUIElement {
         app.scrollViews["explore.trending-people.carousel"]
+    }
+
+    private func trendingPerson(at index: Int) -> XCUIElement {
+        trendingPeopleCarousel.buttons["explore.trending-people.person.\(index)"]
     }
 
 }

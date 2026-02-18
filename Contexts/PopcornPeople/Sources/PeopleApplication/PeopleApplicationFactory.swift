@@ -8,12 +8,12 @@
 import Foundation
 import PeopleDomain
 
-public final class PeopleApplicationFactory: Sendable {
+package final class PeopleApplicationFactory: Sendable {
 
     private let personRepository: any PersonRepository
     private let appConfigurationProvider: any AppConfigurationProviding
 
-    public init(
+    package init(
         personRepository: some PersonRepository,
         appConfigurationProvider: some AppConfigurationProviding
     ) {
@@ -21,7 +21,7 @@ public final class PeopleApplicationFactory: Sendable {
         self.appConfigurationProvider = appConfigurationProvider
     }
 
-    public func makeFetchPersonDetailsUseCase() -> some FetchPersonDetailsUseCase {
+    package func makeFetchPersonDetailsUseCase() -> some FetchPersonDetailsUseCase {
         DefaultFetchPersonDetailsUseCase(
             repository: personRepository,
             appConfigurationProvider: appConfigurationProvider

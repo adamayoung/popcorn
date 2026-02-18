@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import AppDependencies
 import ComposableArchitecture
 import SwiftUI
 
@@ -15,21 +14,11 @@ struct PopcornApp: App {
     @StateObject private var store: StoreOf<AppRootFeature>
 
     init() {
-        if CommandLine.isUITesting {
-            _store = StateObject(wrappedValue: Store(
-                initialState: AppRootFeature.State()
-            ) {
-                AppRootFeature()
-            } withDependencies: {
-                UITestDependencies.configure(&$0)
-            })
-        } else {
-            _store = StateObject(wrappedValue: Store(
-                initialState: AppRootFeature.State()
-            ) {
-                AppRootFeature()
-            })
-        }
+        _store = StateObject(wrappedValue: Store(
+            initialState: AppRootFeature.State()
+        ) {
+            AppRootFeature()
+        })
     }
 
     var body: some Scene {

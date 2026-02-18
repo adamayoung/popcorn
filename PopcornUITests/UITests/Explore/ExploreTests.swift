@@ -24,36 +24,46 @@ final class ExploreTests: PopcornUITestCase {
     func testNavigateToFirstDiscoverMovie() {
         let root = AppScreen(app: app)
         let explore = root.tapExploreTab()
+        let movieTitle = explore.discoverMovieTitle(index: 0)
 
-        explore.tapOnFirstDiscoverMovie()
+        let movieDetails = explore.tapOnDiscoverMovie(index: 0)
+        movieDetails.assertMovieTitle(movieTitle)
     }
 
     func testNavigateToFirstTrendingMovie() {
         let root = AppScreen(app: app)
         let explore = root.tapExploreTab()
+        let movieTitle = explore.trendingMovieTitle(index: 0)
 
-        explore.tapOnFirstTrendingMovie()
+        let movieDetails = explore.tapOnTrendingMovie(index: 0)
+        movieDetails.assertMovieTitle(movieTitle)
     }
 
     func testNavigateToFirstPopularMovie() {
         let root = AppScreen(app: app)
         let explore = root.tapExploreTab()
+        let movieTitle = explore.popularMovieTitle(index: 0)
 
-        explore.tapOnFirstPopularMovie()
+        let movieDetails = explore.tapOnPopularMovie(index: 0)
+        movieDetails.assertMovieTitle(movieTitle)
     }
 
     func testNavigateToFirstTrendingTVSeries() {
         let root = AppScreen(app: app)
         let explore = root.tapExploreTab()
+        let tvSeriesName = explore.trendingTVSeriesName(index: 0)
 
-        explore.tapOnFirstTrendingTVSeries()
+        let tvSeriesDetails = explore.tapOnTrendingTVSeries(index: 0)
+        tvSeriesDetails.assertTVSeriesName(tvSeriesName)
     }
 
     func testNavigateToFirstTrendingPerson() {
         let root = AppScreen(app: app)
         let explore = root.tapExploreTab()
+        let personName = explore.trendingPersonName(index: 0)
 
-        explore.tapOnFirstTrendingPerson()
+        let personDetails = explore.tapOnTrendingPerson(index: 0)
+        personDetails.assertPersonName(personName)
     }
 
 }

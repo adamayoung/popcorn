@@ -15,8 +15,7 @@ let package = Package(
     ],
 
     products: [
-        .library(name: "PopcornTrendingAdapters", targets: ["PopcornTrendingAdapters"]),
-        .library(name: "PopcornTrendingAdaptersUITesting", targets: ["PopcornTrendingAdaptersUITesting"])
+        .library(name: "PopcornTrendingAdapters", targets: ["PopcornTrendingAdapters"])
     ],
 
     dependencies: [
@@ -41,17 +40,6 @@ let package = Package(
                 "TMDb"
             ]
         ),
-
-        .target(
-            name: "PopcornTrendingAdaptersUITesting",
-            dependencies: [
-                .product(name: "TrendingComposition", package: "PopcornTrending"),
-                .product(name: "TrendingApplication", package: "PopcornTrending"),
-                .product(name: "TrendingDomain", package: "PopcornTrending"),
-                "CoreDomain"
-            ]
-        ),
-
         .testTarget(
             name: "PopcornTrendingAdaptersTests",
             dependencies: [

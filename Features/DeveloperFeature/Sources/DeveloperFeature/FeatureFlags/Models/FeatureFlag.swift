@@ -16,9 +16,9 @@ public struct FeatureFlag: Equatable, Sendable, Identifiable {
     public let override: FeatureFlagOverrideState
     public var isEnabled: Bool {
         switch override {
-        case .default: return value
-        case .enabled: return true
-        case .disabled: return false
+        case .default: value
+        case .enabled: true
+        case .disabled: false
         }
     }
 

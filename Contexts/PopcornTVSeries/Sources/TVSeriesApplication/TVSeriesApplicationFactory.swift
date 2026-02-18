@@ -8,12 +8,12 @@
 import Foundation
 import TVSeriesDomain
 
-public final class TVSeriesApplicationFactory: Sendable {
+package final class TVSeriesApplicationFactory: Sendable {
 
     private let tvSeriesRepository: any TVSeriesRepository
     private let appConfigurationProvider: any AppConfigurationProviding
 
-    public init(
+    package init(
         tvSeriesRepository: some TVSeriesRepository,
         appConfigurationProvider: some AppConfigurationProviding
     ) {
@@ -21,14 +21,14 @@ public final class TVSeriesApplicationFactory: Sendable {
         self.appConfigurationProvider = appConfigurationProvider
     }
 
-    public func makeFetchTVSeriesDetailsUseCase() -> some FetchTVSeriesDetailsUseCase {
+    package func makeFetchTVSeriesDetailsUseCase() -> some FetchTVSeriesDetailsUseCase {
         DefaultFetchTVSeriesDetailsUseCase(
             repository: tvSeriesRepository,
             appConfigurationProvider: appConfigurationProvider
         )
     }
 
-    public func makeFetchTVSeriesImageCollectionUseCase()
+    package func makeFetchTVSeriesImageCollectionUseCase()
     -> some FetchTVSeriesImageCollectionUseCase {
         DefaultFetchTVSeriesImageCollectionUseCase(
             repository: tvSeriesRepository,

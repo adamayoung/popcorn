@@ -204,14 +204,10 @@ public struct Popcorn{Context}Factory: Sendable {
 Adapters/Contexts/Popcorn{Context}Adapters/
 ├── Package.swift
 ├── Sources/
-│   ├── Popcorn{Context}Adapters/
-│   │   ├── DataSources/
-│   │   │   └── TMDb{Entity}RemoteDataSource.swift
-│   │   └── Popcorn{Context}AdaptersFactory.swift
-│   └── Popcorn{Context}AdaptersUITesting/
-│       ├── UITestPopcorn{Context}Factory.swift
-│       └── Repositories/
-│           └── Stub{Entity}Repository.swift
+│   └── Popcorn{Context}Adapters/
+│       ├── DataSources/
+│       │   └── TMDb{Entity}RemoteDataSource.swift
+│       └── Popcorn{Context}AdaptersFactory.swift
 ```
 
 ### 8. Wire in AppDependencies

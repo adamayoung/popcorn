@@ -11,7 +11,7 @@ import XCTest
 final class AppScreen: Screen {
 
     override var uniqueElement: XCUIElement {
-        view
+        app
     }
 
     @discardableResult
@@ -42,24 +42,20 @@ final class AppScreen: Screen {
 
 extension AppScreen {
 
-    private var view: XCUIElement {
-        app.tabBars["Tab Bar"]
-    }
-
     private var exploreTab: XCUIElement {
-        app.buttons["app.tabview.explore"]
+        app.buttons["app.tabview.explore"].firstMatch
     }
 
     private var watchlistTab: XCUIElement {
-        app.buttons["app.tabview.watchlist"]
+        app.buttons["app.tabview.watchlist"].firstMatch
     }
 
     private var gamesTab: XCUIElement {
-        app.buttons["app.tabview.games"]
+        app.buttons["app.tabview.games"].firstMatch
     }
 
     private var searchTab: XCUIElement {
-        app.buttons["app.tabview.search"]
+        app.buttons["app.tabview.search"].firstMatch
     }
 
 }

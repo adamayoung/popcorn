@@ -8,15 +8,15 @@
 import ConfigurationDomain
 import Foundation
 
-public final class ConfigurationApplicationFactory: Sendable {
+package final class ConfigurationApplicationFactory: Sendable {
 
     private let configurationRepository: any ConfigurationRepository
 
-    public init(configurationRepository: some ConfigurationRepository) {
+    package init(configurationRepository: some ConfigurationRepository) {
         self.configurationRepository = configurationRepository
     }
 
-    public func makeFetchAppConfigurationUseCase() -> some FetchAppConfigurationUseCase {
+    package func makeFetchAppConfigurationUseCase() -> some FetchAppConfigurationUseCase {
         DefaultFetchAppConfigurationUseCase(
             repository: configurationRepository
         )

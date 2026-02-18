@@ -105,19 +105,6 @@ let package = Package(
                 "PopcornTrendingAdapters",
                 "PopcornTVSeriesAdapters",
 
-                // Context Adapters UITesting
-                .product(name: "PopcornConfigurationAdaptersUITesting", package: "PopcornConfigurationAdapters"),
-                .product(name: "PopcornDiscoverAdaptersUITesting", package: "PopcornDiscoverAdapters"),
-                .product(name: "PopcornGamesCatalogAdaptersUITesting", package: "PopcornGamesCatalogAdapters"),
-                .product(name: "PopcornGenresAdaptersUITesting", package: "PopcornGenresAdapters"),
-                .product(name: "PopcornIntelligenceAdaptersUITesting", package: "PopcornIntelligenceAdapters"),
-                .product(name: "PopcornMoviesAdaptersUITesting", package: "PopcornMoviesAdapters"),
-                .product(name: "PopcornPeopleAdaptersUITesting", package: "PopcornPeopleAdapters"),
-                .product(name: "PopcornPlotRemixGameAdaptersUITesting", package: "PopcornPlotRemixGameAdapters"),
-                .product(name: "PopcornSearchAdaptersUITesting", package: "PopcornSearchAdapters"),
-                .product(name: "PopcornTrendingAdaptersUITesting", package: "PopcornTrendingAdapters"),
-                .product(name: "PopcornTVSeriesAdaptersUITesting", package: "PopcornTVSeriesAdapters"),
-
                 // Platform Adapters
                 "FeatureAccessAdapters",
                 "ObservabilityAdapters"

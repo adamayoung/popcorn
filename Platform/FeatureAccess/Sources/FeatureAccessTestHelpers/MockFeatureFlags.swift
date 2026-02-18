@@ -111,6 +111,12 @@ public final class MockFeatureFlags: FeatureFlagging, FeatureFlagOverriding, Fea
         removeOverrideCalledWithFlags.append(flag)
     }
 
+    public var removeAllOverridesCallCount = 0
+
+    public func removeAllOverrides() {
+        removeAllOverridesCallCount += 1
+    }
+
     public func reset() {
         startCallCount = 0
         startCalledWith.removeAll()
@@ -130,6 +136,7 @@ public final class MockFeatureFlags: FeatureFlagging, FeatureFlagOverriding, Fea
         overrideValueStub = nil
         removeOverrideCallCount = 0
         removeOverrideCalledWithFlags.removeAll()
+        removeAllOverridesCallCount = 0
         isInitialised = false
     }
 
