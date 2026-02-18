@@ -18,6 +18,14 @@ public final class StubMovieWatchlistRepository: MovieWatchlistRepository, @unch
         watchlist
     }
 
+    public func moviesStream() async -> AsyncThrowingStream<Set<WatchlistMovie>, Error> {
+        let currentWatchlist = watchlist
+        return AsyncThrowingStream { continuation in
+            continuation.yield(currentWatchlist)
+            continuation.finish()
+        }
+    }
+
     public func isOnWatchlist(movieID id: Int) async throws(MovieWatchlistRepositoryError) -> Bool {
         watchlist.contains { $0.id == id }
     }

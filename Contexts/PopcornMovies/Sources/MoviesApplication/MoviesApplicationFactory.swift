@@ -126,4 +126,22 @@ public final class MoviesApplicationFactory: Sendable {
         )
     }
 
+    public func makeStreamWatchlistMoviesUseCase() -> some StreamWatchlistMoviesUseCase {
+        DefaultStreamWatchlistMoviesUseCase(
+            movieRepository: movieRepository,
+            movieWatchlistRepository: movieWatchlistRepository,
+            movieImageRepository: movieImageRepository,
+            appConfigurationProvider: appConfigurationProvider
+        )
+    }
+
+    public func makeFetchWatchlistMoviesUseCase() -> some FetchWatchlistMoviesUseCase {
+        DefaultFetchWatchlistMoviesUseCase(
+            movieRepository: movieRepository,
+            movieWatchlistRepository: movieWatchlistRepository,
+            movieImageRepository: movieImageRepository,
+            appConfigurationProvider: appConfigurationProvider
+        )
+    }
+
 }

@@ -11,14 +11,14 @@ import XCTest
 final class TVSeriesDetailsScreen: Screen {
 
     override var uniqueElement: XCUIElement {
-        detailsView
+        view
     }
 
 }
 
 extension TVSeriesDetailsScreen {
 
-    private var detailsView: XCUIElement {
+    private var view: XCUIElement {
         app.scrollViews["tv-series-details.view"]
     }
 

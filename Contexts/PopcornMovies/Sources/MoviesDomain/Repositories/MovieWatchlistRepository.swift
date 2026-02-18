@@ -25,6 +25,14 @@ public protocol MovieWatchlistRepository: Sendable {
     func movies() async throws(MovieWatchlistRepositoryError) -> Set<WatchlistMovie>
 
     ///
+    /// Returns a stream of the user's watchlist that emits updated values
+    /// whenever the underlying data changes.
+    ///
+    /// - Returns: An `AsyncThrowingStream` that emits `Set<WatchlistMovie>` snapshots.
+    ///
+    func moviesStream() async -> AsyncThrowingStream<Set<WatchlistMovie>, Error>
+
+    ///
     /// Checks whether a specific movie is on the user's watchlist.
     ///
     /// - Parameter id: The unique identifier of the movie to check.

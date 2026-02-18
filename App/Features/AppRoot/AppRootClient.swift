@@ -19,6 +19,7 @@ struct AppRootClient: Sendable {
     var setupFeatureFlags: @Sendable () async throws -> Void
 
     var isExploreEnabled: @Sendable () throws -> Bool
+    var isWatchlistEnabled: @Sendable () throws -> Bool
     var isGamesEnabled: @Sendable () throws -> Bool
     var isSearchEnabled: @Sendable () throws -> Bool
 
@@ -93,6 +94,9 @@ extension AppRootClient: DependencyKey {
             },
             isExploreEnabled: {
                 featureFlags.isEnabled(.explore)
+            },
+            isWatchlistEnabled: {
+                featureFlags.isEnabled(.watchlist)
             },
             isGamesEnabled: {
                 featureFlags.isEnabled(.games)

@@ -31,6 +31,9 @@ struct MovieDetailsFeatureFetchTests {
                 #expect(id == 123)
                 return movie
             }
+            $0.movieDetailsClient.streamMovie = { _ in
+                AsyncThrowingStream { $0.finish() }
+            }
             $0.movieDetailsClient.fetchRecommendedMovies = { movieID in
                 #expect(movieID == 123)
                 return recommendations
@@ -58,6 +61,9 @@ struct MovieDetailsFeatureFetchTests {
             $0.movieDetailsClient.fetchMovie = { _ in
                 throw TestError.generic
             }
+            $0.movieDetailsClient.streamMovie = { _ in
+                AsyncThrowingStream { $0.finish() }
+            }
             $0.movieDetailsClient.fetchRecommendedMovies = { _ in [] }
             $0.movieDetailsClient.fetchCredits = { _ in
                 Credits(id: 123, castMembers: [], crewMembers: [])
@@ -69,6 +75,90 @@ struct MovieDetailsFeatureFetchTests {
         await store.receive(\.loadFailed) {
             $0.viewState = .error(ViewStateError(TestError.generic))
         }
+    }
+
+    @Test("fetch starts streaming and updates movie from stream")
+    func fetchStartsStreamingAndUpdatesMovie() async {
+        let movie = Self.testMovie
+        let updatedMovie = Movie(
+            id: 123,
+            title: "Test Movie",
+            overview: "Test overview",
+            isOnWatchlist: true
+        )
+        let recommendations = Self.testRecommendations
+        let credits = Self.testCredits
+
+        let store = TestStore(
+            initialState: MovieDetailsFeature.State(movieID: 123)
+        ) {
+            MovieDetailsFeature()
+        } withDependencies: {
+            $0.movieDetailsClient.fetchMovie = { _ in movie }
+            $0.movieDetailsClient.streamMovie = { _ in
+                AsyncThrowingStream { continuation in
+                    continuation.yield(updatedMovie)
+                    continuation.finish()
+                }
+            }
+            $0.movieDetailsClient.fetchRecommendedMovies = { _ in recommendations }
+            $0.movieDetailsClient.fetchCredits = { _ in credits }
+        }
+
+        await store.send(.fetch)
+
+        await store.receive(\.loaded) {
+            $0.viewState = .ready(Self.testViewSnapshot)
+        }
+
+        await store.receive(\.movieUpdated) {
+            $0.viewState = .ready(MovieDetailsFeature.ViewSnapshot(
+                movie: updatedMovie,
+                recommendedMovies: recommendations,
+                castMembers: credits.castMembers,
+                crewMembers: credits.crewMembers
+            ))
+        }
+    }
+
+    @Test("movieUpdated updates movie in ready state")
+    func movieUpdatedUpdatesMovieInReadyState() async {
+        let snapshot = Self.testViewSnapshot
+        let updatedMovie = Movie(
+            id: 123,
+            title: "Test Movie",
+            overview: "Test overview",
+            isOnWatchlist: true
+        )
+
+        let store = TestStore(
+            initialState: MovieDetailsFeature.State(
+                movieID: 123,
+                viewState: .ready(snapshot)
+            )
+        ) {
+            MovieDetailsFeature()
+        }
+
+        await store.send(.movieUpdated(updatedMovie)) {
+            $0.viewState = .ready(MovieDetailsFeature.ViewSnapshot(
+                movie: updatedMovie,
+                recommendedMovies: Self.testRecommendations,
+                castMembers: Self.testCredits.castMembers,
+                crewMembers: Self.testCredits.crewMembers
+            ))
+        }
+    }
+
+    @Test("movieUpdated when not ready does nothing")
+    func movieUpdatedWhenNotReadyDoesNothing() async {
+        let store = TestStore(
+            initialState: MovieDetailsFeature.State(movieID: 123)
+        ) {
+            MovieDetailsFeature()
+        }
+
+        await store.send(.movieUpdated(Self.testMovie))
     }
 
     @Test("loaded sets viewState to ready")

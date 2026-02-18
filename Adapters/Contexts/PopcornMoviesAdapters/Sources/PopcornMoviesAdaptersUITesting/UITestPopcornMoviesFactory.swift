@@ -71,4 +71,12 @@ public final class UITestPopcornMoviesFactory: PopcornMoviesFactory {
         applicationFactory.makeFetchMovieCreditsUseCase()
     }
 
+    public func makeStreamWatchlistMoviesUseCase() -> StreamWatchlistMoviesUseCase {
+        applicationFactory.makeStreamWatchlistMoviesUseCase()
+    }
+
+    public func makeFetchWatchlistMoviesUseCase() -> FetchWatchlistMoviesUseCase {
+        applicationFactory.makeFetchWatchlistMoviesUseCase()
+    }
+
 }

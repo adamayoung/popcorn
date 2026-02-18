@@ -31,6 +31,25 @@ VStack(spacing: .spacing16) {
 
 - Do not force specific font sizes; prefer using Dynamic Type instead.
 - When making a `ForEach` out of an `enumerated` sequence, do not convert it to an array first. Prefer `ForEach(x.enumerated(), id: \.element.id)` instead of `ForEach(Array(x.enumerated()), id: \.element.id)`.
+- In views inside Swift packages, always use `LocalizedStringResource("KEY", bundle: .module)` for localised strings instead of bare string literals. This ensures the correct bundle is used for string lookup at runtime.
+
+```swift
+// Bad — resolves against the main bundle, not the package bundle
+ContentUnavailableView("NO_ITEMS", systemImage: "tray")
+Label("UNABLE_TO_LOAD", systemImage: "exclamationmark.triangle")
+
+// Good — explicitly targets the package's bundle
+ContentUnavailableView {
+    Label(
+        LocalizedStringResource("NO_ITEMS", bundle: .module),
+        systemImage: "tray"
+    )
+}
+Label(
+    LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
+    systemImage: "exclamationmark.triangle"
+)
+```
 
 ## Platform-Specific Modifiers
 

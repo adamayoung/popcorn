@@ -45,6 +45,7 @@ public struct GamesCatalogView: View {
                 EmptyView()
             }
         }
+        .accessibilityIdentifier("games-catalog.view")
         .overlay {
             if store.viewState.isLoading {
                 loadingBody

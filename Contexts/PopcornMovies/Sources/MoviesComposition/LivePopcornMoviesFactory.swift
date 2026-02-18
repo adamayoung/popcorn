@@ -77,4 +77,12 @@ public final class LivePopcornMoviesFactory: PopcornMoviesFactory {
         applicationFactory.makeFetchMovieCreditsUseCase()
     }
 
+    public func makeStreamWatchlistMoviesUseCase() -> StreamWatchlistMoviesUseCase {
+        applicationFactory.makeStreamWatchlistMoviesUseCase()
+    }
+
+    public func makeFetchWatchlistMoviesUseCase() -> FetchWatchlistMoviesUseCase {
+        applicationFactory.makeFetchWatchlistMoviesUseCase()
+    }
+
 }

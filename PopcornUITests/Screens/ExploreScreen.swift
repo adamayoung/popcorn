@@ -11,7 +11,7 @@ import XCTest
 final class ExploreScreen: Screen {
 
     override var uniqueElement: XCUIElement {
-        exploreView
+        view
     }
 
     @discardableResult
@@ -58,7 +58,7 @@ final class ExploreScreen: Screen {
 
 extension ExploreScreen {
 
-    private var exploreView: XCUIElement {
+    private var view: XCUIElement {
         app.scrollViews["explore.view"]
     }
 

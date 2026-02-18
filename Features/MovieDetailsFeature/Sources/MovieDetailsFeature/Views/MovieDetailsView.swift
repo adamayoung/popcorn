@@ -33,19 +33,21 @@ public struct MovieDetailsView: View {
         .toolbar {
             if case .ready(let snapshot) = store.viewState {
                 if store.isWatchlistEnabled {
-                    ToolbarItem(placement: .primaryAction) {
+                    ToolbarItem(placement: toolbarTrailingPlacement) {
                         Button(
                             snapshot.movie.isOnWatchlist ? "REMOVE_FROM_WATCHLIST" : "ADD_TO_WATCHLIST",
-                            systemImage: snapshot.movie.isOnWatchlist ? "eye.square.fill" : "eye.square"
+                            systemImage: snapshot.movie.isOnWatchlist ? "eye" : "plus"
                         ) {
                             store.send(.toggleOnWatchlist)
                         }
+                        .contentTransition(.symbolEffect(.replace))
+                        .animation(.default, value: snapshot.movie.isOnWatchlist)
                         .sensoryFeedback(.selection, trigger: snapshot.movie.isOnWatchlist)
                     }
                 }
 
                 if store.isIntelligenceEnabled {
-                    ToolbarItem(placement: .primaryAction) {
+                    ToolbarItem(placement: toolbarTrailingPlacement) {
                         Button(
                             "MOVIE_INTELLIGENCE",
                             systemImage: "apple.intelligence"
@@ -74,6 +76,14 @@ public struct MovieDetailsView: View {
 }
 
 extension MovieDetailsView {
+
+    private var toolbarTrailingPlacement: ToolbarItemPlacement {
+        #if os(macOS)
+            .automatic
+        #else
+            .primaryAction
+        #endif
+    }
 
     private var loadingBody: some View {
         ProgressView()

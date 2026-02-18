@@ -69,6 +69,7 @@ public struct MovieDetailsFeature: Sendable {
         case updateFeatureFlags
         case fetch
         case loaded(ViewSnapshot)
+        case movieUpdated(Movie)
         case loadFailed(ViewStateError)
         case toggleOnWatchlist
         case toggleOnWatchlistFailed(Error)
@@ -106,6 +107,19 @@ public struct MovieDetailsFeature: Sendable {
                 state.viewState = .ready(snapshot)
                 return .none
 
+            case .movieUpdated(let movie):
+                guard case .ready(let snapshot) = state.viewState else {
+                    return .none
+                }
+
+                state.viewState = .ready(ViewSnapshot(
+                    movie: movie,
+                    recommendedMovies: snapshot.recommendedMovies,
+                    castMembers: snapshot.castMembers,
+                    crewMembers: snapshot.crewMembers
+                ))
+                return .none
+
             case .loadFailed(let error):
                 state.viewState = .error(error)
                 return .none
@@ -135,7 +149,7 @@ extension MovieDetailsFeature {
 
     private func handleFetch(_ state: inout State) -> EffectOf<Self> {
         .run { [state, client] send in
-            Self.logger.info("User streaming movie")
+            Self.logger.info("User fetching movie details")
 
             async let movie = client.fetchMovie(id: state.movieID)
             async let recommendedMovies = client.fetchRecommendedMovies(movieID: state.movieID)
@@ -155,6 +169,20 @@ extension MovieDetailsFeature {
             }
 
             await send(.loaded(viewSnapshot))
+
+            Self.logger.info("Starting movie details stream")
+
+            do {
+                let stream = try await client.streamMovie(state.movieID)
+                for try await movie in stream {
+                    guard let movie else { continue }
+                    await send(.movieUpdated(movie))
+                }
+            } catch {
+                Self.logger.error(
+                    "Movie details stream failed: \(error.localizedDescription, privacy: .public)"
+                )
+            }
         }
     }
 
