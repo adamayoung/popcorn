@@ -51,12 +51,15 @@ public struct WatchlistFeature: Sendable {
 
     public init() {}
 
+    private enum CancelID { case fetch }
+
     public var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
             case .fetch:
                 state.viewState = .loading
                 return handleFetch()
+                    .cancellable(id: CancelID.fetch, cancelInFlight: true)
             case .moviesLoaded(let movies):
                 state.viewState = .ready(ViewSnapshot(movies: movies))
                 return .none

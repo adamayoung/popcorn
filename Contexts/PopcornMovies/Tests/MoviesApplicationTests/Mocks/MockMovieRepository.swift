@@ -8,6 +8,8 @@
 import Foundation
 import MoviesDomain
 
+/// @unchecked Sendable is safe here: each test creates its own instance and
+/// configures stubs before any concurrent access occurs.
 final class MockMovieRepository: MovieRepository, @unchecked Sendable {
 
     var movieCallCount = 0

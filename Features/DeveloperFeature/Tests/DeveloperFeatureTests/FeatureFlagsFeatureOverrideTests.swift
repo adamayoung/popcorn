@@ -109,4 +109,29 @@ struct FeatureFlagsFeatureOverrideTests {
         }
     }
 
+    @Test("resetAllOverrides calls removeAllOverrides and re-fetches flags")
+    func resetAllOverridesCallsRemoveAllOverridesAndRefetches() async {
+        var removeAllOverridesCalled = false
+        let flags = [Self.testFlag]
+
+        let store = TestStore(
+            initialState: FeatureFlagsFeature.State()
+        ) {
+            FeatureFlagsFeature()
+        } withDependencies: {
+            $0.featureFlagsClient.removeAllOverrides = {
+                removeAllOverridesCalled = true
+            }
+            $0.featureFlagsClient.fetchFeatureFlags = { flags }
+        }
+
+        await store.send(.resetAllOverrides)
+        #expect(removeAllOverridesCalled == true)
+
+        let expectedSnapshot = FeatureFlagsFeature.ViewSnapshot(featureFlags: flags)
+        await store.receive(\.loaded) {
+            $0.viewState = .ready(expectedSnapshot)
+        }
+    }
+
 }
