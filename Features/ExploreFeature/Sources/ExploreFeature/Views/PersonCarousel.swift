@@ -31,6 +31,8 @@ struct PersonCarousel: View {
                         cellLabel(title: person.name, index: offset)
                     }
                 }
+                .accessibilityIdentifier("explore.\(carouselID).person.\(offset)")
+                .accessibilityLabel(person.name)
                 .buttonStyle(.plain)
                 .fixedSize(horizontal: true, vertical: false)
             }

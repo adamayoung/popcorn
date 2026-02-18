@@ -121,13 +121,13 @@ struct AppRootView: View {
         }
         .accessibilityIdentifier("app.tabview")
         #if !os(macOS)
-        .tabViewStyle(.sidebarAdaptable)
-        .tabViewCustomization($customization)
+            .tabViewStyle(.sidebarAdaptable)
+            .tabViewCustomization($customization)
         #else
-        .tabViewStyle(.sidebarAdaptable)
-        .tabViewCustomization($customization)
+            .tabViewStyle(.sidebarAdaptable)
+            .tabViewCustomization($customization)
         #endif
-        .minimizeTabBar()
+            .minimizeTabBar()
     }
 
     private func errorView(with error: Error) -> some View {

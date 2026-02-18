@@ -2,7 +2,7 @@
 //  WatchlistScreen.swift
 //  Popcorn
 //
-//  Created by Adam Young on 18/02/2026.
+//  Copyright © 2026 Adam Young.
 //
 
 import XCTest

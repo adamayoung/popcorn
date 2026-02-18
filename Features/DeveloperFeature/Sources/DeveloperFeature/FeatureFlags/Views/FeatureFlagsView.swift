@@ -29,8 +29,18 @@ public struct FeatureFlagsView: View {
                 EmptyView()
             }
         }
-        .navigationTitle(Text("FEATURE_FLAGS", bundle: .module))
         .accessibilityIdentifier("feature-flags.view")
+        .toolbar {
+            ToolbarItem(placement: .destructiveAction) {
+                Button(
+                    LocalizedStringResource("RESET", bundle: .module),
+                    role: .destructive
+                ) {
+                    store.send(.resetAllOverrides)
+                }
+            }
+        }
+        .navigationTitle(Text("FEATURE_FLAGS", bundle: .module))
         .contentTransition(.opacity)
         .overlay {
             if store.viewState.isLoading {

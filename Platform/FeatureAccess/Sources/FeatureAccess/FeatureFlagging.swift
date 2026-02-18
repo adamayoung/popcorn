@@ -11,6 +11,6 @@ public protocol FeatureFlagging: Sendable {
 
     var isInitialised: Bool { get }
 
-    func isEnabled(_ flag: FeatureFlag) -> Bool
+    func isEnabled(_ featureFlag: FeatureFlag) -> Bool
 
 }

@@ -18,7 +18,7 @@ final class ExploreScreen: Screen {
     func tapOnFirstDiscoverMovie() -> MovieDetailsScreen {
         scrollTo(discoverMoviesCarousel)
         XCTAssertTrue(discoverMoviesCarousel.waitForExistence(timeout: 2))
-        discoverMoviesCarousel.buttons.firstMatch.tap()
+        discoverMovie(at: 0).tap()
         return MovieDetailsScreen(app: app)
     }
 
@@ -64,6 +64,10 @@ extension ExploreScreen {
 
     private var discoverMoviesCarousel: XCUIElement {
         app.scrollViews["explore.discover-movies.carousel"]
+    }
+
+    private func discoverMovie(at index: Int) -> XCUIElement {
+        discoverMoviesCarousel.buttons["explore.discover-movies.movie.\(index)"]
     }
 
     private var trendingMoviesCarousel: XCUIElement {

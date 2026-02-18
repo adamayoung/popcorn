@@ -15,9 +15,7 @@ struct PopcornApp: App {
     @StateObject private var store: StoreOf<AppRootFeature>
 
     init() {
-        let isUITesting = CommandLine.arguments.contains("-uitest")
-
-        if isUITesting {
+        if CommandLine.isUITesting {
             _store = StateObject(wrappedValue: Store(
                 initialState: AppRootFeature.State()
             ) {

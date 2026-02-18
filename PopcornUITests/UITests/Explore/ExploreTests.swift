@@ -10,6 +10,17 @@ import XCTest
 @MainActor
 final class ExploreTests: PopcornUITestCase {
 
+    override var featureFlags: [String: Bool] {
+        [
+            "explore": true,
+            "explore_discover_movies": true,
+            "explore_trending_movies": true,
+            "explore_popular_movies": true,
+            "explore_trending_tv_series": true,
+            "explore_trending_people": true
+        ]
+    }
+
     func testNavigateToFirstDiscoverMovie() {
         let root = AppScreen(app: app)
         let explore = root.tapExploreTab()

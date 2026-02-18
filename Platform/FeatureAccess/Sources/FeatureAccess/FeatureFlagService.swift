@@ -51,28 +51,28 @@ extension FeatureFlagService {
 
 extension FeatureFlagService {
 
-    func isEnabled(_ flag: FeatureFlag) -> Bool {
-        if let overrideValue = overrideValue(for: flag) {
+    func isEnabled(_ featureFlag: FeatureFlag) -> Bool {
+        if let overrideValue = overrideValue(for: featureFlag) {
             return overrideValue
         }
 
-        return actualValue(for: flag)
+        return actualValue(for: featureFlag)
     }
 
 }
 
 extension FeatureFlagService {
 
-    func actualValue(for flag: FeatureFlag) -> Bool {
-        featureFlagProvider.isEnabled(flag.id)
+    func actualValue(for featureFlag: FeatureFlag) -> Bool {
+        featureFlagProvider.isEnabled(featureFlag.id)
     }
 
-    func setOverrideValue(_ value: Bool, for flag: FeatureFlag) {
-        userDefaults.set(value, forKey: overrideKey(for: flag))
+    func setOverrideValue(_ value: Bool, for featureFlag: FeatureFlag) {
+        userDefaults.set(value, forKey: overrideKey(for: featureFlag))
     }
 
-    func overrideValue(for flag: FeatureFlag) -> Bool? {
-        let key = overrideKey(for: flag)
+    func overrideValue(for featureFlag: FeatureFlag) -> Bool? {
+        let key = overrideKey(for: featureFlag)
         guard userDefaults.object(forKey: key) != nil else {
             return nil
         }
@@ -80,8 +80,14 @@ extension FeatureFlagService {
         return userDefaults.bool(forKey: key)
     }
 
-    func removeOverride(for flag: FeatureFlag) {
-        userDefaults.removeObject(forKey: overrideKey(for: flag))
+    func removeOverride(for featureFlag: FeatureFlag) {
+        userDefaults.removeObject(forKey: overrideKey(for: featureFlag))
+    }
+
+    func removeAllOverrides() {
+        for featureFlag in FeatureFlag.allFlags {
+            removeOverride(for: featureFlag)
+        }
     }
 
     private func overrideKey(for flag: FeatureFlag) -> String {

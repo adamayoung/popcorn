@@ -14,6 +14,13 @@ public struct FeatureFlag: Equatable, Sendable, Identifiable {
     public let description: String
     public let value: Bool
     public let override: FeatureFlagOverrideState
+    public var isEnabled: Bool {
+        switch override {
+        case .default: return value
+        case .enabled: return true
+        case .disabled: return false
+        }
+    }
 
     public init(
         id: String,
