@@ -55,19 +55,19 @@ extension MoviePreview {
                 backdropURL: URL(string: "https://image.tmdb.org/t/p/w1280/sdZSjtGUTSN8B3al5o0f2WoQfQQ.jpg")
             ),
             MoviePreview(
-                id: 1368166,
+                id: 1_368_166,
                 title: "The Housemaid",
                 posterURL: URL(string: "https://image.tmdb.org/t/p/w780/cWsBscZzwu5brg9YjNkGewRUvJX.jpg"),
                 backdropURL: URL(string: "https://image.tmdb.org/t/p/w1280/tNONILTe9OJz574KZWaLze4v6RC.jpg")
             ),
             MoviePreview(
-                id: 1084242,
+                id: 1_084_242,
                 title: "Zootopia 2",
                 posterURL: URL(string: "https://image.tmdb.org/t/p/w780/oJ7g2CifqpStmoYQyaLQgEU32qO.jpg"),
                 backdropURL: URL(string: "https://image.tmdb.org/t/p/w1280/7nfpkR9XsQ1lBNCXSSHxGV7Dkxe.jpg")
             ),
             MoviePreview(
-                id: 1159559,
+                id: 1_159_559,
                 title: "Scream 7",
                 posterURL: URL(string: "https://image.tmdb.org/t/p/w780/jjyuk0edLiW8vOSnlfwWCCLpbh5.jpg"),
                 backdropURL: URL(string: "https://image.tmdb.org/t/p/w1280/yWCZc2TcsCYbMMjvUIsczmQi2TX.jpg")
@@ -78,25 +78,25 @@ extension MoviePreview {
     static var trendingSnapshots: [MoviePreview] {
         [
             MoviePreview(
-                id: 1317288,
+                id: 1_317_288,
                 title: "Marty Supreme",
                 posterURL: URL(string: "https://image.tmdb.org/t/p/w780/lYWEXbQgRTR4ZQleSXAgRbxAjvq.jpg"),
                 backdropURL: URL(string: "https://image.tmdb.org/t/p/w1280/bHtlDAORBQiYKCJMwDP9WBgcQHM.jpg")
             ),
             MoviePreview(
-                id: 1236153,
+                id: 1_236_153,
                 title: "Mercy",
                 posterURL: URL(string: "https://image.tmdb.org/t/p/w780/pyok1kZJCfyuFapYXzHcy7BLlQa.jpg"),
                 backdropURL: URL(string: "https://image.tmdb.org/t/p/w1280/7HKpc11uQfxnw0Y8tRUYn1fsKqE.jpg")
             ),
             MoviePreview(
-                id: 1272837,
+                id: 1_272_837,
                 title: "28 Years Later: The Bone Temple",
                 posterURL: URL(string: "https://image.tmdb.org/t/p/w780/kK1BGkG3KAvWB0WMV1DfOx9yTMZ.jpg"),
                 backdropURL: URL(string: "https://image.tmdb.org/t/p/w1280/ryynYdXgP2vLZKH3154bLkNp1kx.jpg")
             ),
             MoviePreview(
-                id: 1315303,
+                id: 1_315_303,
                 title: "Primate",
                 posterURL: URL(string: "https://image.tmdb.org/t/p/w780/rKleYiEj4pFqxedTRWfujLooi84.jpg"),
                 backdropURL: URL(string: "https://image.tmdb.org/t/p/w1280/9uakM2woks0JV8HKIc4oatIVS88.jpg")
@@ -107,25 +107,25 @@ extension MoviePreview {
     static var popularSnapshots: [MoviePreview] {
         [
             MoviePreview(
-                id: 1242898,
+                id: 1_242_898,
                 title: "Predator: Badlands",
                 posterURL: URL(string: "https://image.tmdb.org/t/p/w780/erTRAi241eYF4K8KoGGOI8kFPox.jpg"),
                 backdropURL: URL(string: "https://image.tmdb.org/t/p/w1280/82lM4GJ9uuNvNDOEpxFy77uv4Ak.jpg")
             ),
             MoviePreview(
-                id: 858024,
+                id: 858_024,
                 title: "Hamnet",
                 posterURL: URL(string: "https://image.tmdb.org/t/p/w780/vbeyOZm2bvBXcbgPD3v6o94epPX.jpg"),
                 backdropURL: URL(string: "https://image.tmdb.org/t/p/w1280/73BClq9FOcrWrutnpiqhCNEWEwJ.jpg")
             ),
             MoviePreview(
-                id: 1171145,
+                id: 1_171_145,
                 title: "Crime 101",
                 posterURL: URL(string: "https://image.tmdb.org/t/p/w780/2HoR2x23bqKpopluoBD1FH3tBi7.jpg"),
                 backdropURL: URL(string: "https://image.tmdb.org/t/p/w1280/s6aB9kjxNg0mu2361IkCUSpyHJV.jpg")
             ),
             MoviePreview(
-                id: 425274,
+                id: 425_274,
                 title: "Now You See Me: Now You Don't",
                 posterURL: URL(string: "https://image.tmdb.org/t/p/w780/oD3Eey4e4Z259XLm3eD3WGcoJAh.jpg"),
                 backdropURL: URL(string: "https://image.tmdb.org/t/p/w1280/dHSz0tSFuO2CsXJ1CApSauP9Ncl.jpg")
@@ -140,13 +140,13 @@ extension TVSeriesPreview {
     static var snapshots: [TVSeriesPreview] {
         [
             TVSeriesPreview(
-                id: 224372,
+                id: 224_372,
                 name: "A Knight of the Seven Kingdoms",
                 posterURL: URL(string: "https://image.tmdb.org/t/p/w780/k8yARbD9iYn2nRX2HvsopfKDN2r.jpg"),
                 backdropURL: URL(string: "https://image.tmdb.org/t/p/w1280/7mkUu1F2hVUNgz24xO8HPx0D6mK.jpg")
             ),
             TVSeriesPreview(
-                id: 106379,
+                id: 106_379,
                 name: "Fallout",
                 posterURL: URL(string: "https://image.tmdb.org/t/p/w780/c15BtJxCXMrISLVmysdsnZUPQft.jpg"),
                 backdropURL: URL(string: "https://image.tmdb.org/t/p/w1280/coaPCIqQBPUZsOnJcWZxhaORcDT.jpg")
@@ -158,7 +158,7 @@ extension TVSeriesPreview {
                 backdropURL: URL(string: "https://image.tmdb.org/t/p/w1280/8zbAoryWbtH0DKdev8abFAjdufy.jpg")
             ),
             TVSeriesPreview(
-                id: 250307,
+                id: 250_307,
                 name: "The Pitt",
                 posterURL: URL(string: "https://image.tmdb.org/t/p/w780/kvFSpESyBZMjaeOJDx7RS3P1jey.jpg"),
                 backdropURL: URL(string: "https://image.tmdb.org/t/p/w1280/6uPBHw488MUW6x51zZ2OCJo6Dgp.jpg")
