@@ -7,12 +7,11 @@
 
 import ComposableArchitecture
 @testable import ExploreFeature
-import SDWebImage
 import SnapshotTesting
 import SwiftUI
 import Testing
 
-@Suite("ExploreViewSnapshotTests", .snapshots(record: .failed))
+@Suite("ExploreViewSnapshotTests", .snapshots(record: .missing))
 @MainActor
 struct ExploreViewSnapshotTests {
 
