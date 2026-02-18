@@ -154,6 +154,59 @@ struct DefaultStreamWatchlistMoviesUseCaseTests {
         #expect(results[1].count == 2)
     }
 
+    @Test("stream skips emission when app configuration provider throws")
+    func streamSkipsEmissionWhenAppConfigurationProviderThrows() async throws {
+        let watchlistMovie = WatchlistMovie.mock(id: 1)
+        mockWatchlistRepository.moviesStreamStub = AsyncThrowingStream {
+            $0.yield([watchlistMovie])
+            $0.finish()
+        }
+        mockMovieRepository.movieStubs[1] = .success(.mock(id: 1, title: "Inception"))
+        mockImageRepository.imageCollectionStubs[1] = .success(.mock(id: 1))
+        mockAppConfigurationProvider.appConfigurationStub = .failure(.unknown(nil))
+
+        let useCase = makeUseCase()
+        let stream = await useCase.stream()
+
+        var results: [[MoviePreviewDetails]] = []
+        for try await value in stream {
+            results.append(value)
+        }
+
+        #expect(results.isEmpty)
+    }
+
+    @Test("stream recovers after transient config failure")
+    func streamRecoversAfterTransientConfigFailure() async throws {
+        let movie1 = WatchlistMovie.mock(id: 1)
+        let movie2 = WatchlistMovie.mock(id: 2)
+        mockWatchlistRepository.moviesStreamStub = AsyncThrowingStream {
+            $0.yield([movie1])
+            $0.yield([movie2])
+            $0.finish()
+        }
+        mockMovieRepository.movieStubs[1] = .success(.mock(id: 1, title: "Movie 1"))
+        mockMovieRepository.movieStubs[2] = .success(.mock(id: 2, title: "Movie 2"))
+        mockImageRepository.imageCollectionStubs[1] = .success(.mock(id: 1))
+        mockImageRepository.imageCollectionStubs[2] = .success(.mock(id: 2))
+        mockAppConfigurationProvider.appConfigurationStubs = [
+            .failure(.unknown(nil)),
+            .success(.mock())
+        ]
+
+        let useCase = makeUseCase()
+        let stream = await useCase.stream()
+
+        var results: [[MoviePreviewDetails]] = []
+        for try await value in stream {
+            results.append(value)
+        }
+
+        #expect(results.count == 1)
+        #expect(results[0].count == 1)
+        #expect(results[0][0].id == 2)
+    }
+
     // MARK: - Helpers
 
     private func makeUseCase() -> DefaultStreamWatchlistMoviesUseCase {

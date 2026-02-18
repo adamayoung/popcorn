@@ -22,10 +22,24 @@
       }
     },
     "RETRY" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry"
+          }
+        }
+      }
     },
     "UNABLE_TO_LOAD" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to load"
+          }
+        }
+      }
     },
     "WATCHLIST" : {
       "localizations" : {

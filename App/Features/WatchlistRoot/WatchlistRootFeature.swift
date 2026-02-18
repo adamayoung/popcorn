@@ -7,7 +7,9 @@
 
 import ComposableArchitecture
 import Foundation
+import MovieCastAndCrewFeature
 import MovieDetailsFeature
+import MovieIntelligenceFeature
 import PersonDetailsFeature
 import WatchlistFeature
 
@@ -18,16 +20,20 @@ struct WatchlistRootFeature {
     struct State {
         var path = StackState<Path.State>()
         var watchlist = WatchlistFeature.State()
+
+        @Presents var movieIntelligence: MovieIntelligenceFeature.State?
     }
 
     @Reducer
     enum Path {
         case movieDetails(MovieDetailsFeature)
         case personDetails(PersonDetailsFeature)
+        case movieCastAndCrew(MovieCastAndCrewFeature)
     }
 
     enum Action {
         case watchlist(WatchlistFeature.Action)
+        case movieIntelligence(PresentationAction<MovieIntelligenceFeature.Action>)
         case path(StackActionOf<Path>)
     }
 
@@ -49,11 +55,27 @@ struct WatchlistRootFeature {
             case .path(.element(_, .movieDetails(.navigate(.personDetails(let id))))):
                 state.path.append(.personDetails(PersonDetailsFeature.State(personID: id)))
                 return .none
+            case .path(.element(_, .movieDetails(.navigate(.castAndCrew(let id))))):
+                state.path.append(.movieCastAndCrew(MovieCastAndCrewFeature.State(movieID: id)))
+                return .none
+            case .path(.element(_, .movieDetails(.navigate(.movieIntelligence(let id))))):
+                state.movieIntelligence = MovieIntelligenceFeature.State(movieID: id)
+                return .none
+            case .path(
+                .element(_, .movieCastAndCrew(.navigate(.personDetails(let id, _))))
+            ):
+                state.path.append(
+                    .personDetails(PersonDetailsFeature.State(personID: id))
+                )
+                return .none
             default:
                 return .none
             }
         }
         .forEach(\.path, action: \.path)
+        .ifLet(\.$movieIntelligence, action: \.movieIntelligence) {
+            MovieIntelligenceFeature()
+        }
     }
 
 }

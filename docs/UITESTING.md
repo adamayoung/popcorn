@@ -13,14 +13,21 @@ UI tests launch the app and interact with it through XCUITest. Feature flag over
 ```
 PopcornUITests/                           # XCUITest target
 ├── PopcornUITestCase.swift               # Base test case
-├── Screen.swift                          # Base screen object
-├── Explore/                              # Screen objects by feature
+├── Screens/                              # Screen objects
+│   ├── Screen.swift                      # Base screen object
+│   ├── AppScreen.swift
 │   ├── ExploreScreen.swift
+│   ├── GamesCatalogScreen.swift
+│   ├── MediaSearchScreen.swift
 │   ├── MovieDetailsScreen.swift
-│   └── ...
+│   ├── PersonDetailsScreen.swift
+│   ├── TVSeriesDetailsScreen.swift
+│   └── WatchlistScreen.swift
 └── UITests/                              # Test cases
-    └── Explore/
-        └── ExploreDiscoverMoviesTests.swift
+    ├── Explore/
+    │   └── ExploreTests.swift
+    └── Watchlist/
+        └── WatchlistTests.swift
 ```
 
 ## Running UI Tests

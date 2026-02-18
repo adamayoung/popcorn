@@ -13,11 +13,18 @@ final class MockAppConfigurationProvider: AppConfigurationProviding, @unchecked 
 
     var appConfigurationCallCount = 0
     var appConfigurationStub: Result<AppConfiguration, AppConfigurationProviderError>?
+    var appConfigurationStubs: [Result<AppConfiguration, AppConfigurationProviderError>] = []
 
     func appConfiguration() async throws(AppConfigurationProviderError) -> AppConfiguration {
+        let index = appConfigurationCallCount
         appConfigurationCallCount += 1
 
-        guard let stub = appConfigurationStub else {
+        let stub: Result<AppConfiguration, AppConfigurationProviderError>
+        if !appConfigurationStubs.isEmpty {
+            stub = appConfigurationStubs[min(index, appConfigurationStubs.count - 1)]
+        } else if let singleStub = appConfigurationStub {
+            stub = singleStub
+        } else {
             throw .unknown(nil)
         }
 

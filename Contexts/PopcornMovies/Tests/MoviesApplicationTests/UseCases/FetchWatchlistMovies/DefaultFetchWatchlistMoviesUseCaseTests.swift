@@ -122,6 +122,30 @@ struct DefaultFetchWatchlistMoviesUseCaseTests {
         #expect(result[0].title == "Success Movie")
     }
 
+    @Test("execute throws when app configuration provider fails")
+    func executeThrowsWhenAppConfigurationProviderFails() async {
+        let watchlistMovie = WatchlistMovie.mock(id: 1)
+        mockWatchlistRepository.moviesStub = .success([watchlistMovie])
+        mockAppConfigurationProvider.appConfigurationStub = .failure(.unknown(nil))
+
+        let useCase = makeUseCase()
+
+        await #expect(
+            performing: {
+                try await useCase.execute()
+            },
+            throws: { error in
+                guard let watchlistError = error as? FetchWatchlistMoviesError else {
+                    return false
+                }
+                if case .unknown = watchlistError {
+                    return true
+                }
+                return false
+            }
+        )
+    }
+
     // MARK: - Helpers
 
     private func makeUseCase() -> DefaultFetchWatchlistMoviesUseCase {

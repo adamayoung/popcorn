@@ -54,12 +54,11 @@ final class DefaultStreamWatchlistMoviesUseCase: StreamWatchlistMoviesUseCase {
                         appConfiguration = try await self.appConfigurationProvider
                             .appConfiguration()
                     } catch {
-                        throw FetchWatchlistMoviesError(error)
+                        Self.logger.error("Failed to fetch app configuration: \(error)")
+                        continue
                     }
 
-                    let sortedWatchlistMovies = watchlistMovies
-                        .sorted { $0.createdAt > $1.createdAt }
-                    let movieData = await self.fetchMovieData(for: sortedWatchlistMovies)
+                    let movieData = await self.fetchMovieData(for: watchlistMovies)
 
                     let mapper = MoviePreviewDetailsMapper()
                     let moviePreviews = movieData.map { moviePreview, imageCollection in
@@ -93,7 +92,7 @@ final class DefaultStreamWatchlistMoviesUseCase: StreamWatchlistMoviesUseCase {
 extension DefaultStreamWatchlistMoviesUseCase {
 
     private func fetchMovieData(
-        for watchlistMovies: [WatchlistMovie]
+        for watchlistMovies: Set<WatchlistMovie>
     ) async -> [(MoviePreview, ImageCollection?)] {
         await withTaskGroup(returning: [(MoviePreview, ImageCollection?)].self) { taskGroup in
             for watchlistMovie in watchlistMovies {
@@ -113,6 +112,7 @@ extension DefaultStreamWatchlistMoviesUseCase {
                         )
                         return [(watchlistMovie.createdAt, moviePreview, imageCollection)]
                     } catch {
+                        Self.logger.debug("Failed to fetch movie \(watchlistMovie.id): \(error)")
                         return []
                     }
                 }

@@ -6,7 +6,9 @@
 //
 
 import ComposableArchitecture
+import MovieCastAndCrewFeature
 import MovieDetailsFeature
+import MovieIntelligenceFeature
 import PersonDetailsFeature
 import SwiftUI
 import WatchlistFeature
@@ -34,8 +36,32 @@ struct WatchlistRootView: View {
                     store: store,
                     transitionNamespace: namespace
                 )
+            case .movieCastAndCrew(let store):
+                MovieCastAndCrewView(
+                    store: store,
+                    transitionNamespace: namespace
+                )
             }
         }
+        #if !os(macOS)
+        .fullScreenCover(
+            item: $store.scope(
+                state: \.movieIntelligence,
+                action: \.movieIntelligence
+            )
+        ) { store in
+            MovieChatView(store: store)
+        }
+        #else
+        .sheet(
+                    item: $store.scope(
+                        state: \.movieIntelligence,
+                        action: \.movieIntelligence
+                    )
+                ) { store in
+                    MovieChatView(store: store)
+                }
+        #endif
     }
 
     @ViewBuilder

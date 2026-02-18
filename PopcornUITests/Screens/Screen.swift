@@ -22,7 +22,10 @@ class Screen {
     }
 
     func assertScreenExists() {
-        XCTAssertTrue(uniqueElement.exists, "App is expecting to be on \(String(describing: type(of: self)))")
+        XCTAssertTrue(
+            uniqueElement.waitForExistence(timeout: 5),
+            "App is expecting to be on \(String(describing: type(of: self)))"
+        )
     }
 
     // MARK: - Scrolling

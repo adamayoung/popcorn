@@ -8,8 +8,11 @@
 import CoreDomain
 import Foundation
 import MoviesDomain
+import OSLog
 
 final class DefaultFetchWatchlistMoviesUseCase: FetchWatchlistMoviesUseCase {
+
+    private static let logger = Logger.moviesApplication
 
     private let movieRepository: any MovieRepository
     private let movieWatchlistRepository: any MovieWatchlistRepository
@@ -44,8 +47,7 @@ final class DefaultFetchWatchlistMoviesUseCase: FetchWatchlistMoviesUseCase {
             return []
         }
 
-        let sortedWatchlistMovies = watchlistMovies.sorted { $0.createdAt > $1.createdAt }
-        let movieData = await fetchMovieData(for: sortedWatchlistMovies)
+        let movieData = await fetchMovieData(for: watchlistMovies)
 
         let mapper = MoviePreviewDetailsMapper()
         return movieData.map { moviePreview, imageCollection in
@@ -62,7 +64,7 @@ final class DefaultFetchWatchlistMoviesUseCase: FetchWatchlistMoviesUseCase {
 extension DefaultFetchWatchlistMoviesUseCase {
 
     private func fetchMovieData(
-        for watchlistMovies: [WatchlistMovie]
+        for watchlistMovies: Set<WatchlistMovie>
     ) async -> [(MoviePreview, ImageCollection?)] {
         await withTaskGroup(returning: [(MoviePreview, ImageCollection?)].self) { taskGroup in
             for watchlistMovie in watchlistMovies {
@@ -81,6 +83,7 @@ extension DefaultFetchWatchlistMoviesUseCase {
                         )
                         return [(watchlistMovie.createdAt, moviePreview, imageCollection)]
                     } catch {
+                        Self.logger.debug("Failed to fetch movie \(watchlistMovie.id): \(error)")
                         return []
                     }
                 }

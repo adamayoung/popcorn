@@ -35,10 +35,14 @@ extension WatchlistClient: DependencyKey {
                 return AsyncThrowingStream<[MoviePreview], Error> { continuation in
                     let task = Task {
                         let mapper = MoviePreviewMapper()
-                        for try await moviePreviews in moviesStream {
-                            continuation.yield(moviePreviews.map(mapper.map))
+                        do {
+                            for try await moviePreviews in moviesStream {
+                                continuation.yield(moviePreviews.map(mapper.map))
+                            }
+                            continuation.finish()
+                        } catch {
+                            continuation.finish(throwing: error)
                         }
-                        continuation.finish()
                     }
                     continuation.onTermination = { _ in task.cancel() }
                 }
