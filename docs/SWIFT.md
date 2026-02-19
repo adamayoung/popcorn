@@ -30,6 +30,39 @@ final class MockTVSeriesRepository: TVSeriesRepository { ... }
 - Small, tightly-coupled types can share a file (e.g., an enum with its associated error type)
 - Extensions on the same type can share a file
 
+## Documentation Comments
+
+### Public Domain Entities
+
+All `public` types in domain and application layers (`*Domain`, `*Application`) must have `///` doc comments on the type itself and on each `public` property. Follow the pattern in `TVSeries.swift`:
+
+```swift
+///
+/// Represents a single season within a TV series in the domain model.
+///
+/// A `TVSeason` contains the metadata for an individual season of a show,
+/// including its identifier, display name, season number in the series,
+/// and an optional poster image path.
+///
+public struct TVSeason: Identifiable, Equatable, Sendable {
+
+    /// The unique identifier for the season.
+    public let id: Int
+
+    /// The localized display name of the season.
+    public let name: String
+
+    /// The season's number within its TV series (e.g., 1 for the first season).
+    public let seasonNumber: Int
+
+    /// URL path to the season's poster image, if available.
+    public let posterPath: URL?
+
+}
+```
+
+Internal types (feature-layer models, adapter mappers) do not require doc comments unless their purpose is non-obvious.
+
 ## Concurrency
 
 ### Strict Concurrency Mode

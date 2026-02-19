@@ -51,6 +51,36 @@ Label(
 )
 ```
 
+## Coordinator Views
+
+Navigation destinations in coordinator views (`ExploreRootView`, `SearchRootView`) must be extracted to `private func` helpers — never rendered inline in `switch` cases. This keeps both coordinators consistent and simplifies each case arm.
+
+```swift
+// Good — extracted helper
+destination: { store in
+    switch store.case {
+    case .tvSeasonDetails(let store):
+        tvSeasonDetails(store: store)
+    }
+}
+
+private func tvSeasonDetails(store: StoreOf<TVSeasonDetailsPlaceholder>) -> some View {
+    Text("Season \(store.seasonNumber)")
+        .navigationTitle("Season \(store.seasonNumber)")
+}
+
+// Bad — inline rendering
+destination: { store in
+    switch store.case {
+    case .tvSeasonDetails(let store):
+        Text("Season \(store.seasonNumber)")
+            .navigationTitle("Season \(store.seasonNumber)")
+    }
+}
+```
+
+When adding a new navigation destination, always update **both** `ExploreRootView` and `SearchRootView` with the same helper pattern.
+
 ## Platform-Specific Modifiers
 
 Use `#if` sparingly; prefer SwiftUI's built-in adaptivity.
