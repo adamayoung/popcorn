@@ -69,7 +69,7 @@
         }
       }
     },
-    "Season %lld" : {
+    "SEASON %lld" : {
       "comment" : "A view displaying the title of a TV series season. The single argument is the season number.",
       "localizations" : {
         "en" : {

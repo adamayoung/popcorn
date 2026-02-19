@@ -29,7 +29,7 @@ public struct TrendingPeopleView: View {
                 )
             }
         }
-        .navigationTitle("Trending")
+        .navigationTitle(Text("TRENDING", bundle: .module))
         .task {
             store.send(.loadTrendingPeople)
         }

@@ -123,6 +123,8 @@ struct {ScreenName}View: View {
 }
 ```
 
+Use SCREAMING_SNAKE_CASE keys for all user-facing strings. Build first, then add English values in `Localizable.xcstrings` — see [SWIFTUI.md § Localization](docs/SWIFTUI.md).
+
 ### 6. Add Navigation Enum Case to Source Feature
 
 In the feature that triggers navigation:

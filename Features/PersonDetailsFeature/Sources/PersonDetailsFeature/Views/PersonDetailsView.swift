@@ -30,12 +30,15 @@ public struct PersonDetailsView: View {
                 content(person: snapshot.person)
             case .error(let error):
                 ContentUnavailableView {
-                    Label("UNABLE_TO_LOAD", systemImage: "exclamationmark.triangle")
+                    Label(
+                        LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
+                        systemImage: "exclamationmark.triangle"
+                    )
                 } description: {
                     Text(error.message)
                 } actions: {
                     if error.isRetryable {
-                        Button("RETRY") {
+                        Button(LocalizedStringResource("RETRY", bundle: .module)) {
                             store.send(.fetch)
                         }
                         .buttonStyle(.bordered)

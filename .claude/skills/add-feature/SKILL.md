@@ -215,11 +215,20 @@ public struct {FeatureName}View: View {
         case .ready(let snapshot):
             ContentView(snapshot: snapshot)
         case .error(let error):
-            ContentUnavailableView("Error", systemImage: "exclamationmark.triangle", description: Text(error.message))
+            ContentUnavailableView {
+                Label(
+                    LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
+                    systemImage: "exclamationmark.triangle"
+                )
+            } description: {
+                Text(error.message)
+            }
         }
     }
 }
 ```
+
+Add string keys to `Localizable.xcstrings` — see [SWIFTUI.md § Localization](docs/SWIFTUI.md).
 
 ### 6. Add to Parent Feature's Path
 

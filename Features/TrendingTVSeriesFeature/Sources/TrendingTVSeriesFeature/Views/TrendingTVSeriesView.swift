@@ -29,7 +29,7 @@ public struct TrendingTVSeriesView: View {
                 )
             }
         }
-        .navigationTitle("Trending")
+        .navigationTitle(Text("TRENDING", bundle: .module))
         .task {
             store.send(.loadTrendingTVSeries)
         }
