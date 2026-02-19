@@ -13,7 +13,7 @@ struct FeatureFlagTests {
 
     @Test("allFlags contains expected count")
     func allFlagsContainsExpectedCount() {
-        #expect(FeatureFlag.allFlags.count == 16)
+        #expect(FeatureFlag.allFlags.count == 18)
     }
 
     @Test(
@@ -34,6 +34,8 @@ struct FeatureFlagTests {
             "movie_intelligence",
             "tv_series_intelligence",
             "watchlist",
+            "movie_details_cast_and_crew",
+            "movie_details_recommended_movies",
             "backdrop_focal_point"
         ]
     )

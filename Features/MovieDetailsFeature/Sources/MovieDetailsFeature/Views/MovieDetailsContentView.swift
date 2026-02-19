@@ -103,8 +103,10 @@ extension MovieDetailsContentView {
             }
             .padding(.bottom, 40)
 
-            castAndCrewCarousel
-                .padding(.bottom)
+            if !castMembers.isEmpty || !crewMembers.isEmpty {
+                castAndCrewCarousel
+                    .padding(.bottom)
+            }
 
             if !recommendedMovies.isEmpty {
                 recommendedMoviesCarousel

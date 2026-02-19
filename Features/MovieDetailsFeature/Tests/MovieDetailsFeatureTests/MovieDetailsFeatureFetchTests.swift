@@ -27,6 +27,8 @@ struct MovieDetailsFeatureFetchTests {
         ) {
             MovieDetailsFeature()
         } withDependencies: {
+            $0.movieDetailsClient.isCastAndCrewEnabled = { true }
+            $0.movieDetailsClient.isRecommendedMoviesEnabled = { true }
             $0.movieDetailsClient.fetchMovie = { id in
                 #expect(id == 123)
                 return movie
@@ -58,6 +60,8 @@ struct MovieDetailsFeatureFetchTests {
         ) {
             MovieDetailsFeature()
         } withDependencies: {
+            $0.movieDetailsClient.isCastAndCrewEnabled = { true }
+            $0.movieDetailsClient.isRecommendedMoviesEnabled = { true }
             $0.movieDetailsClient.fetchMovie = { _ in
                 throw TestError.generic
             }
@@ -94,6 +98,8 @@ struct MovieDetailsFeatureFetchTests {
         ) {
             MovieDetailsFeature()
         } withDependencies: {
+            $0.movieDetailsClient.isCastAndCrewEnabled = { true }
+            $0.movieDetailsClient.isRecommendedMoviesEnabled = { true }
             $0.movieDetailsClient.fetchMovie = { _ in movie }
             $0.movieDetailsClient.streamMovie = { _ in
                 AsyncThrowingStream { continuation in
