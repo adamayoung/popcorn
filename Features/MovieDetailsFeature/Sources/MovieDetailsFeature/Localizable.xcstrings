@@ -29,6 +29,17 @@
         }
       }
     },
+    "LOADING" : {
+      "comment" : "Accessibility label for a loading indicator.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading"
+          }
+        }
+      }
+    },
     "MOVIE_INTELLIGENCE" : {
       "comment" : "The title of a button that navigates to a view showing more information about a movie.",
       "localizations" : {
@@ -36,6 +47,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Movie Intelligence"
+          }
+        }
+      }
+    },
+    "VIEW_MOVIE_DETAILS_HINT" : {
+      "comment" : "Accessibility hint for a movie button, describing what happens when activated.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View movie details"
+          }
+        }
+      }
+    },
+    "VIEW_PERSON_DETAILS_HINT" : {
+      "comment" : "Accessibility hint for a person button, describing what happens when activated.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View person details"
           }
         }
       }

@@ -10,6 +10,8 @@ import SwiftUI
 
 struct PlotRemixGameStartView: View {
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var metadata: GameMetadata
     var progress: Float?
     var startGameAction: () -> Void
@@ -52,7 +54,7 @@ struct PlotRemixGameStartView: View {
     }
 
     private func loadingView(progress: Float) -> some View {
-        TimelineView(.animation(minimumInterval: 1.0 / 60.0)) { timeline in
+        TimelineView(.animation(minimumInterval: 1.0 / 60.0, paused: reduceMotion)) { timeline in
             let time = timeline.date.timeIntervalSinceReferenceDate
 
             VStack(spacing: 20) {
@@ -72,26 +74,28 @@ struct PlotRemixGameStartView: View {
                         .frame(width: 100, height: 100)
                         .rotationEffect(.degrees(-90))
 
-                    // Spinning gradient overlay
-                    Circle()
-                        .trim(from: 0, to: 0.1)
-                        .stroke(
-                            AngularGradient(
-                                colors: [Color.white, Color.white.opacity(0)],
-                                center: .center
-                            ),
-                            style: StrokeStyle(lineWidth: 4, lineCap: .round)
-                        )
-                        .frame(width: 100, height: 100)
-                        .rotationEffect(.degrees(time * 120))
+                    if !reduceMotion {
+                        // Spinning gradient overlay
+                        Circle()
+                            .trim(from: 0, to: 0.1)
+                            .stroke(
+                                AngularGradient(
+                                    colors: [Color.white, Color.white.opacity(0)],
+                                    center: .center
+                                ),
+                                style: StrokeStyle(lineWidth: 4, lineCap: .round)
+                            )
+                            .frame(width: 100, height: 100)
+                            .rotationEffect(.degrees(time * 120))
+                    }
 
-                    // Icon with pulse
+                    // Icon
                     Image(systemName: metadata.iconSystemName)
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 40, height: 40)
                         .foregroundStyle(Color.white)
-                        .scaleEffect(1.0 + sin(time * 2) * 0.1)
+                        .scaleEffect(reduceMotion ? 1.0 : 1.0 + sin(time * 2) * 0.1)
                 }
 
                 // Progress percentage
@@ -102,7 +106,7 @@ struct PlotRemixGameStartView: View {
                     .monospacedDigit()
             }
         }
-        .animation(.easeInOut(duration: 0.3), value: progress)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 0.3), value: progress)
     }
 
 }

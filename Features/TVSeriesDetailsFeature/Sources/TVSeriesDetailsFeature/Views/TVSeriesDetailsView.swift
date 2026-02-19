@@ -12,6 +12,7 @@ import TCAFoundation
 
 public struct TVSeriesDetailsView: View {
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Bindable private var store: StoreOf<TVSeriesDetailsFeature>
     private let namespace: Namespace.ID
 
@@ -62,7 +63,7 @@ public struct TVSeriesDetailsView: View {
             }
         }
         .contentTransition(.opacity)
-        .animation(.easeInOut(duration: 1), value: store.viewState.isReady)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 1), value: store.viewState.isReady)
         .overlay {
             if store.viewState.isLoading {
                 loadingBody
@@ -82,6 +83,7 @@ extension TVSeriesDetailsView {
 
     private var loadingBody: some View {
         ProgressView()
+            .accessibilityLabel(Text("LOADING", bundle: .module))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 

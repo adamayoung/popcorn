@@ -45,10 +45,12 @@ Quick navigation for SwiftUI accessibility topics.
 ### I need to...
 
 - **Add a label to an icon button** → `accessible-descriptions.md` (Accessibility Labels)
+- **Add a hint to a navigation button** → `accessible-descriptions.md` (When to Add Hints)
 - **Hide a decorative image from VoiceOver** → `accessible-descriptions.md` (Decorative Images)
 - **Group a card into one VoiceOver stop** → `accessible-grouping.md` (Accessibility Children Behavior)
 - **Make a custom control work with VoiceOver** → `accessible-controls.md` (Accessibility Traits, Actions)
-- **Make a carousel swipe-adjustable** → `accessible-controls.md` (Adjustable Controls)
+- **Make carousel items individually selectable** → `accessible-controls.md` (Per-Item Buttons)
+- **Make a carousel swipe-adjustable** → `accessible-controls.md` (Adjustable Single Element)
 - **Support Dynamic Type properly** → `accessible-appearance.md` (Dynamic Type)
 - **Check if reduce motion is on** → `accessible-appearance.md` (Motion Preferences)
 - **Move VoiceOver focus after a change** → `accessible-navigation.md` (Focus Management)
@@ -60,6 +62,8 @@ Quick navigation for SwiftUI accessibility topics.
 ### I'm getting a VoiceOver issue with...
 
 - **"Button" announced with no label** → `accessible-descriptions.md` (Accessibility Labels)
+- **Button says item name but not what it does** → `accessible-descriptions.md` (When to Add Hints)
+- **Carousel items not individually selectable** → `accessible-controls.md` (Per-Item Buttons) — don't use `.accessibilityElement()` on container
 - **Decorative image being read aloud** → `accessible-descriptions.md` (Decorative Images)
 - **Too many VoiceOver stops on a card** → `accessible-grouping.md` (.combine)
 - **Color-only status not conveyed** → `accessible-appearance.md` (Differentiate Without Color)

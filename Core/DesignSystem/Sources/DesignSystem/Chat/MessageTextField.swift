@@ -45,15 +45,14 @@ public struct MessageTextField: View {
                     Image(systemName: "paperplane.fill")
                         .fontWeight(.medium)
                         .foregroundStyle(.white)
-                        .frame(width: 32, height: 32)
+                        .frame(width: 44, height: 44)
                         .background(Color.accentColor, in: Circle())
                 }
+                .accessibilityLabel(Text("SEND_MESSAGE", bundle: .module))
                 .buttonStyle(.plain)
                 .contentShape(Circle())
                 .disabled(isDisabled || text.isEmpty)
                 .opacity(isDisabled || text.isEmpty ? 0.5 : 1.0)
-                .padding(.bottom, 6)
-                .padding(.trailing, 6)
             }
         }
         .focusEffectDisabled()

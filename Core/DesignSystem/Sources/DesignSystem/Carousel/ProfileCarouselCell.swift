@@ -69,6 +69,7 @@ public struct ProfileCarouselCell<CellLabel: View>: View {
                 .frame(width: width)
                 .frame(maxHeight: .infinity)
         }
+        .accessibilityElement(children: .combine)
     }
 
     private var profileImage: some View {

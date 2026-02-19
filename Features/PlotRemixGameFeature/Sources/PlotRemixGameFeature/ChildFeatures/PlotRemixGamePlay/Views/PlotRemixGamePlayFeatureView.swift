@@ -11,6 +11,7 @@ import SwiftUI
 
 public struct PlotRemixGamePlayFeatureView: View {
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Bindable private var store: StoreOf<PlotRemixGamePlayFeature>
 
     public init(store: StoreOf<PlotRemixGamePlayFeature>) {
@@ -79,7 +80,7 @@ extension PlotRemixGamePlayFeatureView {
             ProgressView(value: progress) {
                 Text("GENERATING_GAME", bundle: .module)
             }
-            .animation(.easeIn(duration: 3), value: progress)
+            .animation(reduceMotion ? nil : .easeIn(duration: 3), value: progress)
         }
     }
 

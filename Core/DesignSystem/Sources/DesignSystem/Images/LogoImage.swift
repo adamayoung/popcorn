@@ -30,6 +30,7 @@ public struct LogoImage: View {
             .resizable()
             .scaledToFit()
             .transition(.fade(duration: 2.0))
+            .accessibilityHidden(true)
     }
 
 }

@@ -21,6 +21,8 @@ public struct BackdropImage: View {
     /// The standard backdrop aspect ratio (16:9).
     private static let aspectRatio: CGFloat = 3840.0 / 2160.0
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     /// The URL of the backdrop image to display.
     private var url: URL?
 
@@ -77,6 +79,7 @@ public struct BackdropImage: View {
                     }
                 }
         }
+        .accessibilityHidden(true)
     }
 
     /// Enables focal point detection on the backdrop image.
@@ -150,8 +153,12 @@ extension BackdropImage {
 
             await MainActor.run {
                 if let offset { focalOffset = offset }
-                withAnimation(.easeIn(duration: 0.3)) {
+                if reduceMotion {
                     focalPointResolved = true
+                } else {
+                    withAnimation(.easeIn(duration: 0.3)) {
+                        focalPointResolved = true
+                    }
                 }
             }
         }

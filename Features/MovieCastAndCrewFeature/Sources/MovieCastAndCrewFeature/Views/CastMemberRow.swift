@@ -28,6 +28,7 @@ struct CastMemberRow: View {
 
             Spacer()
         }
+        .accessibilityElement(children: .combine)
         .contentShape(Rectangle())
     }
 

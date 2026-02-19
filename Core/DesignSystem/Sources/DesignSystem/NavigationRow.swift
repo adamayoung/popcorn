@@ -9,6 +9,8 @@ import SwiftUI
 
 public struct NavigationRow<Content: View>: View {
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     private let action: () -> Void
     @ViewBuilder
     private let content: Content
@@ -31,6 +33,7 @@ public struct NavigationRow<Content: View>: View {
                 Image(systemName: "chevron.right")
                     .foregroundColor(.secondary)
                     .imageScale(.small)
+                    .accessibilityHidden(true)
             }
             .padding(.vertical, 8)
             .contentShape(Rectangle())
@@ -44,8 +47,12 @@ public struct NavigationRow<Content: View>: View {
         .onLongPressGesture(
             minimumDuration: 0.01,
             pressing: { pressing in
-                withAnimation(.easeOut(duration: 0.15)) {
+                if reduceMotion {
                     isPressed = pressing
+                } else {
+                    withAnimation(.easeOut(duration: 0.15)) {
+                        isPressed = pressing
+                    }
                 }
             },
             perform: {}

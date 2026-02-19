@@ -51,6 +51,7 @@ Common VoiceOver/accessibility errors and the next best move:
 - **Color-only indicator not conveyed** → `references/accessible-appearance.md` — pair with icon/text, check `accessibilityDifferentiateWithoutColor`
 - **Custom control not interactive for VoiceOver** → `references/accessible-controls.md` — add correct traits and actions
 - **VoiceOver reads elements in wrong order** → `references/accessible-navigation.md` — use `accessibilitySortPriority`
+- **Button says item name but no action context** → `references/accessible-descriptions.md` — add `accessibilityHint` describing the navigation destination or result
 - **Animations don't respect reduce motion** → `references/accessible-appearance.md` — check `accessibilityReduceMotion`, provide fade alternative
 - **Focus not moving after content change** → `references/accessible-navigation.md` — use `@AccessibilityFocusState` or post `AccessibilityNotification`
 
@@ -90,24 +91,28 @@ HStack {
 .accessibilityElement(children: isEditing ? .contain : .combine)
 ```
 
-### Adjustable Control (Carousel)
+### Carousel with Per-Item Buttons and Hints
+
+Use when each carousel item navigates to its own destination. Each item is an independent VoiceOver stop.
 
 ```swift
-Carousel(items: movies, selectedIndex: $selectedIndex)
-    .accessibilityElement()
-    .accessibilityLabel("Movie carousel")
-    .accessibilityValue("\(movies[selectedIndex].title), \(selectedIndex + 1) of \(movies.count)")
-    .accessibilityAdjustableAction { direction in
-        switch direction {
-        case .increment:
-            selectedIndex = min(selectedIndex + 1, movies.count - 1)
-        case .decrement:
-            selectedIndex = max(selectedIndex - 1, 0)
-        @unknown default:
-            break
+Carousel {
+    ForEach(Array(movies.enumerated()), id: \.offset) { offset, movie in
+        Button {
+            didSelectMovie(movie.id)
+        } label: {
+            MovieCard(movie: movie)
         }
+        .accessibilityIdentifier("carousel.movie.\(offset)")
+        .accessibilityLabel(movie.title)
+        .accessibilityHint("View movie details")
+        .buttonStyle(.plain)
     }
+}
+.accessibilityIdentifier("movies.carousel")
 ```
+
+> **Warning**: Do NOT use `.accessibilityElement()` on the carousel container when items should be individually tappable — it collapses all children into one opaque element.
 
 ### Checking Reduce Motion
 
@@ -133,9 +138,10 @@ AsyncImage(url: posterURL)
 
 ### Labels & Descriptions
 - [ ] Every interactive element has a meaningful `accessibilityLabel`
+- [ ] Navigation buttons with item-name labels have an `accessibilityHint` describing the destination
 - [ ] Decorative images use `Image(decorative:)` or `.accessibilityHidden(true)`
 - [ ] Labels describe purpose, not appearance
-- [ ] Labels are localized
+- [ ] Labels and hints are localized
 
 ### Traits & Roles
 - [ ] Semantic controls used (`Button`, `Toggle`, not `onTapGesture` on `Text`)

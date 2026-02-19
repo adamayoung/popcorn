@@ -15,6 +15,8 @@ import SwiftUI
 // swiftlint:disable identifier_name
 public struct AnimatedMeshBackground: View {
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     private var baseColor: Color
 
     private let basePositions: [SIMD2<Float>] = [
@@ -28,9 +30,9 @@ public struct AnimatedMeshBackground: View {
     }
 
     public var body: some View {
-        TimelineView(.animation) { timeline in
+        TimelineView(.animation(paused: reduceMotion)) { timeline in
             let t = timeline.date.timeIntervalSince1970
-            let positions = animatedPositions(at: t)
+            let positions = reduceMotion ? basePositions : animatedPositions(at: t)
 
             MeshGradient(
                 width: 3,
@@ -43,6 +45,7 @@ public struct AnimatedMeshBackground: View {
                 ]
             )
         }
+        .accessibilityHidden(true)
     }
 
     private func animatedPositions(at time: TimeInterval) -> [SIMD2<Float>] {

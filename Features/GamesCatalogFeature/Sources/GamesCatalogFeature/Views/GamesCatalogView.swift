@@ -64,6 +64,7 @@ extension GamesCatalogView {
 
     private var loadingBody: some View {
         ProgressView()
+            .accessibilityLabel(Text("LOADING", bundle: .module))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
@@ -75,6 +76,7 @@ extension GamesCatalogView {
                 } label: {
                     card(for: game)
                 }
+                .accessibilityLabel(Text(verbatim: game.name))
                 .matchedTransitionSource(id: game.id, in: namespace)
             }
         }

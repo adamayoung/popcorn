@@ -79,10 +79,11 @@ public struct BackdropCarouselCell<CellLabel: View>: View {
                 .frame(width: width)
                 .frame(maxHeight: .infinity)
         }
+        .accessibilityElement(children: .combine)
         #if os(visionOS)
-        .padding(20)
-        .contentShape(.hoverEffect, .rect(cornerRadius: 30))
-        .hoverEffect()
+            .padding(20)
+            .contentShape(.hoverEffect, .rect(cornerRadius: 30))
+            .hoverEffect()
         #endif
     }
 

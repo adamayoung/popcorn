@@ -12,6 +12,17 @@
         }
       }
     },
+    "LOADING" : {
+      "comment" : "Accessibility label for a loading indicator.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading"
+          }
+        }
+      }
+    },
     "RETRY" : {
       "comment" : "The text on a button that triggers a retry action.",
       "localizations" : {
