@@ -74,16 +74,20 @@ extension TVSeriesDetailsContentView {
 
     private var seasonsCarousel: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("SEASONS", bundle: .module)
-                .font(.title2)
-                .fontWeight(.bold)
-                .padding(.horizontal)
+            sectionHeader("SEASONS")
 
             SeasonsCarousel(
                 seasons: tvSeries.seasons,
                 didSelectSeason: didSelectSeason
             )
         }
+    }
+
+    private func sectionHeader(_ key: LocalizedStringKey) -> some View {
+        Text(key, bundle: .module)
+            .font(.title2)
+            .fontWeight(.bold)
+            .padding(.horizontal)
     }
 
 }
