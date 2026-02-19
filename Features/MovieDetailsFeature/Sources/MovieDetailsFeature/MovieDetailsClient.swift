@@ -21,6 +21,8 @@ struct MovieDetailsClient: Sendable {
 
     var isWatchlistEnabled: @Sendable () throws -> Bool
     var isIntelligenceEnabled: @Sendable () throws -> Bool
+    var isCastAndCrewEnabled: @Sendable () throws -> Bool
+    var isRecommendedMoviesEnabled: @Sendable () throws -> Bool
     var isBackdropFocalPointEnabled: @Sendable () throws -> Bool
 
 }
@@ -78,6 +80,12 @@ extension MovieDetailsClient: DependencyKey {
             isIntelligenceEnabled: {
                 featureFlags.isEnabled(.movieIntelligence)
             },
+            isCastAndCrewEnabled: {
+                featureFlags.isEnabled(.movieDetailsCastAndCrew)
+            },
+            isRecommendedMoviesEnabled: {
+                featureFlags.isEnabled(.movieDetailsRecommendedMovies)
+            },
             isBackdropFocalPointEnabled: {
                 featureFlags.isEnabled(.backdropFocalPoint)
             }
@@ -104,6 +112,8 @@ extension MovieDetailsClient: DependencyKey {
             toggleOnWatchlist: { _ in },
             isWatchlistEnabled: { true },
             isIntelligenceEnabled: { true },
+            isCastAndCrewEnabled: { true },
+            isRecommendedMoviesEnabled: { true },
             isBackdropFocalPointEnabled: { true }
         )
     }

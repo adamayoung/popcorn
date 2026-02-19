@@ -151,17 +151,23 @@ extension MovieDetailsFeature {
         .run { [state, client] send in
             Self.logger.info("User fetching movie details")
 
-            async let movie = client.fetchMovie(id: state.movieID)
-            async let recommendedMovies = client.fetchRecommendedMovies(movieID: state.movieID)
-            async let credits = client.fetchCredits(movieID: state.movieID)
+            let isCastAndCrewEnabled = (try? client.isCastAndCrewEnabled()) ?? false
+            let isRecommendedMoviesEnabled = (try? client.isRecommendedMoviesEnabled()) ?? false
 
             let viewSnapshot: ViewSnapshot
             do {
+                async let movie = client.fetchMovie(id: state.movieID)
+                async let recommendedMovies = isRecommendedMoviesEnabled
+                    ? client.fetchRecommendedMovies(movieID: state.movieID) : []
+                async let credits = isCastAndCrewEnabled
+                    ? client.fetchCredits(movieID: state.movieID) : nil
+
+                let resolvedCredits = try await credits
                 viewSnapshot = try await ViewSnapshot(
                     movie: movie,
                     recommendedMovies: recommendedMovies,
-                    castMembers: credits.castMembers,
-                    crewMembers: credits.crewMembers
+                    castMembers: resolvedCredits?.castMembers ?? [],
+                    crewMembers: resolvedCredits?.crewMembers ?? []
                 )
             } catch {
                 await send(.loadFailed(ViewStateError(error)))
