@@ -6,7 +6,6 @@
 //
 
 import ComposableArchitecture
-import Foundation
 
 @Reducer
 struct TVSeasonDetailsPlaceholder {
