@@ -54,7 +54,7 @@ public struct MediaSearchView: View {
 
     private func genresContent(_ genres: [Genre]) -> some View {
         Section {
-            Text("Genres...")
+            Text("GENRES_PLACEHOLDER", bundle: .module)
         }
     }
 

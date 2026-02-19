@@ -87,4 +87,43 @@ struct TVSeriesDetailsMapperTests {
         #expect(result.logoURLSet == nil)
     }
 
+    @Test("map includes seasons in TV series details")
+    func map_includesSeasonsInTVSeriesDetails() {
+        let season1 = TVSeason.mock(
+            id: 77680,
+            name: "Season 1",
+            seasonNumber: 1,
+            posterPath: URL(string: "/poster1.jpg")
+        )
+        let season2 = TVSeason.mock(
+            id: 77681,
+            name: "Season 2",
+            seasonNumber: 2,
+            posterPath: URL(string: "/poster2.jpg")
+        )
+        let tvSeries = TVSeries.mock(seasons: [season1, season2])
+        let imageCollection = ImageCollection(id: tvSeries.id, posterPaths: [], backdropPaths: [], logoPaths: [])
+        let mapper = TVSeriesDetailsMapper()
+
+        let result = mapper.map(tvSeries, imageCollection: imageCollection, imagesConfiguration: imagesConfiguration)
+
+        #expect(result.seasons.count == 2)
+        #expect(result.seasons[0].id == 77680)
+        #expect(result.seasons[0].name == "Season 1")
+        #expect(result.seasons[0].seasonNumber == 1)
+        #expect(result.seasons[1].id == 77681)
+        #expect(result.seasons[1].seasonNumber == 2)
+    }
+
+    @Test("map returns empty seasons when TV series has no seasons")
+    func map_returnsEmptySeasonsWhenNoSeasons() {
+        let tvSeries = TVSeries.mock(seasons: [])
+        let imageCollection = ImageCollection(id: tvSeries.id, posterPaths: [], backdropPaths: [], logoPaths: [])
+        let mapper = TVSeriesDetailsMapper()
+
+        let result = mapper.map(tvSeries, imageCollection: imageCollection, imagesConfiguration: imagesConfiguration)
+
+        #expect(result.seasons.isEmpty)
+    }
+
 }

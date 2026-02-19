@@ -2,6 +2,7 @@
   "sourceLanguage" : "en",
   "strings" : {
     "NO_WATCHLIST_MOVIES" : {
+      "comment" : "A title displayed when there are no movies in the watchlist.",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -12,6 +13,7 @@
       }
     },
     "NO_WATCHLIST_MOVIES_DESCRIPTION" : {
+      "comment" : "A description displayed when there are no movies in the watchlist.",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -22,6 +24,7 @@
       }
     },
     "RETRY" : {
+      "comment" : "The label of a button that triggers a retry action.",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -32,16 +35,18 @@
       }
     },
     "UNABLE_TO_LOAD" : {
+      "comment" : "A label describing an error when the watchlist cannot be loaded.",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Unable to load"
+            "value" : "Unable to Load"
           }
         }
       }
     },
     "WATCHLIST" : {
+      "comment" : "The navigation title for the watchlist screen.",
       "localizations" : {
         "en" : {
           "stringUnit" : {

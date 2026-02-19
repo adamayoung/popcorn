@@ -37,12 +37,15 @@ public struct ExploreView: View {
 
             case .error(let error):
                 ContentUnavailableView {
-                    Label("UNABLE_TO_LOAD", systemImage: "exclamationmark.triangle")
+                    Label(
+                        LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
+                        systemImage: "exclamationmark.triangle"
+                    )
                 } description: {
                     Text(error.message)
                 } actions: {
                     if error.isRetryable {
-                        Button("RETRY") {
+                        Button(LocalizedStringResource("RETRY", bundle: .module)) {
                             store.send(.load)
                         }
                         .buttonStyle(.bordered)

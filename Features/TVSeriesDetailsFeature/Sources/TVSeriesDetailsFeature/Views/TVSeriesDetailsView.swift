@@ -30,12 +30,15 @@ public struct TVSeriesDetailsView: View {
                 content(tvSeries: snapshot.tvSeries)
             case .error(let error):
                 ContentUnavailableView {
-                    Label("UNABLE_TO_LOAD", systemImage: "exclamationmark.triangle")
+                    Label(
+                        LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
+                        systemImage: "exclamationmark.triangle"
+                    )
                 } description: {
                     Text(error.message)
                 } actions: {
                     if error.isRetryable {
-                        Button("RETRY") {
+                        Button(LocalizedStringResource("RETRY", bundle: .module)) {
                             store.send(.fetch)
                         }
                         .buttonStyle(.bordered)
@@ -50,7 +53,7 @@ public struct TVSeriesDetailsView: View {
             if case .ready(let snapshot) = store.viewState, store.isIntelligenceEnabled {
                 ToolbarItem(placement: .primaryAction) {
                     Button(
-                        "Intelligence",
+                        LocalizedStringResource("INTELLIGENCE", bundle: .module),
                         systemImage: "apple.intelligence"
                     ) {
                         store.send(.navigate(.tvSeriesIntelligence(id: snapshot.tvSeries.id)))
@@ -82,52 +85,14 @@ extension TVSeriesDetailsView {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    @ViewBuilder
     private func content(tvSeries: TVSeries) -> some View {
-        StretchyHeaderScrollView(
-            header: { header(tvSeries: tvSeries) },
-            headerOverlay: { headerOverlay(tvSeries: tvSeries) },
-            content: { body(tvSeries: tvSeries) }
+        TVSeriesDetailsContentView(
+            tvSeries: tvSeries,
+            isBackdropFocalPointEnabled: store.isBackdropFocalPointEnabled,
+            didSelectSeason: { seasonNumber in
+                store.send(.navigate(.seasonDetails(tvSeriesID: tvSeries.id, seasonNumber: seasonNumber)))
+            }
         )
-        .navigationTitle(tvSeries.name)
-        #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
-        #endif
-    }
-
-    @ViewBuilder
-    private func header(tvSeries: TVSeries) -> some View {
-        backdropImage(url: tvSeries.backdropURL)
-            .flexibleHeaderContent(height: 600)
-        #if os(macOS)
-            .backgroundExtensionEffect()
-        #endif
-    }
-
-    @ViewBuilder
-    private func backdropImage(url: URL?) -> some View {
-        let image = BackdropImage(url: url)
-        if store.isBackdropFocalPointEnabled {
-            image.focalPointAlignment()
-        } else {
-            image
-        }
-    }
-
-    private func headerOverlay(tvSeries: TVSeries) -> some View {
-        LogoImage(url: tvSeries.logoURL)
-            .padding(.bottom, 20)
-            .frame(maxWidth: 300, maxHeight: 150, alignment: .bottom)
-    }
-
-    private func body(tvSeries: TVSeries) -> some View {
-        VStack(alignment: .leading) {
-            Text(verbatim: tvSeries.overview)
-                .multilineTextAlignment(.leading)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal)
-        }
-        .padding(.bottom)
     }
 
 }

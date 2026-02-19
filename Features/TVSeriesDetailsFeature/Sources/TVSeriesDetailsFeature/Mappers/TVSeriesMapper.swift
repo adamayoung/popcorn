@@ -10,6 +10,8 @@ import TVSeriesApplication
 
 struct TVSeriesMapper {
 
+    private let tvSeasonPreviewMapper = TVSeasonPreviewMapper()
+
     func map(_ tvSeriesDetails: TVSeriesDetails) -> TVSeries {
         TVSeries(
             id: tvSeriesDetails.id,
@@ -17,7 +19,8 @@ struct TVSeriesMapper {
             overview: tvSeriesDetails.overview,
             posterURL: tvSeriesDetails.posterURLSet?.detail,
             backdropURL: tvSeriesDetails.backdropURLSet?.full,
-            logoURL: tvSeriesDetails.logoURLSet?.detail
+            logoURL: tvSeriesDetails.logoURLSet?.detail,
+            seasons: tvSeriesDetails.seasons.map(tvSeasonPreviewMapper.map)
         )
     }
 

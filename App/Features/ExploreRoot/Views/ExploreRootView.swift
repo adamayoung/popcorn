@@ -35,6 +35,8 @@ struct ExploreRootView: View {
                 movieDetails(store: store)
             case .tvSeriesDetails(let store):
                 tvSeriesDetails(store: store)
+            case .tvSeasonDetails(let store):
+                tvSeasonDetails(store: store)
             case .personDetails(let store):
                 personDetails(store: store)
             case .movieCastAndCrew(let store):
@@ -124,6 +126,11 @@ struct ExploreRootView: View {
                 transitionNamespace: namespace
             )
         }
+    }
+
+    private func tvSeasonDetails(store: StoreOf<TVSeasonDetailsPlaceholder>) -> some View {
+        Text("SEASON \(store.seasonNumber)")
+            .navigationTitle(Text("SEASON \(store.seasonNumber)"))
     }
 
     private func movieCastAndCrew(store: StoreOf<MovieCastAndCrewFeature>) -> some View {

@@ -31,6 +31,7 @@ struct ExploreRootFeature {
     enum Path {
         case movieDetails(MovieDetailsFeature)
         case tvSeriesDetails(TVSeriesDetailsFeature)
+        case tvSeasonDetails(TVSeasonDetailsPlaceholder)
         case personDetails(PersonDetailsFeature)
         case movieCastAndCrew(MovieCastAndCrewFeature)
     }
@@ -90,6 +91,13 @@ struct ExploreRootFeature {
                 return .none
             case .path(.element(_, .tvSeriesDetails(.navigate(.tvSeriesIntelligence(let id))))):
                 state.tvSeriesIntelligence = TVSeriesIntelligenceFeature.State(tvSeriesID: id)
+                return .none
+            case .path(.element(_, .tvSeriesDetails(.navigate(.seasonDetails(let tvSeriesID, let seasonNumber))))):
+                state.path.append(
+                    .tvSeasonDetails(
+                        TVSeasonDetailsPlaceholder.State(tvSeriesID: tvSeriesID, seasonNumber: seasonNumber)
+                    )
+                )
                 return .none
             default:
                 return .none

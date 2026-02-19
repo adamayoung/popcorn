@@ -15,6 +15,7 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
     public let posterURL: URL?
     public let backdropURL: URL?
     public let logoURL: URL?
+    public let seasons: [TVSeasonPreview]
 
     public init(
         id: Int,
@@ -22,7 +23,8 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
         overview: String,
         posterURL: URL? = nil,
         backdropURL: URL? = nil,
-        logoURL: URL? = nil
+        logoURL: URL? = nil,
+        seasons: [TVSeasonPreview] = []
     ) {
         self.id = id
         self.name = name
@@ -30,6 +32,7 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
         self.posterURL = posterURL
         self.backdropURL = backdropURL
         self.logoURL = logoURL
+        self.seasons = seasons
     }
 
 }
@@ -49,7 +52,33 @@ extension TVSeries {
             backdropURL: URL(
                 string: "https://image.tmdb.org/t/p/w1280/56v2KjBlU4XaOv9rVYEQypROD7P.jpg"
             ),
-            logoURL: URL(string: "https://image.tmdb.org/t/p/w500/uyVM5qGksUzCgwo6UU0UrHex8Oj.png")
+            logoURL: URL(string: "https://image.tmdb.org/t/p/w500/uyVM5qGksUzCgwo6UU0UrHex8Oj.png"),
+            seasons: [
+                TVSeasonPreview(
+                    id: 77680,
+                    seasonNumber: 1,
+                    name: "Season 1",
+                    posterURL: URL(string: "https://image.tmdb.org/t/p/w780/fOaUnQwDJV22esXEswhaDMSqn2w.jpg")
+                ),
+                TVSeasonPreview(
+                    id: 83248,
+                    seasonNumber: 2,
+                    name: "Stranger Things 2",
+                    posterURL: URL(string: "https://image.tmdb.org/t/p/w780/74nFJmiapxKuUBXRbSu6VqGGcuo.jpg")
+                ),
+                TVSeasonPreview(
+                    id: 96710,
+                    seasonNumber: 3,
+                    name: "Stranger Things 3",
+                    posterURL: URL(string: "https://image.tmdb.org/t/p/w780/cfsvLCFv3Axm0DdBfg2GRXP6kes.jpg")
+                ),
+                TVSeasonPreview(
+                    id: 131_987,
+                    seasonNumber: 4,
+                    name: "Stranger Things 4",
+                    posterURL: URL(string: "https://image.tmdb.org/t/p/w780/49WJfeN0moxb9IPfGn8AIqMGskD.jpg")
+                )
+            ]
         )
     }
     // swiftlint:enable line_length

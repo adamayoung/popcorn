@@ -20,7 +20,8 @@ extension TVSeries {
         """,
         firstAirDate: Date = Date(timeIntervalSince1970: 1_200_528_000),
         posterPath: URL? = URL(string: "/poster.jpg"),
-        backdropPath: URL? = URL(string: "/backdrop.jpg")
+        backdropPath: URL? = URL(string: "/backdrop.jpg"),
+        seasons: [TVSeason] = []
     ) -> TVSeries {
         TVSeries(
             id: id,
@@ -28,7 +29,8 @@ extension TVSeries {
             overview: overview,
             firstAirDate: firstAirDate,
             posterPath: posterPath,
-            backdropPath: backdropPath
+            backdropPath: backdropPath,
+            seasons: seasons
         )
     }
 

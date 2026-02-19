@@ -47,7 +47,7 @@ public struct TrendingMoviesView: View {
                 ProgressView()
             }
         }
-        .navigationTitle("Trending")
+        .navigationTitle(Text("TRENDING", bundle: .module))
         .task {
             store.send(.loadTrendingMovies)
         }

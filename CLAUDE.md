@@ -237,6 +237,8 @@ See [docs/TMDB_MAPPING.md](docs/TMDB_MAPPING.md) for the complete TMDb type refe
 
 Detailed guides: [SWIFT.md](docs/SWIFT.md) · [SWIFTUI.md](docs/SWIFTUI.md) · [SWIFTDATA.md](docs/SWIFTDATA.md) · [TCA.md](docs/TCA.md) · [GIT.md](docs/GIT.md) · [UITESTING.md](docs/UITESTING.md)
 
+Localization: [SWIFTUI.md § Localization](docs/SWIFTUI.md) — SCREAMING_SNAKE_CASE keys, build-first workflow, `bundle: .module` in packages
+
 ### Project-Specific Rules
 
 - When adding or removing feature flags in a Client/Reducer, always update the corresponding `*FeatureFlagsTests` (all existing tests and add new ones for the flag)
