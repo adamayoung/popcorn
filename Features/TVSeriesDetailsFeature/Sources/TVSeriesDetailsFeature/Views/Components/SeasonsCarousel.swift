@@ -28,6 +28,7 @@ struct SeasonsCarousel: View {
                 }
                 .accessibilityIdentifier("tv-series-details.seasons.\(season.seasonNumber)")
                 .accessibilityLabel(season.name)
+                .accessibilityHint(Text("VIEW_SEASON_DETAILS_HINT", bundle: .module))
                 .buttonStyle(.plain)
                 .fixedSize(horizontal: true, vertical: false)
             }

@@ -56,13 +56,11 @@ extension TVSeriesDetailsContentView {
 
     private var content: some View {
         LazyVStack(alignment: .leading, spacing: 10) {
-            Section {
-                Text(verbatim: tvSeries.overview)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding(.horizontal)
-            }
-            .padding(.bottom, 40)
+            Text(verbatim: tvSeries.overview)
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
+                .padding(.horizontal)
+                .padding(.bottom, 40)
 
             if !tvSeries.seasons.isEmpty {
                 seasonsCarousel

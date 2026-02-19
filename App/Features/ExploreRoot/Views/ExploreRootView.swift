@@ -130,7 +130,7 @@ struct ExploreRootView: View {
 
     private func tvSeasonDetails(store: StoreOf<TVSeasonDetailsPlaceholder>) -> some View {
         Text("Season \(store.seasonNumber)")
-            .navigationTitle("Season \(store.seasonNumber)")
+            .navigationTitle(Text("Season \(store.seasonNumber)"))
     }
 
     private func movieCastAndCrew(store: StoreOf<MovieCastAndCrewFeature>) -> some View {
