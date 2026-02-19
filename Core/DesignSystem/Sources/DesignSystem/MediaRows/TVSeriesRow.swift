@@ -50,6 +50,7 @@ public struct TVSeriesRow: View {
 
             Text(verbatim: name)
         }
+        .accessibilityElement(children: .combine)
     }
 
 }

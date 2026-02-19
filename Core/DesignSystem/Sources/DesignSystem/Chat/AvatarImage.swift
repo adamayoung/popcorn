@@ -19,6 +19,7 @@ struct AvatarImage: View {
                 Circle().fill(role.bubbleColour.opacity(0.4))
             )
             .symbolRenderingMode(.multicolor)
+            .accessibilityHidden(true)
     }
 }
 

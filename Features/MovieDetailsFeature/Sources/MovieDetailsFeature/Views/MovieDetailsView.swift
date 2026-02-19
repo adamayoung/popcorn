@@ -12,6 +12,7 @@ import TCAFoundation
 
 public struct MovieDetailsView: View {
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Bindable private var store: StoreOf<MovieDetailsFeature>
 
     public init(store: StoreOf<MovieDetailsFeature>) {
@@ -41,7 +42,7 @@ public struct MovieDetailsView: View {
                             store.send(.toggleOnWatchlist)
                         }
                         .contentTransition(.symbolEffect(.replace))
-                        .animation(.default, value: snapshot.movie.isOnWatchlist)
+                        .animation(reduceMotion ? nil : .default, value: snapshot.movie.isOnWatchlist)
                         .sensoryFeedback(.selection, trigger: snapshot.movie.isOnWatchlist)
                     }
                 }
@@ -59,7 +60,7 @@ public struct MovieDetailsView: View {
             }
         }
         .contentTransition(.opacity)
-        .animation(.easeInOut(duration: 1), value: store.viewState.isReady)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 1), value: store.viewState.isReady)
         .overlay {
             if store.viewState.isLoading {
                 loadingBody
@@ -87,6 +88,7 @@ extension MovieDetailsView {
 
     private var loadingBody: some View {
         ProgressView()
+            .accessibilityLabel(Text("LOADING", bundle: .module))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 

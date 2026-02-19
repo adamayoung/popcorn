@@ -72,6 +72,7 @@ extension ExploreView {
 
     private var loadingBody: some View {
         ProgressView()
+            .accessibilityLabel(Text("LOADING", bundle: .module))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
@@ -109,6 +110,7 @@ extension ExploreView {
             Text("DISCOVER_MOVIES", bundle: .module)
                 .font(.title2)
                 .bold()
+                .accessibilityAddTraits(.isHeader)
         }
         .padding(.horizontal)
         .padding(.vertical, 0)
@@ -132,6 +134,7 @@ extension ExploreView {
             Text("TRENDING_MOVIES", bundle: .module)
                 .font(.title2)
                 .bold()
+                .accessibilityAddTraits(.isHeader)
         }
         .padding(.horizontal)
         .padding(.vertical, 0)
@@ -155,6 +158,7 @@ extension ExploreView {
             Text("POPULAR_MOVIES", bundle: .module)
                 .font(.title2)
                 .bold()
+                .accessibilityAddTraits(.isHeader)
         }
         .padding(.horizontal)
         .padding(.vertical, 0)
@@ -178,6 +182,7 @@ extension ExploreView {
             Text("TRENDING_TV_SERIES", bundle: .module)
                 .font(.title2)
                 .bold()
+                .accessibilityAddTraits(.isHeader)
         }
         .padding(.horizontal)
         .padding(.vertical, 0)
@@ -201,6 +206,7 @@ extension ExploreView {
             Text("TRENDING_PEOPLE", bundle: .module)
                 .font(.title2)
                 .bold()
+                .accessibilityAddTraits(.isHeader)
         }
         .padding(.horizontal)
         .padding(.vertical, 0)

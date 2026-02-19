@@ -42,6 +42,7 @@ public struct PosterImage: View {
                 .frame(width: proxy.size.width, height: proxy.size.height)
                 .background(Color.secondary.opacity(0.1))
         }
+        .accessibilityHidden(true)
     }
 
     /// Sets the poster image height and automatically calculates the width to maintain aspect ratio.

@@ -15,7 +15,7 @@ struct RecommendedCarousel: View {
 
     var body: some View {
         Carousel {
-            ForEach(movies) { movie in
+            ForEach(Array(movies.enumerated()), id: \.offset) { offset, movie in
                 Button {
                     didSelectMovie(movie.id)
                 } label: {
@@ -26,10 +26,14 @@ struct RecommendedCarousel: View {
                         EmptyView()
                     }
                 }
+                .accessibilityIdentifier("movie-details.recommended.movie.\(offset)")
+                .accessibilityLabel(Text(verbatim: movie.title))
+                .accessibilityHint(Text("VIEW_MOVIE_DETAILS_HINT", bundle: .module))
                 .buttonStyle(.plain)
                 .fixedSize(horizontal: true, vertical: false)
             }
         }
+        .accessibilityIdentifier("movie-details.recommended.carousel")
         .contentMargins([.leading, .trailing], 16)
     }
 

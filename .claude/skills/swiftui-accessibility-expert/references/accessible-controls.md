@@ -147,34 +147,9 @@ PlayerView()
 
 ## Adjustable Controls
 
-For elements with incrementable/decrementable values (pickers, steppers, carousels):
+For elements with incrementable/decrementable values (pickers, steppers, carousels treated as a single control):
 
 ```swift
-// ✅ Carousel with adjustable action
-struct Carousel: View {
-    @State private var selectedIndex = 0
-    let items: [Item]
-
-    var body: some View {
-        ScrollView(.horizontal) {
-            // carousel content
-        }
-        .accessibilityElement()
-        .accessibilityLabel("Movie carousel")
-        .accessibilityValue("\(items[selectedIndex].title), \(selectedIndex + 1) of \(items.count)")
-        .accessibilityAdjustableAction { direction in
-            switch direction {
-            case .increment:
-                selectedIndex = min(selectedIndex + 1, items.count - 1)
-            case .decrement:
-                selectedIndex = max(selectedIndex - 1, 0)
-            @unknown default:
-                break
-            }
-        }
-    }
-}
-
 // ✅ Custom stepper
 CustomStepper(value: $quantity, range: 1...10)
     .accessibilityLabel("Quantity")
@@ -189,6 +164,58 @@ CustomStepper(value: $quantity, range: 1...10)
             break
         }
     }
+```
+
+### Carousel Accessibility: Two Patterns
+
+Choose between two patterns depending on whether carousel items should be individually selectable.
+
+#### Pattern 1: Per-Item Buttons (Individually Selectable)
+
+Use when each item is a tappable button navigating to its own destination. Each item is a separate VoiceOver stop with its own label, hint, and identifier.
+
+```swift
+// ✅ Each item is independently selectable — users can tap any item directly
+Carousel {
+    ForEach(Array(movies.enumerated()), id: \.offset) { offset, movie in
+        Button {
+            didSelectMovie(movie.id)
+        } label: {
+            MovieCard(movie: movie)
+        }
+        .accessibilityIdentifier("carousel.movie.\(offset)")
+        .accessibilityLabel(movie.title)
+        .accessibilityHint("View movie details")
+        .buttonStyle(.plain)
+    }
+}
+.accessibilityIdentifier("movies.carousel")
+```
+
+#### Pattern 2: Adjustable Single Element
+
+Use when the carousel is a single control (like a page indicator or image gallery) where only one item is active at a time.
+
+> **Warning**: `.accessibilityElement()` on a container makes all children invisible to VoiceOver. Individual items cannot be selected. Do NOT use this pattern when each item should be independently tappable.
+
+```swift
+// ✅ Single-element carousel — swipe up/down to change selection
+ScrollView(.horizontal) {
+    // carousel content
+}
+.accessibilityElement()
+.accessibilityLabel("Movie carousel")
+.accessibilityValue("\(items[selectedIndex].title), \(selectedIndex + 1) of \(items.count)")
+.accessibilityAdjustableAction { direction in
+    switch direction {
+    case .increment:
+        selectedIndex = min(selectedIndex + 1, items.count - 1)
+    case .decrement:
+        selectedIndex = max(selectedIndex - 1, 0)
+    @unknown default:
+        break
+    }
+}
 ```
 
 ## Scroll Actions
@@ -316,7 +343,9 @@ HStack {
 
 1. **Use semantic controls** — `Button`, `Toggle`, `Picker`, `Slider` come with correct traits automatically
 2. **Don't put `onTapGesture` on Text/Image** — use `Button` instead for correct accessibility behavior
-3. **Adjustable is better than many buttons** — for carousels/steppers, use `accessibilityAdjustableAction` instead of separate next/previous buttons
-4. **Magic tap is app-wide** — the two-finger double-tap bubbles up the view hierarchy; use it for the primary media action
-5. **Test named actions** — swipe up/down on an element in VoiceOver to verify all actions are discoverable
-6. **Remove redundant traits** — after combining children, remove `.isButton` from the parent if the combined element shouldn't be a button
+3. **Add hints to navigation buttons** — when a button's label is an item name (movie title, person name), add a hint describing the destination (e.g., "View movie details")
+4. **Choose the right carousel pattern** — use per-item buttons (Pattern 1) when items navigate to individual destinations; use adjustable (Pattern 2) only when the carousel is a single-value control
+5. **Never use `.accessibilityElement()` on a container with tappable children** — it collapses all children into one opaque element, making individual items unreachable by VoiceOver
+6. **Magic tap is app-wide** — the two-finger double-tap bubbles up the view hierarchy; use it for the primary media action
+7. **Test named actions** — swipe up/down on an element in VoiceOver to verify all actions are discoverable
+8. **Remove redundant traits** — after combining children, remove `.isButton` from the parent if the combined element shouldn't be a button

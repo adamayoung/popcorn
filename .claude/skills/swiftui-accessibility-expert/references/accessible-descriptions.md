@@ -136,6 +136,44 @@ Button("Play") { /* ... */ }
 
 > **Best practice**: Begin hints with a verb and describe the result, not the gesture. "Opens the settings screen" not "Double-tap to open settings."
 
+### When to Add Hints
+
+Hints are most valuable when the label alone doesn't convey what will happen on activation:
+
+```swift
+// ✅ Navigation buttons in carousels/lists — label is the item name, hint clarifies the action
+Button {
+    navigateToMovie(movie.id)
+} label: {
+    MovieCard(movie: movie)
+}
+.accessibilityLabel(movie.title)
+.accessibilityHint(Text("VIEW_MOVIE_DETAILS_HINT", bundle: .module))
+
+// ✅ Buttons whose label is a person/place/thing name — hint explains the navigation
+Button {
+    navigateToPerson(person.id)
+} label: {
+    PersonCard(person: person)
+}
+.accessibilityLabel(person.name)
+.accessibilityHint("View person details")
+
+// ✅ Buttons with ambiguous outcomes
+Button("Submit") { /* ... */ }
+    .accessibilityHint("Sends your review for approval")
+```
+
+**Skip hints when the label already makes the action obvious:**
+
+```swift
+// ✅ No hint needed — "Delete message" is self-explanatory
+Button("Delete message") { /* ... */ }
+
+// ✅ No hint needed — "Play trailer" is clear
+Button("Play trailer") { /* ... */ }
+```
+
 ## Input Labels
 
 Input labels provide alternative labels for Voice Control. Users can say any of these to activate the element:

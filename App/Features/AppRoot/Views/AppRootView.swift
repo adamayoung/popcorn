@@ -26,6 +26,7 @@ struct AppRootView: View {
                 errorView(with: error)
             } else {
                 ProgressView()
+                    .accessibilityLabel("Loading")
             }
         }
         #if DEBUG

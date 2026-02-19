@@ -50,6 +50,7 @@ public struct PersonRow: View {
 
             Text(verbatim: name)
         }
+        .accessibilityElement(children: .combine)
     }
 
 }

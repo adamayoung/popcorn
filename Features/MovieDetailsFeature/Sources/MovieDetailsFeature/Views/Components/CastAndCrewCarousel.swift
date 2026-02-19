@@ -16,7 +16,7 @@ struct CastAndCrewCarousel: View {
 
     var body: some View {
         Carousel {
-            ForEach(castMembers) { castMember in
+            ForEach(Array(castMembers.enumerated()), id: \.offset) { offset, castMember in
                 Button {
                     didSelectPerson(castMember.personID)
                 } label: {
@@ -24,11 +24,14 @@ struct CastAndCrewCarousel: View {
                         cellLabel(personName: castMember.personName, characterName: castMember.characterName)
                     }
                 }
+                .accessibilityIdentifier("movie-details.cast-and-crew.cast.\(offset)")
+                .accessibilityLabel(Text(verbatim: castMember.personName))
+                .accessibilityHint(Text("VIEW_PERSON_DETAILS_HINT", bundle: .module))
                 .buttonStyle(.plain)
                 .fixedSize(horizontal: true, vertical: false)
             }
 
-            ForEach(crewMembers) { crewMember in
+            ForEach(Array(crewMembers.enumerated()), id: \.offset) { offset, crewMember in
                 Button {
                     didSelectPerson(crewMember.personID)
                 } label: {
@@ -36,10 +39,14 @@ struct CastAndCrewCarousel: View {
                         cellLabel(personName: crewMember.personName, characterName: crewMember.job)
                     }
                 }
+                .accessibilityIdentifier("movie-details.cast-and-crew.crew.\(offset)")
+                .accessibilityLabel(Text(verbatim: crewMember.personName))
+                .accessibilityHint(Text("VIEW_PERSON_DETAILS_HINT", bundle: .module))
                 .buttonStyle(.plain)
                 .fixedSize(horizontal: true, vertical: false)
             }
         }
+        .accessibilityIdentifier("movie-details.cast-and-crew.carousel")
         .contentMargins([.leading, .trailing], 16)
     }
 

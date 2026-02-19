@@ -28,6 +28,7 @@ struct CrewMemberRow: View {
 
             Spacer()
         }
+        .accessibilityElement(children: .combine)
         .contentShape(Rectangle())
     }
 

@@ -12,6 +12,17 @@
         }
       }
     },
+    "LOADING" : {
+      "comment" : "Accessibility label for a loading indicator.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading"
+          }
+        }
+      }
+    },
     "EXPLORE" : {
       "comment" : "The title of the Explore screen.",
       "localizations" : {

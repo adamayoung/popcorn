@@ -50,6 +50,7 @@ public struct MovieRow: View {
 
             Text(verbatim: title)
         }
+        .accessibilityElement(children: .combine)
     }
 
 }

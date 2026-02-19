@@ -70,10 +70,11 @@ public struct PosterCarouselCell<CellLabel: View>: View {
 
             Spacer()
         }
+        .accessibilityElement(children: .combine)
         #if os(visionOS)
-        .padding(20)
-        .contentShape(.hoverEffect, .rect(cornerRadius: 15))
-        .hoverEffect()
+            .padding(20)
+            .contentShape(.hoverEffect, .rect(cornerRadius: 15))
+            .hoverEffect()
         #endif
     }
 

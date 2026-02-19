@@ -15,7 +15,7 @@ struct SeasonsCarousel: View {
 
     var body: some View {
         Carousel {
-            ForEach(seasons) { season in
+            ForEach(Array(seasons.enumerated()), id: \.offset) { offset, season in
                 Button {
                     didSelectSeason(season.seasonNumber)
                 } label: {
@@ -26,13 +26,14 @@ struct SeasonsCarousel: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
-                .accessibilityIdentifier("tv-series-details.seasons.\(season.seasonNumber)")
+                .accessibilityIdentifier("tv-series-details.seasons.season.\(offset)")
                 .accessibilityLabel(season.name)
                 .accessibilityHint(Text("VIEW_SEASON_DETAILS_HINT", bundle: .module))
                 .buttonStyle(.plain)
                 .fixedSize(horizontal: true, vertical: false)
             }
         }
+        .accessibilityIdentifier("tv-series-details.seasons.carousel")
         .contentMargins([.leading, .trailing], 16)
     }
 

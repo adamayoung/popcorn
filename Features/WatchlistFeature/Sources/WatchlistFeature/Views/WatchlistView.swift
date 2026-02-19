@@ -16,6 +16,7 @@ public struct WatchlistView: View {
         GridItem(.adaptive(minimum: 120), spacing: 16)
     ]
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Bindable var store: StoreOf<WatchlistFeature>
     private let namespace: Namespace.ID
 
@@ -61,6 +62,7 @@ public struct WatchlistView: View {
         .overlay {
             if store.viewState.isLoading {
                 ProgressView()
+                    .accessibilityLabel(Text("LOADING", bundle: .module))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
@@ -106,7 +108,7 @@ extension WatchlistView {
                 .matchedTransitionSource(id: transitionID, in: namespace)
             }
         }
-        .animation(.default, value: movies)
+        .animation(reduceMotion ? nil : .default, value: movies)
         .padding()
     }
 

@@ -44,6 +44,8 @@ public struct MessageRow: View {
                 Spacer()
             }
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(Text(message.role == .user ? "YOU" : "ASSISTANT", bundle: .module))
     }
 
     private func messageContent(_ content: ChatMessageContent, role: ChatRole) -> some View {

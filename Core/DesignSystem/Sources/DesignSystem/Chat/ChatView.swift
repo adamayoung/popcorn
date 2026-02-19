@@ -9,6 +9,8 @@ import SwiftUI
 
 public struct ChatView<Message: ChatMessage>: View {
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     private var messages: [Message]
     private var send: (String) -> Void
     private var isThinking: Bool
@@ -31,10 +33,12 @@ public struct ChatView<Message: ChatMessage>: View {
                         MessageRow(message: message)
                             .id(message)
                             .listRowSeparator(.hidden)
-                            .transition(.asymmetric(
-                                insertion: .move(edge: .bottom).combined(with: .opacity),
-                                removal: .identity
-                            ))
+                            .transition(reduceMotion
+                                ? .opacity
+                                : .asymmetric(
+                                    insertion: .move(edge: .bottom).combined(with: .opacity),
+                                    removal: .identity
+                                ))
                     }
                 }
 
@@ -45,15 +49,23 @@ public struct ChatView<Message: ChatMessage>: View {
                             Text("THINKING", bundle: .module)
                             Spacer()
                         }
+                        .accessibilityElement(children: .combine)
                         .listRowSeparator(.hidden)
                     }
                 }
             }
             .scrollDismissesKeyboard(.interactively)
-            .animation(messages.isEmpty ? nil : .spring(response: 0.4, dampingFraction: 0.7), value: messages.count)
+            .animation(
+                reduceMotion ? nil : (messages.isEmpty ? nil : .spring(response: 0.4, dampingFraction: 0.7)),
+                value: messages.count
+            )
             .task(id: messages.count) {
-                withAnimation {
+                if reduceMotion {
                     proxy.scrollTo(messages.last, anchor: .bottom)
+                } else {
+                    withAnimation {
+                        proxy.scrollTo(messages.last, anchor: .bottom)
+                    }
                 }
             }
             .listStyle(.plain)

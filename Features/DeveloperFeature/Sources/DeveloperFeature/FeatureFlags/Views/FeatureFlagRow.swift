@@ -28,6 +28,7 @@ struct FeatureFlagRow: View {
             Image(systemName: featureFlag.isEnabled ? "lightswitch.on" : "lightswitch.off")
                 .contentTransition(.symbolEffect(.replace))
                 .foregroundStyle(featureFlag.isEnabled ? .green : .red)
+                .accessibilityLabel(Text(featureFlag.isEnabled ? "ENABLED" : "DISABLED", bundle: .module))
 
             Picker(featureFlag.name, selection: $override) {
                 Text("DEFAULT", bundle: .module)

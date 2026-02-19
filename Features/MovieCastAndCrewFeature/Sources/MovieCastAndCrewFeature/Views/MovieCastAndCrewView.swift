@@ -57,6 +57,7 @@ public struct MovieCastAndCrewView: View {
             .overlay {
                 if store.viewState.isLoading {
                     ProgressView()
+                        .accessibilityLabel(Text("LOADING", bundle: .module))
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
