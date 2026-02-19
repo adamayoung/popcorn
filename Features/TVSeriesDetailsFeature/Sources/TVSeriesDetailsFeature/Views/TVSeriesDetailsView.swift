@@ -82,52 +82,14 @@ extension TVSeriesDetailsView {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    @ViewBuilder
     private func content(tvSeries: TVSeries) -> some View {
-        StretchyHeaderScrollView(
-            header: { header(tvSeries: tvSeries) },
-            headerOverlay: { headerOverlay(tvSeries: tvSeries) },
-            content: { body(tvSeries: tvSeries) }
+        TVSeriesDetailsContentView(
+            tvSeries: tvSeries,
+            isBackdropFocalPointEnabled: store.isBackdropFocalPointEnabled,
+            didSelectSeason: { seasonNumber in
+                store.send(.navigate(.seasonDetails(tvSeriesID: tvSeries.id, seasonNumber: seasonNumber)))
+            }
         )
-        .navigationTitle(tvSeries.name)
-        #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
-        #endif
-    }
-
-    @ViewBuilder
-    private func header(tvSeries: TVSeries) -> some View {
-        backdropImage(url: tvSeries.backdropURL)
-            .flexibleHeaderContent(height: 600)
-        #if os(macOS)
-            .backgroundExtensionEffect()
-        #endif
-    }
-
-    @ViewBuilder
-    private func backdropImage(url: URL?) -> some View {
-        let image = BackdropImage(url: url)
-        if store.isBackdropFocalPointEnabled {
-            image.focalPointAlignment()
-        } else {
-            image
-        }
-    }
-
-    private func headerOverlay(tvSeries: TVSeries) -> some View {
-        LogoImage(url: tvSeries.logoURL)
-            .padding(.bottom, 20)
-            .frame(maxWidth: 300, maxHeight: 150, alignment: .bottom)
-    }
-
-    private func body(tvSeries: TVSeries) -> some View {
-        VStack(alignment: .leading) {
-            Text(verbatim: tvSeries.overview)
-                .multilineTextAlignment(.leading)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.horizontal)
-        }
-        .padding(.bottom)
     }
 
 }

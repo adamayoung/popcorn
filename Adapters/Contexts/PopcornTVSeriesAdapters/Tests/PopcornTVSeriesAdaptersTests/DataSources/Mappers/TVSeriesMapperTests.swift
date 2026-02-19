@@ -240,4 +240,58 @@ struct TVSeriesMapperTests {
         #expect(result.numberOfSeasons == 35)
     }
 
+    @Test("Maps seasons array from TMDb TV series")
+    func mapsSeasonsArray() throws {
+        let poster1 = try #require(URL(string: "/poster1.jpg"))
+        let poster2 = try #require(URL(string: "/poster2.jpg"))
+
+        let tmdbTVSeries = TMDb.TVSeries(
+            id: 1396,
+            name: "Breaking Bad",
+            overview: "A chemistry teacher...",
+            seasons: [
+                TMDb.TVSeason(id: 3572, name: "Season 1", seasonNumber: 1, posterPath: poster1),
+                TMDb.TVSeason(id: 3573, name: "Season 2", seasonNumber: 2, posterPath: poster2)
+            ]
+        )
+
+        let result = mapper.map(tmdbTVSeries)
+
+        #expect(result.seasons.count == 2)
+        #expect(result.seasons[0].id == 3572)
+        #expect(result.seasons[0].name == "Season 1")
+        #expect(result.seasons[0].seasonNumber == 1)
+        #expect(result.seasons[0].posterPath == poster1)
+        #expect(result.seasons[1].id == 3573)
+        #expect(result.seasons[1].seasonNumber == 2)
+    }
+
+    @Test("Maps nil seasons to empty array")
+    func mapsNilSeasonsToEmptyArray() {
+        let tmdbTVSeries = TMDb.TVSeries(
+            id: 1396,
+            name: "Breaking Bad",
+            overview: "A chemistry teacher...",
+            seasons: nil
+        )
+
+        let result = mapper.map(tmdbTVSeries)
+
+        #expect(result.seasons.isEmpty)
+    }
+
+    @Test("Maps empty seasons array to empty array")
+    func mapsEmptySeasonsArrayToEmptyArray() {
+        let tmdbTVSeries = TMDb.TVSeries(
+            id: 1396,
+            name: "Breaking Bad",
+            overview: "A chemistry teacher...",
+            seasons: []
+        )
+
+        let result = mapper.map(tmdbTVSeries)
+
+        #expect(result.seasons.isEmpty)
+    }
+
 }

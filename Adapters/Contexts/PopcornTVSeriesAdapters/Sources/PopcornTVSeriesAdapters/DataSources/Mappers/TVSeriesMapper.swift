@@ -11,6 +11,8 @@ import TVSeriesDomain
 
 struct TVSeriesMapper {
 
+    private let seasonMapper = TVSeasonMapper()
+
     func map(_ dto: TMDb.TVSeries) -> TVSeriesDomain.TVSeries {
         TVSeriesDomain.TVSeries(
             id: dto.id,
@@ -20,7 +22,8 @@ struct TVSeriesMapper {
             numberOfSeasons: dto.numberOfSeasons ?? 0,
             firstAirDate: dto.firstAirDate,
             posterPath: dto.posterPath,
-            backdropPath: dto.backdropPath
+            backdropPath: dto.backdropPath,
+            seasons: dto.seasons?.map(seasonMapper.map) ?? []
         )
     }
 

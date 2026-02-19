@@ -34,6 +34,9 @@ struct SearchRootView: View {
                     store: store,
                     transitionNamespace: namespace
                 )
+            case .tvSeasonDetails(let store):
+                Text("Season \(store.seasonNumber)")
+                    .navigationTitle("Season \(store.seasonNumber)")
             case .personDetails(let store):
                 PersonDetailsView(
                     store: store,

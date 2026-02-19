@@ -17,7 +17,10 @@ struct TVSeriesMapper {
             overview: tvSeriesDetails.overview,
             posterURL: tvSeriesDetails.posterURLSet?.detail,
             backdropURL: tvSeriesDetails.backdropURLSet?.full,
-            logoURL: tvSeriesDetails.logoURLSet?.detail
+            logoURL: tvSeriesDetails.logoURLSet?.detail,
+            seasons: tvSeriesDetails.seasons.map {
+                TVSeasonPreview(id: $0.id, seasonNumber: $0.seasonNumber, name: $0.name, posterURL: $0.posterURL)
+            }
         )
     }
 

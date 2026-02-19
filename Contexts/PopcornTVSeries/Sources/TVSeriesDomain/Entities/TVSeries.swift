@@ -39,6 +39,9 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
     /// URL path to the TV series' backdrop image.
     public let backdropPath: URL?
 
+    /// The seasons of this TV series.
+    public let seasons: [TVSeason]
+
     ///
     /// Creates a new TV series instance.
     ///
@@ -51,6 +54,7 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
     ///   - firstAirDate: First air date.
     ///   - posterPath: URL path to the poster image. Defaults to `nil`.
     ///   - backdropPath: URL path to the backdrop image. Defaults to `nil`.
+    ///   - seasons: The seasons of this TV series. Defaults to `[]`.
     ///
     public init(
         id: Int,
@@ -60,7 +64,8 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
         numberOfSeasons: Int = 0,
         firstAirDate: Date? = nil,
         posterPath: URL? = nil,
-        backdropPath: URL? = nil
+        backdropPath: URL? = nil,
+        seasons: [TVSeason] = []
     ) {
         self.id = id
         self.name = name
@@ -70,6 +75,7 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
         self.firstAirDate = firstAirDate
         self.posterPath = posterPath
         self.backdropPath = backdropPath
+        self.seasons = seasons
     }
 
 }

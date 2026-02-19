@@ -25,6 +25,7 @@ struct SearchRootFeature {
     enum Path {
         case movieDetails(MovieDetailsFeature)
         case tvSeriesDetails(TVSeriesDetailsFeature)
+        case tvSeasonDetails(TVSeasonDetailsPlaceholder)
         case personDetails(PersonDetailsFeature)
     }
 
@@ -52,6 +53,13 @@ struct SearchRootFeature {
                 return .none
             case .path(.element(_, .movieDetails(.navigate(.movieDetails(let id))))):
                 state.path.append(.movieDetails(MovieDetailsFeature.State(movieID: id)))
+                return .none
+            case .path(.element(_, .tvSeriesDetails(.navigate(.seasonDetails(let tvSeriesID, let seasonNumber))))):
+                state.path.append(
+                    .tvSeasonDetails(
+                        TVSeasonDetailsPlaceholder.State(tvSeriesID: tvSeriesID, seasonNumber: seasonNumber)
+                    )
+                )
                 return .none
             default:
                 return .none
