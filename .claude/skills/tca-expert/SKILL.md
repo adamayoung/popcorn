@@ -36,17 +36,6 @@ Use this skill for authoritative guidance on TCA 1.23+. Covers reducer compositi
   - form/binding heavy -> bindings reference
   - cross-feature state -> shared state reference
 
-## Routing map (read the right reference fast)
-
-- `@Reducer`, State, Action, body, composition -> `references/reducers.md`
-- `.run`, `.none`, cancellation, debouncing, long-living effects -> `references/effects.md`
-- `@Dependency`, `@DependencyClient`, `DependencyKey`, wiring -> `references/dependencies.md`
-- Stack-based, tree-based, alerts, dismissal -> `references/navigation.md`
-- `TestStore`, exhaustive/non-exhaustive, patterns -> `references/testing.md`
-- `@Bindable`, `.sending()`, `BindableAction`, `BindingReducer` -> `references/bindings.md`
-- `@Shared`, persistence, deriving, concurrent mutations -> `references/shared-state.md`
-- Store scoping, high-frequency actions, CPU work -> `references/performance.md`
-
 ## Common pitfalls -> next best move
 
 - Action ping-pong between parent/child for shared logic -> extract helper method on reducer.
@@ -69,6 +58,7 @@ Use this skill for authoritative guidance on TCA 1.23+. Covers reducer compositi
 
 ## References
 
+- `references/_index.md` — navigation index with quick links by problem
 - `references/reducers.md`
 - `references/effects.md`
 - `references/dependencies.md`
