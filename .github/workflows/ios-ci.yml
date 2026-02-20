@@ -1,0 +1,84 @@
+name: iOS CI
+
+on:
+  pull_request:
+
+concurrency:
+  group: ios-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint (SwiftLint + SwiftFormat)
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install lint tools
+        run: |
+          if ! command -v swiftlint >/dev/null 2>&1; then
+            HOMEBREW_NO_AUTO_UPDATE=1 brew install swiftlint
+          fi
+
+          if ! command -v swiftformat >/dev/null 2>&1; then
+            HOMEBREW_NO_AUTO_UPDATE=1 brew install swiftformat
+          fi
+
+      - name: Run lint checks
+        run: make lint
+
+  unit-tests:
+    name: Build For Testing + Test Without Building
+    runs-on: macos-latest
+    timeout-minutes: 45
+    env:
+      XCODE_VERSION: "26.3"
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cache SwiftPM and DerivedData
+        uses: actions/cache@v4
+        with:
+          path: |
+            .spm
+            DerivedData
+            ~/Library/Caches/org.swift.swiftpm
+          key: ${{ runner.os }}-xcode-${{ env.XCODE_VERSION }}-build-${{ hashFiles('Popcorn.xcodeproj/project.pbxproj', 'TestPlans/PopcornUnitTests.xctestplan', '**/Package.resolved', '**/Package.swift') }}
+          restore-keys: |
+            ${{ runner.os }}-xcode-${{ env.XCODE_VERSION }}-build-
+            ${{ runner.os }}-xcode-
+
+      - name: Resolve package dependencies
+        run: |
+          xcodebuild \
+            -scheme Popcorn \
+            -destination "platform=iOS Simulator,OS=latest" \
+            -clonedSourcePackagesDirPath .spm \
+            -derivedDataPath DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            -resolvePackageDependencies
+
+      - name: Build for testing (PopcornUnitTests)
+        run: |
+          xcodebuild \
+            -scheme Popcorn \
+            -destination "platform=iOS Simulator,OS=latest" \
+            -testPlan PopcornUnitTests \
+            -clonedSourcePackagesDirPath .spm \
+            -derivedDataPath DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            build-for-testing
+
+      - name: Test without building (PopcornUnitTests)
+        run: |
+          xcodebuild \
+            -scheme Popcorn \
+            -destination "platform=iOS Simulator,OS=latest" \
+            -testPlan PopcornUnitTests \
+            -clonedSourcePackagesDirPath .spm \
+            -derivedDataPath DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            test-without-building
