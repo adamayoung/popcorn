@@ -647,7 +647,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "alias swiftlint=\"/opt/homebrew/bin/swiftlint\"\n\nif [ \"$CI\" != \"TRUE\" ]; then\n    if command -v swiftlint >/dev/null 2>&1\n    then\n        swiftlint\n    else\n        echo \"warning: `swiftlint` command not found - See https://github.com/realm/SwiftLint#installation for installation instructions.\"\n    fi\nfi\n";
+				shellScript = "alias swiftlint=\"/opt/homebrew/bin/swiftlint\"\n\nif [ \"$GITHUB_ACTIONS\" = \"true\" ]; then\n    echo \"Skipping SwiftLint build phase on GitHub Actions.\"\n    exit 0\nfi\n\nif [ \"$CI\" != \"TRUE\" ]; then\n    if command -v swiftlint >/dev/null 2>&1\n    then\n        swiftlint\n    else\n        echo \"warning: `swiftlint` command not found - See https://github.com/realm/SwiftLint#installation for installation instructions.\"\n    fi\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

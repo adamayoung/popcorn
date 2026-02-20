@@ -1,4 +1,4 @@
-name: iOS CI
+name: CI
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ concurrency:
 
 jobs:
   lint:
-    name: Lint (SwiftLint + SwiftFormat)
+    name: Lint
     runs-on: macos-latest
     steps:
       - name: Checkout
@@ -29,7 +29,7 @@ jobs:
         run: make lint
 
   unit-tests:
-    name: Build For Testing + Test Without Building
+    name: Build and Test
     runs-on: macos-latest
     timeout-minutes: 45
     env:
@@ -45,7 +45,7 @@ jobs:
             HOMEBREW_NO_AUTO_UPDATE=1 brew install xcsift
           fi
 
-      - name: Cache SwiftPM and DerivedData
+      - name: Cache
         uses: actions/cache@v4
         with:
           path: |
@@ -69,7 +69,7 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             -resolvePackageDependencies 2>&1 | xcsift -f github-actions --Werror
 
-      - name: Build for testing (PopcornUnitTests)
+      - name: Build
         run: |
           set -o pipefail
           NSUnbufferedIO=YES xcodebuild \
@@ -82,7 +82,7 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             build-for-testing 2>&1 | xcsift -f github-actions --Werror
 
-      - name: Test without building (PopcornUnitTests)
+      - name: Unit Test
         run: |
           set -o pipefail
           NSUnbufferedIO=YES xcodebuild \
