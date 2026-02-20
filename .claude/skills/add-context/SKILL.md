@@ -220,4 +220,20 @@ Create `AppDependencies/{Context}/`:
 
 Add the new package to the main Xcode project's package dependencies.
 
+### 10. Register Tests in Test Plan
+
+Add all new unit test targets to `TestPlans/PopcornUnitTests.xctestplan` so tests run as part of the test plan. Add an entry to the `testTargets` array for each test target:
+
+```json
+{
+  "target" : {
+    "containerPath" : "container:Contexts\/Popcorn{Context}",
+    "identifier" : "{Context}ApplicationTests",
+    "name" : "{Context}ApplicationTests"
+  }
+}
+```
+
+Repeat for each test target (e.g., `{Context}DomainTests`, `{Context}InfrastructureTests`). Do NOT add snapshot test targets here — those belong in `PopcornSnapshotTests.xctestplan`.
+
 $ARGUMENTS

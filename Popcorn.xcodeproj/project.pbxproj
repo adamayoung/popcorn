@@ -18,6 +18,7 @@
 		668F588C2ECDB2D500B47B07 /* TrendingTVSeriesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 668F588B2ECDB2D500B47B07 /* TrendingTVSeriesFeature */; };
 		668F58912ECDD5CA00B47B07 /* TVSeriesDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 668F58902ECDD5CA00B47B07 /* TVSeriesDetailsFeature */; };
 		66A2E0502F0B01C0002B8706 /* MovieCastAndCrewFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66A2E04F2F0B01C0002B8706 /* MovieCastAndCrewFeature */; };
+		66C4E0012F5E000000000001 /* TVSeasonDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66C4E0002F5E000000000001 /* TVSeasonDetailsFeature */; };
 		66BEEA002F4331AF00CCEAB6 /* DeveloperFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66BEE9FF2F4331AF00CCEAB6 /* DeveloperFeature */; };
 		66C873EF2F5B000000000001 /* WatchlistFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66C873EE2F5B000000000001 /* WatchlistFeature */; };
 		66D8F4112EE8BE8F00B8AE7A /* GamesCatalogFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66D8F4102EE8BE8F00B8AE7A /* GamesCatalogFeature */; };
@@ -104,6 +105,7 @@
 				TrendingMoviesFeature,
 				TrendingPeopleFeature,
 				TrendingTVSeriesFeature,
+				TVSeasonDetailsFeature,
 				TVSeriesDetailsFeature,
 				WatchlistFeature,
 			);
@@ -223,6 +225,7 @@
 				668F58892ECCFEBE00B47B07 /* TrendingMoviesFeature in Frameworks */,
 				900E28EA2ED0781900ED5DFC /* ExploreFeature in Frameworks */,
 				66A2E0502F0B01C0002B8706 /* MovieCastAndCrewFeature in Frameworks */,
+				66C4E0012F5E000000000001 /* TVSeasonDetailsFeature in Frameworks */,
 				666AEE492ECE0A1B0038814E /* PersonDetailsFeature in Frameworks */,
 				66D8F4142EE8C93900B8AE7A /* PlotRemixGameFeature in Frameworks */,
 				66BEEA002F4331AF00CCEAB6 /* DeveloperFeature in Frameworks */,
@@ -443,6 +446,7 @@
 				661ADD4E2EFAB62D00A4055D /* MovieIntelligenceFeature */,
 				661ADD4F2EFAB62D00A4055E /* TVSeriesIntelligenceFeature */,
 				66A2E04F2F0B01C0002B8706 /* MovieCastAndCrewFeature */,
+				66C4E0002F5E000000000001 /* TVSeasonDetailsFeature */,
 				66BEE9FF2F4331AF00CCEAB6 /* DeveloperFeature */,
 				66C873EE2F5B000000000001 /* WatchlistFeature */,
 			);
@@ -1126,6 +1130,10 @@
 		66A2E04F2F0B01C0002B8706 /* MovieCastAndCrewFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = MovieCastAndCrewFeature;
+		};
+		66C4E0002F5E000000000001 /* TVSeasonDetailsFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TVSeasonDetailsFeature;
 		};
 		66BEE9FF2F4331AF00CCEAB6 /* DeveloperFeature */ = {
 			isa = XCSwiftPackageProductDependency;

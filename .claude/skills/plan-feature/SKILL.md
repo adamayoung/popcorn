@@ -1,6 +1,6 @@
 ---
 name: plan-feature
-description: Plan a new feature end-to-end — explore patterns, design architecture, adversarial review, and generate a PRD with TDD task list
+description: Plan a new feature end-to-end — explore patterns, write user stories with acceptance criteria and TDD specs, adversarial backlog refinement, and auto-execute via parallel subagents
 skills:
   - swift-concurrency
   - swiftui-expert-skill
@@ -10,7 +10,7 @@ skills:
 
 # Plan a New Feature
 
-Orchestrates the full feature planning workflow: explore codebase patterns, ask clarifying questions, design the implementation layer-by-layer, run adversarial review, and generate a PRD with task list and TDD specs.
+Orchestrates the full feature planning workflow: explore codebase patterns, ask clarifying questions, design user stories with acceptance criteria and TDD specs, run adversarial backlog refinement, and auto-execute stories via parallel subagents.
 
 ## Required Information
 
@@ -47,123 +47,170 @@ Ask the user targeted questions about:
 
 Present options with recommendations and reasons. Use `AskUserQuestion` with 2-4 options per question.
 
-### Phase 3: Design Implementation
+### Phase 3: Draft PRD
 
-Design the layer-by-layer implementation following the project's 4-layer architecture:
+Write the high-level PRD sections to `prds/{feature-name}.md`. Read `references/prd-template.md` for the full format. At this stage, write **only** the foundation sections — user stories come later in Phase 5.
+
+Sections to write now:
+- **Overview** — 1-2 sentence description
+- **Problem** — what problem this solves and why it's needed
+- **Goals** — numbered list of specific goals
+- **Non-Goals** — what's explicitly out of scope
+- **Design Decisions** — table of key decisions with rationale
+- **Data Flow** — ASCII diagram showing data flow through all architecture layers
+
+Leave the User Stories, Story Dependency Graph, and Verification sections empty — these are filled in after the PRD is reviewed and stories are designed.
+
+### Phase 4: Adversarial PRD Review
+
+Spawn **2 adversarial Product Manager subagents in parallel** (using the `plan-reviewer` agent type) to independently review the draft PRD. Read `references/prd-reviewers.md` for the full reviewer prompts.
+
+Provide each reviewer with:
+- The draft PRD (all sections from Phase 3)
+- The original user requirements
+- The architecture decisions from Phase 2
+
+Each PM reviews independently and returns findings classified as **CRITICAL**, **IMPORTANT**, or **SUGGESTION**.
+
+#### 4a. Reconciliation
+
+After both PMs return, compare their findings:
+
+1. **Agreed findings** — both PMs flagged the same issue → confirmed, must address
+2. **Unique findings** — only one PM raised it → evaluate on merit, adopt if valid
+3. **Contradictions** — PMs disagree on an issue → present both positions to the user for a decision
+
+#### 4b. Update PRD
+
+Revise the draft PRD based on the agreed findings. The PMs must converge — do not proceed to story design until the PRD foundation (Goals, Non-Goals, Design Decisions, Data Flow) is stable.
+
+### Phase 5: Design User Stories
+
+Decompose the reviewed PRD into user stories. This is the most critical phase — poor story design leads to blocked subagents, missing wiring, and broken builds.
+
+#### 5a. Map the Architecture Layers
+
+Walk through the data flow from API to screen and identify which layers need work:
+
+1. **Domain** — new entities, repository protocols
+2. **Infrastructure** — data sources, SwiftData models, repository implementations
+3. **Application** — use cases, application models, mappers
+4. **Composition** — factory updates wiring infrastructure to application
+5. **Adapters** — TMDb API bridges, adapter factory updates
+6. **AppDependencies** — TCA dependency key registrations
+7. **Feature** — reducer, client, models, mappers, views
+8. **Coordinators** — navigation wiring in ExploreRoot/SearchRoot
+
+Also identify **cross-cutting work** that doesn't fit neatly into one layer (e.g., adding a new DesignSystem component, adding URL support to `ImagesConfiguration`).
+
+#### 5b. Decompose into Stories
+
+Create one story per logical unit of work. Follow these rules:
+
+- **One story per layer** is a good default — don't bundle Domain + Infrastructure + Application into one giant story
+- **Cross-cutting work gets its own story** (e.g., "StillImage DesignSystem Component" is separate from the feature that uses it)
+- **Factory chain updates** that span 5+ files should be in the same story as the layer that introduces the new dependency (typically the Adapter story)
+- **Coordinator wiring** (ExploreRoot + SearchRoot) goes in the final feature story since it depends on everything else
+- **Each story must be independently buildable and testable** — after implementing a story, `swift build` and `swift test` must pass in the relevant package
+
+#### 5c. Size Each Story
+
+| Size | Scope | Files | Example |
+|------|-------|-------|---------|
+| **S** | Single-layer, few files | 1-3 | Domain entity, TCA wiring, DesignSystem component |
+| **M** | Multi-file within one layer | 3-5 | Use case + models + mapper, adapter + data source + mock |
+| **L** | Cross-layer, significant logic | 5-10 | Full persistence layer, complete feature UI + coordinator |
+| **XL** | NOT ALLOWED | 10+ | Must be broken into smaller stories |
+
+#### 5d. Order Dependencies
+
+Map which stories block which. Follow the natural architecture flow:
 
 ```
-1. Domain Layer      — Entities (value types in {Context}Domain)
-2. Adapter Layer     — TMDb→Domain mappers (in {Context}Adapters)
-3. Infrastructure    — Cache/persistence changes if needed
-4. Application Layer — Application models, mappers, use cases
-5. Composition       — Factory updates
-6. AppDependencies   — TCA dependency wiring (if new use case)
-7. Feature Layer     — Models, mappers, reducer, client, views
-8. App Coordinator   — Navigation handling in root features
+Domain → Infrastructure → Application → Composition → Adapters → AppDependencies → Feature → Coordinators
 ```
 
-For each layer, specify:
-- New files to create (with full paths)
-- Existing files to modify (with specific changes)
-- Code snippets for key implementations
+Identify parallel tracks (stories with no shared dependencies) and merge points (stories that need multiple tracks to complete).
 
-### Phase 4: Adversarial Review
+#### 5e. Write Each Story
 
-Spawn the `plan-reviewer` agent to review the plan. Provide it with:
-- The complete implementation plan
-- List of all files to create and modify
-- The data flow pipeline
+For every story, fill in ALL of these sections — no exceptions:
 
-Address all CRITICAL and IMPORTANT findings before proceeding.
+- **Description**: "As a [developer/user], I want [what] so that [why]" — use **developer** for infrastructure stories, **user** for UI stories
+- **Acceptance Criteria**: Checkboxes with specific, testable assertions (not vague descriptions like "data is cached" — instead "SwiftData entity persisted with 24h TTL")
+- **Tech Elab**: Every file to create or modify with full path, specific patterns to follow (e.g., "follow `BackdropImage` pattern"), key implementation details
+- **Test Elab**: Happy path, error path, and at least 2 edge cases per story
+- **Dependencies**: Which stories must be done first (or "none")
 
-### Phase 5: Generate PRD
+#### 5f. Adversarial Story Review
 
-Write a PRD to `prds/{feature-name}.md` following this format:
+After drafting all stories, spawn **3 reviewer subagents in parallel** (using the `plan-reviewer` agent type) to critique the stories from different perspectives. Read `references/story-reviewers.md` for the full reviewer prompts.
 
-```markdown
-# PRD: {Feature Title}
+Provide each reviewer with:
+- The complete set of drafted user stories (all sections)
+- The data flow diagram
+- The story dependency graph
+- The list of all files to create and modify across all stories
 
-## Overview
-[1-2 sentence description]
+| Reviewer | Persona | Focus |
+|----------|---------|-------|
+| **Reviewer 1** | Product Manager | Story clarity, acceptance criteria completeness, user value, scope creep, missing requirements, story independence |
+| **Reviewer 2** | Staff iOS Engineer & Architect | Architecture alignment, pattern compliance, dependency correctness, factory chain integrity, sizing accuracy, breaking changes |
+| **Reviewer 3** | Staff Software Engineer in Test | Test coverage gaps, missing edge cases, testability of acceptance criteria, mock/helper needs, test file organisation |
 
-## Problem
-[What problem does this solve? Why is it needed?]
+Each reviewer returns findings classified as **CRITICAL**, **IMPORTANT**, or **SUGGESTION**.
 
-## Goals
-[Numbered list of goals]
+#### 5g. Address Review Findings
 
-## Non-Goals
-[What's explicitly out of scope]
+Process findings from all 3 reviewers:
 
----
+1. **CRITICAL** — must fix before proceeding (missing files, broken dependencies, untestable criteria)
+2. **IMPORTANT** — should fix (coverage gaps, sizing issues, vague criteria)
+3. **SUGGESTION** — consider and adopt if they improve quality
 
-## Requirements
-[R1, R2, R3... — specific, testable requirements]
+Update stories, acceptance criteria, Tech Elab, Test Elab, and the dependency graph based on findings. Break down any stories reviewers flag as too large.
 
----
+#### 5h. Finalize PRD
 
-## Technical Design
+Add the refined stories, story dependency graph, and verification sections to the PRD file (`prds/{feature-name}.md`). The PRD is now complete.
 
-### Architecture Layers
-[Data flow diagram showing all layers]
+Final checklist:
 
-### Key Design Decisions
-[Table: Decision | Rationale]
-
----
-
-## Task List
-
-### Task N: {Layer/Component} — [ ]
-
-**Goal**: [What this task achieves]
-
-**TDD Tests** (`path/to/TestFile.swift`):
-1. [Test case description]
-2. [Test case description]
-...
-
-**Files to Create**:
-| File | Purpose |
-|------|---------|
-
-**Files to Modify**:
-| File | Change |
-|------|--------|
-
-**Verification**: [How to verify this task]
-
----
-[Repeat for each task]
-
-## Task Dependency Order
-[ASCII diagram showing task dependencies]
-
-## Development Methodology
-- Strict TDD: write failing tests FIRST
-- High code coverage for all new code
-- Package-level verification after each task
-- Pre-PR full verification: /format, /lint, /build, /test
-
-## Acceptance Criteria
-[Checkboxes for all acceptance criteria]
-```
+- [ ] Every new file appears in exactly one story's Tech Elab
+- [ ] Every modified file lists the specific change needed
+- [ ] Factory chain updates are atomic (all files in one story)
+- [ ] No story is XL — break it down if >10 files
+- [ ] New unit test targets note `PopcornUnitTests.xctestplan` registration
+- [ ] The dependency graph has no cycles
+- [ ] Both ExploreRoot and SearchRoot coordinators are updated (if navigation changes)
+- [ ] All CRITICAL and IMPORTANT review findings are addressed
 
 ### Phase 6: Write Plan File
 
 Write the technical implementation plan to the plan file (if in plan mode). The plan should contain:
 - Context section (why this change)
-- Design decisions
-- Development methodology (strict TDD)
+- Design decisions table
+- Development methodology (strict TDD, package-level verification)
 - Data flow diagram
-- Implementation steps with file paths and code snippets
-- Files summary (new + modified)
-- Reusable components referenced
+- Implementation steps mapped to user stories (with file paths)
+- Story dependency graph
 - Verification steps
 
-### Phase 7: Code Review (after implementation)
+### Phase 7: Execute Stories (After User Approval)
 
-After all tasks are implemented and the pre-PR checklist passes (`/format`, `/lint`, `/build`, `/test`), perform a final code review:
+After the user approves the plan, auto-execute stories using subagents. Read `references/execution.md` for the full subagent orchestration strategy, prompt template, and failure handling.
+
+### Phase 8: Pre-PR Verification
+
+After all stories are implemented:
+
+1. Run the full pre-PR checklist: `/format`, `/lint`, `/build`, `/test`
+2. Fix any issues found
+3. If fixes were made, re-run the full checklist
+
+### Phase 9: Code Review
+
+After the pre-PR checklist passes:
 
 1. **Spawn the `code-reviewer` agent** with the full git diff of all changes (`git diff main...HEAD`). The code reviewer performs an initial review, then an adversarial re-evaluation, and returns only the findings both passes agree on.
 
@@ -178,7 +225,15 @@ After all tasks are implemented and the pre-PR checklist passes (`/format`, `/li
    - Any remaining issues by severity
    - Assessment: Ready to merge / Needs fixes
 
-## Key References
+## References
+
+- `references/prd-template.md` — PRD format, user story template, persona guidelines, sizing, quality rules
+- `references/prd-reviewers.md` — Adversarial PRD reviewer prompt for the 2 PM subagents (Phase 4)
+- `references/story-reviewers.md` — Adversarial story reviewer prompts for the 3 personas (PM, Architect, SEiT)
+- `references/patterns.md` — Domain entity, mapper, test, view, and localisation patterns
+- `references/execution.md` — Subagent orchestration, prompt template, failure handling
+
+## Key Documentation
 
 | Document | Path | Use For |
 |----------|------|---------|
@@ -189,32 +244,5 @@ After all tasks are implemented and the pre-PR checklist passes (`/format`, `/li
 | SwiftUI Guide | `docs/SWIFTUI.md` | View patterns |
 | Git Guide | `docs/GIT.md` | Commit/PR conventions |
 | Existing PRDs | `prds/` | PRD format reference |
-
-## Patterns to Follow
-
-### Domain Entity Pattern
-- `public` structs in `*Domain` / `*Application` layers need `///` doc comments on the type and every public property (see `docs/SWIFT.md`)
-- All properties are `let`, `Identifiable`, `Equatable`, `Sendable`
-
-### Mapper Pattern
-- Adapter: `struct {Name}Mapper { func map(_ dto: TMDb.X) -> Domain.X }`
-- Application: `struct {Name}Mapper { func map(_ entity: Domain.X, imagesConfiguration:) -> App.X }`
-- Feature: `struct {Name}Mapper { func map(_ appModel: App.X) -> Feature.X }`
-
-### Localisation Pattern
-- Every new `.xcstrings` key needs `"isCommentAutoGenerated" : true` alongside its comment
-- Format-string keys (e.g. `"Value %lld"`) need an explicit `localizations` section with English translation — they won't get one automatically from Xcode
-
-### Test Pattern
-- Swift Testing framework (`@Suite`, `@Test`, `#expect`, `#require`)
-- Mock factories: `static func mock(...defaults...) -> Entity`
-- Feature tests: `TestStore` with `withDependencies`
-
-### View Pattern
-- Content views separate from store-connected views
-- Callbacks for navigation (not store references)
-- `#Preview` blocks with mock data
-- Accessibility identifiers and labels
-- In coordinator views (`ExploreRootView`, `SearchRootView`), each destination must be a `private func` helper — never inline in `switch` cases. Both coordinators must be updated consistently (see `docs/SWIFTUI.md`)
 
 $ARGUMENTS

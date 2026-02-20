@@ -59,7 +59,7 @@ public struct TVSeriesDetailsFeature: Sendable {
 
     public enum Navigation: Equatable, Hashable {
         case tvSeriesIntelligence(id: Int)
-        case seasonDetails(tvSeriesID: Int, seasonNumber: Int)
+        case seasonDetails(tvSeriesID: Int, seasonNumber: Int, seasonName: String)
     }
 
     public init() {}

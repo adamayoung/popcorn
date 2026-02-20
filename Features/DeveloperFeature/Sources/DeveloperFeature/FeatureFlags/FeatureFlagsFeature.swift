@@ -23,7 +23,7 @@ public struct FeatureFlagsFeature: Sendable {
     ///
     /// Tracks the current view state and provides computed properties for loading and ready states.
     @ObservableState
-    public struct State {
+    public struct State: Equatable {
         /// The current view state of the feature flags screen.
         public var viewState: ViewState<ViewSnapshot>
 

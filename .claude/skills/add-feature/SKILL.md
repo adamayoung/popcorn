@@ -238,4 +238,18 @@ Wire into the parent feature following the `add-screen` workflow.
 
 Use `TestStore` from TCA for reducer testing.
 
+### 8. Register Tests in Test Plan
+
+Add the new test target to `TestPlans/PopcornUnitTests.xctestplan` so tests run as part of the test plan. Add an entry to the `testTargets` array:
+
+```json
+{
+  "target" : {
+    "containerPath" : "container:Features\/{FeatureName}Feature",
+    "identifier" : "{FeatureName}FeatureTests",
+    "name" : "{FeatureName}FeatureTests"
+  }
+}
+```
+
 $ARGUMENTS
