@@ -69,7 +69,7 @@ struct TVSeriesDetailsFeatureTests {
             $0.tvSeriesDetailsClient.isBackdropFocalPointEnabled = { false }
         }
 
-        await store.send(.navigate(.seasonDetails(tvSeriesID: 66732, seasonNumber: 1)))
+        await store.send(.navigate(.seasonDetails(tvSeriesID: 66732, seasonNumber: 1, seasonName: "Season 1")))
     }
 
 }

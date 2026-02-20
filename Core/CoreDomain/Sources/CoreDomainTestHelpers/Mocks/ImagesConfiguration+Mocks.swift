@@ -14,13 +14,15 @@ public extension ImagesConfiguration {
         posterURLHandler: @escaping URLHandler = Self.posterURLHandlerMock,
         backdropURLHandler: @escaping URLHandler = Self.backdropURLHandlerMock,
         logoURLHandler: @escaping URLHandler = Self.logoURLHandlerMock,
-        profileURLHandler: @escaping URLHandler = Self.profileURLHandlerMock
+        profileURLHandler: @escaping URLHandler = Self.profileURLHandlerMock,
+        stillURLHandler: @escaping URLHandler = Self.stillURLHandlerMock
     ) -> ImagesConfiguration {
         ImagesConfiguration(
             posterURLHandler: posterURLHandler,
             backdropURLHandler: backdropURLHandler,
             logoURLHandler: logoURLHandler,
-            profileURLHandler: profileURLHandler
+            profileURLHandler: profileURLHandler,
+            stillURLHandler: stillURLHandler
         )
     }
 
@@ -54,5 +56,13 @@ public extension ImagesConfiguration {
         }
 
         return URL(string: "https://image.popcorn.dev/profile/\(idealWidth)\(path)")
+    }
+
+    static func stillURLHandlerMock(path: URL?, idealWidth: Int) -> URL? {
+        guard let path = path?.absoluteString else {
+            return nil
+        }
+
+        return URL(string: "https://image.popcorn.dev/still/\(idealWidth)\(path)")
     }
 }

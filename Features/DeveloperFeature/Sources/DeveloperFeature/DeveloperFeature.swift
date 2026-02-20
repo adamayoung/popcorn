@@ -12,7 +12,7 @@ import Foundation
 public struct DeveloperFeature {
 
     @ObservableState
-    public struct State {
+    public struct State: Equatable {
         var path = StackState<Path.State>()
 
         public init() {}
@@ -39,3 +39,5 @@ public struct DeveloperFeature {
         .forEach(\.path, action: \.path)
     }
 }
+
+extension DeveloperFeature.Path.State: Equatable {}

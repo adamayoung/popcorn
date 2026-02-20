@@ -275,27 +275,22 @@ struct DefaultTVSeriesRepositoryImagesTests {
         )
     }
 
-    @Test("images for TV series should throw on local cache save error")
-    func imagesForTVSeries_shouldThrowOnLocalCacheSaveError() async {
+    @Test("images for TV series should return remote data when local cache save fails")
+    func imagesForTVSeries_shouldReturnRemoteDataWhenLocalCacheSaveFails() async throws {
         let tvSeriesID = 2323
-        let imageCollection = ImageCollection.mock(id: tvSeriesID)
+        let expectedImageCollection = ImageCollection.mock(id: tvSeriesID)
         mockLocalDataSource.imagesForTVSeriesStub = .success(nil)
         mockLocalDataSource.setImagesStub = .failure(.unknown())
-        mockRemoteDataSource.imagesForTVSeriesStub = .success(imageCollection)
+        mockRemoteDataSource.imagesForTVSeriesStub = .success(expectedImageCollection)
 
         let repository = DefaultTVSeriesRepository(
             remoteDataSource: mockRemoteDataSource,
             localDataSource: mockLocalDataSource
         )
 
-        await #expect(
-            performing: {
-                try await repository.images(forTVSeries: tvSeriesID)
-            },
-            throws: { error in
-                error is TVSeriesRepositoryError
-            }
-        )
+        let result = try await repository.images(forTVSeries: tvSeriesID)
+
+        #expect(result.id == expectedImageCollection.id)
     }
 
 }

@@ -78,6 +78,7 @@ extension TVSeriesDetailsContentView {
                 seasons: tvSeries.seasons,
                 didSelectSeason: didSelectSeason
             )
+            .accessibilityIdentifier("tv-series-details.seasons.carousel")
         }
     }
 

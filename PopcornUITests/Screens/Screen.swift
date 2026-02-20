@@ -8,23 +8,18 @@
 import XCTest
 
 @MainActor
-class Screen {
+protocol Screen {
+    var app: XCUIApplication { get }
+    var uniqueElement: XCUIElement { get }
+}
 
-    let app: XCUIApplication
+extension Screen {
 
-    var uniqueElement: XCUIElement {
-        fatalError("uniqueElement not implemented")
-    }
-
-    init(app: XCUIApplication) {
-        self.app = app
-        assertScreenExists()
-    }
-
-    func assertScreenExists() {
+    func assertScreenExists(file: StaticString = #filePath, line: UInt = #line) {
         XCTAssertTrue(
             uniqueElement.waitForExistence(timeout: 5),
-            "App is expecting to be on \(String(describing: type(of: self)))"
+            "App is expecting to be on \(String(describing: type(of: self)))",
+            file: file, line: line
         )
     }
 

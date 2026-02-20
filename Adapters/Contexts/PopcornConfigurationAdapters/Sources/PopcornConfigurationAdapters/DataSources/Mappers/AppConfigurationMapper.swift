@@ -33,6 +33,9 @@ struct AppConfigurationMapper {
             },
             profileURLHandler: { path, idealWidth in
                 tmdbImagesConfiguration.profileURL(for: path, idealWidth: idealWidth)
+            },
+            stillURLHandler: { path, idealWidth in
+                tmdbImagesConfiguration.stillURL(for: path, idealWidth: idealWidth)
             }
         )
     }

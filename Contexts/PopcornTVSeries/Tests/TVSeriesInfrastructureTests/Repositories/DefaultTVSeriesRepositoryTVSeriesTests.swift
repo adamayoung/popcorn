@@ -313,27 +313,22 @@ struct DefaultTVSeriesRepositoryTVSeriesTests {
         )
     }
 
-    @Test("tvSeries with ID should throw on local cache save error")
-    func tvSeriesWithID_shouldThrowOnLocalCacheSaveError() async {
+    @Test("tvSeries with ID should return remote data when local cache save fails")
+    func tvSeriesWithID_shouldReturnRemoteDataWhenLocalCacheSaveFails() async throws {
         let id = 1010
-        let tvSeries = TVSeries.mock(id: id)
+        let expectedTVSeries = TVSeries.mock(id: id)
         mockLocalDataSource.tvSeriesWithIDStub = .success(nil)
         mockLocalDataSource.setTVSeriesStub = .failure(.unknown())
-        mockRemoteDataSource.tvSeriesWithIDStub = .success(tvSeries)
+        mockRemoteDataSource.tvSeriesWithIDStub = .success(expectedTVSeries)
 
         let repository = DefaultTVSeriesRepository(
             remoteDataSource: mockRemoteDataSource,
             localDataSource: mockLocalDataSource
         )
 
-        await #expect(
-            performing: {
-                try await repository.tvSeries(withID: id)
-            },
-            throws: { error in
-                error is TVSeriesRepositoryError
-            }
-        )
+        let result = try await repository.tvSeries(withID: id)
+
+        #expect(result == expectedTVSeries)
     }
 
     @Test("tvSeries with ID should map local error correctly")

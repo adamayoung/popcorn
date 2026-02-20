@@ -35,9 +35,7 @@ final class DefaultPopularMovieRepository: PopularMovieRepository {
             throw PopularMovieRepositoryError(error)
         }
 
-        do { try await localDataSource.setPopular(movies, page: page) } catch let error {
-            throw PopularMovieRepositoryError(error)
-        }
+        try? await localDataSource.setPopular(movies, page: page)
 
         return movies
     }

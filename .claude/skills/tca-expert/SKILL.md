@@ -19,6 +19,7 @@ Use this skill for authoritative guidance on TCA 1.23+. Covers reducer compositi
 6. Keep `Reduce` body lightweight — offload async/CPU work to `.run` effects.
 7. Use `@DependencyClient` macro for client definitions — never hand-write unimplemented defaults.
 8. Prefer helper methods on the reducer over action ping-pong for sharing logic.
+9. Always use the latest non-deprecated TCA APIs for the version in use. Check the project's resolved TCA version and avoid any API marked `@available(*, deprecated, ...)`. In particular, never use `@Reducer(state:action:)` — use extensions for conformances instead.
 
 ## First 60 seconds (triage template)
 

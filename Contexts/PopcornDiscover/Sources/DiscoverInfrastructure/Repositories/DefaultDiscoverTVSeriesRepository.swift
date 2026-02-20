@@ -40,11 +40,7 @@ final class DefaultDiscoverTVSeriesRepository: DiscoverTVSeriesRepository {
             throw DiscoverTVSeriesRepositoryError(error)
         }
 
-        do {
-            try await localDataSource.setTVSeries(tvSeries, filter: filter, page: page)
-        } catch let error {
-            throw DiscoverTVSeriesRepositoryError(error)
-        }
+        try? await localDataSource.setTVSeries(tvSeries, filter: filter, page: page)
 
         return tvSeries
     }

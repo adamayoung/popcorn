@@ -37,11 +37,7 @@ final class DefaultMovieCreditsRepository: MovieCreditsRepository {
             throw MovieCreditsRepositoryError(error)
         }
 
-        do {
-            try await localDataSource.setCredits(credits, forMovie: movieID)
-        } catch let error {
-            throw MovieCreditsRepositoryError(error)
-        }
+        try? await localDataSource.setCredits(credits, forMovie: movieID)
 
         return credits
     }

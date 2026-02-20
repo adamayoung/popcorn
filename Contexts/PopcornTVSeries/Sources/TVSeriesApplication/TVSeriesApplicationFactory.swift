@@ -11,13 +11,16 @@ import TVSeriesDomain
 package final class TVSeriesApplicationFactory: Sendable {
 
     private let tvSeriesRepository: any TVSeriesRepository
+    private let tvSeasonRepository: any TVSeasonRepository
     private let appConfigurationProvider: any AppConfigurationProviding
 
     package init(
         tvSeriesRepository: some TVSeriesRepository,
+        tvSeasonRepository: some TVSeasonRepository,
         appConfigurationProvider: some AppConfigurationProviding
     ) {
         self.tvSeriesRepository = tvSeriesRepository
+        self.tvSeasonRepository = tvSeasonRepository
         self.appConfigurationProvider = appConfigurationProvider
     }
 
@@ -32,6 +35,13 @@ package final class TVSeriesApplicationFactory: Sendable {
     -> some FetchTVSeriesImageCollectionUseCase {
         DefaultFetchTVSeriesImageCollectionUseCase(
             repository: tvSeriesRepository,
+            appConfigurationProvider: appConfigurationProvider
+        )
+    }
+
+    package func makeFetchTVSeasonDetailsUseCase() -> some FetchTVSeasonDetailsUseCase {
+        DefaultFetchTVSeasonDetailsUseCase(
+            repository: tvSeasonRepository,
             appConfigurationProvider: appConfigurationProvider
         )
     }

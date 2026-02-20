@@ -10,32 +10,31 @@ import XCTest
 @MainActor
 final class AppScreen: Screen {
 
-    override var uniqueElement: XCUIElement {
+    let app: XCUIApplication
+
+    var uniqueElement: XCUIElement {
         app
     }
 
-    @discardableResult
-    func tapExploreTab() -> ExploreScreen {
+    init(app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
+        self.app = app
+        assertScreenExists(file: file, line: line)
+    }
+
+    func tapExploreTab() {
         exploreTab.tap()
-        return ExploreScreen(app: app)
     }
 
-    @discardableResult
-    func tapWatchlistTab() -> WatchlistScreen {
+    func tapWatchlistTab() {
         watchlistTab.tap()
-        return WatchlistScreen(app: app)
     }
 
-    @discardableResult
-    func tapGamesTab() -> GamesCatalogScreen {
+    func tapGamesTab() {
         gamesTab.tap()
-        return GamesCatalogScreen(app: app)
     }
 
-    @discardableResult
-    func tapSearchTab() -> MediaSearchScreen {
+    func tapSearchTab() {
         searchTab.tap()
-        return MediaSearchScreen(app: app)
     }
 
 }

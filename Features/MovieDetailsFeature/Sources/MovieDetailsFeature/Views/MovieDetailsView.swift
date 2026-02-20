@@ -36,11 +36,18 @@ public struct MovieDetailsView: View {
                 if store.isWatchlistEnabled {
                     ToolbarItem(placement: toolbarTrailingPlacement) {
                         Button(
-                            snapshot.movie.isOnWatchlist ? "REMOVE_FROM_WATCHLIST" : "ADD_TO_WATCHLIST",
+                            snapshot.movie.isOnWatchlist ?
+                                LocalizedStringResource("REMOVE_FROM_WATCHLIST", bundle: .module) :
+                                LocalizedStringResource("ADD_TO_WATCHLIST", bundle: .module),
                             systemImage: snapshot.movie.isOnWatchlist ? "eye" : "plus"
                         ) {
                             store.send(.toggleOnWatchlist)
                         }
+                        .accessibilityIdentifier(
+                            snapshot.movie.isOnWatchlist
+                                ? "movie-details.watchlist-toggle.on"
+                                : "movie-details.watchlist-toggle.off"
+                        )
                         .contentTransition(.symbolEffect(.replace))
                         .animation(reduceMotion ? nil : .default, value: snapshot.movie.isOnWatchlist)
                         .sensoryFeedback(.selection, trigger: snapshot.movie.isOnWatchlist)
@@ -50,7 +57,7 @@ public struct MovieDetailsView: View {
                 if store.isIntelligenceEnabled {
                     ToolbarItem(placement: toolbarTrailingPlacement) {
                         Button(
-                            "MOVIE_INTELLIGENCE",
+                            LocalizedStringResource("MOVIE_INTELLIGENCE", bundle: .module),
                             systemImage: "apple.intelligence"
                         ) {
                             store.send(.navigate(.movieIntelligence(id: snapshot.movie.id)))

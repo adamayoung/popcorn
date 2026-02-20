@@ -41,6 +41,32 @@ struct ParentFeature: Sendable {
 
 The `@Reducer enum Path` auto-generates `State` and `Action` enums via the macro.
 
+### Path.State conformances (Equatable, etc.)
+
+When the parent `State` conforms to `Equatable` (required for `TestStore`), `StackState<Path.State>` must also be `Equatable`, which requires `Path.State: Equatable`. Add conformance via an extension **outside** the parent struct — never use the deprecated `@Reducer(state: .equatable)` form:
+
+```swift
+@Reducer
+struct ParentFeature: Sendable {
+    @Reducer
+    enum Path {
+        case detail(DetailFeature)
+        case settings(SettingsFeature)
+    }
+
+    @ObservableState
+    struct State: Sendable, Equatable {
+        var path = StackState<Path.State>()
+    }
+    // ...
+}
+
+// Extension MUST be outside the parent struct
+extension ParentFeature.Path.State: Equatable {}
+```
+
+All cases' associated `State` types must also conform to `Equatable` for this to compile.
+
 ### Wire in reducer body
 
 ```swift

@@ -59,7 +59,7 @@ public struct TVSeriesDetailsFeature: Sendable {
 
     public enum Navigation: Equatable, Hashable {
         case tvSeriesIntelligence(id: Int)
-        case seasonDetails(tvSeriesID: Int, seasonNumber: Int)
+        case seasonDetails(tvSeriesID: Int, seasonNumber: Int, seasonName: String)
     }
 
     public init() {}
@@ -78,10 +78,6 @@ public struct TVSeriesDetailsFeature: Sendable {
                 return .none
 
             case .fetch:
-                if state.viewState.isReady {
-                    state.viewState = .loading
-                }
-
                 return handleFetchTVSeries(&state)
 
             case .loaded(let snapshot):

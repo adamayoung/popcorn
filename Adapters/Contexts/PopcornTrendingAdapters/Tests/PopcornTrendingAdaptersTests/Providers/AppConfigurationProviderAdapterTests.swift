@@ -31,9 +31,9 @@ struct AppConfigurationProviderAdapterTests {
         let result = try await adapter.appConfiguration()
 
         #expect(mockUseCase.executeCallCount == 1)
-        // Verify images configuration is present - we can't directly compare closures
+        // Verify images configuration is present — we can't directly compare closures
         // so we verify that the result is returned successfully
-        #expect(result.images != nil)
+        _ = result.images
     }
 
     @Test("appConfiguration throws unauthorised error when use case throws unauthorised")

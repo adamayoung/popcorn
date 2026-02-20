@@ -131,6 +131,29 @@ struct AppConfigurationMapperTests {
         #expect(profileURLSet?.path == profilePath)
     }
 
+    @Test("Maps TMDb ImagesConfiguration stillURL handler correctly")
+    func mapsImagesConfigurationStillURLHandler() throws {
+        let baseURL = try #require(URL(string: "http://image.tmdb.org/t/p/"))
+        let secureBaseURL = try #require(URL(string: "https://image.tmdb.org/t/p/"))
+        let tmdbImagesConfiguration = TMDb.ImagesConfiguration(
+            baseURL: baseURL,
+            secureBaseURL: secureBaseURL,
+            backdropSizes: ["w300", "w780", "w1280", "original"],
+            logoSizes: ["w45", "w92", "w154", "w185", "w300", "w500", "original"],
+            posterSizes: ["w92", "w154", "w185", "w342", "w500", "w780", "original"],
+            profileSizes: ["w45", "w185", "h632", "original"],
+            stillSizes: ["w92", "w185", "w300", "original"]
+        )
+
+        let result = mapper.map(tmdbImagesConfiguration)
+        let stillPath = try #require(URL(string: "/still123.jpg"))
+
+        let stillURLSet = result.stillURLSet(for: stillPath)
+
+        #expect(stillURLSet != nil)
+        #expect(stillURLSet?.path == stillPath)
+    }
+
     @Test("Returns nil URL set when path is nil")
     func returnsNilURLSetWhenPathIsNil() throws {
         let baseURL = try #require(URL(string: "http://image.tmdb.org/t/p/"))
@@ -151,6 +174,7 @@ struct AppConfigurationMapperTests {
         #expect(result.backdropURLSet(for: nil) == nil)
         #expect(result.logoURLSet(for: nil) == nil)
         #expect(result.profileURLSet(for: nil) == nil)
+        #expect(result.stillURLSet(for: nil) == nil)
     }
 
 }

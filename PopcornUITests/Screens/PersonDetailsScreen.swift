@@ -10,8 +10,15 @@ import XCTest
 @MainActor
 final class PersonDetailsScreen: Screen {
 
-    override var uniqueElement: XCUIElement {
+    let app: XCUIApplication
+
+    var uniqueElement: XCUIElement {
         view
+    }
+
+    init(app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
+        self.app = app
+        assertScreenExists(file: file, line: line)
     }
 
     func assertPersonName(_ name: String, file: StaticString = #filePath, line: UInt = #line) {
