@@ -25,14 +25,14 @@ struct TVSeasonDetailsContentView: View {
             }
 
             Section {
-                ForEach(Array(episodes.enumerated()), id: \.element.id) { offset, episode in
+                ForEach(episodes) { episode in
                     Button {
                         didSelectEpisode(episode.episodeNumber)
                     } label: {
                         TVEpisodeRowView(episode: episode)
                     }
                     .accessibilityHint(Text("VIEW_EPISODE_DETAILS_HINT", bundle: .module))
-                    .accessibilityIdentifier("tv-season-details.episodes.episode.\(offset)")
+                    .accessibilityIdentifier("tv-season-details.episodes.episode.\(episode.episodeNumber)")
                     .buttonStyle(.plain)
                 }
             } header: {

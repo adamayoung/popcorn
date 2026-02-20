@@ -86,6 +86,9 @@ actor SwiftDataTVSeasonLocalDataSource: TVSeasonLocalDataSource {
 
         let mapper = TVSeasonEpisodesEntityMapper()
         if let existing {
+            for episode in existing.episodes {
+                modelContext.delete(episode)
+            }
             mapper.map(season, to: existing)
         } else {
             let entity = mapper.map(season, tvSeriesID: tvSeriesID)

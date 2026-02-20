@@ -93,7 +93,7 @@ extension TVSeriesDetailsView {
             isBackdropFocalPointEnabled: store.isBackdropFocalPointEnabled,
             didSelectSeason: { seasonNumber in
                 let seasonName = tvSeries.seasons
-                    .first { $0.seasonNumber == seasonNumber }?.name ?? ""
+                    .first { $0.seasonNumber == seasonNumber }?.name ?? "Season \(seasonNumber)"
                 store.send(
                     .navigate(
                         .seasonDetails(
