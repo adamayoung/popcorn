@@ -39,10 +39,9 @@ final class DefaultFetchTVSeasonDetailsUseCase: FetchTVSeasonDetailsUseCase {
         let season: TVSeason
         let appConfiguration: AppConfiguration
         do {
-            (season, appConfiguration) = try await (
-                repository.season(seasonNumber, inTVSeries: tvSeriesID),
-                appConfigurationProvider.appConfiguration()
-            )
+            async let seasonResult = repository.season(seasonNumber, inTVSeries: tvSeriesID)
+            async let configResult = appConfigurationProvider.appConfiguration()
+            (season, appConfiguration) = try await (seasonResult, configResult)
         } catch let error {
             let detailsError = FetchTVSeasonDetailsError(error)
             span?.setData(error: detailsError)

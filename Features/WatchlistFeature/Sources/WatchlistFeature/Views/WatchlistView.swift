@@ -88,7 +88,7 @@ extension WatchlistView {
 
     private func content(movies: [MoviePreview]) -> some View {
         LazyVGrid(columns: Self.columns, spacing: 16) {
-            ForEach(Array(movies.enumerated()), id: \.offset) { offset, movie in
+            ForEach(Array(movies.enumerated()), id: \.element.id) { offset, movie in
                 let transitionID = "\(movie.id)"
                 Button {
                     store.send(
@@ -102,7 +102,6 @@ extension WatchlistView {
                             RoundedRectangle(cornerRadius: 10)
                                 .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                         }
-                        .accessibilityLabel(movie.title)
                 }
                 .accessibilityIdentifier("watchlist.movie.\(offset)")
                 .accessibilityLabel(movie.title)

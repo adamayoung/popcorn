@@ -74,9 +74,10 @@ actor SwiftDataTVSeasonLocalDataSource: TVSeasonLocalDataSource {
             seasonNumber: season.seasonNumber
         )
 
-        let descriptor = FetchDescriptor<TVSeasonEpisodesEntity>(
+        var descriptor = FetchDescriptor<TVSeasonEpisodesEntity>(
             predicate: #Predicate { $0.compositeKey == key }
         )
+        descriptor.fetchLimit = 1
         let existing: TVSeasonEpisodesEntity?
         do {
             existing = try modelContext.fetch(descriptor).first

@@ -22,6 +22,7 @@ struct TVSeasonEpisodesEntityMapper {
             name: entity.seasonName,
             seasonNumber: entity.seasonNumber,
             overview: entity.overview,
+            posterPath: entity.posterPath,
             episodes: episodes
         )
     }
@@ -41,6 +42,7 @@ struct TVSeasonEpisodesEntityMapper {
             seasonName: season.name,
             seasonNumber: season.seasonNumber,
             overview: season.overview,
+            posterPath: season.posterPath,
             episodes: season.episodes.map { episodeMapper.map($0) }
         )
     }
@@ -51,6 +53,7 @@ struct TVSeasonEpisodesEntityMapper {
     ) {
         entity.seasonName = season.name
         entity.overview = season.overview
+        entity.posterPath = season.posterPath
         entity.episodes = season.episodes.map { episodeMapper.map($0) }
         entity.cachedAt = .now
     }

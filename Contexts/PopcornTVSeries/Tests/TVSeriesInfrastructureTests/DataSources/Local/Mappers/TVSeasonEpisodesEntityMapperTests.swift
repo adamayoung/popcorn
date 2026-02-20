@@ -27,6 +27,7 @@ struct TVSeasonEpisodesEntityMapperTests {
         #expect(result.name == entity.seasonName)
         #expect(result.seasonNumber == entity.seasonNumber)
         #expect(result.overview == entity.overview)
+        #expect(result.posterPath == entity.posterPath)
         #expect(result.episodes.count == entity.episodes.count)
     }
 
@@ -68,11 +69,13 @@ struct TVSeasonEpisodesEntityMapperTests {
 
     @Test("map domain to entity creates entity with correct properties")
     func mapDomainToEntity_createsEntityWithCorrectProperties() {
+        let posterPath = URL(string: "/season1.jpg")
         let season = TVSeason(
             id: 3572,
             name: "Season 1",
             seasonNumber: 1,
             overview: "Season overview",
+            posterPath: posterPath,
             episodes: [TVEpisode.mock(id: 1), TVEpisode.mock(id: 2)]
         )
 
@@ -84,6 +87,7 @@ struct TVSeasonEpisodesEntityMapperTests {
         #expect(result.seasonName == "Season 1")
         #expect(result.seasonNumber == 1)
         #expect(result.overview == "Season overview")
+        #expect(result.posterPath == posterPath)
         #expect(result.episodes.count == 2)
     }
 
@@ -105,11 +109,13 @@ struct TVSeasonEpisodesEntityMapperTests {
     @Test("map domain to existing entity updates properties")
     func mapDomainToExistingEntity_updatesProperties() {
         let entity = TVSeasonEpisodesEntity.makeEntity()
+        let newPosterPath = URL(string: "/updated-poster.jpg")
         let updatedSeason = TVSeason(
             id: 3572,
             name: "Updated Season",
             seasonNumber: 1,
             overview: "New overview",
+            posterPath: newPosterPath,
             episodes: [TVEpisode.mock(id: 99, name: "New Episode")]
         )
 
@@ -117,6 +123,7 @@ struct TVSeasonEpisodesEntityMapperTests {
 
         #expect(entity.seasonName == "Updated Season")
         #expect(entity.overview == "New overview")
+        #expect(entity.posterPath == newPosterPath)
         #expect(entity.episodes.count == 1)
         #expect(entity.episodes[0].name == "New Episode")
     }
@@ -131,6 +138,7 @@ extension TVSeasonEpisodesEntity {
         seasonName: String = "Season 1",
         seasonNumber: Int = 1,
         overview: String? = "The first season of Breaking Bad.",
+        posterPath: URL? = URL(string: "/season1.jpg"),
         episodes: [TVEpisodeEntity]? = nil
     ) -> TVSeasonEpisodesEntity {
         let key = TVSeasonEpisodesEntity.makeCompositeKey(
@@ -148,6 +156,7 @@ extension TVSeasonEpisodesEntity {
             seasonName: seasonName,
             seasonNumber: seasonNumber,
             overview: overview,
+            posterPath: posterPath,
             episodes: episodeList
         )
     }

@@ -17,6 +17,7 @@ final class TVSeasonEpisodesEntity: Equatable, ModelExpirable {
     var seasonName: String
     var seasonNumber: Int
     var overview: String?
+    var posterPath: URL?
     @Relationship(deleteRule: .cascade) var episodes: [TVEpisodeEntity]
     var cachedAt: Date
 
@@ -27,6 +28,7 @@ final class TVSeasonEpisodesEntity: Equatable, ModelExpirable {
         seasonName: String,
         seasonNumber: Int,
         overview: String? = nil,
+        posterPath: URL? = nil,
         episodes: [TVEpisodeEntity] = [],
         cachedAt: Date = Date.now
     ) {
@@ -36,6 +38,7 @@ final class TVSeasonEpisodesEntity: Equatable, ModelExpirable {
         self.seasonName = seasonName
         self.seasonNumber = seasonNumber
         self.overview = overview
+        self.posterPath = posterPath
         self.episodes = episodes
         self.cachedAt = cachedAt
     }
