@@ -39,6 +39,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Install xcsift
+        run: |
+          if ! command -v xcsift >/dev/null 2>&1; then
+            HOMEBREW_NO_AUTO_UPDATE=1 brew install xcsift
+          fi
+
       - name: Cache SwiftPM and DerivedData
         uses: actions/cache@v4
         with:
@@ -53,18 +59,20 @@ jobs:
 
       - name: Resolve package dependencies
         run: |
-          xcodebuild \
+          set -o pipefail
+          NSUnbufferedIO=YES xcodebuild \
             -scheme Popcorn \
             -destination "platform=iOS Simulator,name=iPhone 17,OS=latest" \
             -skipMacroValidation \
             -clonedSourcePackagesDirPath .spm \
             -derivedDataPath DerivedData \
             CODE_SIGNING_ALLOWED=NO \
-            -resolvePackageDependencies
+            -resolvePackageDependencies 2>&1 | xcsift -f github-actions --Werror
 
       - name: Build for testing (PopcornUnitTests)
         run: |
-          xcodebuild \
+          set -o pipefail
+          NSUnbufferedIO=YES xcodebuild \
             -scheme Popcorn \
             -destination "platform=iOS Simulator,name=iPhone 17,OS=latest" \
             -skipMacroValidation \
@@ -72,11 +80,12 @@ jobs:
             -clonedSourcePackagesDirPath .spm \
             -derivedDataPath DerivedData \
             CODE_SIGNING_ALLOWED=NO \
-            build-for-testing
+            build-for-testing 2>&1 | xcsift -f github-actions --Werror
 
       - name: Test without building (PopcornUnitTests)
         run: |
-          xcodebuild \
+          set -o pipefail
+          NSUnbufferedIO=YES xcodebuild \
             -scheme Popcorn \
             -destination "platform=iOS Simulator,name=iPhone 17,OS=latest" \
             -skipMacroValidation \
@@ -84,4 +93,4 @@ jobs:
             -clonedSourcePackagesDirPath .spm \
             -derivedDataPath DerivedData \
             CODE_SIGNING_ALLOWED=NO \
-            test-without-building
+            test-without-building 2>&1 | xcsift -f github-actions
