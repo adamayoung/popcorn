@@ -44,7 +44,6 @@ public struct TVSeasonDetailsView: View {
                 EmptyView()
             }
         }
-        .accessibilityIdentifier("tv-season-details.view")
         .navigationTitle(Text(verbatim: store.seasonName))
         #if os(iOS)
             .navigationBarTitleDisplayMode(.large)

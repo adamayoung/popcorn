@@ -14,74 +14,82 @@ final class ExploreScreen: Screen {
         view
     }
 
-    func discoverMovieTitle(index: Int = 0) -> String {
+    func discoverMovieTitle(index: Int = 0, file: StaticString = #filePath, line: UInt = #line) -> String {
         scrollTo(discoverMoviesCarousel)
-        XCTAssertTrue(discoverMoviesCarousel.waitForExistence(timeout: 2))
+        XCTAssertTrue(discoverMoviesCarousel.waitForExistence(timeout: 2), file: file, line: line)
         return discoverMovie(at: index).label
     }
 
-    func trendingMovieTitle(index: Int = 0) -> String {
+    func trendingMovieTitle(index: Int = 0, file: StaticString = #filePath, line: UInt = #line) -> String {
         scrollTo(trendingMoviesCarousel)
-        XCTAssertTrue(trendingMoviesCarousel.waitForExistence(timeout: 2))
+        XCTAssertTrue(trendingMoviesCarousel.waitForExistence(timeout: 2), file: file, line: line)
         return trendingMovie(at: index).label
     }
 
-    func popularMovieTitle(index: Int = 0) -> String {
+    func popularMovieTitle(index: Int = 0, file: StaticString = #filePath, line: UInt = #line) -> String {
         scrollTo(popularMoviesCarousel)
-        XCTAssertTrue(popularMoviesCarousel.waitForExistence(timeout: 2))
+        XCTAssertTrue(popularMoviesCarousel.waitForExistence(timeout: 2), file: file, line: line)
         return popularMovie(at: index).label
     }
 
-    func trendingTVSeriesName(index: Int = 0) -> String {
+    func trendingTVSeriesName(index: Int = 0, file: StaticString = #filePath, line: UInt = #line) -> String {
         scrollTo(trendingTVSeriesCarousel)
-        XCTAssertTrue(trendingTVSeriesCarousel.waitForExistence(timeout: 2))
+        XCTAssertTrue(trendingTVSeriesCarousel.waitForExistence(timeout: 2), file: file, line: line)
         return trendingTVSeries(at: index).label
     }
 
-    func trendingPersonName(index: Int = 0) -> String {
+    func trendingPersonName(index: Int = 0, file: StaticString = #filePath, line: UInt = #line) -> String {
         scrollTo(trendingPeopleCarousel)
-        XCTAssertTrue(trendingPeopleCarousel.waitForExistence(timeout: 2))
+        XCTAssertTrue(trendingPeopleCarousel.waitForExistence(timeout: 2), file: file, line: line)
         return trendingPerson(at: index).label
     }
 
     @discardableResult
-    func tapOnDiscoverMovie(index: Int = 0) -> MovieDetailsScreen {
+    func tapOnDiscoverMovie(index: Int = 0, file: StaticString = #filePath, line: UInt = #line) -> MovieDetailsScreen {
         scrollTo(discoverMoviesCarousel)
-        XCTAssertTrue(discoverMoviesCarousel.waitForExistence(timeout: 2))
+        XCTAssertTrue(discoverMoviesCarousel.waitForExistence(timeout: 2), file: file, line: line)
         discoverMovie(at: index).tap()
-        return MovieDetailsScreen(app: app)
+        return MovieDetailsScreen(app: app, file: file, line: line)
     }
 
     @discardableResult
-    func tapOnTrendingMovie(index: Int = 0) -> MovieDetailsScreen {
+    func tapOnTrendingMovie(index: Int = 0, file: StaticString = #filePath, line: UInt = #line) -> MovieDetailsScreen {
         scrollTo(trendingMoviesCarousel)
-        XCTAssertTrue(trendingMoviesCarousel.waitForExistence(timeout: 2))
+        XCTAssertTrue(trendingMoviesCarousel.waitForExistence(timeout: 2), file: file, line: line)
         trendingMovie(at: index).tap()
-        return MovieDetailsScreen(app: app)
+        return MovieDetailsScreen(app: app, file: file, line: line)
     }
 
     @discardableResult
-    func tapOnPopularMovie(index: Int = 0) -> MovieDetailsScreen {
+    func tapOnPopularMovie(index: Int = 0, file: StaticString = #filePath, line: UInt = #line) -> MovieDetailsScreen {
         scrollTo(popularMoviesCarousel)
-        XCTAssertTrue(popularMoviesCarousel.waitForExistence(timeout: 2))
+        XCTAssertTrue(popularMoviesCarousel.waitForExistence(timeout: 2), file: file, line: line)
         popularMovie(at: index).tap()
-        return MovieDetailsScreen(app: app)
+        return MovieDetailsScreen(app: app, file: file, line: line)
     }
 
     @discardableResult
-    func tapOnTrendingTVSeries(index: Int = 0) -> TVSeriesDetailsScreen {
+    func tapOnTrendingTVSeries(
+        index: Int = 0,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) -> TVSeriesDetailsScreen {
         scrollTo(trendingTVSeriesCarousel)
-        XCTAssertTrue(trendingTVSeriesCarousel.waitForExistence(timeout: 2))
+        XCTAssertTrue(trendingTVSeriesCarousel.waitForExistence(timeout: 2), file: file, line: line)
         trendingTVSeries(at: index).tap()
-        return TVSeriesDetailsScreen(app: app)
+        return TVSeriesDetailsScreen(app: app, file: file, line: line)
     }
 
     @discardableResult
-    func tapOnTrendingPerson(index: Int = 0) -> PersonDetailsScreen {
+    func tapOnTrendingPerson(
+        index: Int = 0,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) -> PersonDetailsScreen {
         scrollTo(trendingPeopleCarousel)
-        XCTAssertTrue(trendingPeopleCarousel.waitForExistence(timeout: 2))
+        XCTAssertTrue(trendingPeopleCarousel.waitForExistence(timeout: 2), file: file, line: line)
         trendingPerson(at: index).tap()
-        return PersonDetailsScreen(app: app)
+        return PersonDetailsScreen(app: app, file: file, line: line)
     }
 
 }

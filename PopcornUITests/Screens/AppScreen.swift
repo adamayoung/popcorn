@@ -14,28 +14,20 @@ final class AppScreen: Screen {
         app
     }
 
-    @discardableResult
-    func tapExploreTab() -> ExploreScreen {
+    func tapExploreTab() {
         exploreTab.tap()
-        return ExploreScreen(app: app)
     }
 
-    @discardableResult
-    func tapWatchlistTab() -> WatchlistScreen {
+    func tapWatchlistTab() {
         watchlistTab.tap()
-        return WatchlistScreen(app: app)
     }
 
-    @discardableResult
-    func tapGamesTab() -> GamesCatalogScreen {
+    func tapGamesTab() {
         gamesTab.tap()
-        return GamesCatalogScreen(app: app)
     }
 
-    @discardableResult
-    func tapSearchTab() -> MediaSearchScreen {
+    func tapSearchTab() {
         searchTab.tap()
-        return MediaSearchScreen(app: app)
     }
 
 }

@@ -18,6 +18,18 @@ final class MovieDetailsScreen: Screen {
         XCTAssertTrue(contentView(withTitle: title).waitForExistence(timeout: 5), file: file, line: line)
     }
 
+    func isOnWatchlist() -> Bool {
+        removeFromWatchlistButton.exists
+    }
+
+    func tapAddToWatchlist() {
+        addToWatchlistButton.tap()
+    }
+
+    func tapRemoveFromWatchlist() {
+        removeFromWatchlistButton.tap()
+    }
+
 }
 
 extension MovieDetailsScreen {
@@ -28,6 +40,14 @@ extension MovieDetailsScreen {
 
     private func contentView(withTitle title: String) -> XCUIElement {
         app.navigationBars.staticTexts[title]
+    }
+
+    private var addToWatchlistButton: XCUIElement {
+        app.buttons["movie-details.watchlist-toggle.off"]
+    }
+
+    private var removeFromWatchlistButton: XCUIElement {
+        app.buttons["movie-details.watchlist-toggle.on"]
     }
 
 }

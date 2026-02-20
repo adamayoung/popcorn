@@ -16,15 +16,16 @@ class Screen {
         fatalError("uniqueElement not implemented")
     }
 
-    init(app: XCUIApplication) {
+    init(app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
         self.app = app
-        assertScreenExists()
+        assertScreenExists(file: file, line: line)
     }
 
-    func assertScreenExists() {
+    func assertScreenExists(file: StaticString = #filePath, line: UInt = #line) {
         XCTAssertTrue(
             uniqueElement.waitForExistence(timeout: 5),
-            "App is expecting to be on \(String(describing: type(of: self)))"
+            "App is expecting to be on \(String(describing: type(of: self)))",
+            file: file, line: line
         )
     }
 

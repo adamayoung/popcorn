@@ -43,6 +43,7 @@ struct TVSeasonDetailsContentView: View {
         #if os(iOS)
         .listStyle(.insetGrouped)
         #endif
+        .accessibilityIdentifier("tv-season-details.view")
     }
 
 }
