@@ -55,7 +55,7 @@ jobs:
         run: |
           xcodebuild \
             -scheme Popcorn \
-            -destination "platform=iOS Simulator,OS=latest" \
+            -destination "platform=iOS Simulator,name=iPhone 17,OS=latest" \
             -skipMacroValidation \
             -clonedSourcePackagesDirPath .spm \
             -derivedDataPath DerivedData \
@@ -66,7 +66,7 @@ jobs:
         run: |
           xcodebuild \
             -scheme Popcorn \
-            -destination "platform=iOS Simulator,OS=latest" \
+            -destination "platform=iOS Simulator,name=iPhone 17,OS=latest" \
             -skipMacroValidation \
             -testPlan PopcornUnitTests \
             -clonedSourcePackagesDirPath .spm \
@@ -78,7 +78,7 @@ jobs:
         run: |
           xcodebuild \
             -scheme Popcorn \
-            -destination "platform=iOS Simulator,OS=latest" \
+            -destination "platform=iOS Simulator,name=iPhone 17,OS=latest" \
             -skipMacroValidation \
             -testPlan PopcornUnitTests \
             -clonedSourcePackagesDirPath .spm \
