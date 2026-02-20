@@ -176,8 +176,8 @@ struct DefaultDiscoverMovieRepositoryTests {
         )
     }
 
-    @Test("movies throws error when cache save fails")
-    func moviesThrowsErrorWhenCacheSaveFails() async {
+    @Test("movies returns remote data when cache save fails")
+    func moviesReturnsRemoteDataWhenCacheSaveFails() async throws {
         let remoteMovies = MoviePreview.mocks
         let saveError = NSError(domain: "test", code: 789)
         mockLocalDataSource.moviesStub = .success(nil)
@@ -186,20 +186,9 @@ struct DefaultDiscoverMovieRepositoryTests {
 
         let repository = makeRepository()
 
-        await #expect(
-            performing: {
-                try await repository.movies(filter: nil, page: 1)
-            },
-            throws: { error in
-                guard let repoError = error as? DiscoverMovieRepositoryError else {
-                    return false
-                }
-                if case .unknown = repoError {
-                    return true
-                }
-                return false
-            }
-        )
+        let result = try await repository.movies(filter: nil, page: 1)
+
+        #expect(result == remoteMovies)
     }
 
     // MARK: - Pagination Tests

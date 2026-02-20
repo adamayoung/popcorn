@@ -10,12 +10,15 @@ import SwiftUI
 
 struct TVEpisodeRowView: View {
 
+    @ScaledMetric(relativeTo: .headline)
+    private var stillHeight: CGFloat = 80
+
     let episode: TVEpisode
 
     var body: some View {
         HStack(spacing: 12) {
             StillImage(url: episode.stillURL)
-                .stillHeight(80)
+                .stillHeight(stillHeight)
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .overlay {
                     RoundedRectangle(cornerRadius: 8)

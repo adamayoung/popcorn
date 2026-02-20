@@ -218,22 +218,18 @@ struct DefaultTVSeasonRepositoryTests {
         )
     }
 
-    @Test("season should throw on local cache save error")
-    func season_shouldThrowOnLocalCacheSaveError() async {
+    @Test("season should return remote data when local cache save fails")
+    func season_shouldReturnRemoteDataWhenLocalCacheSaveFails() async throws {
+        let expectedSeason = TVSeason.mock()
         mockLocalDataSource.seasonStub = .success(nil)
         mockLocalDataSource.setSeasonStub = .failure(.unknown())
-        mockRemoteDataSource.seasonStub = .success(TVSeason.mock())
+        mockRemoteDataSource.seasonStub = .success(expectedSeason)
 
         let repository = makeRepository()
 
-        await #expect(
-            performing: {
-                try await repository.season(1, inTVSeries: 1396)
-            },
-            throws: { error in
-                error is TVSeasonRepositoryError
-            }
-        )
+        let result = try await repository.season(1, inTVSeries: 1396)
+
+        #expect(result == expectedSeason)
     }
 
     @Test("season should set error on span on remote failure")

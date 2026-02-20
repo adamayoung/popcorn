@@ -38,9 +38,7 @@ final class DefaultMovieRepository: MovieRepository {
             throw MovieRepositoryError(error)
         }
 
-        do { try await localDataSource.setMovie(movie) } catch let error {
-            throw MovieRepositoryError(error)
-        }
+        try? await localDataSource.setMovie(movie)
 
         return movie
     }
@@ -76,11 +74,7 @@ final class DefaultMovieRepository: MovieRepository {
             throw MovieRepositoryError(error)
         }
 
-        do {
-            try await localDataSource.setCertification(certification, forMovie: movieID)
-        } catch let error {
-            throw MovieRepositoryError(error)
-        }
+        try? await localDataSource.setCertification(certification, forMovie: movieID)
 
         return certification
     }

@@ -67,14 +67,7 @@ final class DefaultTVSeasonRepository: TVSeasonRepository {
             throw repositoryError
         }
 
-        do {
-            try await localDataSource.setSeason(season, inTVSeries: tvSeriesID)
-        } catch let error {
-            let repositoryError = TVSeasonRepositoryError(error)
-            span?.setData(error: repositoryError)
-            span?.finish(status: .internalError)
-            throw repositoryError
-        }
+        try? await localDataSource.setSeason(season, inTVSeries: tvSeriesID)
 
         span?.finish()
         return season

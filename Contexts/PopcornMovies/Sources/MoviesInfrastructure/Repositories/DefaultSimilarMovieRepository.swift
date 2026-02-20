@@ -37,8 +37,7 @@ final class DefaultSimilarMovieRepository: SimilarMovieRepository {
         do { movies = try await remoteDataSource.similar(toMovie: movieID, page: page) } catch let
             error { throw SimilarMovieRepositoryError(error) }
 
-        do { try await localDataSource.setSimilar(movies, toMovie: movieID, page: page) } catch let
-            error { throw SimilarMovieRepositoryError(error) }
+        try? await localDataSource.setSimilar(movies, toMovie: movieID, page: page)
 
         return movies
     }

@@ -57,14 +57,7 @@ final class DefaultTVSeriesRepository: TVSeriesRepository {
             throw repositoryError
         }
 
-        do {
-            try await localDataSource.setTVSeries(tvSeries)
-        } catch let error {
-            let repositoryError = TVSeriesRepositoryError(error)
-            span?.setData(error: repositoryError)
-            span?.finish(status: .internalError)
-            throw repositoryError
-        }
+        try? await localDataSource.setTVSeries(tvSeries)
 
         span?.finish()
         return tvSeries
@@ -107,14 +100,7 @@ final class DefaultTVSeriesRepository: TVSeriesRepository {
             throw repositoryError
         }
 
-        do {
-            try await localDataSource.setImages(imageCollection, forTVSeries: tvSeriesID)
-        } catch let error {
-            let repositoryError = TVSeriesRepositoryError(error)
-            span?.setData(error: repositoryError)
-            span?.finish(status: .internalError)
-            throw repositoryError
-        }
+        try? await localDataSource.setImages(imageCollection, forTVSeries: tvSeriesID)
 
         span?.finish()
         return imageCollection
