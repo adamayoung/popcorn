@@ -10,8 +10,15 @@ import XCTest
 @MainActor
 final class WatchlistScreen: Screen {
 
-    override var uniqueElement: XCUIElement {
+    let app: XCUIApplication
+
+    var uniqueElement: XCUIElement {
         view
+    }
+
+    init(app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
+        self.app = app
+        assertScreenExists(file: file, line: line)
     }
 
     func assertMovieExists(withTitle title: String, file: StaticString = #filePath, line: UInt = #line) {

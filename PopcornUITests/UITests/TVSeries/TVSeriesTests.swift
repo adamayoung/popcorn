@@ -10,10 +10,10 @@ import XCTest
 @MainActor
 final class TVSeriesTests: PopcornUITestCase {
 
-    override var featureFlags: [String: Bool] {
+    override var featureFlags: [FeatureFlag: Bool] {
         [
-            "explore": true,
-            "explore_trending_tv_series": true
+            .explore: true,
+            .exploreTrendingTVSeries: true
         ]
     }
 

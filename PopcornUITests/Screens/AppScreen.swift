@@ -10,8 +10,15 @@ import XCTest
 @MainActor
 final class AppScreen: Screen {
 
-    override var uniqueElement: XCUIElement {
+    let app: XCUIApplication
+
+    var uniqueElement: XCUIElement {
         app
+    }
+
+    init(app: XCUIApplication, file: StaticString = #filePath, line: UInt = #line) {
+        self.app = app
+        assertScreenExists(file: file, line: line)
     }
 
     func tapExploreTab() {

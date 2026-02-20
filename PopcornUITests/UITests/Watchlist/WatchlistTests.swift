@@ -10,11 +10,11 @@ import XCTest
 @MainActor
 final class WatchlistTests: PopcornUITestCase {
 
-    override var featureFlags: [String: Bool] {
+    override var featureFlags: [FeatureFlag: Bool] {
         [
-            "watchlist": true,
-            "explore": true,
-            "exploreDiscoverMovies": true
+            .watchlist: true,
+            .explore: true,
+            .exploreDiscoverMovies: true
         ]
     }
 

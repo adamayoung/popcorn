@@ -12,7 +12,7 @@ class PopcornUITestCase: XCTestCase {
 
     var app: XCUIApplication!
 
-    var featureFlags: [String: Bool] {
+    var featureFlags: [FeatureFlag: Bool] {
         [:]
     }
 
@@ -24,8 +24,8 @@ class PopcornUITestCase: XCTestCase {
             XCUIDevice.shared.orientation = .portrait
         #endif
         app = XCUIApplication()
-        for (flagID, value) in featureFlags {
-            app.launchArguments += ["-featureFlagOverride.\(flagID)", value ? "1" : "0"]
+        for (flag, value) in featureFlags {
+            app.launchArguments += ["-featureFlagOverride.\(flag.rawValue)", value ? "1" : "0"]
         }
         app.launch()
     }

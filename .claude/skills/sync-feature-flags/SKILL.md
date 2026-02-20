@@ -19,6 +19,7 @@ Syncs Statsig feature gates (source of truth) to `FeatureFlag.swift` in code. Ha
 | `Adapters/Contexts/*/Tests/*/*.swift` | Adapter provider tests |
 | `App/Features/AppRoot/AppRootClient.swift` | Root client with navigation-level flags |
 | `App/Features/AppRoot/AppRootFeature.swift` | Root reducer reading navigation-level flags |
+| `PopcornUITests/FeatureFlag.swift` | UI test feature flag enum (mirrors flag IDs as `String` raw values) |
 
 ## Naming Convention
 
@@ -109,6 +110,14 @@ static let <camelCaseProperty> = FeatureFlag(
 **Empty Statsig descriptions**: If a gate has no description, generate one: `"Controls access to <name>"`
 
 For **updated flags**, edit the existing `static let` to match the new `name` and/or `description` from Statsig. Also update the doc comment if the description changed.
+
+### Step 6b: Sync UI Test FeatureFlag Enum
+
+Update `PopcornUITests/FeatureFlag.swift` to mirror changes:
+
+- **New flags**: Add a new `case` with camelCase name and snake_case raw value, in the matching MARK section
+- **Removed flags**: Remove the corresponding `case`
+- The enum cases and MARK sections should mirror the structure in `FeatureFlag.swift`
 
 ### Step 7: Handle Removals (User Confirmation Required)
 
