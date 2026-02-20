@@ -78,10 +78,6 @@ public struct TVSeriesDetailsFeature: Sendable {
                 return .none
 
             case .fetch:
-                if state.viewState.isReady {
-                    state.viewState = .loading
-                }
-
                 return handleFetchTVSeries(&state)
 
             case .loaded(let snapshot):

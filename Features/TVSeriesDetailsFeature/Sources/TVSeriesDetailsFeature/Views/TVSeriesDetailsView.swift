@@ -73,7 +73,7 @@ public struct TVSeriesDetailsView: View {
             store.send(.didAppear)
         }
         .task {
-            await store.send(.fetch).finish()
+            store.send(.fetch)
         }
     }
 
