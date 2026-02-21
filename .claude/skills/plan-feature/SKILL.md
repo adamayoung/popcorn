@@ -19,7 +19,32 @@ Ask the user for:
 - **Requirements** — numbered list of specific requirements
 - **Any constraints** — which context/feature it belongs to, design preferences
 
-## Workflow
+## Workflow Mode Selection
+
+Before starting, assess the feature's complexity to choose the right workflow mode:
+
+| Mode | Criteria | Skips |
+|------|----------|-------|
+| **Full** | 4+ stories expected, cross-layer changes, new data sources, factory chain updates | Nothing — runs all phases |
+| **Lightweight** | 3 or fewer stories, single context/feature, no new data pipelines | Phase 4 (PRD review), Phase 5f (story review) — goes straight from exploration → stories → plan |
+
+If unsure, start with Phase 1 exploration. Once the scope is clear, choose the mode before Phase 3. When in doubt, prefer lightweight — the user can always ask for a full review.
+
+### Phase 0: Setup
+
+Create a feature branch from latest main before doing anything else:
+
+1. `git fetch origin main`
+2. `git checkout -b feature/<feature-name> origin/main`
+
+Then verify which project resources exist:
+
+1. Check for `docs/ARCHITECTURE.md` — if missing, skip architecture-specific exploration and rely on codebase patterns directly
+2. Check for `docs/TMDB_MAPPING.md` — if missing or the feature doesn't involve TMDb data, skip all TMDb-specific steps (TMDb type exploration, adapter layer stories, TMDb service wiring)
+3. Check for `docs/TCA.md` — if missing, skip TCA-specific guidance and infer patterns from existing features
+4. Check for `prds/` directory — if missing, write the PRD to the plan file instead
+
+This ensures the skill works for non-TMDb features and projects with different documentation structures.
 
 ### Phase 1: Explore Existing Patterns
 
@@ -29,9 +54,9 @@ Launch up to 3 Explore agents in parallel to understand:
 2. **Relevant feature module** — reducer, client, models, mappers, views, navigation, tests
 3. **UI patterns to reuse** — existing components in DesignSystem, carousel/grid/list patterns in other features
 
-Key files to always check:
+Key files to check (if they exist — see Phase 0):
 - `docs/ARCHITECTURE.md` — layer structure and workflows
-- `docs/TMDB_MAPPING.md` — TMDb type reference (if TMDb data involved)
+- `docs/TMDB_MAPPING.md` — TMDb type reference (only if feature involves TMDb data)
 - The context's `Package.swift`, factory protocol, live factory
 - The feature's reducer, client, view, and test files
 - `AppDependencies/` wiring for the relevant context
@@ -41,6 +66,7 @@ Key files to always check:
 Ask the user targeted questions about:
 - **Module choice** — new context vs extend existing? (recommend with rationale)
 - **Data source** — which API endpoint? Separate call or existing response?
+- **Caching** — Recommend SwiftData local caching by default for any feature that fetches remote data. Present it as a decision with rationale (e.g., "reduces API calls on repeat visits, follows existing repository pattern"). If the feature is read-heavy with repeat visits, recommend caching strongly. If the data changes frequently or is rarely revisited, note that caching may not be worth the complexity. Always ask the user — don't silently include or exclude it.
 - **UI component** — which DesignSystem components to reuse?
 - **Navigation** — where does tapping lead? New feature or placeholder?
 - **Feature flags** — should this be gated?
@@ -63,6 +89,8 @@ Leave the User Stories, Story Dependency Graph, and Verification sections empty 
 
 ### Phase 4: Adversarial PRD Review
 
+> **Lightweight mode**: Skip this phase entirely. Proceed directly to Phase 5.
+
 Spawn **2 adversarial Product Manager subagents in parallel** (using the `plan-reviewer` agent type) to independently review the draft PRD. Read `references/prd-reviewers.md` for the full reviewer prompts.
 
 Provide each reviewer with:
@@ -82,7 +110,13 @@ After both PMs return, compare their findings:
 
 #### 4b. Update PRD
 
-Revise the draft PRD based on the agreed findings. The PMs must converge — do not proceed to story design until the PRD foundation (Goals, Non-Goals, Design Decisions, Data Flow) is stable.
+Revise the draft PRD based on the agreed findings.
+
+#### 4c. Re-review if Significant Changes
+
+If the reconciliation resulted in **significant PRD changes** (e.g., new goals added, design decisions changed, data flow restructured, stories reorganised to fix compilation-order issues), re-run Phase 4 from the start — spawn 2 fresh PM reviewers against the updated PRD. Minor wording tweaks or adding clarifications do not require a re-review.
+
+Continue re-reviewing until a round produces no CRITICAL findings and only minor IMPORTANT/SUGGESTION findings. The PMs must converge — do not proceed to story design until the PRD foundation (Goals, Non-Goals, Design Decisions, Data Flow) is stable.
 
 ### Phase 5: Design User Stories
 
@@ -143,6 +177,8 @@ For every story, fill in ALL of these sections — no exceptions:
 - **Dependencies**: Which stories must be done first (or "none")
 
 #### 5f. Adversarial Story Review
+
+> **Lightweight mode**: Skip this phase. Proceed directly to Phase 5h (Finalize PRD).
 
 After drafting all stories, spawn **3 reviewer subagents in parallel** (using the `plan-reviewer` agent type) to critique the stories from different perspectives. Read `references/story-reviewers.md` for the full reviewer prompts.
 
