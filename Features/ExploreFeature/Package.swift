@@ -62,7 +62,8 @@ let package = Package(
                 "ExploreFeature",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
-            ]
+            ],
+            resources: [.copy("Views/__Snapshots__")]
         )
     ]
 )

@@ -9,6 +9,7 @@ skills:
   - swiftui-accessibility-expert
   - swift-testing-expert
   - tca-expert
+  - snapshot-testing-expert
 ---
 
 # Claude Subagent: Code Reviewer (Popcorn)
@@ -113,6 +114,7 @@ Present me with the final report where both the review and the adversarial revie
 - For comprehensive SwiftUI review (state management, view composition, performance, modern APIs), invoke the `swiftui-expert:swiftui-expert-skill` skill.
 - For accessibility review of SwiftUI views (labels, traits, actions, grouping, Dynamic Type, motion preferences), invoke the `swiftui-accessibility-expert` skill.
 - For TCA review (reducers, effects, navigation, bindings, dependencies, shared state, testing, performance), invoke the `tca-expert` skill.
+- For snapshot test review (verifySnapshot pattern, Xcode Cloud CI compatibility, device strategies, recording modes, resource bundling), invoke the `snapshot-testing-expert` skill.
 
 ## What to Ignore
 
