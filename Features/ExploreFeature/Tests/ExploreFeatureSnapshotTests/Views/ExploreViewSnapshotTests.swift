@@ -7,6 +7,7 @@
 
 import ComposableArchitecture
 @testable import ExploreFeature
+import Foundation
 import SnapshotTesting
 import SwiftUI
 import Testing
@@ -36,10 +37,39 @@ struct ExploreViewSnapshotTests {
             )
         }
 
-        assertSnapshot(
+        verify(view)
+    }
+
+    // MARK: - Helpers
+
+    private func verify(
+        _ view: some View,
+        named name: String? = nil,
+        file: StaticString = #filePath,
+        testName: String = #function
+    ) {
+        let failure = verifySnapshot(
             of: view,
-            as: .image(layout: .device(config: .iPhone13Pro))
+            as: .image(layout: .device(config: .iPhone13Pro)),
+            named: name,
+            snapshotDirectory: Self.snapshotDirectory,
+            file: file,
+            testName: testName
         )
+        if let failure {
+            Issue.record(Comment(rawValue: failure))
+        }
+    }
+
+    /// Must match the @Suite struct name — update if the struct is renamed
+    private static var snapshotDirectory: String? {
+        guard ProcessInfo.processInfo.environment["CI_XCODE_CLOUD"] != nil else {
+            return nil
+        }
+        return Bundle.module.resourceURL?
+            .appendingPathComponent("__Snapshots__")
+            .appendingPathComponent("ExploreViewSnapshotTests")
+            .path
     }
 
 }
