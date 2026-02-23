@@ -248,7 +248,12 @@ After all stories are implemented:
 
 After the pre-PR checklist passes:
 
-1. **Spawn the `code-reviewer` agent** with the full git diff of all changes (`git diff main...HEAD`). The code reviewer performs an initial review, then an adversarial re-evaluation, and returns only the findings both passes agree on.
+1. **Spawn the `code-reviewer` agent** with:
+   - The full diff: `git diff main...HEAD`
+   - The list of changed files: `git diff --name-only main...HEAD`
+   - Instruct it to read full files (not just diff hunks) and compare with sibling implementations for pattern consistency
+
+   The code reviewer performs an initial review, then an adversarial re-evaluation, and returns only the findings both passes agree on.
 
 2. **Address findings**:
    - Fix all CRITICAL and HIGH issues
