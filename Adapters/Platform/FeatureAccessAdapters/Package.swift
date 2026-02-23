@@ -33,7 +33,10 @@ let package = Package(
         ),
         .testTarget(
             name: "FeatureAccessAdaptersTests",
-            dependencies: ["FeatureAccessAdapters"]
+            dependencies: [
+                "FeatureAccessAdapters",
+                "FeatureAccess"
+            ]
         )
     ]
 )

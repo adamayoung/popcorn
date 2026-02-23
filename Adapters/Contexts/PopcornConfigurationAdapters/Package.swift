@@ -41,6 +41,8 @@ let package = Package(
             name: "PopcornConfigurationAdaptersTests",
             dependencies: [
                 "PopcornConfigurationAdapters",
+                .product(name: "ConfigurationDomain", package: "PopcornConfiguration"),
+                .product(name: "ConfigurationInfrastructure", package: "PopcornConfiguration"),
                 "TMDb"
             ]
         )

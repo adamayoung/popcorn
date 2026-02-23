@@ -22,6 +22,7 @@ let package = Package(
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Core/TCAFoundation"),
         .package(path: "../../Contexts/PopcornTVSeries"),
+        .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Platform/Observability"),
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1")
     ],
@@ -44,7 +45,11 @@ let package = Package(
         .testTarget(
             name: "TVEpisodeDetailsFeatureTests",
             dependencies: [
-                "TVEpisodeDetailsFeature"
+                "TVEpisodeDetailsFeature",
+                .product(name: "CoreDomain", package: "CoreDomain"),
+                "TCAFoundation",
+                .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         )
     ]

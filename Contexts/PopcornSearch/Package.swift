@@ -74,7 +74,8 @@ let package = Package(
             name: "SearchInfrastructureTests",
             dependencies: [
                 "SearchInfrastructure",
-                "SearchDomain"
+                "SearchDomain",
+                .product(name: "CoreDomain", package: "CoreDomain")
             ]
         )
     ]

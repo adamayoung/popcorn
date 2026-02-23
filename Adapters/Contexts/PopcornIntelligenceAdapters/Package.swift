@@ -21,7 +21,8 @@ let package = Package(
     dependencies: [
         .package(path: "../../../Contexts/PopcornIntelligence"),
         .package(path: "../../../Contexts/PopcornMovies"),
-        .package(path: "../../../Contexts/PopcornTVSeries")
+        .package(path: "../../../Contexts/PopcornTVSeries"),
+        .package(path: "../../../Core/CoreDomain")
     ],
 
     targets: [
@@ -37,7 +38,14 @@ let package = Package(
         ),
         .testTarget(
             name: "PopcornIntelligenceAdaptersTests",
-            dependencies: ["PopcornIntelligenceAdapters"]
+            dependencies: [
+                "PopcornIntelligenceAdapters",
+                "CoreDomain",
+                .product(name: "IntelligenceDomain", package: "PopcornIntelligence"),
+                .product(name: "MoviesApplication", package: "PopcornMovies"),
+                .product(name: "MoviesDomain", package: "PopcornMovies"),
+                .product(name: "TVSeriesApplication", package: "PopcornTVSeries")
+            ]
         )
     ]
 )

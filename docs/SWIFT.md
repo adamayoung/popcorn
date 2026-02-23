@@ -6,6 +6,32 @@ This repository uses Swift 6.2 with strict concurrency. Follow these guidelines 
 
 **Platform Targets**: iOS 26.0+, macOS 26.0+, visionOS 2.0+
 
+## Package Manifests
+
+### Explicit Test Target Dependencies
+
+Test targets must explicitly list every module they import — do not rely on transitive dependencies. SPM resolves transitive deps today, but implicit imports break when the dependency graph is refactored.
+
+```swift
+// Good: all imports are explicit dependencies
+.testTarget(
+    name: "TVEpisodeDetailsFeatureTests",
+    dependencies: [
+        "TVEpisodeDetailsFeature",
+        .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
+        .product(name: "CoreDomain", package: "CoreDomain")
+    ]
+)
+
+// Bad: relies on TVEpisodeDetailsFeature pulling in TVSeriesApplication transitively
+.testTarget(
+    name: "TVEpisodeDetailsFeatureTests",
+    dependencies: [
+        "TVEpisodeDetailsFeature"
+    ]
+)
+```
+
 ## File Organization
 
 ### One Type Per File

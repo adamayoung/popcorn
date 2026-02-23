@@ -76,7 +76,8 @@ let package = Package(
             name: "MoviesInfrastructureTests",
             dependencies: [
                 "MoviesInfrastructure",
-                "MoviesDomain"
+                "MoviesDomain",
+                .product(name: "CoreDomain", package: "CoreDomain")
             ]
         )
     ]
