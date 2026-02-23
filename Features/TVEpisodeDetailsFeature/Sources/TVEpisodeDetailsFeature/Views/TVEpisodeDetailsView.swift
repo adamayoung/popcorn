@@ -102,6 +102,7 @@ public struct TVEpisodeDetailsView: View {
             VStack(alignment: .leading, spacing: 16) {
                 StillImage(url: snapshot.stillURL)
                     .aspectRatio(16.0 / 9.0, contentMode: .fit)
+                    .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: 12) {
                     if let airDate = snapshot.airDate {
@@ -109,16 +110,25 @@ public struct TVEpisodeDetailsView: View {
                             .textCase(.uppercase)
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                            .accessibilityLabel(
+                                Text(
+                                    "AIR_DATE \(airDate.formatted(.dateTime.year().month(.wide).day()))",
+                                    bundle: .module
+                                )
+                            )
+                            .accessibilityIdentifier("tv-episode-details.air-date")
                     }
 
                     if let overview = snapshot.overview, !overview.isEmpty {
                         Text(verbatim: overview)
                             .font(.body)
+                            .accessibilityIdentifier("tv-episode-details.overview")
                     }
                 }
                 .padding(.horizontal)
             }
         }
+        .accessibilityIdentifier("tv-episode-details.view")
     }
 
 }

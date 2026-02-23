@@ -38,6 +38,12 @@ struct TVEpisodeRowView: View {
                         .textCase(.uppercase)
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                        .accessibilityLabel(
+                            Text(
+                                "AIR_DATE \(airDate.formatted(.dateTime.year().month(.wide).day()))",
+                                bundle: .module
+                            )
+                        )
                 }
 
                 if let overview = episode.overview {
