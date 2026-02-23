@@ -22,7 +22,7 @@ public struct TVEpisodeDetailsFeature: Sendable {
         public let tvSeriesID: Int
         public let seasonNumber: Int
         public let episodeNumber: Int
-        public let episodeName: String
+        public var episodeName: String
         public var viewState: ViewState<ViewSnapshot>
 
         public init(
@@ -80,6 +80,7 @@ public struct TVEpisodeDetailsFeature: Sendable {
 
             case .loaded(let snapshot):
                 state.viewState = .ready(snapshot)
+                state.episodeName = snapshot.name
                 return .none
 
             case .loadFailed(let error):

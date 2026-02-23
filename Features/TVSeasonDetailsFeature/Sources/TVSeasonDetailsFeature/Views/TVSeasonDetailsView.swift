@@ -46,7 +46,7 @@ public struct TVSeasonDetailsView: View {
         }
         .navigationTitle(Text(verbatim: store.seasonName))
         #if os(iOS)
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
         #endif
             .overlay {
                 if store.viewState.isLoading {

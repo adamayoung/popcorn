@@ -145,7 +145,7 @@ Create one story per logical unit of work. Follow these rules:
 - **Cross-cutting work gets its own story** (e.g., "StillImage DesignSystem Component" is separate from the feature that uses it)
 - **Factory chain updates** that span 5+ files should be in the same story as the layer that introduces the new dependency (typically the Adapter story)
 - **Coordinator wiring** (ExploreRoot + SearchRoot) goes in the final feature story since it depends on everything else
-- **Each story must be independently buildable and testable** — after implementing a story, `swift build` and `swift test` must pass in the relevant package
+- **Each story must be independently buildable and testable** — after implementing a story, `swift build` and `swift test` must pass in the relevant package. If the story only changes internal code within a single module (no public interface changes), package-level verification is sufficient. If it changes public interfaces or spans multiple packages, verify with a full-app build.
 
 #### 5c. Size Each Story
 

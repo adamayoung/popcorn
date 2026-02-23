@@ -41,6 +41,7 @@ You are implementing user story US-{N}: {Title} for the Popcorn app.
 - Run package-level verification after implementation:
   - `swift build` in the package directory
   - `swift test` in the package directory
+- If the story only changes internal code within a single module (no public interface changes), package-level verification is sufficient. If it adds/modifies public types, protocols, or functions, or spans multiple packages, use a full-app build to verify integration.
 
 ## Architecture Context
 - This is a modular Swift app using TCA (The Composable Architecture)
@@ -60,7 +61,8 @@ You are implementing user story US-{N}: {Title} for the Popcorn app.
 After implementation, run:
 1. `swift build` in the package directory — must succeed with no warnings
 2. `swift test` in the package directory — all tests must pass
-3. Report any build or test failures
+3. If the story changed public interfaces or spans multiple packages, also verify with a full-app build
+4. Report any build or test failures
 ```
 
 ## Parallel Execution Rules
@@ -88,5 +90,6 @@ A story is considered complete when:
 - All tests from Test Elab pass
 - Package-level `swift build` succeeds (no warnings)
 - Package-level `swift test` succeeds (all pass)
+- If the story changed public interfaces or spans multiple packages, full-app build also succeeds
 - New unit test targets are registered in `TestPlans/PopcornUnitTests.xctestplan` (NOT snapshot tests — those go in `PopcornSnapshotTests.xctestplan`)
 - `TaskUpdate` marks the story as `completed`

@@ -23,6 +23,7 @@ struct TVSeasonDetailsFeatureTests {
                 name: "Pilot",
                 episodeNumber: 1,
                 overview: "A chemistry teacher begins cooking meth.",
+                airDate: Date(timeIntervalSince1970: 1_200_528_000),
                 stillURL: nil
             )
         ]
