@@ -29,7 +29,7 @@ struct TVEpisodeDetailsFeatureTests {
                 tvSeriesID: 1396,
                 seasonNumber: 1,
                 episodeNumber: 1,
-                episodeName: "Pilot"
+                episodeName: "Episode 1"
             )
         ) {
             TVEpisodeDetailsFeature()
@@ -44,6 +44,7 @@ struct TVEpisodeDetailsFeatureTests {
             $0.viewState = .loading
         }
         await store.receive(\.loaded) {
+            $0.episodeName = "Pilot"
             $0.viewState = .ready(
                 TVEpisodeDetailsFeature.ViewSnapshot(
                     name: "Pilot",

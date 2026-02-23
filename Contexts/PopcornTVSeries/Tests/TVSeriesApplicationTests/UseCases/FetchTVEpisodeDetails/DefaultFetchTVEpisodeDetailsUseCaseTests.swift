@@ -87,9 +87,10 @@ struct DefaultFetchTVEpisodeDetailsUseCaseTests {
             tvSeriesID: 456, seasonNumber: 3, episodeNumber: 5
         )
 
-        #expect(mockRepository.episodeCalledWith[0].tvSeriesID == 456)
-        #expect(mockRepository.episodeCalledWith[0].seasonNumber == 3)
-        #expect(mockRepository.episodeCalledWith[0].episodeNumber == 5)
+        let call = try #require(mockRepository.episodeCalledWith.first)
+        #expect(call.tvSeriesID == 456)
+        #expect(call.seasonNumber == 3)
+        #expect(call.episodeNumber == 5)
     }
 
     @Test("execute should create span with correct operation")

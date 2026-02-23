@@ -1,18 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "AIR_DATE %@" : {
-      "comment" : "Accessibility label for the episode air date.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Air date: %@"
-          }
-        }
-      }
-    },
     "EPISODES_SECTION_HEADER" : {
       "comment" : "The header for the episodes list section.",
       "extractionState" : "manual",

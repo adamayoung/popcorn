@@ -14,6 +14,12 @@ import SwiftUI
 /// For past dates and today, displays the plain formatted date.
 public struct AirDateText: View {
 
+    enum DateClassification: Equatable {
+        case comingSoon
+        case comingLater
+        case aired
+    }
+
     private let date: Date
 
     /// Creates an air date text view for the given date.
@@ -24,31 +30,57 @@ public struct AirDateText: View {
     }
 
     public var body: some View {
-        let calendar = Calendar.autoupdatingCurrent
-        let startOfToday = calendar.startOfDay(for: .now)
+        let classification = Self.classify(
+            date: date, now: .now
+        )
+
+        Group {
+            switch classification {
+            case .comingSoon:
+                let weekday = date.formatted(
+                    Date.FormatStyle().weekday(.wide)
+                )
+                Text(
+                    "COMING_NEXT_WEEKDAY \(weekday)",
+                    bundle: .module
+                )
+            case .comingLater:
+                let formatted = date.formatted(
+                    .dateTime.year().month(.wide).day()
+                )
+                Text("COMING_DATE \(formatted)", bundle: .module)
+            case .aired:
+                Text(
+                    date,
+                    format: .dateTime.year().month(.wide).day()
+                )
+            }
+        }
+        .accessibilityLabel(
+            Text(
+                "AIR_DATE \(date.formatted(.dateTime.year().month(.wide).day()))",
+                bundle: .module
+            )
+        )
+    }
+
+    nonisolated static func classify(
+        date: Date,
+        now: Date,
+        calendar: Calendar = .autoupdatingCurrent
+    ) -> DateClassification {
+        let startOfToday = calendar.startOfDay(for: now)
         let startOfDate = calendar.startOfDay(for: date)
         let days = calendar.dateComponents(
             [.day], from: startOfToday, to: startOfDate
         ).day ?? 0
 
         if days > 0, days <= 7 {
-            let weekday = date.formatted(
-                Date.FormatStyle().weekday(.wide)
-            )
-            Text(
-                "COMING_NEXT_WEEKDAY \(weekday)",
-                bundle: .module
-            )
+            return .comingSoon
         } else if days > 7 {
-            let formatted = date.formatted(
-                .dateTime.year().month(.wide).day()
-            )
-            Text("COMING_DATE \(formatted)", bundle: .module)
+            return .comingLater
         } else {
-            Text(
-                date,
-                format: .dateTime.year().month(.wide).day()
-            )
+            return .aired
         }
     }
 

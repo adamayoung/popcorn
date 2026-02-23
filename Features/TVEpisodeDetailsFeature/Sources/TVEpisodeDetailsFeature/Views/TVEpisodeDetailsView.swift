@@ -12,10 +12,10 @@ import TCAFoundation
 
 public struct TVEpisodeDetailsView: View {
 
-    let store: StoreOf<TVEpisodeDetailsFeature>
+    @Bindable private var store: StoreOf<TVEpisodeDetailsFeature>
 
     public init(store: StoreOf<TVEpisodeDetailsFeature>) {
-        self.store = store
+        self._store = .init(store)
     }
 
     public var body: some View {
@@ -69,23 +69,17 @@ public struct TVEpisodeDetailsView: View {
         snapshot: TVEpisodeDetailsFeature.ViewSnapshot
     ) -> some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
+            VStack(alignment: .leading, spacing: .spacing16) {
                 StillImage(url: snapshot.stillURL)
                     .aspectRatio(16.0 / 9.0, contentMode: .fit)
                     .accessibilityHidden(true)
 
-                VStack(alignment: .leading, spacing: 12) {
+                VStack(alignment: .leading, spacing: .spacing12) {
                     if let airDate = snapshot.airDate {
                         AirDateText(date: airDate)
                             .textCase(.uppercase)
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                            .accessibilityLabel(
-                                Text(
-                                    "AIR_DATE \(airDate.formatted(.dateTime.year().month(.wide).day()))",
-                                    bundle: .module
-                                )
-                            )
                             .accessibilityIdentifier("tv-episode-details.air-date")
                     }
 

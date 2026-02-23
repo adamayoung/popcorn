@@ -1,18 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "AIR_DATE %@" : {
-      "comment" : "Accessibility label for the episode air date.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Air date: %@"
-          }
-        }
-      }
-    },
     "LOADING" : {
       "comment" : "Accessibility label for a loading indicator.",
       "extractionState" : "manual",

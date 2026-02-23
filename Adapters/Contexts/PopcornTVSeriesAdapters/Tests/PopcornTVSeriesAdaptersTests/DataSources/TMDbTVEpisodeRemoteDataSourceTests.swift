@@ -83,10 +83,11 @@ struct TMDbTVEpisodeRemoteDataSourceTests {
         _ = try await dataSource.episode(5, inSeason: 3, inTVSeries: 456)
 
         #expect(mockService.detailsCallCount == 1)
-        #expect(mockService.detailsCalledWith[0].episodeNumber == 5)
-        #expect(mockService.detailsCalledWith[0].seasonNumber == 3)
-        #expect(mockService.detailsCalledWith[0].tvSeriesID == 456)
-        #expect(mockService.detailsCalledWith[0].language == "en")
+        let call = try #require(mockService.detailsCalledWith.first)
+        #expect(call.episodeNumber == 5)
+        #expect(call.seasonNumber == 3)
+        #expect(call.tvSeriesID == 456)
+        #expect(call.language == "en")
     }
 
     @Test("episode throws notFound for TMDb notFound")

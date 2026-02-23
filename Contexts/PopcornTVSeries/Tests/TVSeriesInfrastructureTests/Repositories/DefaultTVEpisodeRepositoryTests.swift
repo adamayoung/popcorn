@@ -104,7 +104,7 @@ struct DefaultTVEpisodeRepositoryTests {
         _ = try await repository.episode(1, inSeason: 1, inTVSeries: 1396)
 
         #expect(await mockLocalDataSource.setEpisodeCallCount == 1)
-        let cached = await mockLocalDataSource.setEpisodeCalledWith[0]
+        let cached = try #require(await mockLocalDataSource.setEpisodeCalledWith.first)
         #expect(cached.episode.overview == "Cached overview")
         #expect(cached.tvSeriesID == 1396)
     }
@@ -270,13 +270,14 @@ struct DefaultTVEpisodeRepositoryTests {
 
         _ = try await repository.episode(5, inSeason: 3, inTVSeries: 456)
 
-        let localCall = await mockLocalDataSource.episodeCalledWith[0]
+        let localCall = try #require(await mockLocalDataSource.episodeCalledWith.first)
         #expect(localCall.episodeNumber == 5)
         #expect(localCall.seasonNumber == 3)
         #expect(localCall.tvSeriesID == 456)
-        #expect(mockRemoteDataSource.episodeCalledWith[0].episodeNumber == 5)
-        #expect(mockRemoteDataSource.episodeCalledWith[0].seasonNumber == 3)
-        #expect(mockRemoteDataSource.episodeCalledWith[0].tvSeriesID == 456)
+        let remoteCall = try #require(mockRemoteDataSource.episodeCalledWith.first)
+        #expect(remoteCall.episodeNumber == 5)
+        #expect(remoteCall.seasonNumber == 3)
+        #expect(remoteCall.tvSeriesID == 456)
     }
 
 }

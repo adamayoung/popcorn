@@ -54,7 +54,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         appending: TVEpisodeAppendOption,
         language: String?
     ) async throws -> TVEpisodeDetailsResponse {
-        fatalError("Not implemented")
+        throw TMDbError.unknown
     }
 
     func credits(
@@ -63,7 +63,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         inTVSeries tvSeriesID: TVSeries.ID,
         language: String?
     ) async throws -> ShowCredits {
-        fatalError("Not implemented")
+        throw TMDbError.unknown
     }
 
     func images(
@@ -72,7 +72,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         inTVSeries tvSeriesID: TVSeries.ID,
         filter: TVEpisodeImageFilter?
     ) async throws -> TVEpisodeImageCollection {
-        fatalError("Not implemented")
+        throw TMDbError.unknown
     }
 
     func videos(
@@ -81,7 +81,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         inTVSeries tvSeriesID: TVSeries.ID,
         filter: TVEpisodeVideoFilter?
     ) async throws -> VideoCollection {
-        fatalError("Not implemented")
+        throw TMDbError.unknown
     }
 
     func accountStates(
@@ -90,7 +90,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         inTVSeries tvSeriesID: TVSeries.ID,
         session: Session
     ) async throws -> AccountStates {
-        fatalError("Not implemented")
+        throw TMDbError.unknown
     }
 
     func addRating(
@@ -100,7 +100,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         inTVSeries tvSeriesID: TVSeries.ID,
         session: Session
     ) async throws {
-        fatalError("Not implemented")
+        throw TMDbError.unknown
     }
 
     func deleteRating(
@@ -109,7 +109,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         inTVSeries tvSeriesID: TVSeries.ID,
         session: Session
     ) async throws {
-        fatalError("Not implemented")
+        throw TMDbError.unknown
     }
 
     func externalLinks(
@@ -117,7 +117,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         inSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID
     ) async throws -> TVEpisodeExternalLinksCollection {
-        fatalError("Not implemented")
+        throw TMDbError.unknown
     }
 
     func translations(
@@ -125,7 +125,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         inSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID
     ) async throws -> TranslationCollection<TVEpisodeTranslationData> {
-        fatalError("Not implemented")
+        throw TMDbError.unknown
     }
 
     func changes(
@@ -134,7 +134,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         endDate: Date?,
         page: Int?
     ) async throws -> ChangeCollection {
-        fatalError("Not implemented")
+        throw TMDbError.unknown
     }
 
 }
