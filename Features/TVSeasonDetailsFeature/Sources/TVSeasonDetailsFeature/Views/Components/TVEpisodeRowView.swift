@@ -34,7 +34,7 @@ struct TVEpisodeRowView: View {
                 .lineLimit(2)
 
                 if let airDate = episode.airDate {
-                    airDateText(for: airDate)
+                    AirDateText(date: airDate)
                         .textCase(.uppercase)
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -58,36 +58,6 @@ struct TVEpisodeRowView: View {
         }
         .accessibilityElement(children: .combine)
         .contentShape(Rectangle())
-    }
-
-    @ViewBuilder
-    private func airDateText(for date: Date) -> some View {
-        let calendar = Calendar.autoupdatingCurrent
-        let startOfToday = calendar.startOfDay(for: .now)
-        let startOfDate = calendar.startOfDay(for: date)
-        let days = calendar.dateComponents(
-            [.day], from: startOfToday, to: startOfDate
-        ).day ?? 0
-
-        if days > 0, days <= 7 {
-            let weekday = date.formatted(
-                Date.FormatStyle().weekday(.wide)
-            )
-            Text(
-                "COMING_NEXT_WEEKDAY \(weekday)",
-                bundle: .module
-            )
-        } else if days > 7 {
-            let formatted = date.formatted(
-                .dateTime.year().month(.wide).day()
-            )
-            Text("COMING_DATE \(formatted)", bundle: .module)
-        } else {
-            Text(
-                date,
-                format: .dateTime.year().month(.wide).day()
-            )
-        }
     }
 
 }
