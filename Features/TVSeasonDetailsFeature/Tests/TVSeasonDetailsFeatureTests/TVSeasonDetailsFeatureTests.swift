@@ -115,7 +115,7 @@ struct TVSeasonDetailsFeatureTests {
         }
 
         await store.send(
-            .navigate(.episodeDetails(tvSeriesID: 1396, seasonNumber: 1, episodeNumber: 1))
+            .navigate(.episodeDetails(tvSeriesID: 1396, seasonNumber: 1, episodeNumber: 1, episodeName: "Pilot"))
         )
     }
 

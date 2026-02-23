@@ -17,16 +17,19 @@ public final class LivePopcornTVSeriesFactory: PopcornTVSeriesFactory {
     public init(
         tvSeriesRemoteDataSource: some TVSeriesRemoteDataSource,
         tvSeasonRemoteDataSource: some TVSeasonRemoteDataSource,
+        tvEpisodeRemoteDataSource: some TVEpisodeRemoteDataSource,
         appConfigurationProvider: some AppConfigurationProviding
     ) {
         let infrastructureFactory = TVSeriesInfrastructureFactory(
             tvSeriesRemoteDataSource: tvSeriesRemoteDataSource,
-            tvSeasonRemoteDataSource: tvSeasonRemoteDataSource
+            tvSeasonRemoteDataSource: tvSeasonRemoteDataSource,
+            tvEpisodeRemoteDataSource: tvEpisodeRemoteDataSource
         )
 
         self.applicationFactory = TVSeriesApplicationFactory(
             tvSeriesRepository: infrastructureFactory.makeTVSeriesRepository(),
             tvSeasonRepository: infrastructureFactory.makeTVSeasonRepository(),
+            tvEpisodeRepository: infrastructureFactory.makeTVEpisodeRepository(),
             appConfigurationProvider: appConfigurationProvider
         )
     }
@@ -41,6 +44,10 @@ public final class LivePopcornTVSeriesFactory: PopcornTVSeriesFactory {
 
     public func makeFetchTVSeasonDetailsUseCase() -> FetchTVSeasonDetailsUseCase {
         applicationFactory.makeFetchTVSeasonDetailsUseCase()
+    }
+
+    public func makeFetchTVEpisodeDetailsUseCase() -> FetchTVEpisodeDetailsUseCase {
+        applicationFactory.makeFetchTVEpisodeDetailsUseCase()
     }
 
 }

@@ -1,20 +1,21 @@
 //
-//  TVSeasonDetailsView.swift
+//  TVEpisodeDetailsView.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
 //
 
 import ComposableArchitecture
+import DesignSystem
 import SwiftUI
 import TCAFoundation
 
-public struct TVSeasonDetailsView: View {
+public struct TVEpisodeDetailsView: View {
 
-    @Bindable private var store: StoreOf<TVSeasonDetailsFeature>
+    let store: StoreOf<TVEpisodeDetailsFeature>
 
-    public init(store: StoreOf<TVSeasonDetailsFeature>) {
-        self._store = .init(store)
+    public init(store: StoreOf<TVEpisodeDetailsFeature>) {
+        self.store = store
     }
 
     public var body: some View {
@@ -44,7 +45,7 @@ public struct TVSeasonDetailsView: View {
                 EmptyView()
             }
         }
-        .navigationTitle(Text(verbatim: store.seasonName))
+        .navigationTitle(navigationTitle)
         #if os(iOS)
             .navigationBarTitleDisplayMode(.large)
         #endif
@@ -60,41 +61,58 @@ public struct TVSeasonDetailsView: View {
             }
     }
 
+    private var navigationTitle: Text {
+        Text(verbatim: store.episodeName)
+    }
+
     private func content(
-        snapshot: TVSeasonDetailsFeature.ViewSnapshot
+        snapshot: TVEpisodeDetailsFeature.ViewSnapshot
     ) -> some View {
-        TVSeasonDetailsContentView(
-            overview: snapshot.overview,
-            episodes: snapshot.episodes,
-            didSelectEpisode: { episodeNumber, episodeName in
-                store.send(
-                    .navigate(
-                        .episodeDetails(
-                            tvSeriesID: store.tvSeriesID,
-                            seasonNumber: store.seasonNumber,
-                            episodeNumber: episodeNumber,
-                            episodeName: episodeName
-                        )
-                    )
-                )
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                StillImage(url: snapshot.stillURL)
+                    .aspectRatio(16.0 / 9.0, contentMode: .fit)
+
+                VStack(alignment: .leading, spacing: 12) {
+                    if let airDate = snapshot.airDate {
+                        Text(airDate, format: .dateTime.year().month(.wide).day())
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                            .accessibilityLabel(
+                                Text(
+                                    "AIR_DATE \(airDate.formatted(.dateTime.year().month(.wide).day()))",
+                                    bundle: .module
+                                )
+                            )
+                    }
+
+                    if let overview = snapshot.overview, !overview.isEmpty {
+                        Text(verbatim: overview)
+                            .font(.body)
+                    }
+                }
+                .padding(.horizontal)
             }
-        )
+        }
     }
 
 }
 
 #Preview("Ready") {
     NavigationStack {
-        TVSeasonDetailsView(
+        TVEpisodeDetailsView(
             store: Store(
-                initialState: TVSeasonDetailsFeature.State(
+                initialState: TVEpisodeDetailsFeature.State(
                     tvSeriesID: 1396,
                     seasonNumber: 1,
-                    seasonName: "Season 1",
+                    episodeNumber: 1,
+                    episodeName: "Pilot",
                     viewState: .ready(
                         .init(
-                            overview: "The first season of Breaking Bad.",
-                            episodes: TVEpisode.mocks
+                            name: "Pilot",
+                            overview: "A high school chemistry teacher diagnosed with lung cancer.",
+                            airDate: Date(timeIntervalSince1970: 1_200_528_000),
+                            stillURL: URL(string: "https://image.tmdb.org/t/p/original/ydlY3iPfeOAvu8gVqrxPoMvzfBj.jpg")
                         )
                     )
                 ),
@@ -106,12 +124,13 @@ public struct TVSeasonDetailsView: View {
 
 #Preview("Loading") {
     NavigationStack {
-        TVSeasonDetailsView(
+        TVEpisodeDetailsView(
             store: Store(
-                initialState: TVSeasonDetailsFeature.State(
+                initialState: TVEpisodeDetailsFeature.State(
                     tvSeriesID: 1396,
                     seasonNumber: 1,
-                    seasonName: "Season 1",
+                    episodeNumber: 1,
+                    episodeName: "Pilot",
                     viewState: .loading
                 ),
                 reducer: { EmptyReducer() }

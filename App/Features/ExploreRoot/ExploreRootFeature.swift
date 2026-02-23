@@ -12,6 +12,7 @@ import MovieCastAndCrewFeature
 import MovieDetailsFeature
 import MovieIntelligenceFeature
 import PersonDetailsFeature
+import TVEpisodeDetailsFeature
 import TVSeasonDetailsFeature
 import TVSeriesDetailsFeature
 import TVSeriesIntelligenceFeature
@@ -33,7 +34,7 @@ struct ExploreRootFeature {
         case movieDetails(MovieDetailsFeature)
         case tvSeriesDetails(TVSeriesDetailsFeature)
         case tvSeasonDetails(TVSeasonDetailsFeature)
-        case tvEpisodeDetails(TVEpisodeDetailsPlaceholder)
+        case tvEpisodeDetails(TVEpisodeDetailsFeature)
         case personDetails(PersonDetailsFeature)
         case movieCastAndCrew(MovieCastAndCrewFeature)
     }
@@ -117,17 +118,21 @@ struct ExploreRootFeature {
                     _,
                     .tvSeasonDetails(
                         .navigate(
-                            .episodeDetails(let tvSeriesID, let seasonNumber, let episodeNumber)
+                            .episodeDetails(
+                                let tvSeriesID, let seasonNumber,
+                                let episodeNumber, let episodeName
+                            )
                         )
                     )
                 )
             ):
                 state.path.append(
                     .tvEpisodeDetails(
-                        TVEpisodeDetailsPlaceholder.State(
+                        TVEpisodeDetailsFeature.State(
                             tvSeriesID: tvSeriesID,
                             seasonNumber: seasonNumber,
-                            episodeNumber: episodeNumber
+                            episodeNumber: episodeNumber,
+                            episodeName: episodeName
                         )
                     )
                 )

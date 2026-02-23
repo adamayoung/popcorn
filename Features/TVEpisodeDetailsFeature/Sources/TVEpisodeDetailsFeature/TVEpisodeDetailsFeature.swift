@@ -1,5 +1,5 @@
 //
-//  TVSeasonDetailsFeature.swift
+//  TVEpisodeDetailsFeature.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -11,39 +11,51 @@ import OSLog
 import TCAFoundation
 
 @Reducer
-public struct TVSeasonDetailsFeature: Sendable {
+public struct TVEpisodeDetailsFeature: Sendable {
 
-    private static let logger = Logger.tvSeasonDetails
+    private static let logger = Logger.tvEpisodeDetails
 
-    @Dependency(\.tvSeasonDetailsClient) private var client
+    @Dependency(\.tvEpisodeDetailsClient) private var client
 
     @ObservableState
     public struct State: Sendable, Equatable {
         public let tvSeriesID: Int
         public let seasonNumber: Int
-        public let seasonName: String
+        public let episodeNumber: Int
+        public let episodeName: String
         public var viewState: ViewState<ViewSnapshot>
 
         public init(
             tvSeriesID: Int,
             seasonNumber: Int,
-            seasonName: String,
+            episodeNumber: Int,
+            episodeName: String,
             viewState: ViewState<ViewSnapshot> = .initial
         ) {
             self.tvSeriesID = tvSeriesID
             self.seasonNumber = seasonNumber
-            self.seasonName = seasonName
+            self.episodeNumber = episodeNumber
+            self.episodeName = episodeName
             self.viewState = viewState
         }
     }
 
     public struct ViewSnapshot: Equatable, Sendable {
+        public let name: String
         public let overview: String?
-        public let episodes: [TVEpisode]
+        public let airDate: Date?
+        public let stillURL: URL?
 
-        public init(overview: String?, episodes: [TVEpisode]) {
+        public init(
+            name: String,
+            overview: String?,
+            airDate: Date?,
+            stillURL: URL?
+        ) {
+            self.name = name
             self.overview = overview
-            self.episodes = episodes
+            self.airDate = airDate
+            self.stillURL = stillURL
         }
     }
 
@@ -51,11 +63,6 @@ public struct TVSeasonDetailsFeature: Sendable {
         case fetch
         case loaded(ViewSnapshot)
         case loadFailed(ViewStateError)
-        case navigate(Navigation)
-    }
-
-    public enum Navigation: Equatable, Hashable, Sendable {
-        case episodeDetails(tvSeriesID: Int, seasonNumber: Int, episodeNumber: Int, episodeName: String)
     }
 
     public init() {}
@@ -78,40 +85,40 @@ public struct TVSeasonDetailsFeature: Sendable {
             case .loadFailed(let error):
                 state.viewState = .error(error)
                 return .none
-
-            case .navigate:
-                return .none
             }
         }
     }
 
 }
 
-extension TVSeasonDetailsFeature {
+extension TVEpisodeDetailsFeature {
 
     private func handleFetch(_ state: inout State) -> EffectOf<Self> {
         .run { [state, client] send in
             Self.logger.info(
-                "Fetching season details [tvSeriesID: \(state.tvSeriesID, privacy: .private), seasonNumber: \(state.seasonNumber)]"
+                "Fetching episode details [tvSeriesID: \(state.tvSeriesID, privacy: .private), S\(state.seasonNumber)E\(state.episodeNumber)]"
             )
 
-            let seasonDetails: SeasonDetails
+            let episodeDetails: EpisodeDetails
             do {
-                seasonDetails = try await client.fetchSeasonDetails(
+                episodeDetails = try await client.fetchEpisodeDetails(
                     state.tvSeriesID,
-                    state.seasonNumber
+                    state.seasonNumber,
+                    state.episodeNumber
                 )
             } catch {
                 Self.logger.error(
-                    "Failed fetching season details [tvSeriesID: \(state.tvSeriesID, privacy: .private), seasonNumber: \(state.seasonNumber)]: \(error.localizedDescription, privacy: .public)"
+                    "Failed fetching episode details [tvSeriesID: \(state.tvSeriesID, privacy: .private), S\(state.seasonNumber)E\(state.episodeNumber)]: \(error.localizedDescription, privacy: .public)"
                 )
                 await send(.loadFailed(ViewStateError(error)))
                 return
             }
 
             let snapshot = ViewSnapshot(
-                overview: seasonDetails.overview,
-                episodes: seasonDetails.episodes
+                name: episodeDetails.name,
+                overview: episodeDetails.overview,
+                airDate: episodeDetails.airDate,
+                stillURL: episodeDetails.stillURL
             )
             await send(.loaded(snapshot))
         }

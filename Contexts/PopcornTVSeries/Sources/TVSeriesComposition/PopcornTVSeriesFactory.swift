@@ -16,4 +16,6 @@ public protocol PopcornTVSeriesFactory: Sendable {
 
     func makeFetchTVSeasonDetailsUseCase() -> FetchTVSeasonDetailsUseCase
 
+    func makeFetchTVEpisodeDetailsUseCase() -> FetchTVEpisodeDetailsUseCase
+
 }

@@ -20,7 +20,8 @@ package final class TVSeriesInfrastructureFactory {
             TVSeriesSeasonEntity.self,
             TVSeriesImageCollectionEntity.self,
             TVSeasonEpisodesEntity.self,
-            TVEpisodeEntity.self
+            TVEpisodeEntity.self,
+            TVEpisodeDetailsCacheEntity.self
         ])
 
         let storeURL = URL.documentsDirectory.appending(path: "popcorn-tvseries.sqlite")
@@ -40,13 +41,16 @@ package final class TVSeriesInfrastructureFactory {
 
     private let tvSeriesRemoteDataSource: any TVSeriesRemoteDataSource
     private let tvSeasonRemoteDataSource: any TVSeasonRemoteDataSource
+    private let tvEpisodeRemoteDataSource: any TVEpisodeRemoteDataSource
 
     package init(
         tvSeriesRemoteDataSource: some TVSeriesRemoteDataSource,
-        tvSeasonRemoteDataSource: some TVSeasonRemoteDataSource
+        tvSeasonRemoteDataSource: some TVSeasonRemoteDataSource,
+        tvEpisodeRemoteDataSource: some TVEpisodeRemoteDataSource
     ) {
         self.tvSeriesRemoteDataSource = tvSeriesRemoteDataSource
         self.tvSeasonRemoteDataSource = tvSeasonRemoteDataSource
+        self.tvEpisodeRemoteDataSource = tvEpisodeRemoteDataSource
     }
 
     package func makeTVSeriesRepository() -> some TVSeriesRepository {
@@ -63,6 +67,13 @@ package final class TVSeriesInfrastructureFactory {
         )
     }
 
+    package func makeTVEpisodeRepository() -> some TVEpisodeRepository {
+        DefaultTVEpisodeRepository(
+            remoteDataSource: tvEpisodeRemoteDataSource,
+            localDataSource: Self.tvEpisodeLocalDataSource
+        )
+    }
+
 }
 
 extension TVSeriesInfrastructureFactory {
@@ -74,6 +85,11 @@ extension TVSeriesInfrastructureFactory {
 
     private static let tvSeasonLocalDataSource: some TVSeasonLocalDataSource =
         SwiftDataTVSeasonLocalDataSource(
+            modelContainer: modelContainer
+        )
+
+    static let tvEpisodeLocalDataSource: some TVEpisodeLocalDataSource =
+        SwiftDataTVEpisodeLocalDataSource(
             modelContainer: modelContainer
         )
 
