@@ -12,7 +12,10 @@ I'll create a pull request for the current branch by following these steps. If a
 3. Run `/lint` to verify code style and quality
 4. Run `/build-for-testing` to ensure project builds successfully with no warnings
 5. Run `/test` to verify all tests pass
-6. Spawn the `code-reviewer` agent to perform a code review of all changes (pass the git diff output as context)
+6. Spawn the `code-reviewer` agent to perform a code review of all changes. Pass it:
+   - The full diff: `git diff origin/main...HEAD`
+   - The list of changed files: `git diff --name-only origin/main...HEAD`
+   - Instruct it to read full files (not just diff hunks) and compare with sibling implementations for pattern consistency
 7. Summarize the code review findings:
     - List any critical or high-severity issues that should be addressed
     - List any medium-severity suggestions for improvement

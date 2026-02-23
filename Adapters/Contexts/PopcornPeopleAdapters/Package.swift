@@ -39,7 +39,14 @@ let package = Package(
         ),
         .testTarget(
             name: "PopcornPeopleAdaptersTests",
-            dependencies: ["PopcornPeopleAdapters"]
+            dependencies: [
+                "PopcornPeopleAdapters",
+                .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),
+                .product(name: "PeopleDomain", package: "PopcornPeople"),
+                .product(name: "PeopleInfrastructure", package: "PopcornPeople"),
+                "CoreDomain",
+                "TMDb"
+            ]
         )
     ]
 )

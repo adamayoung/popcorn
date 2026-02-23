@@ -10,6 +10,7 @@ import MediaSearchFeature
 import MovieDetailsFeature
 import PersonDetailsFeature
 import SwiftUI
+import TVEpisodeDetailsFeature
 import TVSeasonDetailsFeature
 import TVSeriesDetailsFeature
 
@@ -52,9 +53,8 @@ struct SearchRootView: View {
         TVSeasonDetailsView(store: store)
     }
 
-    private func tvEpisodeDetails(store: StoreOf<TVEpisodeDetailsPlaceholder>) -> some View {
-        Text("EPISODE \(store.episodeNumber)")
-            .navigationTitle(Text("EPISODE \(store.episodeNumber)"))
+    private func tvEpisodeDetails(store: StoreOf<TVEpisodeDetailsFeature>) -> some View {
+        TVEpisodeDetailsView(store: store)
     }
 
 }

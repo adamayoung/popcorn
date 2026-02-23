@@ -73,6 +73,20 @@ Use slash commands or Xcode MCP tools directly:
 
 Use the `-package` variants when working on a single Swift package — they run `swift build`/`swift test` directly in the package directory, which is faster than building the entire app.
 
+### Incremental vs Full Builds
+
+When making an incremental change that is **localised to a single module** and the module's **public interface hasn't changed** (no new/modified `public` types, functions, or protocols), use package-level commands (`/build-package`, `/test-package`) instead of full-app commands (`/build`, `/test`). This is significantly faster and sufficient to validate the change.
+
+**Use package-level** (`/build-package`, `/test-package`):
+- Internal implementation changes (private/internal types, bug fixes, new tests)
+- Adding or modifying non-public code within a single package
+- Changes that don't affect how other modules consume this package
+
+**Use full-app** (`/build-for-testing`, `/test`):
+- Changes to a module's public interface (new/modified `public` types, protocols, functions)
+- Changes spanning multiple packages (e.g., coordinator wiring, factory chain updates)
+- Final pre-PR verification (always use full-app for the last check before creating a PR)
+
 ### Diagnostics & Issues
 
 | Task | MCP Tool |

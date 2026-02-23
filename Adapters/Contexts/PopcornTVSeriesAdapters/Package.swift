@@ -43,8 +43,12 @@ let package = Package(
             name: "PopcornTVSeriesAdaptersTests",
             dependencies: [
                 "PopcornTVSeriesAdapters",
+                .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),
+                .product(name: "TVSeriesDomain", package: "PopcornTVSeries"),
+                .product(name: "TVSeriesInfrastructure", package: "PopcornTVSeries"),
                 .product(name: "CoreDomainTestHelpers", package: "CoreDomain"),
-                .product(name: "ObservabilityTestHelpers", package: "Observability")
+                .product(name: "ObservabilityTestHelpers", package: "Observability"),
+                "TMDb"
             ]
         )
     ]

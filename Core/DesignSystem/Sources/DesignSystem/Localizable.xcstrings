@@ -1,6 +1,42 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "AIR_DATE %@" : {
+      "comment" : "Accessibility label for an air date.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Air date: %@"
+          }
+        }
+      }
+    },
+    "COMING_DATE %@" : {
+      "comment" : "Label for an episode airing on a specific future date, e.g. 'Coming January 30, 2026'.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coming %@"
+          }
+        }
+      }
+    },
+    "COMING_NEXT_WEEKDAY %@" : {
+      "comment" : "Label for an episode airing within the next week, e.g. 'Coming next Wednesday'.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coming next %@"
+          }
+        }
+      }
+    },
     "ASSISTANT" : {
       "comment" : "Accessibility label for a message from the assistant.",
       "localizations" : {

@@ -281,6 +281,13 @@
     },
     {
       "target" : {
+        "containerPath" : "container:Features\/TVEpisodeDetailsFeature",
+        "identifier" : "TVEpisodeDetailsFeatureTests",
+        "name" : "TVEpisodeDetailsFeatureTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Contexts\/PopcornIntelligence",
         "identifier" : "IntelligenceInfrastructureTests",
         "name" : "IntelligenceInfrastructureTests"

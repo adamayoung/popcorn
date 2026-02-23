@@ -66,13 +66,14 @@ public struct TVSeasonDetailsView: View {
         TVSeasonDetailsContentView(
             overview: snapshot.overview,
             episodes: snapshot.episodes,
-            didSelectEpisode: { episodeNumber in
+            didSelectEpisode: { episodeNumber, episodeName in
                 store.send(
                     .navigate(
                         .episodeDetails(
                             tvSeriesID: store.tvSeriesID,
                             seasonNumber: store.seasonNumber,
-                            episodeNumber: episodeNumber
+                            episodeNumber: episodeNumber,
+                            episodeName: episodeName
                         )
                     )
                 )

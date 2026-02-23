@@ -8,6 +8,7 @@
 import ComposableArchitecture
 @testable import Popcorn
 import Testing
+import TVEpisodeDetailsFeature
 import TVSeasonDetailsFeature
 import TVSeriesDetailsFeature
 
@@ -58,7 +59,9 @@ struct SearchRootFeatureTests {
             action: .path(.element(
                 id: 0,
                 action: .tvSeasonDetails(
-                    .navigate(.episodeDetails(tvSeriesID: 1396, seasonNumber: 1, episodeNumber: 1))
+                    .navigate(
+                        .episodeDetails(tvSeriesID: 1396, seasonNumber: 1, episodeNumber: 1, episodeName: "Pilot")
+                    )
                 )
             ))
         )
@@ -71,6 +74,7 @@ struct SearchRootFeatureTests {
         #expect(episodeState.tvSeriesID == 1396)
         #expect(episodeState.seasonNumber == 1)
         #expect(episodeState.episodeNumber == 1)
+        #expect(episodeState.episodeName == "Pilot")
     }
 
 }

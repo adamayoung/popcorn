@@ -51,7 +51,14 @@ let package = Package(
             name: "PopcornSearchAdaptersTests",
             dependencies: [
                 "PopcornSearchAdapters",
-                .product(name: "CoreDomainTestHelpers", package: "CoreDomain")
+                .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),
+                .product(name: "MoviesApplication", package: "PopcornMovies"),
+                .product(name: "PeopleApplication", package: "PopcornPeople"),
+                .product(name: "SearchDomain", package: "PopcornSearch"),
+                .product(name: "SearchInfrastructure", package: "PopcornSearch"),
+                .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
+                .product(name: "CoreDomainTestHelpers", package: "CoreDomain"),
+                "TMDb"
             ]
         )
     ]

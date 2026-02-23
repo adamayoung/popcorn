@@ -20,6 +20,7 @@ let package = Package(
 
     dependencies: [
         .package(path: "../../AppDependencies"),
+        .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Contexts/PopcornSearch"),
         .package(
@@ -40,7 +41,11 @@ let package = Package(
         ),
         .testTarget(
             name: "MediaSearchFeatureTests",
-            dependencies: ["MediaSearchFeature"]
+            dependencies: [
+                "MediaSearchFeature",
+                .product(name: "CoreDomain", package: "CoreDomain"),
+                .product(name: "SearchApplication", package: "PopcornSearch")
+            ]
         )
     ]
 )

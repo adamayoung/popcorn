@@ -11,7 +11,7 @@ struct TVSeasonDetailsContentView: View {
 
     var overview: String?
     var episodes: [TVEpisode]
-    var didSelectEpisode: (_ episodeNumber: Int) -> Void
+    var didSelectEpisode: (_ episodeNumber: Int, _ episodeName: String) -> Void
 
     var body: some View {
         List {
@@ -27,7 +27,7 @@ struct TVSeasonDetailsContentView: View {
             Section {
                 ForEach(episodes) { episode in
                     Button {
-                        didSelectEpisode(episode.episodeNumber)
+                        didSelectEpisode(episode.episodeNumber, episode.name)
                     } label: {
                         TVEpisodeRowView(episode: episode)
                     }
@@ -53,7 +53,7 @@ struct TVSeasonDetailsContentView: View {
         TVSeasonDetailsContentView(
             overview: "The first season of Breaking Bad.",
             episodes: TVEpisode.mocks,
-            didSelectEpisode: { _ in }
+            didSelectEpisode: { _, _ in }
         )
         .navigationTitle("Season 1")
     }
@@ -64,7 +64,7 @@ struct TVSeasonDetailsContentView: View {
         TVSeasonDetailsContentView(
             overview: nil,
             episodes: TVEpisode.mocks,
-            didSelectEpisode: { _ in }
+            didSelectEpisode: { _, _ in }
         )
         .navigationTitle("Season 1")
     }

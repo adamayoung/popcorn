@@ -16,6 +16,7 @@ struct TVEpisodeMapper {
             name: summary.name,
             episodeNumber: summary.episodeNumber,
             overview: summary.overview,
+            airDate: summary.airDate,
             stillURL: summary.stillURLSet?.card
         )
     }

@@ -23,6 +23,7 @@ struct TVSeasonDetailsFeatureTests {
                 name: "Pilot",
                 episodeNumber: 1,
                 overview: "A chemistry teacher begins cooking meth.",
+                airDate: Date(timeIntervalSince1970: 1_200_528_000),
                 stillURL: nil
             )
         ]
@@ -115,7 +116,7 @@ struct TVSeasonDetailsFeatureTests {
         }
 
         await store.send(
-            .navigate(.episodeDetails(tvSeriesID: 1396, seasonNumber: 1, episodeNumber: 1))
+            .navigate(.episodeDetails(tvSeriesID: 1396, seasonNumber: 1, episodeNumber: 1, episodeName: "Pilot"))
         )
     }
 

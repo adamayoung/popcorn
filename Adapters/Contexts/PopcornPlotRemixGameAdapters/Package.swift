@@ -51,6 +51,14 @@ let package = Package(
             name: "PopcornPlotRemixGameAdaptersTests",
             dependencies: [
                 "PopcornPlotRemixGameAdapters",
+                .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),
+                .product(name: "DiscoverApplication", package: "PopcornDiscover"),
+                .product(name: "DiscoverDomain", package: "PopcornDiscover"),
+                .product(name: "GenresApplication", package: "PopcornGenres"),
+                .product(name: "GenresDomain", package: "PopcornGenres"),
+                .product(name: "MoviesApplication", package: "PopcornMovies"),
+                .product(name: "MoviesDomain", package: "PopcornMovies"),
+                .product(name: "PlotRemixGameDomain", package: "PopcornPlotRemixGame"),
                 .product(name: "CoreDomainTestHelpers", package: "CoreDomain")
             ]
         )

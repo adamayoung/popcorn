@@ -33,6 +33,13 @@ struct TVEpisodeRowView: View {
                 .font(.headline)
                 .lineLimit(2)
 
+                if let airDate = episode.airDate {
+                    AirDateText(date: airDate)
+                        .textCase(.uppercase)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
                 if let overview = episode.overview {
                     Text(verbatim: overview)
                         .font(.subheadline)

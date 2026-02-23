@@ -26,12 +26,15 @@ struct TVEpisodeMapperTests {
             full: #require(URL(string: "https://image.tmdb.org/t/p/original/still.jpg"))
         )
 
+        let airDate = Date(timeIntervalSince1970: 1_200_528_000)
+
         let summary = TVEpisodeSummary(
             id: 62085,
             name: "Pilot",
             episodeNumber: 1,
             seasonNumber: 1,
             overview: "A chemistry teacher begins cooking meth.",
+            airDate: airDate,
             stillURLSet: stillURLSet
         )
 
@@ -41,6 +44,7 @@ struct TVEpisodeMapperTests {
         #expect(result.name == "Pilot")
         #expect(result.episodeNumber == 1)
         #expect(result.overview == "A chemistry teacher begins cooking meth.")
+        #expect(result.airDate == airDate)
         #expect(result.stillURL == stillURLSet.card)
     }
 
@@ -59,6 +63,7 @@ struct TVEpisodeMapperTests {
         #expect(result.name == "Pilot")
         #expect(result.episodeNumber == 1)
         #expect(result.overview == nil)
+        #expect(result.airDate == nil)
         #expect(result.stillURL == nil)
     }
 
