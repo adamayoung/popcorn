@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: read
+      pull-requests: write
       issues: read
       id-token: write
 
@@ -29,7 +29,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
 
       - name: Run Claude Code Review
         id: claude-review
@@ -49,9 +49,43 @@ jobs:
 
             Use the repository's CLAUDE.md for guidance on style and conventions. Be constructive and helpful in your feedback.
 
-            Use `gh pr comment` with your Bash tool to leave your review as a comment on the PR.
+            ## How to submit your review
+
+            Submit your review as a **GitHub pull request review with inline comments** on the changed lines.
+
+            1. Use `gh pr diff ${{ github.event.pull_request.number }}` to get the diff.
+            2. For each finding, identify the exact file path and line number in the HEAD commit.
+            3. Build a JSON review payload and submit it with `gh api`:
+
+            ```bash
+            gh api repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/reviews \
+              -X POST \
+              --input review.json
+            ```
+
+            The review.json should have this structure:
+            ```json
+            {
+              "event": "COMMENT",
+              "body": "## Code Review\n\nOverall summary here.",
+              "comments": [
+                {
+                  "path": "relative/path/to/file.swift",
+                  "line": 42,
+                  "body": "**[H1]** Description of the issue."
+                }
+              ]
+            }
+            ```
+
+            Rules:
+            - The `line` must be a line number that appears in the diff (i.e. added or context lines in the HEAD version).
+            - Use `path` relative to the repo root (e.g. `Features/Foo/Sources/Bar.swift`).
+            - Prefix each comment body with a severity tag: `[H1]`, `[H2]` for high, `[M1]`, `[M2]` for medium, `[L1]` for low.
+            - The top-level `body` should contain an overall summary with a table of all findings.
+            - Do NOT use `gh pr comment` — always use the review API for inline comments.
 
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
-          claude_args: '--allowed-tools "Bash(gh issue view:*),Bash(gh search:*),Bash(gh issue list:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*)"'
+          claude_args: '--allowed-tools "Bash(gh issue view:*),Bash(gh search:*),Bash(gh issue list:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*),Bash(gh api:*)"'
 
