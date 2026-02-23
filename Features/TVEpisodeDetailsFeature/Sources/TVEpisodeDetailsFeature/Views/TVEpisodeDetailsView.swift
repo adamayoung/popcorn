@@ -57,7 +57,7 @@ public struct TVEpisodeDetailsView: View {
                 }
             }
             .task {
-                store.send(.fetch)
+                store.send(.didAppear)
             }
     }
 

@@ -15,8 +15,8 @@ import Testing
 @Suite("TVEpisodeDetailsFeature Tests")
 struct TVEpisodeDetailsFeatureTests {
 
-    @Test("fetch populates ViewSnapshot with episode details")
-    func fetchPopulatesViewSnapshotWithEpisodeDetails() async {
+    @Test("didAppear triggers fetch when state is initial")
+    func didAppearTriggersFetchWhenInitial() async {
         let episodeDetails = EpisodeDetails(
             name: "Pilot",
             overview: "A chemistry teacher begins cooking meth.",
@@ -39,7 +39,8 @@ struct TVEpisodeDetailsFeatureTests {
             }
         }
 
-        await store.send(.fetch) {
+        await store.send(.didAppear)
+        await store.receive(\.fetch) {
             $0.viewState = .loading
         }
         await store.receive(\.loaded) {
@@ -52,6 +53,47 @@ struct TVEpisodeDetailsFeatureTests {
                 )
             )
         }
+    }
+
+    @Test("didAppear does not trigger fetch when state is loading")
+    func didAppearDoesNotTriggerFetchWhenLoading() async {
+        let store = TestStore(
+            initialState: TVEpisodeDetailsFeature.State(
+                tvSeriesID: 1396,
+                seasonNumber: 1,
+                episodeNumber: 1,
+                episodeName: "Pilot",
+                viewState: .loading
+            )
+        ) {
+            TVEpisodeDetailsFeature()
+        }
+
+        await store.send(.didAppear)
+    }
+
+    @Test("didAppear does not trigger fetch when state is ready")
+    func didAppearDoesNotTriggerFetchWhenReady() async {
+        let store = TestStore(
+            initialState: TVEpisodeDetailsFeature.State(
+                tvSeriesID: 1396,
+                seasonNumber: 1,
+                episodeNumber: 1,
+                episodeName: "Pilot",
+                viewState: .ready(
+                    .init(
+                        name: "Pilot",
+                        overview: nil,
+                        airDate: nil,
+                        stillURL: nil
+                    )
+                )
+            )
+        ) {
+            TVEpisodeDetailsFeature()
+        }
+
+        await store.send(.didAppear)
     }
 
     @Test("fetch handles error")
@@ -79,30 +121,6 @@ struct TVEpisodeDetailsFeatureTests {
                 ViewStateError(NSError(domain: "test", code: 1))
             )
         }
-    }
-
-    @Test("fetch does not reload when ready")
-    func fetchDoesNotReloadWhenReady() async {
-        let store = TestStore(
-            initialState: TVEpisodeDetailsFeature.State(
-                tvSeriesID: 1396,
-                seasonNumber: 1,
-                episodeNumber: 1,
-                episodeName: "Pilot",
-                viewState: .ready(
-                    .init(
-                        name: "Pilot",
-                        overview: nil,
-                        airDate: nil,
-                        stillURL: nil
-                    )
-                )
-            )
-        ) {
-            TVEpisodeDetailsFeature()
-        }
-
-        await store.send(.fetch)
     }
 
 }

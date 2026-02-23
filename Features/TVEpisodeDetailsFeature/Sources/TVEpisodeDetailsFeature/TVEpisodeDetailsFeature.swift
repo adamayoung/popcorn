@@ -60,6 +60,7 @@ public struct TVEpisodeDetailsFeature: Sendable {
     }
 
     public enum Action {
+        case didAppear
         case fetch
         case loaded(ViewSnapshot)
         case loadFailed(ViewStateError)
@@ -70,11 +71,13 @@ public struct TVEpisodeDetailsFeature: Sendable {
     public var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
-            case .fetch:
-                if case .ready = state.viewState {
+            case .didAppear:
+                guard case .initial = state.viewState else {
                     return .none
                 }
+                return .send(.fetch)
 
+            case .fetch:
                 state.viewState = .loading
                 return handleFetch(&state)
 

@@ -88,7 +88,7 @@ extension TVSeriesInfrastructureFactory {
             modelContainer: modelContainer
         )
 
-    static let tvEpisodeLocalDataSource: some TVEpisodeLocalDataSource =
+    private static let tvEpisodeLocalDataSource: some TVEpisodeLocalDataSource =
         SwiftDataTVEpisodeLocalDataSource(
             modelContainer: modelContainer
         )
