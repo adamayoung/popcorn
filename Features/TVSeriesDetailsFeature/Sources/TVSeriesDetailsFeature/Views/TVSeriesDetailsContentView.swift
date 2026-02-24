@@ -53,8 +53,8 @@ extension TVSeriesDetailsContentView {
             LogoImage(url: tvSeries.logoURL)
                 .frame(maxWidth: 300, maxHeight: 90, alignment: .bottom)
 
-            if let genres = tvSeries.genres {
-                Text("\(genres.prefix(4).map(\.name).joined(separator: " ∙ "))")
+            if let genres = tvSeries.genres, !genres.isEmpty {
+                Text(verbatim: genres.prefix(4).map(\.name).joined(separator: " ∙ "))
                     .font(.callout)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 10)
