@@ -7,6 +7,7 @@
 
 import CoreDomain
 import Foundation
+import TVSeriesDomain
 
 public struct TVSeriesDetails: Identifiable, Equatable, Sendable {
 
@@ -15,6 +16,7 @@ public struct TVSeriesDetails: Identifiable, Equatable, Sendable {
     public let tagline: String?
     public let overview: String
     public let numberOfSeasons: Int
+    public let genres: [Genre]?
     public let firstAirDate: Date?
     public let posterURLSet: ImageURLSet?
     public let backdropURLSet: ImageURLSet?
@@ -27,6 +29,7 @@ public struct TVSeriesDetails: Identifiable, Equatable, Sendable {
         tagline: String? = nil,
         overview: String,
         numberOfSeasons: Int,
+        genres: [Genre]? = nil,
         firstAirDate: Date? = nil,
         posterURLSet: ImageURLSet? = nil,
         backdropURLSet: ImageURLSet? = nil,
@@ -38,6 +41,7 @@ public struct TVSeriesDetails: Identifiable, Equatable, Sendable {
         self.tagline = tagline
         self.overview = overview
         self.numberOfSeasons = numberOfSeasons
+        self.genres = genres
         self.firstAirDate = firstAirDate
         self.posterURLSet = posterURLSet
         self.backdropURLSet = backdropURLSet

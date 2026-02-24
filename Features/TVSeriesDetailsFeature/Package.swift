@@ -50,7 +50,8 @@ let package = Package(
                 "TCAFoundation",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "CoreDomain", package: "CoreDomain"),
-                .product(name: "TVSeriesApplication", package: "PopcornTVSeries")
+                .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
+                .product(name: "TVSeriesDomain", package: "PopcornTVSeries")
             ]
         )
     ]

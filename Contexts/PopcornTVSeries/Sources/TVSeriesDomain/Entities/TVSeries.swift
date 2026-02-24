@@ -30,6 +30,9 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
 
     public let numberOfSeasons: Int
 
+    /// The genres of this TV series.
+    public let genres: [Genre]?
+
     /// The first air date.
     public let firstAirDate: Date?
 
@@ -51,6 +54,7 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
     ///   - tagLine: The TV series' tagline.
     ///   - overview: A brief description or summary. Defaults to `nil`.
     ///   - numberOfSeasons: Number of seasons. Defaults to `0`,
+    ///   - genres: The genres of this TV series. Defaults to `nil`.
     ///   - firstAirDate: First air date.
     ///   - posterPath: URL path to the poster image. Defaults to `nil`.
     ///   - backdropPath: URL path to the backdrop image. Defaults to `nil`.
@@ -62,6 +66,7 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
         tagline: String? = nil,
         overview: String,
         numberOfSeasons: Int = 0,
+        genres: [Genre]? = nil,
         firstAirDate: Date? = nil,
         posterPath: URL? = nil,
         backdropPath: URL? = nil,
@@ -72,6 +77,7 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
         self.tagline = tagline
         self.overview = overview
         self.numberOfSeasons = numberOfSeasons
+        self.genres = genres
         self.firstAirDate = firstAirDate
         self.posterPath = posterPath
         self.backdropPath = backdropPath

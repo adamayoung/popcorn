@@ -19,6 +19,7 @@ final class TVSeriesEntity: Equatable, ModelExpirable {
     var firstAirDate: Date?
     var posterPath: URL?
     var backdropPath: URL?
+    @Relationship(deleteRule: .cascade) var genres: [TVSeriesGenreEntity]?
     @Relationship(deleteRule: .cascade) var seasons: [TVSeriesSeasonEntity]
     var cachedAt: Date
 
@@ -31,6 +32,7 @@ final class TVSeriesEntity: Equatable, ModelExpirable {
         firstAirDate: Date? = nil,
         posterPath: URL? = nil,
         backdropPath: URL? = nil,
+        genres: [TVSeriesGenreEntity]? = nil,
         seasons: [TVSeriesSeasonEntity] = [],
         cachedAt: Date = Date.now
     ) {
@@ -42,6 +44,7 @@ final class TVSeriesEntity: Equatable, ModelExpirable {
         self.firstAirDate = firstAirDate
         self.posterPath = posterPath
         self.backdropPath = backdropPath
+        self.genres = genres
         self.seasons = seasons
         self.cachedAt = cachedAt
     }

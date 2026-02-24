@@ -19,6 +19,7 @@ struct TVSeriesEntityMapper {
             tagline: entity.tagline,
             overview: entity.overview,
             numberOfSeasons: entity.numberOfSeasons,
+            genres: entity.genres.map { mapGenresToDomain($0) },
             firstAirDate: entity.firstAirDate,
             posterPath: entity.posterPath,
             backdropPath: entity.backdropPath,
@@ -36,6 +37,7 @@ struct TVSeriesEntityMapper {
             firstAirDate: tvSeries.firstAirDate,
             posterPath: tvSeries.posterPath,
             backdropPath: tvSeries.backdropPath,
+            genres: tvSeries.genres.map { mapGenresToEntity($0) },
             seasons: tvSeries.seasons.map { seasonMapper.map($0) }
         )
     }
@@ -48,8 +50,19 @@ struct TVSeriesEntityMapper {
         entity.firstAirDate = tvSeries.firstAirDate
         entity.posterPath = tvSeries.posterPath
         entity.backdropPath = tvSeries.backdropPath
+        entity.genres = tvSeries.genres.map { mapGenresToEntity($0) }
         entity.seasons = tvSeries.seasons.map { seasonMapper.map($0) }
         entity.cachedAt = .now
+    }
+
+    // MARK: - Private
+
+    private func mapGenresToDomain(_ genres: [TVSeriesGenreEntity]) -> [Genre] {
+        genres.map { Genre(id: $0.genreID, name: $0.name) }
+    }
+
+    private func mapGenresToEntity(_ genres: [Genre]) -> [TVSeriesGenreEntity] {
+        genres.map { TVSeriesGenreEntity(genreID: $0.id, name: $0.name) }
     }
 
 }

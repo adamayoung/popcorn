@@ -10,6 +10,7 @@ import Foundation
 import Testing
 import TVSeriesApplication
 @testable import TVSeriesDetailsFeature
+import TVSeriesDomain
 
 @Suite("TVSeriesMapper Tests")
 struct TVSeriesMapperTests {
@@ -40,12 +41,18 @@ struct TVSeriesMapperTests {
             full: #require(URL(string: "https://example.com/logo-full.jpg"))
         )
 
+        let genres = [
+            TVSeriesDomain.Genre(id: 18, name: "Drama"),
+            TVSeriesDomain.Genre(id: 10759, name: "Action & Adventure")
+        ]
+
         let details = TVSeriesDetails(
             id: 1399,
             name: "Game of Thrones",
             tagline: "Winter is Coming",
             overview: "A fantasy epic about noble houses fighting for control.",
             numberOfSeasons: 8,
+            genres: genres,
             firstAirDate: Date(timeIntervalSince1970: 1_302_739_200),
             posterURLSet: posterURLSet,
             backdropURLSet: backdropURLSet,
@@ -56,6 +63,11 @@ struct TVSeriesMapperTests {
 
         #expect(result.id == 1399)
         #expect(result.name == "Game of Thrones")
+        #expect(result.genres?.count == 2)
+        #expect(result.genres?[0].id == 18)
+        #expect(result.genres?[0].name == "Drama")
+        #expect(result.genres?[1].id == 10759)
+        #expect(result.genres?[1].name == "Action & Adventure")
         #expect(result.overview == "A fantasy epic about noble houses fighting for control.")
         #expect(result.posterURL == URL(string: "https://example.com/poster-detail.jpg"))
         #expect(result.backdropURL == URL(string: "https://example.com/backdrop-full.jpg"))
@@ -136,6 +148,36 @@ struct TVSeriesMapperTests {
         let result = mapper.map(details)
 
         #expect(result.seasons.isEmpty)
+    }
+
+    @Test("Maps TVSeriesDetails with nil genres to nil")
+    func mapsTVSeriesDetailsWithNilGenres() {
+        let details = TVSeriesDetails(
+            id: 123,
+            name: "Test Series",
+            overview: "Overview",
+            numberOfSeasons: 1,
+            genres: nil
+        )
+
+        let result = mapper.map(details)
+
+        #expect(result.genres == nil)
+    }
+
+    @Test("Maps TVSeriesDetails with empty genres to empty array")
+    func mapsTVSeriesDetailsWithEmptyGenres() {
+        let details = TVSeriesDetails(
+            id: 123,
+            name: "Test Series",
+            overview: "Overview",
+            numberOfSeasons: 1,
+            genres: []
+        )
+
+        let result = mapper.map(details)
+
+        #expect(result.genres?.isEmpty == true)
     }
 
     @Test("Maps season posterURL correctly")

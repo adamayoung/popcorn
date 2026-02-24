@@ -28,6 +28,7 @@ struct TVSeriesDetailsMapper {
             tagline: tvSeries.tagline,
             overview: tvSeries.overview,
             numberOfSeasons: tvSeries.numberOfSeasons,
+            genres: tvSeries.genres,
             firstAirDate: tvSeries.firstAirDate,
             posterURLSet: posterURLSet,
             backdropURLSet: backdropURLSet,
