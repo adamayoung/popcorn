@@ -11,6 +11,7 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
 
     public let id: Int
     public let name: String
+    public let genres: [Genre]?
     public let overview: String
     public let posterURL: URL?
     public let backdropURL: URL?
@@ -20,6 +21,7 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
     public init(
         id: Int,
         name: String,
+        genres: [Genre]? = nil,
         overview: String,
         posterURL: URL? = nil,
         backdropURL: URL? = nil,
@@ -28,6 +30,7 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
     ) {
         self.id = id
         self.name = name
+        self.genres = genres
         self.overview = overview
         self.posterURL = posterURL
         self.backdropURL = backdropURL
@@ -44,6 +47,10 @@ extension TVSeries {
         TVSeries(
             id: 66732,
             name: "Stranger Things",
+            genres: [
+                Genre(id: 18, name: "Drama"),
+                Genre(id: 10765, name: "Sci-Fi & Fantasy")
+            ],
             overview:
             "When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces, and one strange little girl.",
             posterURL: URL(

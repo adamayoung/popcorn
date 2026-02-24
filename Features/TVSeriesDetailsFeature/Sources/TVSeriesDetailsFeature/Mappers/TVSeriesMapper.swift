@@ -10,12 +10,22 @@ import TVSeriesApplication
 
 struct TVSeriesMapper {
 
+    private let genreMapper = GenreMapper()
     private let tvSeasonPreviewMapper = TVSeasonPreviewMapper()
 
     func map(_ tvSeriesDetails: TVSeriesDetails) -> TVSeries {
-        TVSeries(
+        let genres: [Genre]? = {
+            guard let genres = tvSeriesDetails.genres else {
+                return nil
+            }
+
+            return genres.map(genreMapper.map)
+        }()
+
+        return TVSeries(
             id: tvSeriesDetails.id,
             name: tvSeriesDetails.name,
+            genres: genres,
             overview: tvSeriesDetails.overview,
             posterURL: tvSeriesDetails.posterURLSet?.detail,
             backdropURL: tvSeriesDetails.backdropURLSet?.full,

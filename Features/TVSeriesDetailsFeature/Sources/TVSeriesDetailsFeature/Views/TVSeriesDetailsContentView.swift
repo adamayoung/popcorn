@@ -49,9 +49,18 @@ extension TVSeriesDetailsContentView {
     }
 
     private var headerOverlay: some View {
-        LogoImage(url: tvSeries.logoURL)
-            .padding(.bottom, 20)
-            .frame(maxWidth: 300, maxHeight: 150, alignment: .bottom)
+        VStack(spacing: 20) {
+            LogoImage(url: tvSeries.logoURL)
+                .frame(maxWidth: 300, maxHeight: 90, alignment: .bottom)
+
+            if let genres = tvSeries.genres, !genres.isEmpty {
+                Text(verbatim: genres.prefix(4).map(\.name).joined(separator: " ∙ "))
+                    .font(.callout)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 10)
+            }
+        }
+        .padding(.bottom, 10)
     }
 
     private var content: some View {
