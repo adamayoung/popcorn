@@ -18,42 +18,14 @@ Popcorn is a modular SwiftUI application for browsing movies and TV series acros
 
 ### Configuration
 
-Copy `Configs/Secrets.example.xcconfig` to `Configs/Secrets.xcconfig` and fill in:
-```
-TMDB_API_KEY = <your-tmdb-api-key>
-SENTRY_DSN = <your-sentry-dsn>           # Optional
-STATSIG_SDK_KEY = <your-statsig-key>     # Optional
-```
+Copy `Configs/Secrets.example.xcconfig` to `Configs/Secrets.xcconfig` and fill in `TMDB_API_KEY` (required), `SENTRY_DSN` and `STATSIG_SDK_KEY` (optional).
 
-### Xcode MCP
+### MCP Servers
 
-When the Xcode MCP server (`xcode`) is available, prefer its tools for building, testing, file operations, and diagnostics. All Xcode MCP tools require a `tabIdentifier` — use `mcp__xcode__XcodeListWindows` to discover open workspaces. File paths use Xcode project navigator paths (e.g., `ProjectName/Sources/MyFile.swift`), not filesystem paths.
-
-### TMDb MCP
-
-When the TMDb MCP server (`tmdb`) is available, use it to look up real movie, TV series, and person data. This is the authoritative source for all TMDb-related questions — prefer it over web searches or training knowledge.
-
-| Task | MCP Tool |
-|------|----------|
-| Movie details | `mcp__tmdb__movie_details` |
-| Movie credits | `mcp__tmdb__movie_credits` |
-| Movie keywords | `mcp__tmdb__movie_keywords` |
-| Search movies | `mcp__tmdb__search_movie` |
-| TV series details | `mcp__tmdb__tv_series_details` |
-| TV series credits | `mcp__tmdb__tv_series_credits` |
-| TV season details | `mcp__tmdb__tv_season_details` |
-| TV episode details | `mcp__tmdb__tv_episode_details` |
-| Search TV series | `mcp__tmdb__search_tv` |
-| Person details | `mcp__tmdb__person_details` |
-| Person movie credits | `mcp__tmdb__person_movie_credits` |
-| Person TV credits | `mcp__tmdb__person_tv_credits` |
-| Search people | `mcp__tmdb__search_person` |
-| Search all | `mcp__tmdb__search_multi` |
-| Trending movies | `mcp__tmdb__trending_movies` |
-| Trending TV | `mcp__tmdb__trending_tv` |
-| Trending people | `mcp__tmdb__trending_people` |
-| Discover movies | `mcp__tmdb__discover_movie` |
-| Discover TV | `mcp__tmdb__discover_tv` |
+When available, prefer MCP tools over manual commands:
+- **Xcode MCP** (`xcode`) — building, testing, file operations, diagnostics. All tools require a `tabIdentifier` from `mcp__xcode__XcodeListWindows`. File paths use Xcode project navigator format, not filesystem paths.
+- **TMDb MCP** (`tmdb`) — authoritative source for movie, TV series, and person data. Prefer over web searches or training knowledge.
+- **xcode-index-mcp** — locate call sites of functions, and function definitions from call sites. Use project name `Popcorn`. If you need a filepath to make a request, use `rg` to find the file and `rg -n` to find the line number. Use the absolute path when requesting symbols from a file.
 
 ### Build & Test
 
@@ -68,8 +40,6 @@ Use slash commands or Xcode MCP tools directly:
 | Build single package | `/build-package` | — |
 | Build single package for testing | `/build-package-for-testing` | — |
 | Test single package | `/test-package` | `mcp__xcode__RunSomeTests` with test specifiers |
-| Get build log | — | `mcp__xcode__GetBuildLog` (filter by severity, glob, pattern) |
-| List available tests | — | `mcp__xcode__GetTestList` |
 
 Use the `-package` variants when working on a single Swift package — they run `swift build`/`swift test` directly in the package directory, which is faster than building the entire app.
 
@@ -86,41 +56,6 @@ When making an incremental change that is **localised to a single module** and t
 - Changes to a module's public interface (new/modified `public` types, protocols, functions)
 - Changes spanning multiple packages (e.g., coordinator wiring, factory chain updates)
 - Final pre-PR verification (always use full-app for the last check before creating a PR)
-
-### Diagnostics & Issues
-
-| Task | MCP Tool |
-|------|----------|
-| List navigator issues | `mcp__xcode__XcodeListNavigatorIssues` (filter by severity, glob, pattern) |
-| Get file diagnostics | `mcp__xcode__XcodeRefreshCodeIssuesInFile` |
-
-### File Operations (Xcode Project-Aware)
-
-These operate on the Xcode project structure, automatically managing project membership:
-
-| Task | MCP Tool |
-|------|----------|
-| Read file | `mcp__xcode__XcodeRead` |
-| Write/create file | `mcp__xcode__XcodeWrite` (auto-adds to project) |
-| Edit file | `mcp__xcode__XcodeUpdate` |
-| List files | `mcp__xcode__XcodeLS` |
-| Find files by pattern | `mcp__xcode__XcodeGlob` |
-| Search file contents | `mcp__xcode__XcodeGrep` |
-| Create directory/group | `mcp__xcode__XcodeMakeDir` |
-| Move/rename/copy | `mcp__xcode__XcodeMV` |
-| Remove file/directory | `mcp__xcode__XcodeRM` |
-
-### Development Tools
-
-| Task | MCP Tool |
-|------|----------|
-| Search Apple docs | `mcp__xcode__DocumentationSearch` |
-| Execute code snippet | `mcp__xcode__ExecuteSnippet` (runs in context of a source file) |
-| Render SwiftUI preview | `mcp__xcode__RenderPreview` |
-
-### Finding function definitions and call sites
-
-Use tool `xcode-index-mcp` if available. Use project name Popcorn. The tool can locate call sites of functions, and function definitions from call sites. If you need a filepath to make a request, use `rg` to find the file and `rg -n` to find the line number. Use the absolute path when requesting symbols from a file.
 
 ### Formatting
 
@@ -151,86 +86,11 @@ This prevents CI failures and ensures code quality before review.
 | `App/Features/AppRoot/AppRootClient.swift` | App initialization (observability, feature flags) |
 | `AppDependencies/` | Central DI hub — registers all use cases as TCA `DependencyKey`s, wires adapters to contexts |
 
-## Contexts (Business Domains)
-
-| Context | Purpose |
-|---------|---------|
-| `PopcornMovies` | Movie details, credits, watchlist, recommendations |
-| `PopcornTVSeries` | TV series details, seasons, episodes |
-| `PopcornPeople` | Person details, filmography |
-| `PopcornSearch` | Media search functionality |
-| `PopcornDiscover` | Discovery and browsing |
-| `PopcornTrending` | Trending content |
-| `PopcornIntelligence` | AI-powered movie/TV chat |
-| `PopcornConfiguration` | TMDb API configuration |
-| `PopcornGenres` | Genre data |
-| `PopcornGamesCatalog` | Games catalog |
-| `PopcornPlotRemixGame` | Plot remix game logic |
-
-## Features (UI Modules)
-
-| Feature | Purpose |
-|---------|---------|
-| `ExploreFeature` | Main browse/discover tab |
-| `MovieDetailsFeature` | Movie detail screen |
-| `TVSeriesDetailsFeature` | TV series detail screen |
-| `PersonDetailsFeature` | Person detail screen |
-| `MediaSearchFeature` | Search tab |
-| `MovieIntelligenceFeature` | AI chat about movies |
-| `TVSeriesIntelligenceFeature` | AI chat about TV series |
-| `TrendingMoviesFeature` | Trending movies list |
-| `TrendingTVSeriesFeature` | Trending TV series list |
-| `TrendingPeopleFeature` | Trending people list |
-| `MovieCastAndCrewFeature` | Full cast/crew list |
-| `GamesCatalogFeature` | Games tab |
-| `PlotRemixGameFeature` | Plot remix game UI |
-| `DeveloperFeature` | Developer menu, feature flag overrides |
-
-## Adapters (External Service Bridges)
-
-**Context Adapters** — bridge TMDb API to domain interfaces.
-
-| Adapter | Bridges To |
-|---------|-----------|
-| `PopcornMoviesAdapters` | PopcornMovies ↔ TMDb |
-| `PopcornTVSeriesAdapters` | PopcornTVSeries ↔ TMDb |
-| `PopcornPeopleAdapters` | PopcornPeople ↔ TMDb |
-| `PopcornSearchAdapters` | PopcornSearch ↔ TMDb (depends on Movies/TVSeries/People adapters) |
-| `PopcornDiscoverAdapters` | PopcornDiscover ↔ TMDb |
-| `PopcornTrendingAdapters` | PopcornTrending ↔ TMDb |
-| `PopcornIntelligenceAdapters` | PopcornIntelligence ↔ Movies/TVSeries contexts (no external API) |
-| `PopcornConfigurationAdapters` | PopcornConfiguration ↔ TMDb |
-| `PopcornGenresAdapters` | PopcornGenres ↔ TMDb |
-| `PopcornGamesCatalogAdapters` | PopcornGamesCatalog ↔ FeatureAccess |
-| `PopcornPlotRemixGameAdapters` | PopcornPlotRemixGame ↔ TMDb |
-
-**Platform Adapters** — bridge platform concerns to third-party SDKs.
-
-| Adapter | Bridges To |
-|---------|-----------|
-| `ObservabilityAdapters` | Observability ↔ Sentry |
-| `FeatureAccessAdapters` | FeatureAccess ↔ Statsig |
-
-## Core (Shared Foundation)
-
-| Package | Purpose |
-|---------|---------|
-| `CoreDomain` | Shared domain primitives (also provides `CoreDomainTestHelpers`) |
-| `DesignSystem` | Shared UI components, styles, image loading (SDWebImageSwiftUI) |
-| `TCAFoundation` | Shared TCA utilities and extensions |
-
-## Platform (Cross-Cutting Concerns)
-
-| Package | Purpose |
-|---------|---------|
-| `Caching` | In-memory caching with TTL, provides `CachingTestHelpers` |
-| `Observability` | Logging, analytics, error reporting interfaces, provides `ObservabilityTestHelpers` |
-| `FeatureAccess` | Feature flag interfaces and evaluation |
-| `DataPersistenceInfrastructure` | SwiftData persistence protocols |
-
 ## Architecture
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for layer structure, use case patterns, and step-by-step workflows.
+The app follows domain-driven design with 4 layers: Domain, Infrastructure, Application, Composition. Business logic is organised into **Contexts** (e.g., `PopcornMovies`, `PopcornTVSeries`, `PopcornPeople`), UI into **Features** (e.g., `MovieDetailsFeature`, `TVSeriesDetailsFeature`), and external service bridges into **Adapters** (e.g., `PopcornMoviesAdapters`).
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full layer structure, module inventory, use case patterns, and step-by-step workflows.
 
 ## TMDb Domain Model Mapping
 
