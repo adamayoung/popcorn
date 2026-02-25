@@ -75,6 +75,9 @@ struct SearchRootFeature {
                     )
                 )
                 return .none
+            case .path(.element(_, .tvSeriesDetails(.navigate(.personDetails(let id))))):
+                state.path.append(.personDetails(PersonDetailsFeature.State(personID: id)))
+                return .none
             case .path(
                 .element(
                     _,

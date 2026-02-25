@@ -1,6 +1,17 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "CAST_AND_CREW" : {
+      "comment" : "Section title for the cast and crew carousel on the TV series details screen.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cast & Crew"
+          }
+        }
+      }
+    },
     "INTELLIGENCE" : {
       "comment" : "The title of a button that navigates to a screen showing more information about a TV series.",
       "localizations" : {
@@ -52,6 +63,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unable to Load"
+          }
+        }
+      }
+    },
+    "VIEW_PERSON_DETAILS_HINT" : {
+      "comment" : "Accessibility hint for a person button, describing what happens when activated.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View person details"
           }
         }
       }

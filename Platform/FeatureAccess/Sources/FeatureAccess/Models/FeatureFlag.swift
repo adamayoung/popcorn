@@ -42,6 +42,7 @@ public extension FeatureFlag {
         .watchlist,
         .movieDetailsCastAndCrew,
         .movieDetailsRecommendedMovies,
+        .tvSeriesDetailsCastAndCrew,
         .backdropFocalPoint
     ]
 
@@ -186,6 +187,15 @@ public extension FeatureFlag {
         id: "movie_details_recommended_movies",
         name: "Movie Details Recommended Movies",
         description: "Show Recommended Movies section on the Movie Details screen"
+    )
+
+    // MARK: - TV Series Details
+
+    /// Controls the Cast and Crew section on the TV Series Details screen.
+    static let tvSeriesDetailsCastAndCrew = FeatureFlag(
+        id: "tv_series_details_cast_and_crew",
+        name: "TV Series Details Cast and Crew",
+        description: "Show Cast and Crew section on the TV Series Details screen"
     )
 
     // MARK: - Artwork

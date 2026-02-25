@@ -66,6 +66,10 @@ When making an incremental change that is **localised to a single module** and t
 
 **Always run `/format` and `/lint` after making code changes** to ensure consistent style before committing.
 
+### Git Push
+
+**Always use `git push`** (not `gh` CLI) when pushing to remote branches. The `gh` CLI bypasses GitHub webhooks and workflow triggers.
+
 ### Pre-PR Checklist
 
 Before creating a pull request, **always** verify:

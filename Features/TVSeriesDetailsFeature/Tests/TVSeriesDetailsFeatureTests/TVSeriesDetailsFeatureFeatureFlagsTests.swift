@@ -21,11 +21,13 @@ struct TVSeriesDetailsFeatureFeatureFlagsTests {
         ) {
             TVSeriesDetailsFeature()
         } withDependencies: {
+            $0.tvSeriesDetailsClient.isCastAndCrewEnabled = { true }
             $0.tvSeriesDetailsClient.isIntelligenceEnabled = { true }
             $0.tvSeriesDetailsClient.isBackdropFocalPointEnabled = { true }
         }
 
         await store.send(.updateFeatureFlags) {
+            $0.isCastAndCrewEnabled = true
             $0.isIntelligenceEnabled = true
             $0.isBackdropFocalPointEnabled = true
         }
@@ -36,17 +38,20 @@ struct TVSeriesDetailsFeatureFeatureFlagsTests {
         let store = TestStore(
             initialState: TVSeriesDetailsFeature.State(
                 tvSeriesID: 123,
+                isCastAndCrewEnabled: true,
                 isIntelligenceEnabled: true,
                 isBackdropFocalPointEnabled: true
             )
         ) {
             TVSeriesDetailsFeature()
         } withDependencies: {
+            $0.tvSeriesDetailsClient.isCastAndCrewEnabled = { false }
             $0.tvSeriesDetailsClient.isIntelligenceEnabled = { false }
             $0.tvSeriesDetailsClient.isBackdropFocalPointEnabled = { false }
         }
 
         await store.send(.updateFeatureFlags) {
+            $0.isCastAndCrewEnabled = false
             $0.isIntelligenceEnabled = false
             $0.isBackdropFocalPointEnabled = false
         }
@@ -57,29 +62,33 @@ struct TVSeriesDetailsFeatureFeatureFlagsTests {
         let store = TestStore(
             initialState: TVSeriesDetailsFeature.State(
                 tvSeriesID: 123,
+                isCastAndCrewEnabled: true,
                 isIntelligenceEnabled: true,
                 isBackdropFocalPointEnabled: true
             )
         ) {
             TVSeriesDetailsFeature()
         } withDependencies: {
+            $0.tvSeriesDetailsClient.isCastAndCrewEnabled = { throw TestError.generic }
             $0.tvSeriesDetailsClient.isIntelligenceEnabled = { throw TestError.generic }
             $0.tvSeriesDetailsClient.isBackdropFocalPointEnabled = { throw TestError.generic }
         }
 
         await store.send(.updateFeatureFlags) {
+            $0.isCastAndCrewEnabled = false
             $0.isIntelligenceEnabled = false
             $0.isBackdropFocalPointEnabled = false
         }
     }
 
-    @Test("updateFeatureFlags enables only backdropFocalPoint when intelligence disabled")
+    @Test("updateFeatureFlags enables only backdropFocalPoint when others disabled")
     func updateFeatureFlagsEnablesOnlyBackdropFocalPoint() async {
         let store = TestStore(
             initialState: TVSeriesDetailsFeature.State(tvSeriesID: 123)
         ) {
             TVSeriesDetailsFeature()
         } withDependencies: {
+            $0.tvSeriesDetailsClient.isCastAndCrewEnabled = { false }
             $0.tvSeriesDetailsClient.isIntelligenceEnabled = { false }
             $0.tvSeriesDetailsClient.isBackdropFocalPointEnabled = { true }
         }
@@ -89,19 +98,37 @@ struct TVSeriesDetailsFeatureFeatureFlagsTests {
         }
     }
 
-    @Test("updateFeatureFlags enables only intelligence when backdropFocalPoint disabled")
+    @Test("updateFeatureFlags enables only intelligence when others disabled")
     func updateFeatureFlagsEnablesOnlyIntelligence() async {
         let store = TestStore(
             initialState: TVSeriesDetailsFeature.State(tvSeriesID: 123)
         ) {
             TVSeriesDetailsFeature()
         } withDependencies: {
+            $0.tvSeriesDetailsClient.isCastAndCrewEnabled = { false }
             $0.tvSeriesDetailsClient.isIntelligenceEnabled = { true }
             $0.tvSeriesDetailsClient.isBackdropFocalPointEnabled = { false }
         }
 
         await store.send(.updateFeatureFlags) {
             $0.isIntelligenceEnabled = true
+        }
+    }
+
+    @Test("updateFeatureFlags enables only castAndCrew when others disabled")
+    func updateFeatureFlagsEnablesOnlyCastAndCrew() async {
+        let store = TestStore(
+            initialState: TVSeriesDetailsFeature.State(tvSeriesID: 123)
+        ) {
+            TVSeriesDetailsFeature()
+        } withDependencies: {
+            $0.tvSeriesDetailsClient.isCastAndCrewEnabled = { true }
+            $0.tvSeriesDetailsClient.isIntelligenceEnabled = { false }
+            $0.tvSeriesDetailsClient.isBackdropFocalPointEnabled = { false }
+        }
+
+        await store.send(.updateFeatureFlags) {
+            $0.isCastAndCrewEnabled = true
         }
     }
 

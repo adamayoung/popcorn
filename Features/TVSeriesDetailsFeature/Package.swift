@@ -24,6 +24,7 @@ let package = Package(
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Core/TCAFoundation"),
         .package(path: "../../Contexts/PopcornTVSeries"),
+        .package(path: "../../Platform/FeatureAccess"),
         .package(path: "../../Platform/Observability"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
@@ -46,10 +47,12 @@ let package = Package(
         .testTarget(
             name: "TVSeriesDetailsFeatureTests",
             dependencies: [
+                "AppDependencies",
                 "TVSeriesDetailsFeature",
                 "TCAFoundation",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "CoreDomain", package: "CoreDomain"),
+                .product(name: "FeatureAccessTestHelpers", package: "FeatureAccess"),
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
                 .product(name: "TVSeriesDomain", package: "PopcornTVSeries")
             ]
