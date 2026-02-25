@@ -244,7 +244,9 @@ After all stories are implemented:
 2. Fix any issues found
 3. If fixes were made, re-run the full checklist
 
-### Phase 9: Code Review
+### Phase 9: Code Review (Optional)
+
+> **Skip this phase if using `/pr` to create the pull request** — `/pr` already spawns the `code-reviewer` agent. Running it here too is redundant.
 
 After the pre-PR checklist passes:
 
