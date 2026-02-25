@@ -16,7 +16,7 @@ struct CastAndCrewCarousel: View {
 
     var body: some View {
         Carousel {
-            ForEach(Array(castMembers.enumerated()), id: \.offset) { offset, castMember in
+            ForEach(castMembers) { castMember in
                 Button {
                     didSelectPerson(castMember.personID)
                 } label: {
@@ -24,14 +24,14 @@ struct CastAndCrewCarousel: View {
                         cellLabel(personName: castMember.personName, characterName: castMember.characterName)
                     }
                 }
-                .accessibilityIdentifier("tv-series-details.cast-and-crew.cast.\(offset)")
+                .accessibilityIdentifier("tv-series-details.cast-and-crew.cast.\(castMember.id)")
                 .accessibilityLabel(Text(verbatim: castMember.personName))
                 .accessibilityHint(Text("VIEW_PERSON_DETAILS_HINT", bundle: .module))
                 .buttonStyle(.plain)
                 .fixedSize(horizontal: true, vertical: false)
             }
 
-            ForEach(Array(crewMembers.enumerated()), id: \.offset) { offset, crewMember in
+            ForEach(crewMembers) { crewMember in
                 Button {
                     didSelectPerson(crewMember.personID)
                 } label: {
@@ -39,7 +39,7 @@ struct CastAndCrewCarousel: View {
                         cellLabel(personName: crewMember.personName, characterName: crewMember.job)
                     }
                 }
-                .accessibilityIdentifier("tv-series-details.cast-and-crew.crew.\(offset)")
+                .accessibilityIdentifier("tv-series-details.cast-and-crew.crew.\(crewMember.id)")
                 .accessibilityLabel(Text(verbatim: crewMember.personName))
                 .accessibilityHint(Text("VIEW_PERSON_DETAILS_HINT", bundle: .module))
                 .buttonStyle(.plain)
@@ -68,8 +68,6 @@ struct CastAndCrewCarousel: View {
 }
 
 #Preview {
-    @Previewable @Namespace var transitionNamespace
-
     ScrollView {
         CastAndCrewCarousel(
             castMembers: CastMember.mocks,

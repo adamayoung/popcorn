@@ -26,10 +26,9 @@ final class DefaultFetchTVSeriesCreditsUseCase: FetchTVSeriesCreditsUseCase {
         let credits: Credits
         let appConfiguration: AppConfiguration
         do {
-            (credits, appConfiguration) = try await (
-                tvSeriesCreditsRepository.credits(forTVSeries: tvSeriesID),
-                appConfigurationProvider.appConfiguration()
-            )
+            async let creditsTask = tvSeriesCreditsRepository.credits(forTVSeries: tvSeriesID)
+            async let appConfigurationTask = appConfigurationProvider.appConfiguration()
+            (credits, appConfiguration) = try await (creditsTask, appConfigurationTask)
         } catch let error {
             throw FetchTVSeriesCreditsError(error)
         }

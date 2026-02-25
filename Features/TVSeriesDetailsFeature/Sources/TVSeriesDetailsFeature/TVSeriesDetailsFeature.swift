@@ -117,20 +117,9 @@ extension TVSeriesDetailsFeature {
                 "User fetching TV series [tvSeriesID: \(state.tvSeriesID, privacy: .private)]"
             )
 
-            let isCastAndCrewEnabled = (try? client.isCastAndCrewEnabled()) ?? false
-
-            let viewSnapshot: ViewSnapshot
+            let tvSeries: TVSeries
             do {
-                async let tvSeries = client.fetchTVSeries(state.tvSeriesID)
-                async let credits = isCastAndCrewEnabled
-                    ? client.fetchCredits(tvSeriesID: state.tvSeriesID) : nil
-
-                let resolvedCredits = try await credits
-                viewSnapshot = try await ViewSnapshot(
-                    tvSeries: tvSeries,
-                    castMembers: resolvedCredits?.castMembers ?? [],
-                    crewMembers: resolvedCredits?.crewMembers ?? []
-                )
+                tvSeries = try await client.fetchTVSeries(state.tvSeriesID)
             } catch {
                 Self.logger.error(
                     "Failed fetching TV series [tvSeriesID: \(state.tvSeriesID, privacy: .private)]: \(error.localizedDescription, privacy: .public)"
@@ -139,7 +128,25 @@ extension TVSeriesDetailsFeature {
                 return
             }
 
-            await send(.loaded(viewSnapshot))
+            var castMembers: [CastMember] = []
+            var crewMembers: [CrewMember] = []
+            if state.isCastAndCrewEnabled {
+                do {
+                    let credits = try await client.fetchCredits(tvSeriesID: state.tvSeriesID)
+                    castMembers = credits.castMembers
+                    crewMembers = credits.crewMembers
+                } catch {
+                    Self.logger.warning(
+                        "Failed fetching credits [tvSeriesID: \(state.tvSeriesID, privacy: .private)]: \(error.localizedDescription, privacy: .public)"
+                    )
+                }
+            }
+
+            await send(.loaded(ViewSnapshot(
+                tvSeries: tvSeries,
+                castMembers: castMembers,
+                crewMembers: crewMembers
+            )))
         }
     }
 }

@@ -64,7 +64,10 @@ struct TVSeriesDetailsFeatureTests {
         let tvSeries = TVSeries.mock
 
         let store = TestStore(
-            initialState: TVSeriesDetailsFeature.State(tvSeriesID: tvSeries.id)
+            initialState: TVSeriesDetailsFeature.State(
+                tvSeriesID: tvSeries.id,
+                isCastAndCrewEnabled: true
+            )
         ) {
             TVSeriesDetailsFeature()
         } withDependencies: {
@@ -94,12 +97,15 @@ struct TVSeriesDetailsFeatureTests {
         #expect(snapshot.crewMembers.count == Credits.mock.crewMembers.count)
     }
 
-    @Test("fetch sends loadFailed when credits fetch throws and cast and crew enabled")
-    func fetchSendsLoadFailedWhenCreditsFetchThrows() async {
+    @Test("fetch succeeds with empty credits when credits fetch throws")
+    func fetchSucceedsWithEmptyCreditsWhenCreditsFetchThrows() async {
         let tvSeries = TVSeries.mock
 
         let store = TestStore(
-            initialState: TVSeriesDetailsFeature.State(tvSeriesID: tvSeries.id)
+            initialState: TVSeriesDetailsFeature.State(
+                tvSeriesID: tvSeries.id,
+                isCastAndCrewEnabled: true
+            )
         ) {
             TVSeriesDetailsFeature()
         } withDependencies: {
@@ -113,8 +119,8 @@ struct TVSeriesDetailsFeatureTests {
         }
 
         await store.send(.fetch)
-        await store.receive(\.loadFailed) {
-            $0.viewState = .error(ViewStateError(TestError.creditsFetchFailed))
+        await store.receive(\.loaded) {
+            $0.viewState = .ready(TVSeriesDetailsFeature.ViewSnapshot(tvSeries: tvSeries))
         }
     }
 
