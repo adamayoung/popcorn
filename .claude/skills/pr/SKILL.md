@@ -27,7 +27,7 @@ I'll create a pull request for the current branch by following these steps. If a
 9. Check if branch is up-to-date with main (warn if behind)
 10. Run `git status` and `git diff origin/main...HEAD` to understand all changes
 11. Analyze the commits and changes to generate an appropriate title and summary
-12. Push the current branch to remote if not already pushed
+12. Push the current branch to remote using `git push` (not `gh` CLI, which bypasses webhooks/workflows)
 13. Create a PR using `gh pr create` with:
     - **IMPORTANT: Title MUST start with a gitmoji prefix** (e.g., "✨ Add new feature", "🐛 Fix bug", "📚 Improve documentation")
         - Refer to <https://gitmoji.dev> to use the correct emoji
