@@ -94,6 +94,30 @@ struct TVSeriesDetailsFeatureTests {
         #expect(snapshot.crewMembers.count == Credits.mock.crewMembers.count)
     }
 
+    @Test("fetch sends loadFailed when credits fetch throws and cast and crew enabled")
+    func fetchSendsLoadFailedWhenCreditsFetchThrows() async {
+        let tvSeries = TVSeries.mock
+
+        let store = TestStore(
+            initialState: TVSeriesDetailsFeature.State(tvSeriesID: tvSeries.id)
+        ) {
+            TVSeriesDetailsFeature()
+        } withDependencies: {
+            $0.tvSeriesDetailsClient.fetchTVSeries = { _ in tvSeries }
+            $0.tvSeriesDetailsClient.fetchCredits = { _ in
+                throw TestError.creditsFetchFailed
+            }
+            $0.tvSeriesDetailsClient.isCastAndCrewEnabled = { true }
+            $0.tvSeriesDetailsClient.isIntelligenceEnabled = { false }
+            $0.tvSeriesDetailsClient.isBackdropFocalPointEnabled = { false }
+        }
+
+        await store.send(.fetch)
+        await store.receive(\.loadFailed) {
+            $0.viewState = .error(ViewStateError(TestError.creditsFetchFailed))
+        }
+    }
+
     @Test("navigate seasonDetails returns none")
     func navigateSeasonDetailsReturnsNone() async {
         let store = TestStore(
@@ -124,4 +148,10 @@ struct TVSeriesDetailsFeatureTests {
         await store.send(.navigate(.personDetails(id: 17419)))
     }
 
+}
+
+// MARK: - Test Helpers
+
+private enum TestError: Error, Equatable {
+    case creditsFetchFailed
 }
