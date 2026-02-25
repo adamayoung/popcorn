@@ -25,7 +25,7 @@ Copy `Configs/Secrets.example.xcconfig` to `Configs/Secrets.xcconfig` and fill i
 When available, prefer MCP tools over manual commands:
 - **Xcode MCP** (`xcode`) — building, testing, file operations, diagnostics. All tools require a `tabIdentifier` from `mcp__xcode__XcodeListWindows`. File paths use Xcode project navigator format, not filesystem paths.
 - **TMDb MCP** (`tmdb`) — authoritative source for movie, TV series, and person data. Prefer over web searches or training knowledge.
-- **xcode-index-mcp** — locate function definitions and call sites. Use project name `Popcorn`.
+- **xcode-index-mcp** — locate call sites of functions, and function definitions from call sites. Use project name `Popcorn`. If you need a filepath to make a request, use `rg` to find the file and `rg -n` to find the line number. Use the absolute path when requesting symbols from a file.
 
 ### Build & Test
 
