@@ -28,7 +28,7 @@ public struct TVSeriesDetailsView: View {
         ZStack {
             switch store.viewState {
             case .ready(let snapshot):
-                content(tvSeries: snapshot.tvSeries)
+                content(snapshot: snapshot)
             case .error(let error):
                 ContentUnavailableView {
                     Label(
@@ -87,22 +87,27 @@ extension TVSeriesDetailsView {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private func content(tvSeries: TVSeries) -> some View {
+    private func content(snapshot: TVSeriesDetailsFeature.ViewSnapshot) -> some View {
         TVSeriesDetailsContentView(
-            tvSeries: tvSeries,
+            tvSeries: snapshot.tvSeries,
+            castMembers: snapshot.castMembers,
+            crewMembers: snapshot.crewMembers,
             isBackdropFocalPointEnabled: store.isBackdropFocalPointEnabled,
             didSelectSeason: { seasonNumber in
-                let seasonName = tvSeries.seasons
+                let seasonName = snapshot.tvSeries.seasons
                     .first { $0.seasonNumber == seasonNumber }?.name ?? "Season \(seasonNumber)"
                 store.send(
                     .navigate(
                         .seasonDetails(
-                            tvSeriesID: tvSeries.id,
+                            tvSeriesID: snapshot.tvSeries.id,
                             seasonNumber: seasonNumber,
                             seasonName: seasonName
                         )
                     )
                 )
+            },
+            didSelectPerson: { personID in
+                store.send(.navigate(.personDetails(id: personID)))
             }
         )
     }
@@ -117,7 +122,13 @@ extension TVSeriesDetailsView {
             store: Store(
                 initialState: TVSeriesDetailsFeature.State(
                     tvSeriesID: 1,
-                    viewState: .ready(.init(tvSeries: TVSeries.mock))
+                    viewState: .ready(
+                        .init(
+                            tvSeries: TVSeries.mock,
+                            castMembers: CastMember.mocks,
+                            crewMembers: CrewMember.mocks
+                        )
+                    )
                 ),
                 reducer: { EmptyReducer() }
             ),

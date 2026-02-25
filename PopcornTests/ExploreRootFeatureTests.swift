@@ -6,6 +6,7 @@
 //
 
 import ComposableArchitecture
+import PersonDetailsFeature
 @testable import Popcorn
 import Testing
 import TVEpisodeDetailsFeature
@@ -39,6 +40,28 @@ struct ExploreRootFeatureTests {
         #expect(seasonState.tvSeriesID == 66732)
         #expect(seasonState.seasonNumber == 1)
         #expect(seasonState.seasonName == "Season 1")
+    }
+
+    @Test("tvSeriesDetails navigate personDetails appends personDetails to path")
+    func tvSeriesDetailsNavigatePersonDetailsAppendsToPath() {
+        var state = ExploreRootFeature.State()
+        state.path.append(.tvSeriesDetails(TVSeriesDetailsFeature.State(tvSeriesID: 66732)))
+
+        _ = ExploreRootFeature().reduce(
+            into: &state,
+            action: .path(.element(
+                id: 0,
+                action: .tvSeriesDetails(
+                    .navigate(.personDetails(id: 17419))
+                )
+            ))
+        )
+
+        guard case .personDetails = state.path.last else {
+            Issue.record("Expected personDetails as last path element")
+            return
+        }
+        #expect(state.path.count == 2)
     }
 
     @Test("tvSeasonDetails navigate episodeDetails appends tvEpisodeDetails to path")

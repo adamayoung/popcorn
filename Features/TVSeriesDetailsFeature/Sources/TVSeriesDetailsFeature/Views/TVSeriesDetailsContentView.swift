@@ -11,8 +11,11 @@ import SwiftUI
 struct TVSeriesDetailsContentView: View {
 
     var tvSeries: TVSeries
+    var castMembers: [CastMember]
+    var crewMembers: [CrewMember]
     var isBackdropFocalPointEnabled: Bool
     var didSelectSeason: (_ seasonNumber: Int) -> Void
+    var didSelectPerson: (_ personID: Int) -> Void
 
     var body: some View {
         StretchyHeaderScrollView(
@@ -75,8 +78,25 @@ extension TVSeriesDetailsContentView {
                 seasonsCarousel
                     .padding(.bottom)
             }
+
+            if !castMembers.isEmpty || !crewMembers.isEmpty {
+                castAndCrewCarousel
+                    .padding(.bottom)
+            }
         }
         .padding(.vertical)
+    }
+
+    private var castAndCrewCarousel: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            sectionHeader("CAST_AND_CREW")
+
+            CastAndCrewCarousel(
+                castMembers: castMembers,
+                crewMembers: crewMembers,
+                didSelectPerson: didSelectPerson
+            )
+        }
     }
 
     private var seasonsCarousel: some View {
@@ -104,8 +124,11 @@ extension TVSeriesDetailsContentView {
     NavigationStack {
         TVSeriesDetailsContentView(
             tvSeries: TVSeries.mock,
+            castMembers: CastMember.mocks,
+            crewMembers: CrewMember.mocks,
             isBackdropFocalPointEnabled: true,
-            didSelectSeason: { _ in }
+            didSelectSeason: { _ in },
+            didSelectPerson: { _ in }
         )
     }
 }
@@ -119,8 +142,11 @@ extension TVSeriesDetailsContentView {
                 overview: "A series with no seasons data available.",
                 seasons: []
             ),
+            castMembers: [],
+            crewMembers: [],
             isBackdropFocalPointEnabled: false,
-            didSelectSeason: { _ in }
+            didSelectSeason: { _ in },
+            didSelectPerson: { _ in }
         )
     }
 }
