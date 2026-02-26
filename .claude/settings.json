@@ -16,7 +16,6 @@
       "Bash(wc:*)",
       "Bash(xargs:*)",
       "Bash(xcodebuild:*)",
-      "Bash(xcsift:*)",
       "Bash(swift:*)",
       "Bash(make:*)",
       "Bash(git:*)",
