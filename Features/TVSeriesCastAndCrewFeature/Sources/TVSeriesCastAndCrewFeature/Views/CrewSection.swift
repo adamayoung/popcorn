@@ -13,12 +13,15 @@ struct CrewSection: View {
     let transitionNamespace: Namespace.ID?
     let didSelectPerson: (Int, String?) -> Void
 
+    // TMDb department names are always returned in English, so this comparison is safe.
+    private static let departmentPriority = [
+        "Directing", "Writing", "Production", "Camera", "Editing", "Sound", "Art"
+    ]
+
     private var sortedDepartments: [String] {
-        // TMDb department names are always returned in English, so this comparison is safe.
-        let priority = ["Directing", "Writing", "Production", "Camera", "Editing", "Sound", "Art"]
         return crewByDepartment.keys.sorted { lhs, rhs in
-            let lhsIndex = priority.firstIndex(of: lhs) ?? Int.max
-            let rhsIndex = priority.firstIndex(of: rhs) ?? Int.max
+            let lhsIndex = Self.departmentPriority.firstIndex(of: lhs) ?? Int.max
+            let rhsIndex = Self.departmentPriority.firstIndex(of: rhs) ?? Int.max
             if lhsIndex != rhsIndex {
                 return lhsIndex < rhsIndex
             }

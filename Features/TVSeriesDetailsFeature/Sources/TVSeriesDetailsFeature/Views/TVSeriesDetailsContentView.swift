@@ -130,6 +130,7 @@ extension TVSeriesDetailsContentView {
                     .font(.subheadline)
                     .fontWeight(.semibold)
                     .foregroundStyle(.secondary)
+                    .accessibilityHidden(true)
             }
         }
         .buttonStyle(.plain)
