@@ -25,28 +25,33 @@ public struct PersonRow: View {
     /// The URL of the person's profile image, if available.
     public var profileURL: URL?
 
+    /// The person's initials to show as a placeholder.
+    public var initials: String?
+
     /// Creates a new person row.
     ///
     /// - Parameters:
     ///   - id: The unique identifier of the person.
     ///   - name: The name of the person to display.
     ///   - profileURL: The URL of the person's profile image. Defaults to `nil`.
+    ///   - initials: The person's initials to show as a placeholder. Defaults to `nil`.
     public init(
         id: Int,
         name: String,
-        profileURL: URL? = nil
+        profileURL: URL? = nil,
+        initials: String? = nil
     ) {
         self.id = id
         self.name = name
         self.profileURL = profileURL
+        self.initials = initials
     }
 
     public var body: some View {
         HStack {
-            ProfileImage(url: profileURL)
+            ProfileImage(url: profileURL, initials: initials)
                 .frame(width: 80, height: 80)
-                .cornerRadius(40)
-                .clipped()
+                .clipShape(.circle)
 
             Text(verbatim: name)
         }

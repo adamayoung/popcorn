@@ -20,7 +20,7 @@ struct CastAndCrewCarousel: View {
                 Button {
                     didSelectPerson(castMember.personID)
                 } label: {
-                    ProfileCarouselCell(imageURL: castMember.profileURL) {
+                    ProfileCarouselCell(imageURL: castMember.profileURL, initials: castMember.initials) {
                         cellLabel(personName: castMember.personName, characterName: castMember.characterName)
                     }
                 }
@@ -35,7 +35,7 @@ struct CastAndCrewCarousel: View {
                 Button {
                     didSelectPerson(crewMember.personID)
                 } label: {
-                    ProfileCarouselCell(imageURL: crewMember.profileURL) {
+                    ProfileCarouselCell(imageURL: crewMember.profileURL, initials: crewMember.initials) {
                         cellLabel(personName: crewMember.personName, characterName: crewMember.job)
                     }
                 }

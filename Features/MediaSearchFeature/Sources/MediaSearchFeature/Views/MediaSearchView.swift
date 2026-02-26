@@ -137,9 +137,9 @@ extension MediaSearchView {
             store.send(.navigate(.personDetails(id: person.id)))
         } label: {
             HStack {
-                ProfileImage(url: person.profileURL)
+                ProfileImage(url: person.profileURL, initials: person.initials)
                     .frame(width: 60, height: 60)
-                    .clipShape(Circle())
+                    .clipShape(.circle)
 
                 Text(verbatim: person.name)
             }

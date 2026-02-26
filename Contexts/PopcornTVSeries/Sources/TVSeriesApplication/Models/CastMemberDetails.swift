@@ -17,6 +17,7 @@ public struct CastMemberDetails: Identifiable, Equatable, Sendable {
     public let profileURLSet: ImageURLSet?
     public let gender: Gender
     public let order: Int
+    public let initials: String?
 
     public init(
         id: String,
@@ -25,7 +26,8 @@ public struct CastMemberDetails: Identifiable, Equatable, Sendable {
         personName: String,
         profileURLSet: ImageURLSet? = nil,
         gender: Gender,
-        order: Int
+        order: Int,
+        initials: String? = nil
     ) {
         self.id = id
         self.personID = personID
@@ -34,6 +36,7 @@ public struct CastMemberDetails: Identifiable, Equatable, Sendable {
         self.profileURLSet = profileURLSet
         self.gender = gender
         self.order = order
+        self.initials = initials
     }
 
 }

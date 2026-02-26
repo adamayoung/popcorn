@@ -20,7 +20,8 @@ struct PersonPreviewDetailsMapper {
             name: personPreview.name,
             knownForDepartment: personPreview.knownForDepartment,
             gender: personPreview.gender,
-            profileURLSet: profileURLSet
+            profileURLSet: profileURLSet,
+            initials: personPreview.initials
         )
     }
 

@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import Foundation
 import TVSeriesDomain
 
@@ -28,7 +29,8 @@ struct AggregateCrewMemberEntityMapper {
             gender: genderMapper.map(entity.gender),
             department: entity.department,
             jobs: jobs,
-            totalEpisodeCount: entity.totalEpisodeCount
+            totalEpisodeCount: entity.totalEpisodeCount,
+            initials: personInitials(from: entity.name)
         )
     }
 

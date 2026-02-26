@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import Foundation
 import TMDb
 import TVSeriesDomain
@@ -28,7 +29,8 @@ struct AggregateCastMemberMapper {
             profilePath: dto.profilePath,
             gender: genderMapper.compactMap(dto.gender) ?? .unknown,
             roles: roles,
-            totalEpisodeCount: dto.totalEpisodeCount
+            totalEpisodeCount: dto.totalEpisodeCount,
+            initials: personInitials(from: dto.name)
         )
     }
 

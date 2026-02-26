@@ -15,6 +15,7 @@ public struct CrewMember: Identifiable, Equatable, Sendable {
     public let department: String
     public let jobs: [Job]
     public let totalEpisodeCount: Int
+    public let initials: String?
 
     public init(
         id: Int,
@@ -22,7 +23,8 @@ public struct CrewMember: Identifiable, Equatable, Sendable {
         profileURL: URL? = nil,
         department: String,
         jobs: [Job] = [],
-        totalEpisodeCount: Int = 0
+        totalEpisodeCount: Int = 0,
+        initials: String? = nil
     ) {
         self.id = id
         self.personName = personName
@@ -30,6 +32,7 @@ public struct CrewMember: Identifiable, Equatable, Sendable {
         self.department = department
         self.jobs = jobs
         self.totalEpisodeCount = totalEpisodeCount
+        self.initials = initials
     }
 
     public struct Job: Equatable, Sendable {

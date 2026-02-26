@@ -32,7 +32,8 @@ struct AggregateCrewMemberDetailsMapper {
             gender: crewMember.gender,
             department: crewMember.department,
             jobs: jobs,
-            totalEpisodeCount: crewMember.totalEpisodeCount
+            totalEpisodeCount: crewMember.totalEpisodeCount,
+            initials: crewMember.initials
         )
     }
 

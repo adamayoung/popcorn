@@ -31,7 +31,8 @@ struct AggregateCastMemberDetailsMapper {
             profileURLSet: profileURLSet,
             gender: castMember.gender,
             roles: roles,
-            totalEpisodeCount: castMember.totalEpisodeCount
+            totalEpisodeCount: castMember.totalEpisodeCount,
+            initials: castMember.initials
         )
     }
 

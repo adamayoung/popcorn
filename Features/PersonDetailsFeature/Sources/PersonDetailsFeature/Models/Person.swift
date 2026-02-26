@@ -15,6 +15,7 @@ public struct Person: Identifiable, Equatable, Sendable {
     public let knownForDepartment: String
     public let gender: Gender
     public let profileURL: URL?
+    public let initials: String?
 
     public init(
         id: Int,
@@ -22,7 +23,8 @@ public struct Person: Identifiable, Equatable, Sendable {
         biography: String,
         knownForDepartment: String,
         gender: Gender,
-        profileURL: URL? = nil
+        profileURL: URL? = nil,
+        initials: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -30,6 +32,7 @@ public struct Person: Identifiable, Equatable, Sendable {
         self.knownForDepartment = knownForDepartment
         self.gender = gender
         self.profileURL = profileURL
+        self.initials = initials
     }
 
 }

@@ -24,7 +24,8 @@ struct CastMemberDetailsMapper {
             personName: castMember.personName,
             profileURLSet: profileURLSet,
             gender: castMember.gender,
-            order: castMember.order
+            order: castMember.order,
+            initials: castMember.initials
         )
     }
 

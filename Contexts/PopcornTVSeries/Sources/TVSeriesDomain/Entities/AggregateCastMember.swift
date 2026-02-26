@@ -34,6 +34,9 @@ public struct AggregateCastMember: Identifiable, Equatable, Sendable {
     /// The total number of episodes in which this cast member appeared.
     public let totalEpisodeCount: Int
 
+    /// The person's initials derived from their name.
+    public let initials: String?
+
     ///
     /// Creates a new aggregate cast member instance.
     ///
@@ -44,6 +47,7 @@ public struct AggregateCastMember: Identifiable, Equatable, Sendable {
     ///   - gender: The gender of the cast member.
     ///   - roles: The roles played across all seasons.
     ///   - totalEpisodeCount: The total number of episodes appeared in.
+    ///   - initials: The person's initials. Defaults to `nil`.
     ///
     public init(
         id: Int,
@@ -51,7 +55,8 @@ public struct AggregateCastMember: Identifiable, Equatable, Sendable {
         profilePath: URL?,
         gender: Gender,
         roles: [CastRole],
-        totalEpisodeCount: Int
+        totalEpisodeCount: Int,
+        initials: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -59,6 +64,7 @@ public struct AggregateCastMember: Identifiable, Equatable, Sendable {
         self.gender = gender
         self.roles = roles
         self.totalEpisodeCount = totalEpisodeCount
+        self.initials = initials
     }
 
 }

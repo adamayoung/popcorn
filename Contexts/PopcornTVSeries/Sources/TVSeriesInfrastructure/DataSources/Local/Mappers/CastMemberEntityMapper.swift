@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import Foundation
 import TVSeriesDomain
 
@@ -19,7 +20,8 @@ struct CastMemberEntityMapper {
             personName: entity.personName,
             profilePath: entity.profilePath,
             gender: genderMapper.map(entity.gender),
-            order: entity.order
+            order: entity.order,
+            initials: personInitials(from: entity.personName)
         )
     }
 

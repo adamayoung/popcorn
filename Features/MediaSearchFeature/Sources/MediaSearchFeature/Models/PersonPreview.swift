@@ -12,15 +12,18 @@ public struct PersonPreview: Identifiable, Sendable, Equatable {
     public let id: Int
     public let name: String
     public let profileURL: URL?
+    public let initials: String?
 
     public init(
         id: Int,
         name: String,
-        profileURL: URL? = nil
+        profileURL: URL? = nil,
+        initials: String? = nil
     ) {
         self.id = id
         self.name = name
         self.profileURL = profileURL
+        self.initials = initials
     }
 
 }

@@ -24,7 +24,8 @@ struct CreditsMapper {
             personID: castMemberDetails.personID,
             characterName: castMemberDetails.characterName,
             personName: castMemberDetails.personName,
-            profileURL: castMemberDetails.profileURLSet?.detail
+            profileURL: castMemberDetails.profileURLSet?.detail,
+            initials: castMemberDetails.initials
         )
     }
 
@@ -35,7 +36,8 @@ struct CreditsMapper {
             personName: crewMemberDetails.personName,
             job: crewMemberDetails.job,
             profileURL: crewMemberDetails.profileURLSet?.detail,
-            department: crewMemberDetails.department
+            department: crewMemberDetails.department,
+            initials: crewMemberDetails.initials
         )
     }
 

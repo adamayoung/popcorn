@@ -18,7 +18,8 @@ struct PersonPreviewMapper {
             name: dto.name,
             knownForDepartment: dto.knownForDepartment,
             gender: map(dto.gender),
-            profilePath: dto.profilePath
+            profilePath: dto.profilePath,
+            initials: personInitials(from: dto.name)
         )
     }
 
