@@ -11,8 +11,9 @@ import TVSeriesDomain
 
 struct AggregateCastMemberMapper {
 
+    private let genderMapper = GenderMapper()
+
     func map(_ dto: TMDb.AggregateCastMember) -> TVSeriesDomain.AggregateCastMember {
-        let genderMapper = GenderMapper()
 
         let roles = dto.roles.map { role in
             TVSeriesDomain.CastRole(

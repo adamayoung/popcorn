@@ -66,9 +66,10 @@ SwiftDataFetchStreaming {
         _ aggregateCredits: AggregateCredits,
         forTVSeries tvSeriesID: Int
     ) async throws(TVSeriesAggregateCreditsLocalDataSourceError) {
-        let descriptor = FetchDescriptor<TVSeriesAggregateCreditsEntity>(
+        var descriptor = FetchDescriptor<TVSeriesAggregateCreditsEntity>(
             predicate: #Predicate { $0.tvSeriesID == tvSeriesID }
         )
+        descriptor.fetchLimit = 1
         let existing: TVSeriesAggregateCreditsEntity?
 
         do {
