@@ -61,8 +61,11 @@ public enum ModelContainerFactory {
         let fileManager = FileManager.default
         let suffixes = ["", "-wal", "-shm"]
 
+        let directory = url.deletingLastPathComponent()
+        let filename = url.lastPathComponent
+
         for suffix in suffixes {
-            let fileURL = URL(filePath: url.path() + suffix)
+            let fileURL = directory.appending(path: filename + suffix)
             try? fileManager.removeItem(at: fileURL)
         }
     }

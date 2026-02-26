@@ -34,6 +34,27 @@ struct ModelContainerFactoryTests {
         Self.cleanUpSQLiteFiles(at: url)
     }
 
+    @Test("recovers from a corrupted database by deleting and recreating")
+    func makeLocalModelContainerRecoversFromCorruptedDatabase() throws {
+        let url = Self.temporarySQLiteURL()
+
+        try Data("not a valid sqlite database".utf8).write(to: url)
+        #expect(FileManager.default.fileExists(atPath: url.path()))
+
+        let schema = Schema([TestEntity.self])
+
+        let container = ModelContainerFactory.makeLocalModelContainer(
+            schema: schema,
+            url: url,
+            logger: logger
+        )
+
+        #expect(container.schema.entities.isEmpty == false)
+        #expect(FileManager.default.fileExists(atPath: url.path()))
+
+        Self.cleanUpSQLiteFiles(at: url)
+    }
+
     @Test("creates a local ModelContainer when no previous database exists")
     func makeLocalModelContainerCreatesContainerFreshInstall() {
         let url = Self.temporarySQLiteURL()
@@ -55,7 +76,7 @@ struct ModelContainerFactoryTests {
 
     // MARK: - makeCloudKitModelContainer
 
-    @Test("creates a CloudKit ModelContainer with migration plan")
+    @Test("creates a ModelContainer with migration plan via makeCloudKitModelContainer")
     func makeCloudKitModelContainerCreatesContainer() {
         let url = Self.temporarySQLiteURL()
         let schema = Schema([TestEntity.self])
@@ -78,8 +99,8 @@ struct ModelContainerFactoryTests {
     @Test("removes all SQLite files including WAL and SHM")
     func removeSQLiteFilesRemovesAllFiles() throws {
         let url = Self.temporarySQLiteURL()
-        let walURL = URL(filePath: url.path() + "-wal")
-        let shmURL = URL(filePath: url.path() + "-shm")
+        let walURL = Self.sqliteJournalURL(for: url, suffix: "-wal")
+        let shmURL = Self.sqliteJournalURL(for: url, suffix: "-shm")
 
         try Data().write(to: url)
         try Data().write(to: walURL)
@@ -110,7 +131,7 @@ struct ModelContainerFactoryTests {
     @Test("removes only existing files when some journal files are missing")
     func removeSQLiteFilesRemovesPartialFiles() throws {
         let url = Self.temporarySQLiteURL()
-        let walURL = URL(filePath: url.path() + "-wal")
+        let walURL = Self.sqliteJournalURL(for: url, suffix: "-wal")
 
         try Data().write(to: url)
         try Data().write(to: walURL)
@@ -129,6 +150,10 @@ extension ModelContainerFactoryTests {
 
     private static func temporarySQLiteURL() -> URL {
         URL.temporaryDirectory.appending(path: "test-\(UUID().uuidString).sqlite")
+    }
+
+    private static func sqliteJournalURL(for url: URL, suffix: String) -> URL {
+        url.deletingLastPathComponent().appending(path: url.lastPathComponent + suffix)
     }
 
     private static func cleanUpSQLiteFiles(at url: URL) {
