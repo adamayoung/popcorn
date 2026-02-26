@@ -36,7 +36,7 @@ struct PersonDetailsContentView: View {
         }
         .navigationTitle(person.name)
         #if os(iOS)
-        .hideToolbarTitle()
+            .hideToolbarTitle()
         #endif
     }
 

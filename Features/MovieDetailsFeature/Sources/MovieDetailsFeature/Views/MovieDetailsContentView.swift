@@ -27,7 +27,7 @@ struct MovieDetailsContentView: View {
         )
         .navigationTitle(movie.title)
         #if os(iOS)
-        .hideToolbarTitle()
+            .hideToolbarTitle()
         #endif
     }
 

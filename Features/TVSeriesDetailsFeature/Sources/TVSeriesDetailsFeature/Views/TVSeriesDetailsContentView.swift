@@ -26,7 +26,7 @@ struct TVSeriesDetailsContentView: View {
         )
         .navigationTitle(tvSeries.name)
         #if os(iOS)
-        .hideToolbarTitle()
+            .hideToolbarTitle()
         #endif
     }
 
