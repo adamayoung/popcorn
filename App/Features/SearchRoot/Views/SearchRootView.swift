@@ -47,10 +47,7 @@ struct SearchRootView: View {
                     transitionNamespace: namespace
                 )
             case .tvSeriesCastAndCrew(let store):
-                TVSeriesCastAndCrewView(
-                    store: store,
-                    transitionNamespace: namespace
-                )
+                tvSeriesCastAndCrew(store: store)
             }
         }
     }
@@ -61,6 +58,13 @@ struct SearchRootView: View {
 
     private func tvEpisodeDetails(store: StoreOf<TVEpisodeDetailsFeature>) -> some View {
         TVEpisodeDetailsView(store: store)
+    }
+
+    private func tvSeriesCastAndCrew(store: StoreOf<TVSeriesCastAndCrewFeature>) -> some View {
+        TVSeriesCastAndCrewView(
+            store: store,
+            transitionNamespace: namespace
+        )
     }
 
 }

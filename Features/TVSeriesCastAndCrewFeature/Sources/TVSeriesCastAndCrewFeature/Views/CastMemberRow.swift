@@ -25,7 +25,7 @@ struct CastMemberRow: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
 
-                Text(verbatim: episodeCountText)
+                Text("EPISODE_COUNT \(member.totalEpisodeCount)", bundle: .module)
                     .font(.caption)
                     .foregroundStyle(.tertiary)
             }
@@ -51,11 +51,6 @@ struct CastMemberRow: View {
 
     private var rolesText: String {
         member.roles.map(\.character).joined(separator: " / ")
-    }
-
-    private var episodeCountText: String {
-        let count = member.totalEpisodeCount
-        return "\(count) Episode\(count == 1 ? "" : "s")"
     }
 
 }
