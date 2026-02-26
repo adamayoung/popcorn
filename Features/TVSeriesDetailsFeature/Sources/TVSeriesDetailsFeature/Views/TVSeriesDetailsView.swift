@@ -108,6 +108,9 @@ extension TVSeriesDetailsView {
             },
             didSelectPerson: { personID in
                 store.send(.navigate(.personDetails(id: personID)))
+            },
+            navigateToCastAndCrew: { tvSeriesID in
+                store.send(.navigate(.castAndCrew(tvSeriesID: tvSeriesID)))
             }
         )
     }

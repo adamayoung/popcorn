@@ -20,4 +20,6 @@ public protocol PopcornTVSeriesFactory: Sendable {
 
     func makeFetchTVSeriesCreditsUseCase() -> FetchTVSeriesCreditsUseCase
 
+    func makeFetchTVSeriesAggregateCreditsUseCase() -> FetchTVSeriesAggregateCreditsUseCase
+
 }

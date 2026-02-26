@@ -31,4 +31,25 @@ final class MockTVSeriesCreditsRepository: TVSeriesCreditsRepository, @unchecked
         }
     }
 
+    var aggregateCreditsCallCount = 0
+    var aggregateCreditsCalledWith: [Int] = []
+    var aggregateCreditsStub: Result<AggregateCredits, TVSeriesCreditsRepositoryError>?
+
+    func aggregateCredits(forTVSeries tvSeriesID: Int)
+    async throws(TVSeriesCreditsRepositoryError) -> AggregateCredits {
+        aggregateCreditsCallCount += 1
+        aggregateCreditsCalledWith.append(tvSeriesID)
+
+        guard let stub = aggregateCreditsStub else {
+            throw .unknown(nil)
+        }
+
+        switch stub {
+        case .success(let credits):
+            return credits
+        case .failure(let error):
+            throw error
+        }
+    }
+
 }

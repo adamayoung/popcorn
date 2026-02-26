@@ -14,6 +14,7 @@ import MovieIntelligenceFeature
 import PersonDetailsFeature
 import TVEpisodeDetailsFeature
 import TVSeasonDetailsFeature
+import TVSeriesCastAndCrewFeature
 import TVSeriesDetailsFeature
 import TVSeriesIntelligenceFeature
 
@@ -37,6 +38,7 @@ struct ExploreRootFeature {
         case tvEpisodeDetails(TVEpisodeDetailsFeature)
         case personDetails(PersonDetailsFeature)
         case movieCastAndCrew(MovieCastAndCrewFeature)
+        case tvSeriesCastAndCrew(TVSeriesCastAndCrewFeature)
     }
 
     enum Action {
@@ -115,6 +117,18 @@ struct ExploreRootFeature {
                 return .none
             case .path(.element(_, .tvSeriesDetails(.navigate(.personDetails(let id))))):
                 state.path.append(.personDetails(PersonDetailsFeature.State(personID: id)))
+                return .none
+            case .path(.element(_, .tvSeriesDetails(.navigate(.castAndCrew(let id))))):
+                state.path.append(
+                    .tvSeriesCastAndCrew(TVSeriesCastAndCrewFeature.State(tvSeriesID: id))
+                )
+                return .none
+            case .path(
+                .element(_, .tvSeriesCastAndCrew(.navigate(.personDetails(let id, _))))
+            ):
+                state.path.append(
+                    .personDetails(PersonDetailsFeature.State(personID: id))
+                )
                 return .none
             case .path(
                 .element(

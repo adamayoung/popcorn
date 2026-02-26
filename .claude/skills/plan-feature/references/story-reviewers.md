@@ -92,6 +92,10 @@ Review each user story and the overall backlog for:
 - Are coordinator changes (ExploreRoot + SearchRoot) handled consistently?
 - Are existing test files that break due to interface changes listed in Tech Elab?
 
+**View Consistency**
+- Do sibling views in the same feature use consistent fonts, spacing, and layout patterns? (e.g., CastMemberRow and CrewMemberRow should use the same `.font(.headline)` for names)
+- Does the Tech Elab reference existing sibling views to follow for consistency?
+
 **Missing Files**
 - Is every new file listed in exactly one story's Tech Elab?
 - Is every modified file listed with the specific change?
@@ -113,6 +117,7 @@ Review each user story and the overall backlog for:
 - Is the happy path tested?
 - Is the error/failure path tested?
 - Are there at least 2 edge cases per story?
+- **Layer coverage check**: Does EVERY mapper (adapter, application, feature) have its own test file? Does every use case have tests? Does every reducer have tests? Missing test files at any layer is CRITICAL.
 
 **Edge Case Analysis**
 - Nil/optional values: are nil inputs and nil outputs tested?

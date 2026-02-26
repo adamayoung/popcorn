@@ -72,6 +72,7 @@ public struct TVSeriesDetailsFeature: Sendable {
         case tvSeriesIntelligence(id: Int)
         case seasonDetails(tvSeriesID: Int, seasonNumber: Int, seasonName: String)
         case personDetails(id: Int)
+        case castAndCrew(tvSeriesID: Int)
     }
 
     public init() {}
@@ -128,9 +129,11 @@ extension TVSeriesDetailsFeature {
                 return
             }
 
+            let isCastAndCrewEnabled = (try? client.isCastAndCrewEnabled()) ?? false
+
             var castMembers: [CastMember] = []
             var crewMembers: [CrewMember] = []
-            if state.isCastAndCrewEnabled {
+            if isCastAndCrewEnabled {
                 do {
                     let credits = try await client.fetchCredits(tvSeriesID: state.tvSeriesID)
                     castMembers = credits.castMembers

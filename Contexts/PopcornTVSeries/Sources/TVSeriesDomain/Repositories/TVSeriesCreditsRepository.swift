@@ -26,6 +26,16 @@ public protocol TVSeriesCreditsRepository: Sendable {
     func credits(forTVSeries tvSeriesID: Int) async throws(TVSeriesCreditsRepositoryError)
         -> Credits
 
+    ///
+    /// Fetches the aggregate credits for a specific TV series across all seasons.
+    ///
+    /// - Parameter tvSeriesID: The unique identifier of the TV series.
+    /// - Returns: An ``AggregateCredits`` instance containing the aggregate cast and crew.
+    /// - Throws: ``TVSeriesCreditsRepositoryError`` if the aggregate credits cannot be fetched.
+    ///
+    func aggregateCredits(forTVSeries tvSeriesID: Int)
+        async throws(TVSeriesCreditsRepositoryError) -> AggregateCredits
+
 }
 
 ///

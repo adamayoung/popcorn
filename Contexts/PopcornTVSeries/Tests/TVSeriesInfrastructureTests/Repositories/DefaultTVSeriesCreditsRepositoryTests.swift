@@ -196,7 +196,8 @@ struct DefaultTVSeriesCreditsRepositoryTests {
     private func makeRepository() -> DefaultTVSeriesCreditsRepository {
         DefaultTVSeriesCreditsRepository(
             remoteDataSource: mockRemoteDataSource,
-            localDataSource: mockLocalDataSource
+            localDataSource: mockLocalDataSource,
+            aggregateCreditsLocalDataSource: MockTVSeriesAggregateCreditsLocalDataSource()
         )
     }
 
