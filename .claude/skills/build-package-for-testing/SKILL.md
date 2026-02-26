@@ -12,20 +12,20 @@ Build a single Swift package including its test targets. Use this when you only 
 Run from the package directory:
 
 ```
-cd <package-dir> && set -o pipefail && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1 | xcsift -f toon --Werror
+cd <package-dir> && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1
 ```
 
 ### Examples
 
 ```bash
 # Context package
-cd Contexts/PopcornMovies && set -o pipefail && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1 | xcsift -f toon --Werror
+cd Contexts/PopcornMovies && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1
 
 # Adapter package
-cd Adapters/Contexts/PopcornMoviesAdapters && set -o pipefail && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1 | xcsift -f toon --Werror
+cd Adapters/Contexts/PopcornMoviesAdapters && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1
 
 # Feature package
-cd Features/MovieDetailsFeature && set -o pipefail && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1 | xcsift -f toon --Werror
+cd Features/MovieDetailsFeature && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1
 ```
 
 ### Package locations

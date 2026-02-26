@@ -1,150 +1,87 @@
 # Agent guide for SwiftData
 
-## CloudKit Constraints
+For comprehensive SwiftData guidance (models, attributes, querying, concurrency, CloudKit, migrations), use the `swiftdata-expert` skill. This document covers **project-specific patterns only**.
 
-**Important:** Before applying CloudKit constraints, check where the model is registered in the Infrastructure factory (e.g., `MoviesInfrastructureFactory.swift`). Look for `cloudKitDatabase` configuration:
+## Architecture Rules
 
-- `cloudKitDatabase: .private` or `.public` → CloudKit rules apply
-- `cloudKitDatabase: .none` → CloudKit rules do NOT apply (local-only store)
+- SwiftData is used exclusively in the **Infrastructure layer**
+- `@Model` classes define persistence schema — never expose them outside Infrastructure
+- Map to Domain entities at the repository boundary via mapper classes
+- Each context owns its own `ModelContainer(s)` — never share between contexts
 
-When SwiftData is configured with CloudKit sync (`cloudKitDatabase` is NOT `.none`):
+## Container Strategy
 
-- Never use `@Attribute(.unique)` - causes sync conflicts
-- Model properties must have default values or be optional
-- All relationships must be optional
+| Container | Database File | CloudKit | On Schema Failure |
+|-----------|--------------|----------|-------------------|
+| Movies (cache) | `popcorn-movies.sqlite` | `.none` | Delete and recreate |
+| Movies (watchlist) | `popcorn-movies-cloudkit.sqlite` | `.private(...)` | Migration plan |
+| TVSeries (cache) | `popcorn-tvseries.sqlite` | `.none` | Delete and recreate |
+| Discover (cache) | `popcorn-discover.sqlite` | `.none` | Delete and recreate |
+| Search (history) | `popcorn-search-cloudkit.sqlite` | `.private(...)` | Migration plan |
 
-For local-only stores (`cloudKitDatabase: .none`), `@Attribute(.unique)` is acceptable for enforcing uniqueness constraints.
+### Non-CloudKit containers (cache data)
 
-## Infrastructure Layer Usage
-
-SwiftData is used exclusively in the Infrastructure layer:
-
-- `@Model` classes define persistence schema
-- Repository implementations use `ModelContext`
-- Never expose `@Model` types outside Infrastructure
-- Map to Domain entities at repository boundary
-
-## Model Definition
+Use `ModelContainerFactory.makeLocalModelContainer` — on failure it deletes the database files and retries:
 
 ```swift
-// DataSources/Local/Models/MoviesMovieEntity.swift
-@Model
-final class MoviesMovieEntity {
-    // Primary identifier (NOT @Attribute(.unique) for CloudKit)
-    var movieID: Int = 0
+let storeURL = URL.documentsDirectory.appending(path: "popcorn-movies.sqlite")
 
-    // All properties have defaults or are optional
-    var title: String = ""
-    var overview: String = ""
-    var releaseDate: Date?
-    var posterPath: String?
-    var backdropPath: String?
-
-    // Cache management
-    var lastUpdated: Date = Date.now
-
-    // Relationships must be optional
-    var imageCollection: MoviesImageCollectionEntity?
-
-    init(movieID: Int, title: String, overview: String) {
-        self.movieID = movieID
-        self.title = title
-        self.overview = overview
-    }
-}
+return ModelContainerFactory.makeLocalModelContainer(
+    schema: schema,
+    url: storeURL,
+    logger: logger
+)
 ```
 
-## Mapping to Domain Entities
+### CloudKit containers (user data)
+
+Use `ModelContainerFactory.makeCloudKitModelContainer` with a `SchemaMigrationPlan`:
 
 ```swift
-// DataSources/Local/Mappers/MovieEntityMapper.swift
-struct MovieEntityMapper {
-    func map(_ entity: MoviesMovieEntity) -> Movie {
-        Movie(
-            id: entity.movieID,
-            title: entity.title,
-            overview: entity.overview,
-            releaseDate: entity.releaseDate,
-            posterPath: entity.posterPath.flatMap { URL(string: $0) },
-            backdropPath: entity.backdropPath.flatMap { URL(string: $0) }
-        )
-    }
+let storeURL = URL.documentsDirectory.appending(path: "popcorn-movies-cloudkit.sqlite")
 
-    func map(_ movie: Movie) -> MoviesMovieEntity {
-        let entity = MoviesMovieEntity(
-            movieID: movie.id,
-            title: movie.title,
-            overview: movie.overview
-        )
-        entity.releaseDate = movie.releaseDate
-        entity.posterPath = movie.posterPath?.absoluteString
-        entity.backdropPath = movie.backdropPath?.absoluteString
-        entity.lastUpdated = .now
-        return entity
-    }
-}
+return ModelContainerFactory.makeCloudKitModelContainer(
+    schema: schema,
+    url: storeURL,
+    cloudKitDatabase: .private("iCloud.uk.co.adam-young.Popcorn"),
+    migrationPlan: MoviesWatchlistMigrationPlan.self,
+    logger: logger
+)
 ```
 
-## Local Data Source Pattern
+## CloudKit Model Constraints
 
-Use the `@ModelActor` macro for SwiftData actors that need automatic `ModelContainer` and `ModelContext` injection:
+Before applying constraints, check `cloudKitDatabase` in the Infrastructure factory:
 
-```swift
-// DataSources/Local/SwiftDataMovieLocalDataSource.swift
-@ModelActor
-public actor SwiftDataMovieLocalDataSource: MovieLocalDataSource {
-    private let ttl: TimeInterval = 60 * 60 * 24  // 1 day cache
+- `cloudKitDatabase: .none` → local-only, `@Attribute(.unique)` is fine
+- `cloudKitDatabase: .private(...)` → CloudKit rules apply:
+  - No `@Attribute(.unique)` — causes sync conflicts
+  - All properties must have default values or be optional
+  - All relationships must be optional
+  - No `.deny` delete rule
 
-    func movie(withID id: Int) async throws(MovieLocalDataSourceError) -> Movie? {
-        let descriptor = FetchDescriptor<MoviesMovieEntity>(
-            predicate: #Predicate { $0.movieID == id }
-        )
+## Migration Strategy
 
-        guard let entity = try modelContext.fetch(descriptor).first else {
-            return nil
-        }
+- **Non-CloudKit stores:** Never migrate — delete and recreate (cached API data is re-fetched)
+- **CloudKit stores:** Always use `VersionedSchema` + `SchemaMigrationPlan`
 
-        // Check TTL - return nil if expired
-        guard !isExpired(entity.lastUpdated, ttl: ttl) else {
-            return nil
-        }
+Current CloudKit schemas:
 
-        return MovieEntityMapper().map(entity)
-    }
+| Context | Schema V1 | Migration Plan | File Location |
+|---------|-----------|----------------|---------------|
+| PopcornMovies | `MoviesWatchlistSchemaV1` | `MoviesWatchlistMigrationPlan` | `MoviesInfrastructure/DataSources/Local/Models/` |
+| PopcornSearch | `SearchHistorySchemaV1` | `SearchHistoryMigrationPlan` | `SearchInfrastructure/DataSources/Local/Models/` |
 
-    func setMovie(_ movie: Movie) async throws(MovieLocalDataSourceError) {
-        let entity = MovieEntityMapper().map(movie)
-        modelContext.insert(entity)
-        try modelContext.save()
-    }
+Use `static let` (not `static var`) for `VersionedSchema` and `SchemaMigrationPlan` properties to avoid Swift 6 concurrency warnings.
 
-    private func isExpired(_ date: Date, ttl: TimeInterval) -> Bool {
-        Date.now.timeIntervalSince(date) > ttl
-    }
-}
-```
+## Key File Locations
 
-## Repository Using Local + Remote
-
-```swift
-// Repositories/DefaultMovieRepository.swift
-final class DefaultMovieRepository: MovieRepository {
-    private let remoteDataSource: any MovieRemoteDataSource
-    private let localDataSource: any MovieLocalDataSource
-
-    func movie(withID id: Int) async throws(MovieRepositoryError) -> Movie {
-        // Try cache first
-        if let cached = try await localDataSource.movie(withID: id) {
-            return cached
-        }
-
-        // Fetch from remote
-        let movie = try await remoteDataSource.movie(withID: id)
-
-        // Update cache
-        try await localDataSource.setMovie(movie)
-
-        return movie
-    }
-}
-```
+| Pattern | Path |
+|---------|------|
+| Entity models | `Sources/<Context>Infrastructure/DataSources/Local/Models/` |
+| Entity mappers | `Sources/<Context>Infrastructure/DataSources/Local/Mappers/` |
+| Local data sources | `Sources/<Context>Infrastructure/DataSources/Local/` |
+| Repositories | `Sources/<Context>Infrastructure/Repositories/` |
+| Infrastructure factory | `Sources/<Context>Infrastructure/<Context>InfrastructureFactory.swift` |
+| Container factory | `Platform/DataPersistenceInfrastructure/Sources/.../ModelContainerFactory.swift` |
+| Fetch streaming | `Platform/DataPersistenceInfrastructure/Sources/.../SwiftDataFetchStreaming.swift` |

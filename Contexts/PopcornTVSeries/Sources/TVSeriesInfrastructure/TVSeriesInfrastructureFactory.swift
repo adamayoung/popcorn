@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import DataPersistenceInfrastructure
 import Foundation
 import OSLog
 import SwiftData
@@ -31,18 +32,12 @@ package final class TVSeriesInfrastructureFactory {
         ])
 
         let storeURL = URL.documentsDirectory.appending(path: "popcorn-tvseries.sqlite")
-        let config = ModelConfiguration(schema: schema, url: storeURL, cloudKitDatabase: .none)
 
-        do {
-            return try ModelContainer(for: schema, configurations: [config])
-        } catch let error {
-            logger.critical(
-                "Cannot configure ModelContainer: \(error.localizedDescription, privacy: .public)"
-            )
-            fatalError(
-                "PopcornTVSeries: Cannot configure ModelContainer: \(error.localizedDescription)"
-            )
-        }
+        return ModelContainerFactory.makeLocalModelContainer(
+            schema: schema,
+            url: storeURL,
+            logger: logger
+        )
     }()
 
     private let tvSeriesRemoteDataSource: any TVSeriesRemoteDataSource
