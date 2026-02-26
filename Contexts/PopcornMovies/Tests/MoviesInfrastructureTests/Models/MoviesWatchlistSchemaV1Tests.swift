@@ -20,7 +20,7 @@ struct MoviesWatchlistSchemaV1Tests {
     @Test("models contains MoviesWatchlistMovieEntity")
     func modelsContainsWatchlistMovieEntity() {
         #expect(MoviesWatchlistSchemaV1.models.count == 1)
-        #expect(MoviesWatchlistSchemaV1.models[0] is MoviesWatchlistMovieEntity.Type)
+        #expect(MoviesWatchlistSchemaV1.models.first is MoviesWatchlistMovieEntity.Type)
     }
 
 }

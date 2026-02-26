@@ -15,7 +15,7 @@ struct MoviesWatchlistMigrationPlanTests {
     @Test("schemas contains only V1")
     func schemasContainsOnlyV1() {
         #expect(MoviesWatchlistMigrationPlan.schemas.count == 1)
-        #expect(MoviesWatchlistMigrationPlan.schemas[0] is MoviesWatchlistSchemaV1.Type)
+        #expect(MoviesWatchlistMigrationPlan.schemas.first is MoviesWatchlistSchemaV1.Type)
     }
 
     @Test("stages is empty for V1")

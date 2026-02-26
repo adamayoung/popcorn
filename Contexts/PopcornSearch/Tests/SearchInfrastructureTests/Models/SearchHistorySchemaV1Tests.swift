@@ -20,7 +20,7 @@ struct SearchHistorySchemaV1Tests {
     @Test("models contains SearchMediaSearchHistoryEntryEntity")
     func modelsContainsSearchHistoryEntity() {
         #expect(SearchHistorySchemaV1.models.count == 1)
-        #expect(SearchHistorySchemaV1.models[0] is SearchMediaSearchHistoryEntryEntity.Type)
+        #expect(SearchHistorySchemaV1.models.first is SearchMediaSearchHistoryEntryEntity.Type)
     }
 
 }

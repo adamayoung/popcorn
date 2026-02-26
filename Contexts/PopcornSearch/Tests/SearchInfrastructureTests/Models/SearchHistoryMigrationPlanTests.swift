@@ -15,7 +15,7 @@ struct SearchHistoryMigrationPlanTests {
     @Test("schemas contains only V1")
     func schemasContainsOnlyV1() {
         #expect(SearchHistoryMigrationPlan.schemas.count == 1)
-        #expect(SearchHistoryMigrationPlan.schemas[0] is SearchHistorySchemaV1.Type)
+        #expect(SearchHistoryMigrationPlan.schemas.first is SearchHistorySchemaV1.Type)
     }
 
     @Test("stages is empty for V1")
