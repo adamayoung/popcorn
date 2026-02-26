@@ -29,15 +29,13 @@ struct CrewSection: View {
     var body: some View {
         ForEach(sortedDepartments, id: \.self) { department in
             Section {
-                if let members = crewByDepartment[department] {
-                    ForEach(members) { member in
-                        Button {
-                            didSelectPerson(member.id, String(member.id))
-                        } label: {
-                            CrewMemberRow(member: member, transitionNamespace: transitionNamespace)
-                        }
-                        .buttonStyle(.plain)
+                ForEach(crewByDepartment[department, default: []]) { member in
+                    Button {
+                        didSelectPerson(member.id, String(member.id))
+                    } label: {
+                        CrewMemberRow(member: member, transitionNamespace: transitionNamespace)
                     }
+                    .buttonStyle(.plain)
                 }
             } header: {
                 Text(verbatim: department)

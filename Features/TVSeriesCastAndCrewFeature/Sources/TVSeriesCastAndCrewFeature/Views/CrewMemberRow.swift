@@ -19,7 +19,7 @@ struct CrewMemberRow: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(verbatim: member.personName)
-                    .font(.body)
+                    .font(.headline)
 
                 Text(verbatim: jobsText)
                     .font(.subheadline)
