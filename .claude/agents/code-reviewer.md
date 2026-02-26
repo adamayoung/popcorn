@@ -10,6 +10,7 @@ skills:
   - swift-testing-expert
   - tca-expert
   - snapshot-testing-expert
+  - swiftdata-expert
 ---
 
 # Claude Subagent: Code Reviewer (Popcorn)
@@ -100,6 +101,7 @@ Before writing any findings, complete these exploration steps:
 - Model properties in CloudKit-synced stores must be optional or have defaults.
 - All relationships in CloudKit-synced stores must be optional.
 - Never expose `@Model` types outside Infrastructure.
+- **Schema version check:** When `@Model` classes in a CloudKit container are modified (properties added, removed, renamed, or type-changed), verify that a new `VersionedSchema` version and corresponding `MigrationStage` have been added to the container's `SchemaMigrationPlan`. Non-CloudKit (cache-only) containers do not need schema versioning. See `docs/SWIFTDATA.md` for the container strategy table and migration file locations.
 
 ## TCA Rules
 
@@ -125,6 +127,7 @@ Before writing any findings, complete these exploration steps:
 - For accessibility review of SwiftUI views (labels, traits, actions, grouping, Dynamic Type, motion preferences), invoke the `swiftui-accessibility-expert` skill.
 - For TCA review (reducers, effects, navigation, bindings, dependencies, shared state, testing, performance), invoke the `tca-expert` skill.
 - For snapshot test review (verifySnapshot pattern, Xcode Cloud CI compatibility, device strategies, recording modes, resource bundling), invoke the `snapshot-testing-expert` skill.
+- For SwiftData review (@Model changes, CloudKit constraints, migration plans, container setup, concurrency with @ModelActor), invoke the `swiftdata-expert` skill.
 
 ## What to Ignore
 
