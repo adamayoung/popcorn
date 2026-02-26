@@ -17,7 +17,7 @@ SwiftDataFetchStreaming {
 
     private static let logger = Logger.tvSeriesInfrastructure
 
-    private var ttl: TimeInterval = 60 * 60 * 24 // 1 day
+    private let ttl: TimeInterval = 60 * 60 * 24 // 1 day
 
     func aggregateCredits(
         forTVSeries tvSeriesID: Int

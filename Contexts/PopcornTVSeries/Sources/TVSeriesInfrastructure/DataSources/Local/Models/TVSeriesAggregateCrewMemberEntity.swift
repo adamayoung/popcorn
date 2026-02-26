@@ -19,6 +19,7 @@ final class TVSeriesAggregateCrewMemberEntity: Equatable {
     var department: String
     var jobs: [CrewJobValue]
     var totalEpisodeCount: Int
+    var order: Int
 
     init(
         tvSeriesID: Int,
@@ -28,7 +29,8 @@ final class TVSeriesAggregateCrewMemberEntity: Equatable {
         gender: Int,
         department: String,
         jobs: [CrewJobValue] = [],
-        totalEpisodeCount: Int
+        totalEpisodeCount: Int,
+        order: Int = 0
     ) {
         self.tvSeriesID = tvSeriesID
         self.personID = personID
@@ -38,6 +40,7 @@ final class TVSeriesAggregateCrewMemberEntity: Equatable {
         self.department = department
         self.jobs = jobs
         self.totalEpisodeCount = totalEpisodeCount
+        self.order = order
     }
 
 }

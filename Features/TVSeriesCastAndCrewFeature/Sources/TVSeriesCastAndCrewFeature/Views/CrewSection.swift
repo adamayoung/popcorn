@@ -14,6 +14,7 @@ struct CrewSection: View {
     let didSelectPerson: (Int, String?) -> Void
 
     private var sortedDepartments: [String] {
+        // TMDb department names are always returned in English, so this comparison is safe.
         let priority = ["Directing", "Writing", "Production", "Camera", "Editing", "Sound", "Art"]
         return crewByDepartment.keys.sorted { lhs, rhs in
             let lhsIndex = priority.firstIndex(of: lhs) ?? Int.max

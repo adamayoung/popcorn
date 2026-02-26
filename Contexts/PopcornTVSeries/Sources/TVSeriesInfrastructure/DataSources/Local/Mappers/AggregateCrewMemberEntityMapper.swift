@@ -34,7 +34,8 @@ struct AggregateCrewMemberEntityMapper {
 
     func map(
         _ crewMember: AggregateCrewMember,
-        tvSeriesID: Int
+        tvSeriesID: Int,
+        order: Int
     ) -> TVSeriesAggregateCrewMemberEntity {
         let genderMapper = GenderEntityMapper()
 
@@ -54,7 +55,8 @@ struct AggregateCrewMemberEntityMapper {
             gender: genderMapper.map(crewMember.gender),
             department: crewMember.department,
             jobs: jobs,
-            totalEpisodeCount: crewMember.totalEpisodeCount
+            totalEpisodeCount: crewMember.totalEpisodeCount,
+            order: order
         )
     }
 

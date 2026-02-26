@@ -19,7 +19,7 @@ public struct TVSeriesCastAndCrewFeature: Sendable {
     @Dependency(\.tvSeriesCastAndCrewClient) private var client
 
     @ObservableState
-    public struct State: Sendable {
+    public struct State: Equatable, Sendable {
         public let tvSeriesID: Int
         public var viewState: ViewState<ViewSnapshot>
 

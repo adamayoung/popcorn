@@ -27,6 +27,7 @@ struct AggregateCrewMemberMapper {
             name: dto.name,
             profilePath: dto.profilePath,
             gender: genderMapper.compactMap(dto.gender) ?? .unknown,
+            // TMDb department names are always English; "Other" is a safe fallback for nil values.
             department: dto.knownForDepartment ?? "Other",
             jobs: jobs,
             totalEpisodeCount: dto.totalEpisodeCount
