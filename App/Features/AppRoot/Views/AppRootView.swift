@@ -121,9 +121,8 @@ struct AppRootView: View {
             }
         }
         .accessibilityIdentifier("app.tabview")
-        #if !os(macOS)
-            .tabViewStyle(.sidebarAdaptable)
-            .tabViewCustomization($customization)
+        #if os(macOS)
+            .tabViewStyle(.automatic)
         #else
             .tabViewStyle(.sidebarAdaptable)
             .tabViewCustomization($customization)
