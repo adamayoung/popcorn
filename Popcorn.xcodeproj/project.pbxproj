@@ -48,7 +48,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		662A94222F4FCC9400B57C63 /* Integration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = Integration.xcodeproj; sourceTree = "<group>"; };
 		664551862ECB7C2100250D87 /* Popcorn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Popcorn.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		664551932ECB7C2200250D87 /* PopcornTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PopcornTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6645519D2ECB7C2200250D87 /* PopcornUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PopcornUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -267,13 +266,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		662A947D2F4FCC9400B57C63 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		6645517D2ECB7C2100250D87 = {
 			isa = PBXGroup;
 			children = (
@@ -561,10 +553,6 @@
 				{
 					ProductGroup = 66EE0DBF2F45D95B004F9BF1 /* Products */;
 					ProjectRef = 66EE0B772F45D95B004F9BF1 /* DuplicatedSDKTest.xcodeproj */;
-				},
-				{
-					ProductGroup = 662A947D2F4FCC9400B57C63 /* Products */;
-					ProjectRef = 662A94222F4FCC9400B57C63 /* Integration.xcodeproj */;
 				},
 				{
 					ProductGroup = 66EE0DC72F45D95B004F9BF1 /* Products */;

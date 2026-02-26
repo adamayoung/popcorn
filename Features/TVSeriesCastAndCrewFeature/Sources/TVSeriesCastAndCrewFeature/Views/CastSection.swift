@@ -24,7 +24,7 @@ struct CastSection: View {
                 .buttonStyle(.plain)
             }
         } header: {
-            Text(verbatim: "Cast")
+            Text("CAST", bundle: .module)
         }
     }
 

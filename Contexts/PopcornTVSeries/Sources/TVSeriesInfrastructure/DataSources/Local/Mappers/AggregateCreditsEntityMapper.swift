@@ -15,8 +15,8 @@ struct AggregateCreditsEntityMapper {
         let crewMapper = AggregateCrewMemberEntityMapper()
 
         let cast = entity.cast
+            .sorted { $0.order < $1.order }
             .map(castMapper.map)
-            .sorted { $0.totalEpisodeCount > $1.totalEpisodeCount }
 
         let crew = entity.crew
             .map(crewMapper.map)
@@ -37,7 +37,9 @@ struct AggregateCreditsEntityMapper {
 
         return TVSeriesAggregateCreditsEntity(
             tvSeriesID: tvSeriesID,
-            cast: aggregateCredits.cast.map { castMapper.map($0, tvSeriesID: tvSeriesID) },
+            cast: aggregateCredits.cast.enumerated().map { index, member in
+                castMapper.map(member, tvSeriesID: tvSeriesID, order: index)
+            },
             crew: aggregateCredits.crew.map { crewMapper.map($0, tvSeriesID: tvSeriesID) }
         )
     }
@@ -50,7 +52,9 @@ struct AggregateCreditsEntityMapper {
         let castMapper = AggregateCastMemberEntityMapper()
         let crewMapper = AggregateCrewMemberEntityMapper()
 
-        entity.cast = aggregateCredits.cast.map { castMapper.map($0, tvSeriesID: tvSeriesID) }
+        entity.cast = aggregateCredits.cast.enumerated().map { index, member in
+            castMapper.map(member, tvSeriesID: tvSeriesID, order: index)
+        }
         entity.crew = aggregateCredits.crew.map { crewMapper.map($0, tvSeriesID: tvSeriesID) }
         entity.cachedAt = .now
     }

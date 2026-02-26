@@ -24,7 +24,6 @@ let package = Package(
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Core/TCAFoundation"),
         .package(path: "../../Contexts/PopcornTVSeries"),
-        .package(path: "../../Platform/Observability"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
         )
@@ -38,7 +37,6 @@ let package = Package(
                 "DesignSystem",
                 "TCAFoundation",
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
-                "Observability",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ],
             resources: [.process("Localizable.xcstrings")]

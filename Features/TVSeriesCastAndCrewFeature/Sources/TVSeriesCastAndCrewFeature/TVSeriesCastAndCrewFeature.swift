@@ -8,7 +8,6 @@
 import AppDependencies
 import ComposableArchitecture
 import Foundation
-import Observability
 import OSLog
 import TCAFoundation
 
@@ -18,7 +17,6 @@ public struct TVSeriesCastAndCrewFeature: Sendable {
     private static let logger = Logger.tvSeriesCastAndCrew
 
     @Dependency(\.tvSeriesCastAndCrewClient) private var client
-    @Dependency(\.observability) private var observability
 
     @ObservableState
     public struct State: Sendable {
@@ -67,6 +65,9 @@ public struct TVSeriesCastAndCrewFeature: Sendable {
             switch action {
             case .fetch:
                 if case .ready = state.viewState {
+                    return .none
+                }
+                if case .loading = state.viewState {
                     return .none
                 }
 

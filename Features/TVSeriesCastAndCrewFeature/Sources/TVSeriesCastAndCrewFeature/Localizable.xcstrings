@@ -24,6 +24,17 @@
         }
       }
     },
+    "CAST" : {
+      "comment" : "The section header for the cast list.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cast"
+          }
+        }
+      }
+    },
     "CAST_AND_CREW" : {
       "comment" : "The title of the view.",
       "localizations" : {

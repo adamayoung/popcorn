@@ -18,7 +18,7 @@ The TV Series Details screen shows a carousel with the top 5 cast and crew membe
 ## Non-Goals
 
 - Genericising MovieCastAndCrewFeature to support both media types (separate packages per convention)
-- Adding aggregate credits (episode-level guest cast) — uses existing `fetchTVSeriesCredits` use case
+- Genericising the feature to share code with MovieCastAndCrewFeature
 - Adding a feature flag (the cast & crew section is already gated by `.tvSeriesDetailsCastAndCrew`)
 
 ## Design Decisions
@@ -26,7 +26,8 @@ The TV Series Details screen shows a carousel with the top 5 cast and crew membe
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
 | Separate vs generic feature | Separate `TVSeriesCastAndCrewFeature` | Follows project convention of per-media-type features; avoids touching working movie feature |
-| Data fetching | Feature fetches own data via `fetchTVSeriesCredits` use case | Matches MovieCastAndCrewFeature pattern; keeps feature self-contained |
+| Data fetching | Feature fetches own data via `fetchTVSeriesAggregateCredits` use case | Uses TMDb aggregate credits endpoint (`/tv/{id}/aggregate_credits`) to show roles/jobs per person with episode counts across all seasons |
+| Caching | SwiftData with 1-day TTL | Reduces API calls on repeat visits; follows existing repository cache-first pattern |
 | Models | Feature-specific models (not shared) | Each feature defines its own lightweight CastMember/CrewMember; follows existing convention |
 | Navigation trigger | Section header button with chevron | Matches MovieDetailsContentView `sectionHeader` with action pattern |
 
@@ -43,9 +44,9 @@ User taps "Cast & Crew >" header
          ↓
 [TVSeriesCastAndCrewView] .task { store.send(.fetch) }
          ↓
-[TVSeriesCastAndCrewClient] fetchTVSeriesCredits.execute(tvSeriesID:)
+[TVSeriesCastAndCrewClient] fetchTVSeriesAggregateCredits.execute(tvSeriesID:)
          ↓
-[CreditsMapper] maps CreditsDetails → Credits (all members, no prefix limit)
+[CreditsMapper] maps AggregateCreditsDetails → Credits (all members with roles/jobs and episode counts)
          ↓
 [TVSeriesCastAndCrewView] List with CastSection + CrewSection (grouped by department)
          ↓
