@@ -53,21 +53,6 @@
 		6645519D2ECB7C2200250D87 /* PopcornUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PopcornUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6653A7302EF0D2D200CDE7DF /* AppDependencies */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = AppDependencies; sourceTree = "<group>"; };
 		66E814782EE05BDF004BA237 /* Popcorn.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Popcorn.entitlements; sourceTree = "<group>"; };
-		66EE06562F45D95B004F9BF1 /* XCFramework.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = XCFramework.xcodeproj; sourceTree = "<group>"; };
-		66EE066C2F45D95B004F9BF1 /* iOS-Cocoapods-Swift6.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "iOS-Cocoapods-Swift6.xcodeproj"; sourceTree = "<group>"; };
-		66EE0B772F45D95B004F9BF1 /* DuplicatedSDKTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = DuplicatedSDKTest.xcodeproj; sourceTree = "<group>"; };
-		66EE0B832F45D95B004F9BF1 /* test-app-plain.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "test-app-plain.xcodeproj"; sourceTree = "<group>"; };
-		66EE0B8B2F45D95B004F9BF1 /* test-app-sentry.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "test-app-sentry.xcodeproj"; sourceTree = "<group>"; };
-		66EE0DB82F45D95B004F9BF1 /* Sentry.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = Sentry.xcodeproj; sourceTree = "<group>"; };
-		66EEEC002F45D952004F9BF1 /* SwiftRefactorExtension.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = SwiftRefactorExtension.xcodeproj; sourceTree = "<group>"; };
-		66EEF9E32F45D95A004F9BF1 /* SDWebImage Demo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "SDWebImage Demo.xcodeproj"; sourceTree = "<group>"; };
-		66EEFB0A2F45D95A004F9BF1 /* SDWebImage Tests.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = "SDWebImage Tests.xcodeproj"; sourceTree = "<group>"; };
-		66EEFB1B2F45D95A004F9BF1 /* SDWebImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = SDWebImage.xcodeproj; sourceTree = "<group>"; };
-		66EEFB562F45D95A004F9BF1 /* SDWebImageSwiftUI.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = SDWebImageSwiftUI.xcodeproj; sourceTree = "<group>"; };
-		66EEFB7E2F45D95A004F9BF1 /* SDWebImageSwiftUI.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = SDWebImageSwiftUI.xcodeproj; sourceTree = "<group>"; };
-		66EEFBA42F45D95A004F9BF1 /* StatsigSamples.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = StatsigSamples.xcodeproj; sourceTree = "<group>"; };
-		66EEFBA82F45D95A004F9BF1 /* StatsigSamples.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = StatsigSamples.xcodeproj; sourceTree = "<group>"; };
-		66EEFF242F45D95A004F9BF1 /* Collections.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = Collections.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -303,111 +288,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		66EE00762F45D95A004F9BF1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		66EE00782F45D95A004F9BF1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		66EE007A2F45D95A004F9BF1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		66EE007C2F45D95A004F9BF1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		66EE007E2F45D95A004F9BF1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		66EE00802F45D95A004F9BF1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		66EE00822F45D95A004F9BF1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		66EE00842F45D95A004F9BF1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		66EE0DBF2F45D95B004F9BF1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		66EE0DC12F45D95B004F9BF1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		66EE0DC32F45D95B004F9BF1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		66EE0DC52F45D95B004F9BF1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		66EE0DC72F45D95B004F9BF1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		66EE0DC92F45D95B004F9BF1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		66EEED272F45D952004F9BF1 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -545,68 +425,6 @@
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 664551872ECB7C2100250D87 /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 66EE007E2F45D95A004F9BF1 /* Products */;
-					ProjectRef = 66EEFF242F45D95A004F9BF1 /* Collections.xcodeproj */;
-				},
-				{
-					ProductGroup = 66EE0DBF2F45D95B004F9BF1 /* Products */;
-					ProjectRef = 66EE0B772F45D95B004F9BF1 /* DuplicatedSDKTest.xcodeproj */;
-				},
-				{
-					ProductGroup = 66EE0DC72F45D95B004F9BF1 /* Products */;
-					ProjectRef = 66EE066C2F45D95B004F9BF1 /* iOS-Cocoapods-Swift6.xcodeproj */;
-				},
-				{
-					ProductGroup = 66EE007A2F45D95A004F9BF1 /* Products */;
-					ProjectRef = 66EEF9E32F45D95A004F9BF1 /* SDWebImage Demo.xcodeproj */;
-				},
-				{
-					ProductGroup = 66EE00802F45D95A004F9BF1 /* Products */;
-					ProjectRef = 66EEFB0A2F45D95A004F9BF1 /* SDWebImage Tests.xcodeproj */;
-				},
-				{
-					ProductGroup = 66EE00822F45D95A004F9BF1 /* Products */;
-					ProjectRef = 66EEFB1B2F45D95A004F9BF1 /* SDWebImage.xcodeproj */;
-				},
-				{
-					ProductGroup = 66EE007C2F45D95A004F9BF1 /* Products */;
-					ProjectRef = 66EEFB562F45D95A004F9BF1 /* SDWebImageSwiftUI.xcodeproj */;
-				},
-				{
-					ProductGroup = 66EE00762F45D95A004F9BF1 /* Products */;
-					ProjectRef = 66EEFB7E2F45D95A004F9BF1 /* SDWebImageSwiftUI.xcodeproj */;
-				},
-				{
-					ProductGroup = 66EE0DC92F45D95B004F9BF1 /* Products */;
-					ProjectRef = 66EE0DB82F45D95B004F9BF1 /* Sentry.xcodeproj */;
-				},
-				{
-					ProductGroup = 66EE00842F45D95A004F9BF1 /* Products */;
-					ProjectRef = 66EEFBA42F45D95A004F9BF1 /* StatsigSamples.xcodeproj */;
-				},
-				{
-					ProductGroup = 66EE00782F45D95A004F9BF1 /* Products */;
-					ProjectRef = 66EEFBA82F45D95A004F9BF1 /* StatsigSamples.xcodeproj */;
-				},
-				{
-					ProductGroup = 66EEED272F45D952004F9BF1 /* Products */;
-					ProjectRef = 66EEEC002F45D952004F9BF1 /* SwiftRefactorExtension.xcodeproj */;
-				},
-				{
-					ProductGroup = 66EE0DC52F45D95B004F9BF1 /* Products */;
-					ProjectRef = 66EE0B832F45D95B004F9BF1 /* test-app-plain.xcodeproj */;
-				},
-				{
-					ProductGroup = 66EE0DC12F45D95B004F9BF1 /* Products */;
-					ProjectRef = 66EE0B8B2F45D95B004F9BF1 /* test-app-sentry.xcodeproj */;
-				},
-				{
-					ProductGroup = 66EE0DC32F45D95B004F9BF1 /* Products */;
-					ProjectRef = 66EE06562F45D95B004F9BF1 /* XCFramework.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				664551852ECB7C2100250D87 /* Popcorn */,
