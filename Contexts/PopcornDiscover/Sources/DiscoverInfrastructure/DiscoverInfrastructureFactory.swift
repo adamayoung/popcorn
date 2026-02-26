@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import DataPersistenceInfrastructure
 import DiscoverDomain
 import Foundation
 import OSLog
@@ -23,18 +24,12 @@ package final class DiscoverInfrastructureFactory {
         ])
 
         let storeURL = URL.documentsDirectory.appending(path: "popcorn-discover.sqlite")
-        let config = ModelConfiguration(schema: schema, url: storeURL, cloudKitDatabase: .none)
 
-        do {
-            return try ModelContainer(for: schema, configurations: [config])
-        } catch let error {
-            logger.critical(
-                "Cannot configure CloudKit ModelContainer: \(error.localizedDescription, privacy: .public)"
-            )
-            fatalError(
-                "PopcornDiscover: Cannot configure ModelContainer: \(error.localizedDescription)"
-            )
-        }
+        return ModelContainerFactory.makeLocalModelContainer(
+            schema: schema,
+            url: storeURL,
+            logger: logger
+        )
     }()
 
     private let discoverRemoteDataSource: any DiscoverRemoteDataSource

@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import DataPersistenceInfrastructure
 import Foundation
 import OSLog
 import SearchDomain
@@ -19,23 +20,18 @@ package final class SearchInfrastructureFactory {
             SearchMediaSearchHistoryEntryEntity.self
         ])
 
-        let storeURL = URL.documentsDirectory.appending(path: "searchkit-cloudkit.sqlite")
-        let config = ModelConfiguration(
+        let oldStoreURL = URL.documentsDirectory.appending(path: "searchkit-cloudkit.sqlite")
+        ModelContainerFactory.removeSQLiteFiles(at: oldStoreURL)
+
+        let storeURL = URL.documentsDirectory.appending(path: "popcorn-search-cloudkit.sqlite")
+
+        return ModelContainerFactory.makeCloudKitModelContainer(
             schema: schema,
             url: storeURL,
-            cloudKitDatabase: .private("iCloud.uk.co.adam-young.Popcorn")
+            cloudKitDatabase: .private("iCloud.uk.co.adam-young.Popcorn"),
+            migrationPlan: SearchHistoryMigrationPlan.self,
+            logger: logger
         )
-
-        do {
-            return try ModelContainer(for: schema, configurations: [config])
-        } catch let error {
-            logger.critical(
-                "Cannot configure CloudKit ModelContainer: \(error.localizedDescription, privacy: .public)"
-            )
-            fatalError(
-                "SearchKit: Cannot configure CloudKit ModelContainer: \(error.localizedDescription)"
-            )
-        }
     }()
 
     private let mediaRemoteDataSource: any MediaRemoteDataSource
