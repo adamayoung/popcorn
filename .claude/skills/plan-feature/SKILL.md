@@ -173,7 +173,7 @@ For every story, fill in ALL of these sections — no exceptions:
 - **Description**: "As a [developer/user], I want [what] so that [why]" — use **developer** for infrastructure stories, **user** for UI stories
 - **Acceptance Criteria**: Checkboxes with specific, testable assertions (not vague descriptions like "data is cached" — instead "SwiftData entity persisted with 24h TTL")
 - **Tech Elab**: Every file to create or modify with full path, specific patterns to follow (e.g., "follow `BackdropImage` pattern"), key implementation details
-- **Test Elab**: Happy path, error path, and at least 2 edge cases per story
+- **Test Elab**: Happy path, error path, and at least 2 edge cases per story. **Every mapper, use case, and reducer must have a dedicated test file listed.** See `references/patterns.md` § Required Test Coverage Per Layer.
 - **Dependencies**: Which stories must be done first (or "none")
 
 #### 5f. Adversarial Story Review
@@ -220,6 +220,9 @@ Final checklist:
 - [ ] The dependency graph has no cycles
 - [ ] Both ExploreRoot and SearchRoot coordinators are updated (if navigation changes)
 - [ ] All CRITICAL and IMPORTANT review findings are addressed
+- [ ] Every adapter mapper has a test file in the Test Elab
+- [ ] Every use case has a test file in the Test Elab
+- [ ] Every TCA reducer has a test file with `State: Equatable` noted
 
 ### Phase 6: Write Plan File
 

@@ -57,6 +57,13 @@ You are implementing user story US-{N}: {Title} for the Popcorn app.
 - Swift Testing framework for tests (`@Suite`, `@Test`, `#expect`, `#require`)
 - SwiftLint limits: function_body_length 50, file_length 400, type_body_length 350
 
+## Test Coverage Requirements
+- EVERY mapper (adapter, application, feature) needs its own test file
+- EVERY use case needs tests (success, error types, edge cases)
+- EVERY TCA reducer needs tests (`@MainActor`, `State: Equatable` required for TestStore)
+- TCA type inference: use explicit types like `Feature.Action.loaded(snapshot)` and `ViewState<Feature.ViewSnapshot>.error(...)` when `@ObservableState` obscures inference
+- Sibling views must use consistent fonts/styles — check existing views before writing new ones
+
 ## Verification
 After implementation, run:
 1. `swift build` in the package directory — must succeed with no warnings
@@ -88,6 +95,7 @@ When a subagent reports build or test failures:
 A story is considered complete when:
 - All acceptance criteria are met
 - All tests from Test Elab pass
+- **Test coverage at every layer**: adapter mapper tests, use case tests, reducer tests — see `references/patterns.md` § Required Test Coverage Per Layer
 - Package-level `swift build` succeeds (no warnings)
 - Package-level `swift test` succeeds (all pass)
 - If the story changed public interfaces or spans multiple packages, full-app build also succeeds

@@ -142,6 +142,81 @@ struct {Entity}EntityMapper {
 - SwiftLint limits: `function_body_length` 50, `file_length` 400, `type_body_length` 350
 - `@Model` classes aren't `Sendable` — use `static func makeEntity()` factory methods, NOT `static let`
 
+### Required Test Coverage Per Layer
+
+Every new feature MUST have tests at ALL of these layers. Missing any layer is a review blocker.
+
+#### Adapter Mapper Tests
+
+Every adapter mapper (TMDb → Domain) needs its own test file. Test all properties, nil/optional handling, and empty collections.
+
+```swift
+@Suite("{Name}Mapper Tests")
+struct {Name}MapperTests {
+    private let mapper = {Name}Mapper()
+
+    @Test("map converts all properties correctly")
+    func mapConvertsAllPropertiesCorrectly() { ... }
+
+    @Test("map handles nil optional properties")
+    func mapHandlesNilOptionalProperties() { ... }
+
+    @Test("map handles empty collections")
+    func mapHandlesEmptyCollections() { ... }
+}
+```
+
+#### Use Case Tests
+
+Every use case needs tests for: success, ID propagation, each error type (notFound, unauthorised, unknown), and upstream failures.
+
+```swift
+@Suite("DefaultFetch{Entity}UseCase Tests")
+struct DefaultFetch{Entity}UseCaseTests {
+    @Test("returns entity on success")
+    func returnsEntityOnSuccess() async throws { ... }
+
+    @Test("propagates correct ID to repository")
+    func propagatesCorrectIDToRepository() async throws { ... }
+
+    @Test("throws not found error")
+    func throwsNotFoundError() async throws { ... }
+
+    @Test("throws unauthorised error")
+    func throwsUnauthorisedError() async throws { ... }
+
+    @Test("throws unknown error")
+    func throwsUnknownError() async throws { ... }
+}
+```
+
+#### TCA Reducer Tests
+
+Every reducer needs `@MainActor` and `State: Equatable` (required for `TestStore`). Cover: initial state, fetch success → ready, fetch failure → error, guard states, and navigation actions.
+
+```swift
+@MainActor
+@Suite("{Feature}Feature Tests")
+struct {Feature}FeatureTests {
+    // State MUST conform to Equatable for TestStore
+    // Use explicit types when @ObservableState obscures inference:
+    //   Feature.Action.loaded(snapshot)  instead of  .loaded(snapshot)
+    //   ViewState<Feature.ViewSnapshot>.error(...)  instead of  .error(...)
+
+    @Test("fetch success transitions to ready")
+    func fetchSuccessTransitionsToReady() async { ... }
+
+    @Test("fetch failure transitions to error")
+    func fetchFailureTransitionsToError() async { ... }
+
+    @Test("fetch does nothing when already ready")
+    func fetchDoesNothingWhenAlreadyReady() async { ... }
+
+    @Test("fetch does nothing when already loading")
+    func fetchDoesNothingWhenAlreadyLoading() async { ... }
+}
+```
+
 ## View Pattern
 
 - Content views separate from store-connected views
