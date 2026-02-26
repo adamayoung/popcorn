@@ -154,6 +154,21 @@ struct TVSeriesDetailsFeatureTests {
         await store.send(.navigate(.personDetails(id: 17419)))
     }
 
+    @Test("navigate castAndCrew returns none")
+    func navigateCastAndCrewReturnsNone() async {
+        let store = TestStore(
+            initialState: TVSeriesDetailsFeature.State(tvSeriesID: 66732)
+        ) {
+            TVSeriesDetailsFeature()
+        } withDependencies: {
+            $0.tvSeriesDetailsClient.isCastAndCrewEnabled = { false }
+            $0.tvSeriesDetailsClient.isIntelligenceEnabled = { false }
+            $0.tvSeriesDetailsClient.isBackdropFocalPointEnabled = { false }
+        }
+
+        await store.send(.navigate(.castAndCrew(tvSeriesID: 66732)))
+    }
+
 }
 
 // MARK: - Test Helpers

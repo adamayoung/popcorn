@@ -12,6 +12,7 @@ import PersonDetailsFeature
 import SwiftUI
 import TVEpisodeDetailsFeature
 import TVSeasonDetailsFeature
+import TVSeriesCastAndCrewFeature
 import TVSeriesDetailsFeature
 
 struct SearchRootView: View {
@@ -42,6 +43,11 @@ struct SearchRootView: View {
                 tvEpisodeDetails(store: store)
             case .personDetails(let store):
                 PersonDetailsView(
+                    store: store,
+                    transitionNamespace: namespace
+                )
+            case .tvSeriesCastAndCrew(let store):
+                TVSeriesCastAndCrewView(
                     store: store,
                     transitionNamespace: namespace
                 )

@@ -55,4 +55,9 @@ public final class LivePopcornTVSeriesFactory: PopcornTVSeriesFactory {
         applicationFactory.makeFetchTVSeriesCreditsUseCase()
     }
 
+    public func makeFetchTVSeriesAggregateCreditsUseCase()
+    -> FetchTVSeriesAggregateCreditsUseCase {
+        applicationFactory.makeFetchTVSeriesAggregateCreditsUseCase()
+    }
+
 }

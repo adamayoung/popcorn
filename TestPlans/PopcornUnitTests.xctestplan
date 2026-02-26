@@ -449,6 +449,13 @@
     },
     {
       "target" : {
+        "containerPath" : "container:Features\/TVSeriesCastAndCrewFeature",
+        "identifier" : "TVSeriesCastAndCrewFeatureTests",
+        "name" : "TVSeriesCastAndCrewFeatureTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Contexts\/PopcornGamesCatalog",
         "identifier" : "GamesCatalogDomainTests",
         "name" : "GamesCatalogDomainTests"

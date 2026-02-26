@@ -26,6 +26,9 @@ public protocol TVSeriesCreditsRepository: Sendable {
     func credits(forTVSeries tvSeriesID: Int) async throws(TVSeriesCreditsRepositoryError)
         -> Credits
 
+    func aggregateCredits(forTVSeries tvSeriesID: Int)
+        async throws(TVSeriesCreditsRepositoryError) -> AggregateCredits
+
 }
 
 ///

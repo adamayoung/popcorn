@@ -18,6 +18,7 @@
 		668F588C2ECDB2D500B47B07 /* TrendingTVSeriesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 668F588B2ECDB2D500B47B07 /* TrendingTVSeriesFeature */; };
 		668F58912ECDD5CA00B47B07 /* TVSeriesDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 668F58902ECDD5CA00B47B07 /* TVSeriesDetailsFeature */; };
 		66A2E0502F0B01C0002B8706 /* MovieCastAndCrewFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66A2E04F2F0B01C0002B8706 /* MovieCastAndCrewFeature */; };
+		66A2E0522F0B01C0002B8706 /* TVSeriesCastAndCrewFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66A2E0512F0B01C0002B8706 /* TVSeriesCastAndCrewFeature */; };
 		66BEEA002F4331AF00CCEAB6 /* DeveloperFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66BEE9FF2F4331AF00CCEAB6 /* DeveloperFeature */; };
 		66C4E0012F5E000000000001 /* TVSeasonDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66C4E0002F5E000000000001 /* TVSeasonDetailsFeature */; };
 		66C4E0032F5E000000000002 /* TVEpisodeDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66C4E0022F5E000000000002 /* TVEpisodeDetailsFeature */; };
@@ -47,6 +48,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		662A94222F4FCC9400B57C63 /* Integration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; path = Integration.xcodeproj; sourceTree = "<group>"; };
 		664551862ECB7C2100250D87 /* Popcorn.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Popcorn.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		664551932ECB7C2200250D87 /* PopcornTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PopcornTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6645519D2ECB7C2200250D87 /* PopcornUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PopcornUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -227,6 +229,7 @@
 				668F58892ECCFEBE00B47B07 /* TrendingMoviesFeature in Frameworks */,
 				900E28EA2ED0781900ED5DFC /* ExploreFeature in Frameworks */,
 				66A2E0502F0B01C0002B8706 /* MovieCastAndCrewFeature in Frameworks */,
+				66A2E0522F0B01C0002B8706 /* TVSeriesCastAndCrewFeature in Frameworks */,
 				66C4E0012F5E000000000001 /* TVSeasonDetailsFeature in Frameworks */,
 				66C4E0032F5E000000000002 /* TVEpisodeDetailsFeature in Frameworks */,
 				666AEE492ECE0A1B0038814E /* PersonDetailsFeature in Frameworks */,
@@ -264,6 +267,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		662A947D2F4FCC9400B57C63 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		6645517D2ECB7C2100250D87 = {
 			isa = PBXGroup;
 			children = (
@@ -449,6 +459,7 @@
 				661ADD4E2EFAB62D00A4055D /* MovieIntelligenceFeature */,
 				661ADD4F2EFAB62D00A4055E /* TVSeriesIntelligenceFeature */,
 				66A2E04F2F0B01C0002B8706 /* MovieCastAndCrewFeature */,
+				66A2E0512F0B01C0002B8706 /* TVSeriesCastAndCrewFeature */,
 				66C4E0002F5E000000000001 /* TVSeasonDetailsFeature */,
 				66C4E0022F5E000000000002 /* TVEpisodeDetailsFeature */,
 				66BEE9FF2F4331AF00CCEAB6 /* DeveloperFeature */,
@@ -550,6 +561,10 @@
 				{
 					ProductGroup = 66EE0DBF2F45D95B004F9BF1 /* Products */;
 					ProjectRef = 66EE0B772F45D95B004F9BF1 /* DuplicatedSDKTest.xcodeproj */;
+				},
+				{
+					ProductGroup = 662A947D2F4FCC9400B57C63 /* Products */;
+					ProjectRef = 662A94222F4FCC9400B57C63 /* Integration.xcodeproj */;
 				},
 				{
 					ProductGroup = 66EE0DC72F45D95B004F9BF1 /* Products */;
@@ -1134,6 +1149,10 @@
 		66A2E04F2F0B01C0002B8706 /* MovieCastAndCrewFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = MovieCastAndCrewFeature;
+		};
+		66A2E0512F0B01C0002B8706 /* TVSeriesCastAndCrewFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TVSeriesCastAndCrewFeature;
 		};
 		66BEE9FF2F4331AF00CCEAB6 /* DeveloperFeature */ = {
 			isa = XCSwiftPackageProductDependency;

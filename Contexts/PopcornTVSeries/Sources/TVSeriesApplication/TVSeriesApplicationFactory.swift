@@ -66,4 +66,12 @@ package final class TVSeriesApplicationFactory: Sendable {
         )
     }
 
+    package func makeFetchTVSeriesAggregateCreditsUseCase()
+    -> some FetchTVSeriesAggregateCreditsUseCase {
+        DefaultFetchTVSeriesAggregateCreditsUseCase(
+            tvSeriesCreditsRepository: tvSeriesCreditsRepository,
+            appConfigurationProvider: appConfigurationProvider
+        )
+    }
+
 }

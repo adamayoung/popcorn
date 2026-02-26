@@ -11,6 +11,7 @@ import PersonDetailsFeature
 import Testing
 import TVEpisodeDetailsFeature
 import TVSeasonDetailsFeature
+import TVSeriesCastAndCrewFeature
 import TVSeriesDetailsFeature
 
 @MainActor
@@ -98,6 +99,53 @@ struct ExploreRootFeatureTests {
         #expect(episodeState.seasonNumber == 1)
         #expect(episodeState.episodeNumber == 1)
         #expect(episodeState.episodeName == "Pilot")
+    }
+
+    @Test("tvSeriesDetails navigate castAndCrew appends tvSeriesCastAndCrew to path")
+    func tvSeriesDetailsNavigateCastAndCrewAppendsToPath() {
+        var state = ExploreRootFeature.State()
+        state.path.append(.tvSeriesDetails(TVSeriesDetailsFeature.State(tvSeriesID: 66732)))
+
+        _ = ExploreRootFeature().reduce(
+            into: &state,
+            action: .path(.element(
+                id: 0,
+                action: .tvSeriesDetails(
+                    .navigate(.castAndCrew(tvSeriesID: 66732))
+                )
+            ))
+        )
+
+        guard case .tvSeriesCastAndCrew(let castAndCrewState) = state.path.last else {
+            Issue.record("Expected tvSeriesCastAndCrew as last path element")
+            return
+        }
+        #expect(state.path.count == 2)
+        #expect(castAndCrewState.tvSeriesID == 66732)
+    }
+
+    @Test("tvSeriesCastAndCrew navigate personDetails appends personDetails to path")
+    func tvSeriesCastAndCrewNavigatePersonDetailsAppendsToPath() {
+        var state = ExploreRootFeature.State()
+        state.path.append(
+            .tvSeriesCastAndCrew(TVSeriesCastAndCrewFeature.State(tvSeriesID: 66732))
+        )
+
+        _ = ExploreRootFeature().reduce(
+            into: &state,
+            action: .path(.element(
+                id: 0,
+                action: .tvSeriesCastAndCrew(
+                    .navigate(.personDetails(id: 17419, transitionID: nil))
+                )
+            ))
+        )
+
+        guard case .personDetails = state.path.last else {
+            Issue.record("Expected personDetails as last path element")
+            return
+        }
+        #expect(state.path.count == 2)
     }
 
 }

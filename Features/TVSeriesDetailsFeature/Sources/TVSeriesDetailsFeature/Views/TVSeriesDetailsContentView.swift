@@ -16,6 +16,7 @@ struct TVSeriesDetailsContentView: View {
     var isBackdropFocalPointEnabled: Bool
     var didSelectSeason: (_ seasonNumber: Int) -> Void
     var didSelectPerson: (_ personID: Int) -> Void
+    var navigateToCastAndCrew: (_ tvSeriesID: Int) -> Void
 
     var body: some View {
         StretchyHeaderScrollView(
@@ -89,7 +90,9 @@ extension TVSeriesDetailsContentView {
 
     private var castAndCrewCarousel: some View {
         VStack(alignment: .leading, spacing: 8) {
-            sectionHeader("CAST_AND_CREW")
+            sectionHeader("CAST_AND_CREW") {
+                navigateToCastAndCrew(tvSeries.id)
+            }
 
             CastAndCrewCarousel(
                 castMembers: castMembers,
@@ -111,6 +114,28 @@ extension TVSeriesDetailsContentView {
         }
     }
 
+    private func sectionHeader(
+        _ key: LocalizedStringKey,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button {
+            action()
+        } label: {
+            HStack(spacing: 4) {
+                Text(key, bundle: .module)
+                    .font(.title2)
+                    .fontWeight(.bold)
+
+                Image(systemName: "chevron.right")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal)
+    }
+
     private func sectionHeader(_ key: LocalizedStringKey) -> some View {
         Text(key, bundle: .module)
             .font(.title2)
@@ -128,7 +153,8 @@ extension TVSeriesDetailsContentView {
             crewMembers: CrewMember.mocks,
             isBackdropFocalPointEnabled: true,
             didSelectSeason: { _ in },
-            didSelectPerson: { _ in }
+            didSelectPerson: { _ in },
+            navigateToCastAndCrew: { _ in }
         )
     }
 }
@@ -146,7 +172,8 @@ extension TVSeriesDetailsContentView {
             crewMembers: [],
             isBackdropFocalPointEnabled: false,
             didSelectSeason: { _ in },
-            didSelectPerson: { _ in }
+            didSelectPerson: { _ in },
+            navigateToCastAndCrew: { _ in }
         )
     }
 }
