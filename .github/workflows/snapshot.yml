@@ -11,18 +11,16 @@ concurrency:
 jobs:
   snapshot-tests:
     name: Build and Snapshot Test
-    runs-on: macos-latest
+    runs-on: macos-26
     timeout-minutes: 45
     env:
       XCODE_VERSION: "26.3"
       DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
       SIMULATOR_NAME: "iPhone 17"
+      IOS_VERSION: "26.2"
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install xcpretty
-        run: gem install xcpretty
+        uses: actions/checkout@v6
 
       - name: Cache SPM packages
         uses: actions/cache@v4
@@ -50,26 +48,32 @@ jobs:
 
       - name: Build
         run: |
-          set -o pipefail
           NSUnbufferedIO=YES xcodebuild \
             -scheme Popcorn \
-            -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }},OS=latest" \
+            -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }},OS=${{ env.IOS_VERSION }}" \
             -skipMacroValidation \
             -testPlan PopcornSnapshotTests \
             -clonedSourcePackagesDirPath .spm \
             -derivedDataPath DerivedData \
             CODE_SIGNING_ALLOWED=NO \
-            build-for-testing 2>&1 | xcpretty
+            build-for-testing
 
       - name: Snapshot Test
         run: |
-          set -o pipefail
           NSUnbufferedIO=YES xcodebuild \
             -scheme Popcorn \
-            -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }},OS=latest" \
+            -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }},OS=${{ env.IOS_VERSION }}" \
             -skipMacroValidation \
             -testPlan PopcornSnapshotTests \
             -clonedSourcePackagesDirPath .spm \
             -derivedDataPath DerivedData \
             CODE_SIGNING_ALLOWED=NO \
-            test-without-building 2>&1 | xcpretty
+            -resultBundlePath SnapshotTestResults.xcresult \
+            test-without-building
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshot-test-results
+          path: SnapshotTestResults.xcresult
