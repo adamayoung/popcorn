@@ -17,6 +17,7 @@ public struct AggregateCrewMemberDetails: Identifiable, Equatable, Sendable {
     public let department: String
     public let jobs: [CrewJobDetails]
     public let totalEpisodeCount: Int
+    public let initials: String?
 
     public init(
         id: Int,
@@ -25,7 +26,8 @@ public struct AggregateCrewMemberDetails: Identifiable, Equatable, Sendable {
         gender: Gender,
         department: String,
         jobs: [CrewJobDetails],
-        totalEpisodeCount: Int
+        totalEpisodeCount: Int,
+        initials: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -34,6 +36,7 @@ public struct AggregateCrewMemberDetails: Identifiable, Equatable, Sendable {
         self.department = department
         self.jobs = jobs
         self.totalEpisodeCount = totalEpisodeCount
+        self.initials = initials
     }
 
 }

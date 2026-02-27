@@ -37,6 +37,9 @@ public struct CrewMember: Identifiable, Equatable, Sendable {
     /// The department the crew member belongs to (e.g., "Directing", "Writing").
     public let department: String
 
+    /// The person's initials derived from their name.
+    public let initials: String?
+
     ///
     /// Creates a new crew member instance.
     ///
@@ -48,6 +51,7 @@ public struct CrewMember: Identifiable, Equatable, Sendable {
     ///   - profilePath: URL path to the person's profile image. Defaults to `nil`.
     ///   - gender: The person's gender.
     ///   - department: The department the crew member belongs to.
+    ///   - initials: The person's initials. Defaults to `nil`.
     ///
     public init(
         id: String,
@@ -56,7 +60,8 @@ public struct CrewMember: Identifiable, Equatable, Sendable {
         job: String,
         profilePath: URL? = nil,
         gender: Gender,
-        department: String
+        department: String,
+        initials: String? = nil
     ) {
         self.id = id
         self.personID = personID
@@ -65,6 +70,7 @@ public struct CrewMember: Identifiable, Equatable, Sendable {
         self.profilePath = profilePath
         self.gender = gender
         self.department = department
+        self.initials = initials
     }
 
 }

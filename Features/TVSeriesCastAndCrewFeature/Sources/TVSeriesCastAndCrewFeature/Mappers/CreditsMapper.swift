@@ -31,7 +31,8 @@ struct CreditsMapper {
             personName: castMemberDetails.name,
             profileURL: castMemberDetails.profileURLSet?.detail,
             roles: roles,
-            totalEpisodeCount: castMemberDetails.totalEpisodeCount
+            totalEpisodeCount: castMemberDetails.totalEpisodeCount,
+            initials: castMemberDetails.initials
         )
     }
 
@@ -49,7 +50,8 @@ struct CreditsMapper {
             profileURL: crewMemberDetails.profileURLSet?.detail,
             department: crewMemberDetails.department,
             jobs: jobs,
-            totalEpisodeCount: crewMemberDetails.totalEpisodeCount
+            totalEpisodeCount: crewMemberDetails.totalEpisodeCount,
+            initials: crewMemberDetails.initials
         )
     }
 

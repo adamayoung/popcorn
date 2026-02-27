@@ -16,6 +16,7 @@ public struct AggregateCastMemberDetails: Identifiable, Equatable, Sendable {
     public let gender: Gender
     public let roles: [CastRoleDetails]
     public let totalEpisodeCount: Int
+    public let initials: String?
 
     public init(
         id: Int,
@@ -23,7 +24,8 @@ public struct AggregateCastMemberDetails: Identifiable, Equatable, Sendable {
         profileURLSet: ImageURLSet? = nil,
         gender: Gender,
         roles: [CastRoleDetails],
-        totalEpisodeCount: Int
+        totalEpisodeCount: Int,
+        initials: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -31,6 +33,7 @@ public struct AggregateCastMemberDetails: Identifiable, Equatable, Sendable {
         self.gender = gender
         self.roles = roles
         self.totalEpisodeCount = totalEpisodeCount
+        self.initials = initials
     }
 
 }

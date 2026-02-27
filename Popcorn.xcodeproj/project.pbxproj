@@ -61,6 +61,7 @@
 			membershipExceptions = (
 				Caching,
 				DataPersistenceInfrastructure,
+				FeatureAccess,
 				Observability,
 			);
 			target = 664551852ECB7C2100250D87 /* Popcorn */;
@@ -77,6 +78,7 @@
 			membershipExceptions = (
 				CoreDomain,
 				DesignSystem,
+				TCAFoundation,
 			);
 			target = 664551852ECB7C2100250D87 /* Popcorn */;
 		};
@@ -85,8 +87,11 @@
 			membershipExceptions = (
 				DeveloperFeature,
 				ExploreFeature,
+				GamesCatalogFeature,
 				MediaSearchFeature,
+				MovieCastAndCrewFeature,
 				MovieDetailsFeature,
+				MovieIntelligenceFeature,
 				PersonDetailsFeature,
 				PlotRemixGameFeature,
 				TrendingMoviesFeature,
@@ -94,7 +99,9 @@
 				TrendingTVSeriesFeature,
 				TVEpisodeDetailsFeature,
 				TVSeasonDetailsFeature,
+				TVSeriesCastAndCrewFeature,
 				TVSeriesDetailsFeature,
+				TVSeriesIntelligenceFeature,
 				WatchlistFeature,
 			);
 			target = 664551852ECB7C2100250D87 /* Popcorn */;
@@ -102,11 +109,18 @@
 		668F58812ECCDBA300B47B07 /* Exceptions for "Adapters" folder in "Popcorn" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Contexts/PopcornConfigurationAdapters,
 				Contexts/PopcornDiscoverAdapters,
 				Contexts/PopcornGamesCatalogAdapters,
 				Contexts/PopcornGenresAdapters,
 				Contexts/PopcornIntelligenceAdapters,
+				Contexts/PopcornMoviesAdapters,
+				Contexts/PopcornPeopleAdapters,
 				Contexts/PopcornPlotRemixGameAdapters,
+				Contexts/PopcornSearchAdapters,
+				Contexts/PopcornTrendingAdapters,
+				Contexts/PopcornTVSeriesAdapters,
+				Platform/FeatureAccessAdapters,
 				Platform/ObservabilityAdapters,
 			);
 			target = 664551852ECB7C2100250D87 /* Popcorn */;
@@ -124,8 +138,17 @@
 		66CB7F332EE7239A00B05B4B /* Exceptions for "Contexts" folder in "Popcorn" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				PopcornConfiguration,
 				PopcornDiscover,
+				PopcornGamesCatalog,
 				PopcornGenres,
+				PopcornIntelligence,
+				PopcornMovies,
+				PopcornPeople,
+				PopcornPlotRemixGame,
+				PopcornSearch,
+				PopcornTrending,
+				PopcornTVSeries,
 			);
 			target = 664551852ECB7C2100250D87 /* Popcorn */;
 		};
@@ -296,7 +319,6 @@
 			buildConfigurationList = 664551A72ECB7C2200250D87 /* Build configuration list for PBXNativeTarget "Popcorn" */;
 			buildPhases = (
 				664551822ECB7C2100250D87 /* Sources */,
-				66B9847F2EF62A520073EC12 /* Swiftlint */,
 				664551832ECB7C2100250D87 /* Frameworks */,
 				664551842ECB7C2100250D87 /* Resources */,
 			);
@@ -457,28 +479,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		66B9847F2EF62A520073EC12 /* Swiftlint */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = Swiftlint;
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "alias swiftlint=\"/opt/homebrew/bin/swiftlint\"\n\nif [ \"$CI\" != \"TRUE\" ]; then\n    if command -v swiftlint >/dev/null 2>&1\n    then\n        swiftlint\n    else\n        echo \"warning: `swiftlint` command not found - See https://github.com/realm/SwiftLint#installation for installation instructions.\"\n    fi\nfi\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		664551822ECB7C2100250D87 /* Sources */ = {

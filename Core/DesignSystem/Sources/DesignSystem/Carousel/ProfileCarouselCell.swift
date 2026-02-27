@@ -20,6 +20,9 @@ public struct ProfileCarouselCell<CellLabel: View>: View {
     /// The URL of the profile image to display.
     private var imageURL: URL?
 
+    /// The person's initials to show as a placeholder.
+    private var initials: String?
+
     /// The custom label view to display below the profile image.
     private var cellLabel: CellLabel
 
@@ -31,7 +34,7 @@ public struct ProfileCarouselCell<CellLabel: View>: View {
 
     // Platform-specific width for the profile image.
     #if os(macOS) || os(visionOS)
-        private let width: CGFloat = 200
+        private let width: CGFloat = 150
     #else
         private let width: CGFloat = 150
     #endif
@@ -40,16 +43,19 @@ public struct ProfileCarouselCell<CellLabel: View>: View {
     ///
     /// - Parameters:
     ///   - imageURL: The URL of the profile image to display.
+    ///   - initials: The person's initials to show as a placeholder. Defaults to `nil`.
     ///   - transitionID: The identifier for matched geometry transitions. Defaults to `nil`.
     ///   - transitionNamespace: The namespace for matched geometry transitions. Defaults to `nil`.
     ///   - cellLabel: A view builder that creates the label to display below the image.
     public init(
         imageURL: URL?,
+        initials: String? = nil,
         transitionID: String? = nil,
         transitionNamespace: Namespace.ID? = nil,
         @ViewBuilder cellLabel: () -> CellLabel
     ) {
         self.imageURL = imageURL
+        self.initials = initials
         self.transitionID = transitionID
         self.namespace = transitionNamespace
         self.cellLabel = cellLabel()
@@ -73,11 +79,11 @@ public struct ProfileCarouselCell<CellLabel: View>: View {
     }
 
     private var profileImage: some View {
-        ProfileImage(url: imageURL)
+        ProfileImage(url: imageURL, initials: initials)
             .frame(width: width, height: width)
-            .clipShape(.rect(cornerRadius: width / 2))
+            .clipShape(.circle)
             .overlay {
-                RoundedRectangle(cornerRadius: width / 2)
+                Circle()
                     .stroke(Color.gray.opacity(0.3), lineWidth: 1)
             }
     }

@@ -45,39 +45,48 @@ public struct BackdropImage: View {
 
     public var body: some View {
         GeometryReader { proxy in
-            WebImage(url: url, options: detectFocalPoint ? [] : .forceTransition)
-                .onSuccess { image, _, _ in
-                    if detectFocalPoint, !focalPointResolved {
-                        analyzeImage(image, frameSize: proxy.size)
+            ZStack {
+                LinearGradient(
+                    colors: [Color.secondary.opacity(0.15), Color.secondary.opacity(0.0)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+
+                WebImage(url: url, options: detectFocalPoint ? [] : .forceTransition)
+                    .onSuccess { image, _, _ in
+                        if detectFocalPoint, !focalPointResolved {
+                            analyzeImage(image, frameSize: proxy.size)
+                        }
                     }
-                }
-                .onFailure { _ in
-                    if detectFocalPoint, !focalPointResolved {
-                        focalPointResolved = true
+                    .onFailure { _ in
+                        if detectFocalPoint, !focalPointResolved {
+                            focalPointResolved = true
+                        }
                     }
-                }
-                .resizable()
-                .scaledToFill()
-                .aspectRatio(Self.aspectRatio, contentMode: .fill)
-                .offset(focalOffset)
-                .frame(width: proxy.size.width, height: proxy.size.height, alignment: .center)
-                .clipped()
-                .opacity(imageOpacity)
-                .background(Color.secondary.opacity(0.1))
-                .overlay(alignment: .bottom) {
-                    if let logoURL {
-                        WebImage(url: logoURL, options: .forceTransition)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: proxy.size.width / 1.5)
-                            .padding(.bottom, proxy.size.height / 10)
+                    .resizable()
+                    .transition(.fade(duration: 2.0))
+                    .scaledToFill()
+                    .aspectRatio(Self.aspectRatio, contentMode: .fill)
+                    .offset(focalOffset)
+                    .frame(width: proxy.size.width, height: proxy.size.height, alignment: .center)
+                    .clipped()
+                    .opacity(imageOpacity)
+                    .background(Color.secondary.opacity(0.1))
+                    .overlay(alignment: .bottom) {
+                        if let logoURL {
+                            WebImage(url: logoURL, options: .forceTransition)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(maxWidth: proxy.size.width / 1.5, maxHeight: proxy.size.height / 3)
+                                .padding(.bottom, proxy.size.height / 10)
+                        }
                     }
-                }
-                .onAppear {
-                    if detectFocalPoint, url == nil {
-                        focalPointResolved = true
+                    .onAppear {
+                        if detectFocalPoint, url == nil {
+                            focalPointResolved = true
+                        }
                     }
-                }
+            }
         }
         .accessibilityHidden(true)
     }

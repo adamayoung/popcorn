@@ -51,6 +51,7 @@ struct AggregateCastMemberMapperTests {
         #expect(result.roles[1].character == "011")
         #expect(result.roles[1].episodeCount == 4)
         #expect(result.totalEpisodeCount == 34)
+        #expect(result.initials == "MB")
     }
 
     @Test("map handles nil profile path")

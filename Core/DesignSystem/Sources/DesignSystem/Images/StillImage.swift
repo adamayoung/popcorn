@@ -28,12 +28,20 @@ public struct StillImage: View {
 
     public var body: some View {
         GeometryReader { proxy in
-            WebImage(url: url, options: .forceTransition)
-                .resizable()
-                .scaledToFill()
-                .frame(width: proxy.size.width, height: proxy.size.height, alignment: .center)
-                .clipped()
-                .background(Color.secondary.opacity(0.1))
+            ZStack {
+                LinearGradient(
+                    colors: [Color.secondary.opacity(0.15), Color.secondary.opacity(0.0)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+
+                WebImage(url: url, options: .forceTransition)
+                    .resizable()
+                    .transition(.fade(duration: 2.0))
+                    .scaledToFill()
+                    .frame(width: proxy.size.width, height: proxy.size.height, alignment: .center)
+                    .clipped()
+            }
         }
         .accessibilityHidden(true)
     }

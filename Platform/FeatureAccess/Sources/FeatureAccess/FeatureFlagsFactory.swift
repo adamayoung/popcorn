@@ -7,15 +7,12 @@
 
 import Foundation
 
-public final class FeatureFlagsFactory {
+public final class FeatureFlagsFactory: Sendable {
 
-    private let provider: any FeatureFlagProviding
-
-    public lazy var featureFlagService: some FeatureFlagging & FeatureFlagOverriding & FeatureFlagInitialising =
-        FeatureFlagService(featureFlagProvider: provider, userDefaults: .standard)
+    public let featureFlagService: any FeatureFlagging & FeatureFlagOverriding & FeatureFlagInitialising
 
     public init(provider: some FeatureFlagProviding) {
-        self.provider = provider
+        self.featureFlagService = FeatureFlagService(featureFlagProvider: provider, userDefaults: .standard)
     }
 
 }

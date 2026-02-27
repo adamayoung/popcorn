@@ -12,6 +12,7 @@ import TCAFoundation
 
 public struct ExploreView: View {
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Bindable var store: StoreOf<ExploreFeature>
     private let namespace: Namespace.ID?
 
@@ -25,37 +26,42 @@ public struct ExploreView: View {
 
     public var body: some View {
         ScrollView {
-            switch store.viewState {
-            case .ready(let snapshot):
-                content(
-                    discoverMovies: snapshot.discoverMovies,
-                    trendingMovies: snapshot.trendingMovies,
-                    popularMovies: snapshot.popularMovies,
-                    trendingTVSeries: snapshot.trendingTVSeries,
-                    trendingPeople: snapshot.trendingPeople
-                )
-
-            case .error(let error):
-                ContentUnavailableView {
-                    Label(
-                        LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
-                        systemImage: "exclamationmark.triangle"
+            ZStack {
+                switch store.viewState {
+                case .ready(let snapshot):
+                    content(
+                        discoverMovies: snapshot.discoverMovies,
+                        trendingMovies: snapshot.trendingMovies,
+                        popularMovies: snapshot.popularMovies,
+                        trendingTVSeries: snapshot.trendingTVSeries,
+                        trendingPeople: snapshot.trendingPeople
                     )
-                } description: {
-                    Text(error.message)
-                } actions: {
-                    if error.isRetryable {
-                        Button(LocalizedStringResource("RETRY", bundle: .module)) {
-                            store.send(.load)
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                }
 
-            default:
-                EmptyView()
+                case .error(let error):
+                    ContentUnavailableView {
+                        Label(
+                            LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
+                            systemImage: "exclamationmark.triangle"
+                        )
+                    } description: {
+                        Text(error.message)
+                    } actions: {
+                        if error.isRetryable {
+                            Button(LocalizedStringResource("RETRY", bundle: .module)) {
+                                store.send(.load)
+                            }
+                            .buttonStyle(.bordered)
+                        }
+                    }
+
+                default:
+                    EmptyView()
+                }
             }
+            .contentTransition(.opacity)
+            .animation(reduceMotion ? nil : .easeInOut(duration: 1), value: store.viewState.isReady)
         }
+        .contentMargins(.bottom, 16, for: .scrollContent)
         .accessibilityIdentifier("explore.view")
         .overlay {
             if store.viewState.isLoading {

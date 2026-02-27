@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import Foundation
 import TVSeriesDomain
 
@@ -19,7 +20,8 @@ struct CrewMemberEntityMapper {
             job: entity.job,
             profilePath: entity.profilePath,
             gender: genderMapper.map(entity.gender),
-            department: entity.department
+            department: entity.department,
+            initials: PersonInitials.resolve(from: entity.personName)
         )
     }
 

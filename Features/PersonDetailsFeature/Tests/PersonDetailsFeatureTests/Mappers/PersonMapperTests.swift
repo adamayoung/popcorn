@@ -32,7 +32,8 @@ struct PersonMapperTests {
             biography: "Glen Powell is an American actor known for his roles in action films.",
             knownForDepartment: "Acting",
             gender: .male,
-            profileURLSet: profileURLSet
+            profileURLSet: profileURLSet,
+            initials: "GP"
         )
 
         let result = mapper.map(details)
@@ -43,6 +44,7 @@ struct PersonMapperTests {
         #expect(result.knownForDepartment == "Acting")
         #expect(result.gender == .male)
         #expect(result.profileURL == URL(string: "https://example.com/detail.jpg"))
+        #expect(result.initials == "GP")
     }
 
     @Test("Maps PersonDetails with nil profile URL set")
@@ -63,6 +65,7 @@ struct PersonMapperTests {
         #expect(result.knownForDepartment == "Directing")
         #expect(result.gender == .female)
         #expect(result.profileURL == nil)
+        #expect(result.initials == nil)
     }
 
     @Test("Maps female gender correctly")

@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import Foundation
 import TMDb
 import TVSeriesDomain
@@ -21,7 +22,8 @@ struct CastMemberMapper {
             personName: dto.name,
             profilePath: dto.profilePath,
             gender: genderMapper.compactMap(dto.gender) ?? .unknown,
-            order: dto.order
+            order: dto.order,
+            initials: PersonInitials.resolve(from: dto.name)
         )
     }
 

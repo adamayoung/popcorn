@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import Foundation
 import TVSeriesDomain
 
@@ -27,7 +28,8 @@ struct AggregateCastMemberEntityMapper {
             profilePath: entity.profilePath,
             gender: genderMapper.map(entity.gender),
             roles: roles,
-            totalEpisodeCount: entity.totalEpisodeCount
+            totalEpisodeCount: entity.totalEpisodeCount,
+            initials: PersonInitials.resolve(from: entity.name)
         )
     }
 

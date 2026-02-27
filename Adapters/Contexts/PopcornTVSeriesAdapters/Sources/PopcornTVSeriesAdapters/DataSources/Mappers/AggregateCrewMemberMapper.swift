@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import Foundation
 import TMDb
 import TVSeriesDomain
@@ -30,7 +31,8 @@ struct AggregateCrewMemberMapper {
             // TMDb department names are always English; "Other" is a safe fallback for nil values.
             department: dto.knownForDepartment ?? "Other",
             jobs: jobs,
-            totalEpisodeCount: dto.totalEpisodeCount
+            totalEpisodeCount: dto.totalEpisodeCount,
+            initials: PersonInitials.resolve(from: dto.name)
         )
     }
 

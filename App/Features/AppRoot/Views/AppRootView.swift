@@ -26,7 +26,7 @@ struct AppRootView: View {
                 errorView(with: error)
             } else {
                 ProgressView()
-                    .accessibilityLabel("Loading")
+                    .accessibilityLabel(Text("LOADING"))
             }
         }
         #if DEBUG
@@ -121,8 +121,8 @@ struct AppRootView: View {
             }
         }
         .accessibilityIdentifier("app.tabview")
-        #if !os(macOS)
-            .tabViewStyle(.sidebarAdaptable)
+        #if os(macOS)
+            .tabViewStyle(.automatic)
             .tabViewCustomization($customization)
         #else
             .tabViewStyle(.sidebarAdaptable)

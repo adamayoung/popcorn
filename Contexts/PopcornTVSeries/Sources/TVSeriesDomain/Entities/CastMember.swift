@@ -37,6 +37,9 @@ public struct CastMember: Identifiable, Equatable, Sendable {
     /// The display order of this cast member in the credits list.
     public let order: Int
 
+    /// The person's initials derived from their name.
+    public let initials: String?
+
     ///
     /// Creates a new cast member instance.
     ///
@@ -48,6 +51,7 @@ public struct CastMember: Identifiable, Equatable, Sendable {
     ///   - profilePath: URL path to the person's profile image. Defaults to `nil`.
     ///   - gender: The person's gender.
     ///   - order: The display order in the credits list.
+    ///   - initials: The person's initials. Defaults to `nil`.
     ///
     public init(
         id: String,
@@ -56,7 +60,8 @@ public struct CastMember: Identifiable, Equatable, Sendable {
         personName: String,
         profilePath: URL? = nil,
         gender: Gender,
-        order: Int
+        order: Int,
+        initials: String? = nil
     ) {
         self.id = id
         self.personID = personID
@@ -65,6 +70,7 @@ public struct CastMember: Identifiable, Equatable, Sendable {
         self.profilePath = profilePath
         self.gender = gender
         self.order = order
+        self.initials = initials
     }
 
 }

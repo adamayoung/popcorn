@@ -14,19 +14,22 @@ public struct CastMember: Identifiable, Equatable, Sendable {
     public let characterName: String
     public let personName: String
     public let profileURL: URL?
+    public let initials: String?
 
     public init(
         id: String,
         personID: Int,
         characterName: String,
         personName: String,
-        profileURL: URL? = nil
+        profileURL: URL? = nil,
+        initials: String? = nil
     ) {
         self.id = id
         self.personID = personID
         self.characterName = characterName
         self.personName = personName
         self.profileURL = profileURL
+        self.initials = initials
     }
 
 }

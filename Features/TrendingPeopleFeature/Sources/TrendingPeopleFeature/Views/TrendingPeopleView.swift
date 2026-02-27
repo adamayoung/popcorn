@@ -25,7 +25,8 @@ public struct TrendingPeopleView: View {
                 PersonRow(
                     id: person.id,
                     name: person.name,
-                    profileURL: person.profileURL
+                    profileURL: person.profileURL,
+                    initials: person.initials
                 )
             }
         }

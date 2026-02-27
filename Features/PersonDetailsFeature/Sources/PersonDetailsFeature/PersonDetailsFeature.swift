@@ -19,19 +19,22 @@ public struct PersonDetailsFeature: Sendable {
     @Dependency(\.personDetailsClient) private var client
 
     @ObservableState
-    public struct State: Sendable {
+    public struct State: Sendable, Equatable {
         var personID: Int
         public let transitionID: String?
         public var viewState: ViewState<ViewSnapshot>
+        var isFocalPointEnabled: Bool
 
         public init(
             personID: Int,
             transitionID: String? = nil,
-            viewState: ViewState<ViewSnapshot> = .initial
+            viewState: ViewState<ViewSnapshot> = .initial,
+            isFocalPointEnabled: Bool = false
         ) {
             self.personID = personID
             self.transitionID = transitionID
             self.viewState = viewState
+            self.isFocalPointEnabled = isFocalPointEnabled
         }
     }
 
@@ -44,6 +47,8 @@ public struct PersonDetailsFeature: Sendable {
     }
 
     public enum Action {
+        case didAppear
+        case updateFeatureFlags
         case fetch
         case loaded(ViewSnapshot)
         case loadFailed(ViewStateError)
@@ -54,8 +59,17 @@ public struct PersonDetailsFeature: Sendable {
     public var body: some Reducer<State, Action> {
         Reduce { state, action in
             switch action {
+            case .didAppear:
+                return .run { send in
+                    await send(.updateFeatureFlags)
+                }
+
+            case .updateFeatureFlags:
+                state.isFocalPointEnabled = (try? client.isFocalPointEnabled()) ?? false
+                return .none
+
             case .fetch:
-                if state.viewState.isReady {
+                if state.viewState.isReady || state.viewState.isError {
                     state.viewState = .loading
                 }
 

@@ -52,6 +52,7 @@ struct AggregateCrewMemberMapperTests {
         #expect(result.jobs[1].job == "Executive Producer")
         #expect(result.jobs[1].episodeCount == 34)
         #expect(result.totalEpisodeCount == 34)
+        #expect(result.initials == "MD")
     }
 
     @Test("map handles nil department with Other fallback")

@@ -14,19 +14,22 @@ public struct CastMember: Identifiable, Equatable, Sendable {
     public let profileURL: URL?
     public let roles: [Role]
     public let totalEpisodeCount: Int
+    public let initials: String?
 
     public init(
         id: Int,
         personName: String,
         profileURL: URL? = nil,
         roles: [Role] = [],
-        totalEpisodeCount: Int = 0
+        totalEpisodeCount: Int = 0,
+        initials: String? = nil
     ) {
         self.id = id
         self.personName = personName
         self.profileURL = profileURL
         self.roles = roles
         self.totalEpisodeCount = totalEpisodeCount
+        self.initials = initials
     }
 
     public struct Role: Equatable, Sendable {

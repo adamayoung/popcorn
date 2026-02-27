@@ -17,6 +17,7 @@ public struct CastMember: Identifiable, Equatable, Sendable {
     public let profilePath: URL?
     public let gender: Gender
     public let order: Int
+    public let initials: String?
 
     public init(
         id: String,
@@ -25,7 +26,8 @@ public struct CastMember: Identifiable, Equatable, Sendable {
         personName: String,
         profilePath: URL? = nil,
         gender: Gender,
-        order: Int
+        order: Int,
+        initials: String? = nil
     ) {
         self.id = id
         self.personID = personID
@@ -34,6 +36,7 @@ public struct CastMember: Identifiable, Equatable, Sendable {
         self.profilePath = profilePath
         self.gender = gender
         self.order = order
+        self.initials = initials
     }
 
 }

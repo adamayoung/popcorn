@@ -39,6 +39,7 @@ struct CrewMemberMapperTests {
         #expect(result.profilePath == profilePath)
         #expect(result.gender == .male)
         #expect(result.department == "Directing")
+        #expect(result.initials == "DF")
     }
 
     @Test("map converts female gender correctly")
