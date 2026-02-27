@@ -11,15 +11,12 @@ struct HideToolbarTitle: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-        #if os(iOS)
-        .navigationBarTitleDisplayMode(.inline)
-        #endif
-        .toolbarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Color.clear.frame(height: 0)
+            .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Color.clear.frame(height: 0)
+                }
             }
-        }
     }
 
 }
