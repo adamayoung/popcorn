@@ -19,7 +19,7 @@ struct PersonDetailsContentView: View {
                 .frame(width: 300, height: 300)
                 .clipShape(.circle)
                 .overlay {
-                    RoundedRectangle(cornerRadius: 300 / 2)
+                    Circle()
                         .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                 }
 

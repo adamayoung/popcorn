@@ -36,7 +36,7 @@ public struct PosterImage: View {
         GeometryReader { proxy in
             ZStack {
                 LinearGradient(
-                    colors: [.white.opacity(0.25), .white.opacity(0.0)],
+                    colors: [Color.secondary.opacity(0.15), Color.secondary.opacity(0.0)],
                     startPoint: .top,
                     endPoint: .bottom
                 )

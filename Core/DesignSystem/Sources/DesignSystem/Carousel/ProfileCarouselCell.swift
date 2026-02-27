@@ -83,7 +83,7 @@ public struct ProfileCarouselCell<CellLabel: View>: View {
             .frame(width: width, height: width)
             .clipShape(.circle)
             .overlay {
-                RoundedRectangle(cornerRadius: width / 2)
+                Circle()
                     .stroke(Color.gray.opacity(0.3), lineWidth: 1)
             }
     }

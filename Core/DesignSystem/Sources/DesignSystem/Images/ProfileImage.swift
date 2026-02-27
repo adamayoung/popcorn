@@ -48,7 +48,7 @@ public struct ProfileImage: View {
         GeometryReader { proxy in
             ZStack {
                 LinearGradient(
-                    colors: [.white.opacity(0.25), .white.opacity(0.0)],
+                    colors: [Color.secondary.opacity(0.15), Color.secondary.opacity(0.0)],
                     startPoint: .top,
                     endPoint: .bottom
                 )
@@ -66,13 +66,10 @@ public struct ProfileImage: View {
                         }
                     }
                     .onFailure { _ in
-                        Task { @MainActor in
-                            if detectFocalPoint, !focalPointResolved {
-                                focalPointResolved = true
-                            }
-
-                            isInitialsVisible = true
+                        if detectFocalPoint, !focalPointResolved {
+                            focalPointResolved = true
                         }
+                        isInitialsVisible = true
                     }
                     .resizable()
                     .scaledToFill()

@@ -123,6 +123,7 @@ struct AppRootView: View {
         .accessibilityIdentifier("app.tabview")
         #if os(macOS)
             .tabViewStyle(.automatic)
+            .tabViewCustomization($customization)
         #else
             .tabViewStyle(.sidebarAdaptable)
             .tabViewCustomization($customization)
