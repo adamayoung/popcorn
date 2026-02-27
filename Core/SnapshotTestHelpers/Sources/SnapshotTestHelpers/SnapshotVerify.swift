@@ -21,7 +21,7 @@ public func verifyViewSnapshot(
 ) {
     let failure = verifySnapshot(
         of: view,
-        as: .image(layout: .device(config: .snapshotDevice)),
+        as: .image(layout: .device(config: .snapshotLayout)),
         named: name,
         file: file,
         testName: testName
@@ -60,6 +60,7 @@ private func attachSnapshotImages(from failure: String, sourceLocation: SourceLo
 
 extension ViewImageConfig {
 
-    static let snapshotDevice: ViewImageConfig = .iPhone13Pro
+    /// Pinned to iPhone 13 Pro dimensions (390 x 844 pt) for a stable baseline.
+    static let snapshotLayout: ViewImageConfig = .iPhone13Pro
 
 }
