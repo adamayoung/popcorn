@@ -1,16 +1,16 @@
-name: CI
+name: Snapshot Tests
 
 on:
   pull_request:
   workflow_dispatch:
 
 concurrency:
-  group: ios-ci-${{ github.workflow }}-${{ github.ref }}
+  group: ios-snapshot-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  unit-tests:
-    name: Build and Test
+  snapshot-tests:
+    name: Build and Snapshot Test
     runs-on: macos-latest
     timeout-minutes: 45
     env:
@@ -55,20 +55,20 @@ jobs:
             -scheme Popcorn \
             -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }},OS=latest" \
             -skipMacroValidation \
-            -testPlan PopcornUnitTests \
+            -testPlan PopcornSnapshotTests \
             -clonedSourcePackagesDirPath .spm \
             -derivedDataPath DerivedData \
             CODE_SIGNING_ALLOWED=NO \
             build-for-testing 2>&1 | xcpretty
 
-      - name: Unit Test
+      - name: Snapshot Test
         run: |
           set -o pipefail
           NSUnbufferedIO=YES xcodebuild \
             -scheme Popcorn \
             -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }},OS=latest" \
             -skipMacroValidation \
-            -testPlan PopcornUnitTests \
+            -testPlan PopcornSnapshotTests \
             -clonedSourcePackagesDirPath .spm \
             -derivedDataPath DerivedData \
             CODE_SIGNING_ALLOWED=NO \

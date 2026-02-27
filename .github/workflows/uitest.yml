@@ -1,16 +1,18 @@
-name: CI
+name: UI Tests
 
 on:
-  pull_request:
+  push:
+    branches:
+      - main
   workflow_dispatch:
 
 concurrency:
-  group: ios-ci-${{ github.workflow }}-${{ github.ref }}
+  group: ios-uitest-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  unit-tests:
-    name: Build and Test
+  ui-tests:
+    name: Build and UI Test
     runs-on: macos-latest
     timeout-minutes: 45
     env:
@@ -55,20 +57,20 @@ jobs:
             -scheme Popcorn \
             -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }},OS=latest" \
             -skipMacroValidation \
-            -testPlan PopcornUnitTests \
+            -testPlan PopcornUITests \
             -clonedSourcePackagesDirPath .spm \
             -derivedDataPath DerivedData \
             CODE_SIGNING_ALLOWED=NO \
             build-for-testing 2>&1 | xcpretty
 
-      - name: Unit Test
+      - name: UI Test
         run: |
           set -o pipefail
           NSUnbufferedIO=YES xcodebuild \
             -scheme Popcorn \
             -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }},OS=latest" \
             -skipMacroValidation \
-            -testPlan PopcornUnitTests \
+            -testPlan PopcornUITests \
             -clonedSourcePackagesDirPath .spm \
             -derivedDataPath DerivedData \
             CODE_SIGNING_ALLOWED=NO \
