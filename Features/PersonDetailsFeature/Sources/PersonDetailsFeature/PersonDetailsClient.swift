@@ -30,6 +30,8 @@ extension PersonDetailsClient: DependencyKey {
                 let mapper = PersonMapper()
                 return mapper.map(person)
             },
+            // Shares the backdropFocalPoint gate intentionally — focal point
+            // alignment is a single feature covering both backdrop and profile images.
             isFocalPointEnabled: {
                 featureFlags.isEnabled(.backdropFocalPoint)
             }

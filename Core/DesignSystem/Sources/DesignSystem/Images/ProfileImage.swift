@@ -29,9 +29,13 @@ public struct ProfileImage: View {
     /// Whether to detect and align to the focal point of the image.
     private var detectFocalPoint = false
 
-    @State private var isInitialsVisible = false
+    @State private var imageLoadFailed = false
     @State private var focalOffset: CGSize = .zero
     @State private var focalPointResolved = false
+
+    private var isInitialsVisible: Bool {
+        url == nil || imageLoadFailed
+    }
 
     /// Creates a new profile image view.
     ///
@@ -41,7 +45,6 @@ public struct ProfileImage: View {
     public init(url: URL?, initials: String? = nil) {
         self.url = url
         self.initials = initials
-        self._isInitialsVisible = .init(initialValue: url == nil)
     }
 
     public var body: some View {
@@ -69,7 +72,7 @@ public struct ProfileImage: View {
                         if detectFocalPoint, !focalPointResolved {
                             focalPointResolved = true
                         }
-                        isInitialsVisible = true
+                        imageLoadFailed = true
                     }
                     .resizable()
                     .scaledToFill()
@@ -82,6 +85,11 @@ public struct ProfileImage: View {
                             focalPointResolved = true
                         }
                     }
+            }
+        }
+        .onChange(of: url) { _, newURL in
+            if newURL != nil {
+                imageLoadFailed = false
             }
         }
     }

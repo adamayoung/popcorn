@@ -67,11 +67,25 @@ struct PersonInitialsTests {
         #expect(result == "HC")
     }
 
-    @Test("suffix name uses last token initial")
-    func suffixName() {
+    @Test("name with Jr. suffix ignores suffix")
+    func suffixJr() {
         let result = personInitials(from: "Robert Downey Jr.")
 
-        #expect(result == "RJ")
+        #expect(result == "RD")
+    }
+
+    @Test("name with Sr. suffix ignores suffix")
+    func suffixSr() {
+        let result = personInitials(from: "Martin Luther King Sr.")
+
+        #expect(result == "MK")
+    }
+
+    @Test("name with numeral suffix ignores suffix")
+    func suffixNumeral() {
+        let result = personInitials(from: "Robert Downey III")
+
+        #expect(result == "RD")
     }
 
 }

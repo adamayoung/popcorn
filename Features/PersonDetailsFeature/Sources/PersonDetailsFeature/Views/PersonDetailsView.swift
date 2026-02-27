@@ -37,7 +37,10 @@ public struct PersonDetailsView: View {
         }
         .accessibilityIdentifier("person-details.view")
         .contentTransition(.opacity)
-        .animation(reduceMotion ? nil : .easeInOut(duration: 1), value: store.viewState.isReady)
+        .animation(
+            reduceMotion ? nil : .easeInOut(duration: 1),
+            value: store.viewState.isReady || store.viewState.isError
+        )
         .overlay {
             if store.viewState.isLoading {
                 loadingBody
