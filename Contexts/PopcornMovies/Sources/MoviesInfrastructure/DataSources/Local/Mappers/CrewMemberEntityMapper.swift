@@ -21,7 +21,7 @@ struct CrewMemberEntityMapper {
             profilePath: entity.profilePath,
             gender: genderMapper.map(entity.gender),
             department: entity.department,
-            initials: personInitials(from: entity.personName)
+            initials: PersonInitials.resolve(from: entity.personName)
         )
     }
 

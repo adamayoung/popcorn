@@ -60,10 +60,12 @@ public struct ProfileImage: View {
                     Text(verbatim: initials)
                         .font(.system(size: proxy.size.width * 0.4, weight: .medium))
                         .foregroundStyle(.secondary)
+                        .accessibilityHidden(true)
                 }
 
                 WebImage(url: url, options: detectFocalPoint ? [] : .forceTransition)
                     .onSuccess { image, _, _ in
+                        imageLoadFailed = false
                         if detectFocalPoint, !focalPointResolved {
                             analyzeImage(image, frameSize: proxy.size)
                         }
@@ -90,6 +92,8 @@ public struct ProfileImage: View {
         .onChange(of: url) { _, newURL in
             if newURL != nil {
                 imageLoadFailed = false
+                focalOffset = .zero
+                focalPointResolved = false
             }
         }
     }

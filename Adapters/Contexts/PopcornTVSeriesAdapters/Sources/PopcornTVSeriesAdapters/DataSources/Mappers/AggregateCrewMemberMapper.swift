@@ -32,7 +32,7 @@ struct AggregateCrewMemberMapper {
             department: dto.knownForDepartment ?? "Other",
             jobs: jobs,
             totalEpisodeCount: dto.totalEpisodeCount,
-            initials: personInitials(from: dto.name)
+            initials: PersonInitials.resolve(from: dto.name)
         )
     }
 

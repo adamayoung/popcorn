@@ -20,7 +20,7 @@ struct PersonMapper {
             knownForDepartment: tmdbPerson.knownForDepartment ?? "",
             gender: map(tmdbPerson.gender),
             profilePath: tmdbPerson.profilePath,
-            initials: personInitials(from: tmdbPerson.name)
+            initials: PersonInitials.resolve(from: tmdbPerson.name)
         )
     }
 

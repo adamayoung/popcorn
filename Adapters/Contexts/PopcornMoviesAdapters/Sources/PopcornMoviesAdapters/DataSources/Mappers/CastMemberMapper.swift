@@ -23,7 +23,7 @@ struct CastMemberMapper {
             profilePath: dto.profilePath,
             gender: genderMapper.compactMap(dto.gender) ?? .unknown,
             order: dto.order,
-            initials: personInitials(from: dto.name)
+            initials: PersonInitials.resolve(from: dto.name)
         )
     }
 

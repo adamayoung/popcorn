@@ -30,7 +30,7 @@ struct AggregateCrewMemberEntityMapper {
             department: entity.department,
             jobs: jobs,
             totalEpisodeCount: entity.totalEpisodeCount,
-            initials: personInitials(from: entity.name)
+            initials: PersonInitials.resolve(from: entity.name)
         )
     }
 

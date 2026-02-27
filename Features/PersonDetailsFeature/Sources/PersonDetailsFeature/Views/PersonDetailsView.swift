@@ -39,7 +39,11 @@ public struct PersonDetailsView: View {
         .contentTransition(.opacity)
         .animation(
             reduceMotion ? nil : .easeInOut(duration: 1),
-            value: store.viewState.isReady || store.viewState.isError
+            value: store.viewState.isReady
+        )
+        .animation(
+            reduceMotion ? nil : .easeInOut(duration: 1),
+            value: store.viewState.isError
         )
         .overlay {
             if store.viewState.isLoading {

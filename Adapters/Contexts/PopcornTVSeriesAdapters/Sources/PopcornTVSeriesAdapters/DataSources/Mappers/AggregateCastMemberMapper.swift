@@ -30,7 +30,7 @@ struct AggregateCastMemberMapper {
             gender: genderMapper.compactMap(dto.gender) ?? .unknown,
             roles: roles,
             totalEpisodeCount: dto.totalEpisodeCount,
-            initials: personInitials(from: dto.name)
+            initials: PersonInitials.resolve(from: dto.name)
         )
     }
 

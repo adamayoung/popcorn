@@ -17,18 +17,17 @@ struct PersonDetailsContentView: View {
 
     var body: some View {
         ScrollView {
-            GeometryReader { proxy in
-                let size = min(proxy.size.width * 0.65, Self.maxProfileSize)
-                profileImage
-                    .frame(width: size, height: size)
-                    .clipShape(.circle)
-                    .overlay {
-                        Circle()
-                            .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                    }
-                    .frame(maxWidth: .infinity)
-            }
-            .frame(height: Self.maxProfileSize)
+            profileImage
+                .containerRelativeFrame(.horizontal) { width, _ in
+                    min(width * 0.65, Self.maxProfileSize)
+                }
+                .aspectRatio(1, contentMode: .fit)
+                .clipShape(.circle)
+                .overlay {
+                    Circle()
+                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                }
+                .frame(maxWidth: .infinity)
 
             VStack {
                 Text(verbatim: person.name)

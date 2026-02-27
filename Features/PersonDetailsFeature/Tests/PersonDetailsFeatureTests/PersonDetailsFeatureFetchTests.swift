@@ -82,6 +82,31 @@ struct PersonDetailsFeatureFetchTests {
         }
     }
 
+    @Test("fetch when error transitions to loading")
+    func fetchWhenErrorTransitionsToLoading() async {
+        let person = Self.testPerson
+        let snapshot = PersonDetailsFeature.ViewSnapshot(person: person)
+
+        let store = TestStore(
+            initialState: PersonDetailsFeature.State(
+                personID: 2283,
+                viewState: .error(ViewStateError(message: "Previous error"))
+            )
+        ) {
+            PersonDetailsFeature()
+        } withDependencies: {
+            $0.personDetailsClient.fetchPerson = { _ in person }
+        }
+
+        await store.send(.fetch) {
+            $0.viewState = .loading
+        }
+
+        await store.receive(\.loaded) {
+            $0.viewState = .ready(snapshot)
+        }
+    }
+
     @Test("loaded sets viewState to ready")
     func loadedSetsViewStateToReady() async {
         let snapshot = PersonDetailsFeature.ViewSnapshot(

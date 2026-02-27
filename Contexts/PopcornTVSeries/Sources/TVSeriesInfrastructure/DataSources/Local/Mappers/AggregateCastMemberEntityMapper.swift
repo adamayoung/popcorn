@@ -29,7 +29,7 @@ struct AggregateCastMemberEntityMapper {
             gender: genderMapper.map(entity.gender),
             roles: roles,
             totalEpisodeCount: entity.totalEpisodeCount,
-            initials: personInitials(from: entity.name)
+            initials: PersonInitials.resolve(from: entity.name)
         )
     }
 

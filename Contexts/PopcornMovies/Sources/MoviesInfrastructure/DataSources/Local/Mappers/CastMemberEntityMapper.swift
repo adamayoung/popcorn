@@ -21,7 +21,7 @@ struct CastMemberEntityMapper {
             profilePath: entity.profilePath,
             gender: genderMapper.map(entity.gender),
             order: entity.order,
-            initials: personInitials(from: entity.personName)
+            initials: PersonInitials.resolve(from: entity.personName)
         )
     }
 

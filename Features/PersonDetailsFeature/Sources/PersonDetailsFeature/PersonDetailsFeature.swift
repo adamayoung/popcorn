@@ -69,7 +69,7 @@ public struct PersonDetailsFeature: Sendable {
                 return .none
 
             case .fetch:
-                if state.viewState.isReady {
+                if state.viewState.isReady || state.viewState.isError {
                     state.viewState = .loading
                 }
 

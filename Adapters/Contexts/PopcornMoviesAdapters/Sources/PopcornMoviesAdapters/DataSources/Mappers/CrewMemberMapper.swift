@@ -23,7 +23,7 @@ struct CrewMemberMapper {
             profilePath: dto.profilePath,
             gender: genderMapper.compactMap(dto.gender) ?? .unknown,
             department: dto.department,
-            initials: personInitials(from: dto.name)
+            initials: PersonInitials.resolve(from: dto.name)
         )
     }
 
