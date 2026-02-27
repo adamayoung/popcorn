@@ -19,6 +19,125 @@
         "identifier" : "ExploreFeatureSnapshotTests",
         "name" : "ExploreFeatureSnapshotTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/MovieDetailsFeature",
+        "identifier" : "MovieDetailsFeatureSnapshotTests",
+        "name" : "MovieDetailsFeatureSnapshotTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TVSeriesDetailsFeature",
+        "identifier" : "TVSeriesDetailsFeatureSnapshotTests",
+        "name" : "TVSeriesDetailsFeatureSnapshotTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/PersonDetailsFeature",
+        "identifier" : "PersonDetailsFeatureSnapshotTests",
+        "name" : "PersonDetailsFeatureSnapshotTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/MovieCastAndCrewFeature",
+        "identifier" : "MovieCastAndCrewFeatureSnapshotTests",
+        "name" : "MovieCastAndCrewFeatureSnapshotTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TVSeriesCastAndCrewFeature",
+        "identifier" : "TVSeriesCastAndCrewFeatureSnapshotTests",
+        "name" : "TVSeriesCastAndCrewFeatureSnapshotTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/WatchlistFeature",
+        "identifier" : "WatchlistFeatureSnapshotTests",
+        "name" : "WatchlistFeatureSnapshotTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TVSeasonDetailsFeature",
+        "identifier" : "TVSeasonDetailsFeatureSnapshotTests",
+        "name" : "TVSeasonDetailsFeatureSnapshotTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TVEpisodeDetailsFeature",
+        "identifier" : "TVEpisodeDetailsFeatureSnapshotTests",
+        "name" : "TVEpisodeDetailsFeatureSnapshotTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/GamesCatalogFeature",
+        "identifier" : "GamesCatalogFeatureSnapshotTests",
+        "name" : "GamesCatalogFeatureSnapshotTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TrendingMoviesFeature",
+        "identifier" : "TrendingMoviesFeatureSnapshotTests",
+        "name" : "TrendingMoviesFeatureSnapshotTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TrendingPeopleFeature",
+        "identifier" : "TrendingPeopleFeatureSnapshotTests",
+        "name" : "TrendingPeopleFeatureSnapshotTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TrendingTVSeriesFeature",
+        "identifier" : "TrendingTVSeriesFeatureSnapshotTests",
+        "name" : "TrendingTVSeriesFeatureSnapshotTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/MediaSearchFeature",
+        "identifier" : "MediaSearchFeatureSnapshotTests",
+        "name" : "MediaSearchFeatureSnapshotTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/DeveloperFeature",
+        "identifier" : "DeveloperFeatureSnapshotTests",
+        "name" : "DeveloperFeatureSnapshotTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/MovieIntelligenceFeature",
+        "identifier" : "MovieIntelligenceFeatureSnapshotTests",
+        "name" : "MovieIntelligenceFeatureSnapshotTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TVSeriesIntelligenceFeature",
+        "identifier" : "TVSeriesIntelligenceFeatureSnapshotTests",
+        "name" : "TVSeriesIntelligenceFeatureSnapshotTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/PlotRemixGameFeature",
+        "identifier" : "PlotRemixGameFeatureSnapshotTests",
+        "name" : "PlotRemixGameFeatureSnapshotTests"
+      }
     }
   ],
   "version" : 1

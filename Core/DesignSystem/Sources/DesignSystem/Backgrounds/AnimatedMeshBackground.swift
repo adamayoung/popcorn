@@ -16,6 +16,7 @@ import SwiftUI
 public struct AnimatedMeshBackground: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.meshAnimationPaused) private var meshAnimationPaused
 
     private var baseColor: Color
 
@@ -25,14 +26,18 @@ public struct AnimatedMeshBackground: View {
         .init(x: 0, y: 1), .init(x: 0.9, y: 1), .init(x: 1, y: 1)
     ]
 
+    private var isPaused: Bool {
+        reduceMotion || meshAnimationPaused
+    }
+
     public init(baseColor: Color) {
         self.baseColor = baseColor
     }
 
     public var body: some View {
-        TimelineView(.animation(paused: reduceMotion)) { timeline in
+        TimelineView(.animation(paused: isPaused)) { timeline in
             let t = timeline.date.timeIntervalSince1970
-            let positions = reduceMotion ? basePositions : animatedPositions(at: t)
+            let positions = isPaused ? basePositions : animatedPositions(at: t)
 
             MeshGradient(
                 width: 3,
@@ -146,3 +151,9 @@ private extension Color {
 }
 
 // swiftlint:enable identifier_name
+
+public extension EnvironmentValues {
+
+    @Entry var meshAnimationPaused: Bool = false
+
+}

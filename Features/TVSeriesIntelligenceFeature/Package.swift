@@ -27,7 +27,8 @@ let package = Package(
         .package(path: "../../Platform/Observability"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
-        )
+        ),
+        .package(path: "../../Core/SnapshotTestHelpers")
     ],
 
     targets: [
@@ -49,6 +50,14 @@ let package = Package(
                 "TVSeriesIntelligenceFeature",
                 .product(name: "CoreDomain", package: "CoreDomain"),
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries")
+            ]
+        ),
+        .testTarget(
+            name: "TVSeriesIntelligenceFeatureSnapshotTests",
+            dependencies: [
+                "TVSeriesIntelligenceFeature",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                "SnapshotTestHelpers"
             ]
         )
     ]
