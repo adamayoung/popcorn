@@ -40,6 +40,7 @@ struct PersonPreviewMapperTests {
         #expect(result.knownForDepartment == "Acting")
         #expect(result.gender == .male)
         #expect(result.profilePath == profilePath)
+        #expect(result.initials == "BP")
     }
 
     @Test("Maps with nil optional properties")

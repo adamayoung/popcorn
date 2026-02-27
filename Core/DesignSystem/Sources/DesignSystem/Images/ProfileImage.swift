@@ -65,21 +65,26 @@ public struct ProfileImage: View {
 
                 WebImage(url: url, options: detectFocalPoint ? [] : .forceTransition)
                     .onSuccess { image, _, _ in
-                        imageLoadFailed = false
+                        Task { @MainActor in
+                            imageLoadFailed = false
+                        }
                         if detectFocalPoint, !focalPointResolved {
                             analyzeImage(image, frameSize: proxy.size)
                         }
                     }
                     .onFailure { _ in
-                        if detectFocalPoint, !focalPointResolved {
-                            focalPointResolved = true
+                        Task { @MainActor in
+                            if detectFocalPoint, !focalPointResolved {
+                                focalPointResolved = true
+                            }
+                            imageLoadFailed = true
                         }
-                        imageLoadFailed = true
                     }
                     .resizable()
                     .scaledToFill()
                     .offset(focalOffset)
                     .frame(width: proxy.size.width, height: proxy.size.height, alignment: .center)
+                    .background(Color.secondary.opacity(0.1))
                     .clipped()
                     .opacity(imageOpacity)
                     .onAppear {

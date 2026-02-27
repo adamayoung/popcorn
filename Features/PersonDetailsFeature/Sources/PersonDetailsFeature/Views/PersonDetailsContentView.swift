@@ -18,16 +18,12 @@ struct PersonDetailsContentView: View {
     var body: some View {
         ScrollView {
             profileImage
-                .containerRelativeFrame(.horizontal) { width, _ in
-                    min(width * 0.65, Self.maxProfileSize)
-                }
-                .aspectRatio(1, contentMode: .fit)
+                .frame(width: 300, height: 300)
                 .clipShape(.circle)
                 .overlay {
                     Circle()
                         .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                 }
-                .frame(maxWidth: .infinity)
 
             VStack {
                 Text(verbatim: person.name)

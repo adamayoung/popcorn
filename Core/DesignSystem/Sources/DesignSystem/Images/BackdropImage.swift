@@ -71,6 +71,7 @@ public struct BackdropImage: View {
                     .frame(width: proxy.size.width, height: proxy.size.height, alignment: .center)
                     .clipped()
                     .opacity(imageOpacity)
+                    .background(Color.secondary.opacity(0.1))
                     .overlay(alignment: .bottom) {
                         if let logoURL {
                             WebImage(url: logoURL, options: .forceTransition)

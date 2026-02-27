@@ -47,6 +47,7 @@ public struct PosterImage: View {
                     .scaledToFit()
                     .aspectRatio(Self.aspectRatio, contentMode: .fill)
                     .frame(width: proxy.size.width, height: proxy.size.height)
+                    .background(Color.secondary.opacity(0.1))
             }
         }
         .accessibilityHidden(true)

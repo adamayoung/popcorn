@@ -95,4 +95,32 @@ struct PersonInitialsTests {
         #expect(result == "J")
     }
 
+    @Test("suffix-only input returns first character")
+    func suffixOnly() {
+        let result = PersonInitials.resolve(from: "Jr.")
+
+        #expect(result == "J")
+    }
+
+    @Test("name with Esq suffix without period ignores suffix")
+    func suffixEsqNoPeriod() {
+        let result = PersonInitials.resolve(from: "John Smith Esq")
+
+        #expect(result == "JS")
+    }
+
+    @Test("name with non-breaking space splits correctly")
+    func nonBreakingSpace() {
+        let result = PersonInitials.resolve(from: "Tom\u{00a0}Cruise")
+
+        #expect(result == "TC")
+    }
+
+    @Test("leading suffix uses first meaningful word")
+    func leadingSuffix() {
+        let result = PersonInitials.resolve(from: "II John Smith")
+
+        #expect(result == "JS")
+    }
+
 }
