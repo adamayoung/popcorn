@@ -31,6 +31,8 @@ Configs/Secrets.xcconfig
 
 # Claude
 .claude/settings.local.json
+.claude/worktrees
+.worktrees/
 
 # MCP
 .spm

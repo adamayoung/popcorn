@@ -41,9 +41,7 @@ final class DefaultMovieImageRepository: MovieImageRepository {
             throw MovieImageRepositoryError(error)
         }
 
-        do { try await localDataSource.setImageCollection(imageCollection) } catch let error {
-            throw MovieImageRepositoryError(error)
-        }
+        try? await localDataSource.setImageCollection(imageCollection)
 
         return imageCollection
     }

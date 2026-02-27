@@ -10,6 +10,9 @@ import MediaSearchFeature
 import MovieDetailsFeature
 import PersonDetailsFeature
 import SwiftUI
+import TVEpisodeDetailsFeature
+import TVSeasonDetailsFeature
+import TVSeriesCastAndCrewFeature
 import TVSeriesDetailsFeature
 
 struct SearchRootView: View {
@@ -36,18 +39,32 @@ struct SearchRootView: View {
                 )
             case .tvSeasonDetails(let store):
                 tvSeasonDetails(store: store)
+            case .tvEpisodeDetails(let store):
+                tvEpisodeDetails(store: store)
             case .personDetails(let store):
                 PersonDetailsView(
                     store: store,
                     transitionNamespace: namespace
                 )
+            case .tvSeriesCastAndCrew(let store):
+                tvSeriesCastAndCrew(store: store)
             }
         }
     }
 
-    private func tvSeasonDetails(store: StoreOf<TVSeasonDetailsPlaceholder>) -> some View {
-        Text("SEASON \(store.seasonNumber)")
-            .navigationTitle(Text("SEASON \(store.seasonNumber)"))
+    private func tvSeasonDetails(store: StoreOf<TVSeasonDetailsFeature>) -> some View {
+        TVSeasonDetailsView(store: store)
+    }
+
+    private func tvEpisodeDetails(store: StoreOf<TVEpisodeDetailsFeature>) -> some View {
+        TVEpisodeDetailsView(store: store)
+    }
+
+    private func tvSeriesCastAndCrew(store: StoreOf<TVSeriesCastAndCrewFeature>) -> some View {
+        TVSeriesCastAndCrewView(
+            store: store,
+            transitionNamespace: namespace
+        )
     }
 
 }

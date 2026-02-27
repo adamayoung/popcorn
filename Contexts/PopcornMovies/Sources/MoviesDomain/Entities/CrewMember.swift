@@ -17,6 +17,7 @@ public struct CrewMember: Identifiable, Equatable, Sendable {
     public let profilePath: URL?
     public let gender: Gender
     public let department: String
+    public let initials: String?
 
     public init(
         id: String,
@@ -25,7 +26,8 @@ public struct CrewMember: Identifiable, Equatable, Sendable {
         job: String,
         profilePath: URL? = nil,
         gender: Gender,
-        department: String
+        department: String,
+        initials: String? = nil
     ) {
         self.id = id
         self.personID = personID
@@ -34,6 +36,7 @@ public struct CrewMember: Identifiable, Equatable, Sendable {
         self.profilePath = profilePath
         self.gender = gender
         self.department = department
+        self.initials = initials
     }
 
 }

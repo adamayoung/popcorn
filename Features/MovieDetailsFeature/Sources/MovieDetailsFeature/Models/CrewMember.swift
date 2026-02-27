@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import CoreDomain
 import Foundation
 
 public struct CrewMember: Identifiable, Equatable, Sendable {
@@ -16,6 +15,7 @@ public struct CrewMember: Identifiable, Equatable, Sendable {
     public let job: String
     public let profileURL: URL?
     public let department: String
+    public let initials: String?
 
     public init(
         id: String,
@@ -23,7 +23,8 @@ public struct CrewMember: Identifiable, Equatable, Sendable {
         personName: String,
         job: String,
         profileURL: URL? = nil,
-        department: String
+        department: String,
+        initials: String? = nil
     ) {
         self.id = id
         self.personID = personID
@@ -31,6 +32,7 @@ public struct CrewMember: Identifiable, Equatable, Sendable {
         self.job = job
         self.profileURL = profileURL
         self.department = department
+        self.initials = initials
     }
 
 }

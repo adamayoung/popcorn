@@ -33,10 +33,11 @@ final class DefaultGenreRepository: GenreRepository {
         let genres: [Genre]
         do {
             genres = try await remoteDataSource.movieGenres()
-            try await localDataSource.setMovieGenres(genres)
         } catch let error {
             throw GenreRepositoryError(error)
         }
+
+        try? await localDataSource.setMovieGenres(genres)
 
         return genres
     }
@@ -53,10 +54,11 @@ final class DefaultGenreRepository: GenreRepository {
         let genres: [Genre]
         do {
             genres = try await remoteDataSource.tvSeriesGenres()
-            try await localDataSource.setTVSeriesGenres(genres)
         } catch let error {
             throw GenreRepositoryError(error)
         }
+
+        try? await localDataSource.setTVSeriesGenres(genres)
 
         return genres
     }

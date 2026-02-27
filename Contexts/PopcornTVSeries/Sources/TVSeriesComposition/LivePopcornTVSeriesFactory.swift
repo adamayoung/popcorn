@@ -16,14 +16,21 @@ public final class LivePopcornTVSeriesFactory: PopcornTVSeriesFactory {
 
     public init(
         tvSeriesRemoteDataSource: some TVSeriesRemoteDataSource,
+        tvSeasonRemoteDataSource: some TVSeasonRemoteDataSource,
+        tvEpisodeRemoteDataSource: some TVEpisodeRemoteDataSource,
         appConfigurationProvider: some AppConfigurationProviding
     ) {
         let infrastructureFactory = TVSeriesInfrastructureFactory(
-            tvSeriesRemoteDataSource: tvSeriesRemoteDataSource
+            tvSeriesRemoteDataSource: tvSeriesRemoteDataSource,
+            tvSeasonRemoteDataSource: tvSeasonRemoteDataSource,
+            tvEpisodeRemoteDataSource: tvEpisodeRemoteDataSource
         )
 
         self.applicationFactory = TVSeriesApplicationFactory(
             tvSeriesRepository: infrastructureFactory.makeTVSeriesRepository(),
+            tvSeasonRepository: infrastructureFactory.makeTVSeasonRepository(),
+            tvEpisodeRepository: infrastructureFactory.makeTVEpisodeRepository(),
+            tvSeriesCreditsRepository: infrastructureFactory.makeTVSeriesCreditsRepository(),
             appConfigurationProvider: appConfigurationProvider
         )
     }
@@ -34,6 +41,23 @@ public final class LivePopcornTVSeriesFactory: PopcornTVSeriesFactory {
 
     public func makeFetchTVSeriesImageCollectionUseCase() -> FetchTVSeriesImageCollectionUseCase {
         applicationFactory.makeFetchTVSeriesImageCollectionUseCase()
+    }
+
+    public func makeFetchTVSeasonDetailsUseCase() -> FetchTVSeasonDetailsUseCase {
+        applicationFactory.makeFetchTVSeasonDetailsUseCase()
+    }
+
+    public func makeFetchTVEpisodeDetailsUseCase() -> FetchTVEpisodeDetailsUseCase {
+        applicationFactory.makeFetchTVEpisodeDetailsUseCase()
+    }
+
+    public func makeFetchTVSeriesCreditsUseCase() -> FetchTVSeriesCreditsUseCase {
+        applicationFactory.makeFetchTVSeriesCreditsUseCase()
+    }
+
+    public func makeFetchTVSeriesAggregateCreditsUseCase()
+    -> FetchTVSeriesAggregateCreditsUseCase {
+        applicationFactory.makeFetchTVSeriesAggregateCreditsUseCase()
     }
 
 }

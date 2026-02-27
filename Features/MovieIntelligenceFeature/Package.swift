@@ -20,6 +20,7 @@ let package = Package(
 
     dependencies: [
         .package(path: "../../AppDependencies"),
+        .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Contexts/PopcornMovies"),
         .package(path: "../../Contexts/PopcornIntelligence"),
@@ -49,6 +50,10 @@ let package = Package(
             name: "MovieIntelligenceFeatureTests",
             dependencies: [
                 "MovieIntelligenceFeature",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "CoreDomain", package: "CoreDomain"),
+                .product(name: "IntelligenceDomain", package: "PopcornIntelligence"),
+                .product(name: "MoviesApplication", package: "PopcornMovies"),
                 .product(name: "MoviesDomain", package: "PopcornMovies"),
                 .product(name: "ObservabilityTestHelpers", package: "Observability")
             ]

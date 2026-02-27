@@ -40,11 +40,7 @@ final class DefaultMovieRecommendationRepository: MovieRecommendationRepository 
             throw MovieRecommendationRepositoryError(error)
         }
 
-        do {
-            try await localDataSource.setRecommendations(movies, forMovie: movieID, page: page)
-        } catch let error {
-            throw MovieRecommendationRepositoryError(error)
-        }
+        try? await localDataSource.setRecommendations(movies, forMovie: movieID, page: page)
 
         return movies
     }

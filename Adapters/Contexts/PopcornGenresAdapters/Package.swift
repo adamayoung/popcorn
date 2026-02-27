@@ -35,7 +35,12 @@ let package = Package(
         ),
         .testTarget(
             name: "PopcornGenresAdaptersTests",
-            dependencies: ["PopcornGenresAdapters"]
+            dependencies: [
+                "PopcornGenresAdapters",
+                .product(name: "GenresDomain", package: "PopcornGenres"),
+                .product(name: "GenresInfrastructure", package: "PopcornGenres"),
+                "TMDb"
+            ]
         )
     ]
 )

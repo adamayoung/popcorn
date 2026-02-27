@@ -20,22 +20,22 @@ Testing is a two-step process: build with warnings-as-errors first, then run tes
 Run from the package directory:
 
 ```
-cd <package-dir> && set -o pipefail && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1 | xcsift -f toon --Werror && set -o pipefail && swift test --skip-build 2>&1 | xcsift -f toon
+cd <package-dir> && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1 && swift test --skip-build 2>&1
 ```
 
-Note: The build step uses `-Xswiftc -warnings-as-errors` and `--Werror`. The test execution step does not — consistent with how the app-level `make test` works.
+Note: The build step uses `-Xswiftc -warnings-as-errors`. The test execution step does not — consistent with how the app-level `make test` works.
 
 ### Examples
 
 ```bash
 # Context package
-cd Contexts/PopcornMovies && set -o pipefail && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1 | xcsift -f toon --Werror && set -o pipefail && swift test --skip-build 2>&1 | xcsift -f toon
+cd Contexts/PopcornMovies && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1 && swift test --skip-build 2>&1
 
 # Adapter package
-cd Adapters/Contexts/PopcornMoviesAdapters && set -o pipefail && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1 | xcsift -f toon --Werror && set -o pipefail && swift test --skip-build 2>&1 | xcsift -f toon
+cd Adapters/Contexts/PopcornMoviesAdapters && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1 && swift test --skip-build 2>&1
 
 # Feature package
-cd Features/MovieDetailsFeature && set -o pipefail && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1 | xcsift -f toon --Werror && set -o pipefail && swift test --skip-build 2>&1 | xcsift -f toon
+cd Features/MovieDetailsFeature && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1 && swift test --skip-build 2>&1
 ```
 
 ### Package locations

@@ -10,10 +10,19 @@ import FeatureAccess
 import FeatureAccessAdapters
 import Foundation
 
+enum FeatureAccessFactoryKey: DependencyKey {
+
+    static var liveValue: FeatureFlagsFactory {
+        FeatureAccessAdaptersFactory().makeFeatureFlagsFactory()
+    }
+
+}
+
 extension DependencyValues {
 
     var featureAccessFactory: FeatureFlagsFactory {
-        FeatureAccessAdaptersFactory().makeFeatureFlagsFactory()
+        get { self[FeatureAccessFactoryKey.self] }
+        set { self[FeatureAccessFactoryKey.self] = newValue }
     }
 
 }

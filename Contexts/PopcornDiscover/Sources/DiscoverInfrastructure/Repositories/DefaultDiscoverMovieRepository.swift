@@ -40,11 +40,7 @@ final class DefaultDiscoverMovieRepository: DiscoverMovieRepository {
             throw DiscoverMovieRepositoryError(error)
         }
 
-        do {
-            try await localDataSource.setMovies(movies, filter: filter, page: page)
-        } catch let error {
-            throw DiscoverMovieRepositoryError(error)
-        }
+        try? await localDataSource.setMovies(movies, filter: filter, page: page)
 
         return movies
     }

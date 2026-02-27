@@ -39,6 +39,7 @@ struct CastMemberMapperTests {
         #expect(result.profilePath == profilePath)
         #expect(result.gender == .male)
         #expect(result.order == 0)
+        #expect(result.initials == "EN")
     }
 
     @Test("map converts female gender correctly")

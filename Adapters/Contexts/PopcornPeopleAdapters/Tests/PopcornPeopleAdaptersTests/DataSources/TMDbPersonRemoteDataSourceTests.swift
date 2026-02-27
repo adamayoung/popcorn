@@ -54,7 +54,8 @@ struct TMDbPersonRemoteDataSourceTests {
             biography: "William Bradley Pitt is an American actor and film producer.",
             knownForDepartment: "Acting",
             gender: .male,
-            profilePath: profilePath
+            profilePath: profilePath,
+            initials: "BP"
         ))
         #expect(mockService.detailsCallCount == 1)
         #expect(mockService.detailsCalledWith[0] == .init(id: id, language: "en"))

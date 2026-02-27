@@ -16,6 +16,14 @@ public protocol TVSeriesRemoteDataSource: Sendable {
         forTVSeries tvSeriesID: Int
     ) async throws(TVSeriesRemoteDataSourceError) -> ImageCollection
 
+    func credits(
+        forTVSeries tvSeriesID: Int
+    ) async throws(TVSeriesRemoteDataSourceError) -> Credits
+
+    func aggregateCredits(
+        forTVSeries tvSeriesID: Int
+    ) async throws(TVSeriesRemoteDataSourceError) -> AggregateCredits
+
 }
 
 public enum TVSeriesRemoteDataSourceError: Error {

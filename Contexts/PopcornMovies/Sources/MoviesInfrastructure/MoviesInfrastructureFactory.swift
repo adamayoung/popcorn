@@ -6,6 +6,7 @@
 //
 
 import Caching
+import DataPersistenceInfrastructure
 import Foundation
 import MoviesDomain
 import OSLog
@@ -35,18 +36,12 @@ package final class MoviesInfrastructureFactory {
         ])
 
         let storeURL = URL.documentsDirectory.appending(path: "popcorn-movies.sqlite")
-        let config = ModelConfiguration(schema: schema, url: storeURL, cloudKitDatabase: .none)
 
-        do {
-            return try ModelContainer(for: schema, configurations: [config])
-        } catch let error {
-            logger.critical(
-                "Cannot configure ModelContainer: \(error.localizedDescription, privacy: .public)"
-            )
-            fatalError(
-                "PopcornMovies: Cannot configure ModelContainer: \(error.localizedDescription)"
-            )
-        }
+        return ModelContainerFactory.makeLocalModelContainer(
+            schema: schema,
+            url: storeURL,
+            logger: logger
+        )
     }()
 
     private static let cloudKitModelContainer: ModelContainer = {
@@ -55,22 +50,14 @@ package final class MoviesInfrastructureFactory {
         ])
 
         let storeURL = URL.documentsDirectory.appending(path: "popcorn-movies-cloudkit.sqlite")
-        let config = ModelConfiguration(
+
+        return ModelContainerFactory.makeCloudKitModelContainer(
             schema: schema,
             url: storeURL,
-            cloudKitDatabase: .private("iCloud.uk.co.adam-young.Popcorn")
+            cloudKitDatabase: .private("iCloud.uk.co.adam-young.Popcorn"),
+            migrationPlan: MoviesWatchlistMigrationPlan.self,
+            logger: logger
         )
-
-        do {
-            return try ModelContainer(for: schema, configurations: [config])
-        } catch let error {
-            logger.critical(
-                "Cannot configure CloudKit ModelContainer: \(error.localizedDescription, privacy: .public)"
-            )
-            fatalError(
-                "PopcornMovies: Cannot configure CloudKit ModelContainer: \(error.localizedDescription)"
-            )
-        }
     }()
 
     private let movieRemoteDataSource: any MovieRemoteDataSource

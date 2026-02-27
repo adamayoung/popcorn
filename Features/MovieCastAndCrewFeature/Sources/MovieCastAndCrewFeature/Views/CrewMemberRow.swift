@@ -34,9 +34,9 @@ struct CrewMemberRow: View {
 
     @ViewBuilder
     private var profileImage: some View {
-        let image = ProfileImage(url: member.profileURL)
+        let image = ProfileImage(url: member.profileURL, initials: member.initials)
             .frame(width: 50, height: 50)
-            .clipShape(Circle())
+            .clipShape(.circle)
 
         if let namespace = transitionNamespace {
             image.matchedTransitionSource(id: member.id, in: namespace)

@@ -12,6 +12,9 @@ import MovieDetailsFeature
 import MovieIntelligenceFeature
 import PersonDetailsFeature
 import SwiftUI
+import TVEpisodeDetailsFeature
+import TVSeasonDetailsFeature
+import TVSeriesCastAndCrewFeature
 import TVSeriesDetailsFeature
 import TVSeriesIntelligenceFeature
 
@@ -37,10 +40,14 @@ struct ExploreRootView: View {
                 tvSeriesDetails(store: store)
             case .tvSeasonDetails(let store):
                 tvSeasonDetails(store: store)
+            case .tvEpisodeDetails(let store):
+                tvEpisodeDetails(store: store)
             case .personDetails(let store):
                 personDetails(store: store)
             case .movieCastAndCrew(let store):
                 movieCastAndCrew(store: store)
+            case .tvSeriesCastAndCrew(let store):
+                tvSeriesCastAndCrew(store: store)
             }
         }
         #if !os(macOS)
@@ -128,13 +135,23 @@ struct ExploreRootView: View {
         }
     }
 
-    private func tvSeasonDetails(store: StoreOf<TVSeasonDetailsPlaceholder>) -> some View {
-        Text("SEASON \(store.seasonNumber)")
-            .navigationTitle(Text("SEASON \(store.seasonNumber)"))
+    private func tvSeasonDetails(store: StoreOf<TVSeasonDetailsFeature>) -> some View {
+        TVSeasonDetailsView(store: store)
+    }
+
+    private func tvEpisodeDetails(store: StoreOf<TVEpisodeDetailsFeature>) -> some View {
+        TVEpisodeDetailsView(store: store)
     }
 
     private func movieCastAndCrew(store: StoreOf<MovieCastAndCrewFeature>) -> some View {
         MovieCastAndCrewView(
+            store: store,
+            transitionNamespace: namespace
+        )
+    }
+
+    private func tvSeriesCastAndCrew(store: StoreOf<TVSeriesCastAndCrewFeature>) -> some View {
+        TVSeriesCastAndCrewView(
             store: store,
             transitionNamespace: namespace
         )

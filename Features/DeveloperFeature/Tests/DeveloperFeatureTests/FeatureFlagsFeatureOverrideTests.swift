@@ -33,7 +33,7 @@ struct FeatureFlagsFeatureOverrideTests {
 
     @Test("setFeatureFlagOverride with enabled calls client with true")
     func setFeatureFlagOverrideEnabledCallsClientWithTrue() async {
-        var receivedValue: Bool?
+        let receivedValue = LockIsolated<Bool?>(nil)
         let updatedFlags = [Self.updatedTestFlag]
 
         let store = TestStore(
@@ -42,13 +42,13 @@ struct FeatureFlagsFeatureOverrideTests {
             FeatureFlagsFeature()
         } withDependencies: {
             $0.featureFlagsClient.updateFeatureFlagValue = { _, value in
-                receivedValue = value
+                receivedValue.withValue { $0 = value }
             }
             $0.featureFlagsClient.fetchFeatureFlags = { updatedFlags }
         }
 
         await store.send(.setFeatureFlagOverride(Self.testFlag, .enabled))
-        #expect(receivedValue == true)
+        receivedValue.withValue { #expect($0 == true) }
 
         let expectedSnapshot = FeatureFlagsFeature.ViewSnapshot(featureFlags: updatedFlags)
         await store.receive(\.loaded) {
@@ -58,7 +58,7 @@ struct FeatureFlagsFeatureOverrideTests {
 
     @Test("setFeatureFlagOverride with disabled calls client with false")
     func setFeatureFlagOverrideDisabledCallsClientWithFalse() async {
-        var receivedValue: Bool?
+        let receivedValue = LockIsolated<Bool?>(nil)
         let updatedFlags = [Self.testFlag]
 
         let store = TestStore(
@@ -67,13 +67,13 @@ struct FeatureFlagsFeatureOverrideTests {
             FeatureFlagsFeature()
         } withDependencies: {
             $0.featureFlagsClient.updateFeatureFlagValue = { _, value in
-                receivedValue = value
+                receivedValue.withValue { $0 = value }
             }
             $0.featureFlagsClient.fetchFeatureFlags = { updatedFlags }
         }
 
         await store.send(.setFeatureFlagOverride(Self.testFlag, .disabled))
-        #expect(receivedValue == false)
+        receivedValue.withValue { #expect($0 == false) }
 
         let expectedSnapshot = FeatureFlagsFeature.ViewSnapshot(featureFlags: updatedFlags)
         await store.receive(\.loaded) {
@@ -83,8 +83,8 @@ struct FeatureFlagsFeatureOverrideTests {
 
     @Test("setFeatureFlagOverride with default calls client with nil")
     func setFeatureFlagOverrideDefaultCallsClientWithNil() async {
-        var receivedValue: Bool?
-        var wasCalled = false
+        let receivedValue = LockIsolated<Bool?>(nil)
+        let wasCalled = LockIsolated(false)
         let updatedFlags = [Self.testFlag]
 
         let store = TestStore(
@@ -93,15 +93,15 @@ struct FeatureFlagsFeatureOverrideTests {
             FeatureFlagsFeature()
         } withDependencies: {
             $0.featureFlagsClient.updateFeatureFlagValue = { _, value in
-                wasCalled = true
-                receivedValue = value
+                wasCalled.withValue { $0 = true }
+                receivedValue.withValue { $0 = value }
             }
             $0.featureFlagsClient.fetchFeatureFlags = { updatedFlags }
         }
 
         await store.send(.setFeatureFlagOverride(Self.testFlag, .default))
-        #expect(wasCalled == true)
-        #expect(receivedValue == nil)
+        wasCalled.withValue { #expect($0 == true) }
+        receivedValue.withValue { #expect($0 == nil) }
 
         let expectedSnapshot = FeatureFlagsFeature.ViewSnapshot(featureFlags: updatedFlags)
         await store.receive(\.loaded) {
@@ -111,7 +111,7 @@ struct FeatureFlagsFeatureOverrideTests {
 
     @Test("resetAllOverrides calls removeAllOverrides and re-fetches flags")
     func resetAllOverridesCallsRemoveAllOverridesAndRefetches() async {
-        var removeAllOverridesCalled = false
+        let removeAllOverridesCalled = LockIsolated(false)
         let flags = [Self.testFlag]
 
         let store = TestStore(
@@ -120,13 +120,13 @@ struct FeatureFlagsFeatureOverrideTests {
             FeatureFlagsFeature()
         } withDependencies: {
             $0.featureFlagsClient.removeAllOverrides = {
-                removeAllOverridesCalled = true
+                removeAllOverridesCalled.withValue { $0 = true }
             }
             $0.featureFlagsClient.fetchFeatureFlags = { flags }
         }
 
         await store.send(.resetAllOverrides)
-        #expect(removeAllOverridesCalled == true)
+        removeAllOverridesCalled.withValue { #expect($0 == true) }
 
         let expectedSnapshot = FeatureFlagsFeature.ViewSnapshot(featureFlags: flags)
         await store.receive(\.loaded) {

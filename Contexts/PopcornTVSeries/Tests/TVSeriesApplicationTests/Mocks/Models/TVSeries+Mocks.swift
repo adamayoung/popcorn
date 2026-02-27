@@ -18,6 +18,7 @@ extension TVSeries {
         of only two years left to live. He becomes filled with a sense of fearlessness and an unrelenting desire \
         to secure his family's financial future at any cost as he enters the dangerous world of drugs and crime.
         """,
+        genres: [Genre]? = nil,
         firstAirDate: Date = Date(timeIntervalSince1970: 1_200_528_000),
         posterPath: URL? = URL(string: "/poster.jpg"),
         backdropPath: URL? = URL(string: "/backdrop.jpg"),
@@ -27,6 +28,7 @@ extension TVSeries {
             id: id,
             name: name,
             overview: overview,
+            genres: genres,
             firstAirDate: firstAirDate,
             posterPath: posterPath,
             backdropPath: backdropPath,

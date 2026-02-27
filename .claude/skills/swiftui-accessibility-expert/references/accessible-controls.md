@@ -339,6 +339,65 @@ HStack {
 // VoiceOver: "Movie Title. Actions available: Favorite, Share"
 ```
 
+## State-Dependent Toggle Buttons
+
+Toggle buttons that switch between two states need careful accessibility treatment. The label must communicate both the current state and what action will occur on activation.
+
+### Pattern: Full Accessibility Toggle Button
+
+```swift
+@Environment(\.accessibilityReduceMotion) private var reduceMotion
+
+Button(
+    // ✅ State-dependent label tells VoiceOver both current state AND intended action
+    item.isOnWatchlist
+        ? LocalizedStringResource("REMOVE_FROM_WATCHLIST", bundle: .module)
+        : LocalizedStringResource("ADD_TO_WATCHLIST", bundle: .module),
+    // ✅ State-dependent icon gives sighted users visual feedback
+    systemImage: item.isOnWatchlist ? "eye" : "plus"
+) {
+    store.send(.toggleOnWatchlist)
+}
+// ✅ State-dependent identifier enables UI testing of toggle state
+.accessibilityIdentifier(
+    item.isOnWatchlist
+        ? "movie-details.watchlist-toggle.on"
+        : "movie-details.watchlist-toggle.off"
+)
+// ✅ Smooth icon transition on state change
+.contentTransition(.symbolEffect(.replace))
+// ✅ Respect reduce motion — disable animation when preference is set
+.animation(reduceMotion ? nil : .default, value: item.isOnWatchlist)
+// ✅ Haptic confirmation for state changes
+.sensoryFeedback(.selection, trigger: item.isOnWatchlist)
+```
+
+### Key Principles
+
+1. **Label describes the action, not the state** — "Add to Watchlist" / "Remove from Watchlist" tells VoiceOver users what will happen. Avoid generic labels like "Watchlist" that don't indicate the action.
+2. **State-dependent `accessibilityIdentifier`** — use suffixes like `.on` / `.off` so UI tests can assert on the current toggle state without reading the label.
+3. **`.sensoryFeedback(.selection, trigger:)`** — provides haptic confirmation when the state changes, benefiting users who may not see the visual change.
+4. **`.contentTransition(.symbolEffect(.replace))`** — animates the SF Symbol swap smoothly for sighted users.
+5. **Respect `reduceMotion`** — pass `nil` animation when the user has enabled Reduce Motion (see Accessible Appearance > Motion Preferences).
+
+### Common Mistakes
+
+```swift
+// ❌ Generic label — VoiceOver says "Watchlist" with no indication of action
+Button("Watchlist", systemImage: "eye") { toggle() }
+
+// ❌ No accessibilityIdentifier — UI tests can't verify toggle state
+Button(label, systemImage: icon) { toggle() }
+
+// ❌ Missing sensoryFeedback — state change has no haptic confirmation
+Button(label, systemImage: icon) { toggle() }
+    .contentTransition(.symbolEffect(.replace))
+
+// ❌ Ignoring reduceMotion — animation plays regardless of preference
+Button(label, systemImage: icon) { toggle() }
+    .animation(.default, value: isToggled)
+```
+
 ## Best Practices
 
 1. **Use semantic controls** — `Button`, `Toggle`, `Picker`, `Slider` come with correct traits automatically
@@ -349,3 +408,5 @@ HStack {
 6. **Magic tap is app-wide** — the two-finger double-tap bubbles up the view hierarchy; use it for the primary media action
 7. **Test named actions** — swipe up/down on an element in VoiceOver to verify all actions are discoverable
 8. **Remove redundant traits** — after combining children, remove `.isButton` from the parent if the combined element shouldn't be a button
+9. **Toggle buttons need action-oriented labels** — use state-dependent labels that describe the action ("Add to…" / "Remove from…"), not just the state name
+10. **Add haptic feedback to toggle buttons** — use `.sensoryFeedback(.selection, trigger:)` so users feel the state change

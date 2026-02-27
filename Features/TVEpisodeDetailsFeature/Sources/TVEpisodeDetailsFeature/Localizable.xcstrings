@@ -1,0 +1,42 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "LOADING" : {
+      "comment" : "Accessibility label for a loading indicator.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading"
+          }
+        }
+      }
+    },
+    "RETRY" : {
+      "comment" : "The text on a button that triggers a retry action.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry"
+          }
+        }
+      }
+    },
+    "UNABLE_TO_LOAD" : {
+      "comment" : "An error message indicating that the episode information is unavailable to be displayed.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to Load"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.1"
+}

@@ -53,4 +53,48 @@ final class MockTVSeriesRemoteDataSource: TVSeriesRemoteDataSource, @unchecked S
         }
     }
 
+    var creditsForTVSeriesCallCount = 0
+    var creditsForTVSeriesCalledWith: [Int] = []
+    var creditsForTVSeriesStub: Result<Credits, TVSeriesRemoteDataSourceError>?
+
+    func credits(
+        forTVSeries tvSeriesID: Int
+    ) async throws(TVSeriesRemoteDataSourceError) -> Credits {
+        creditsForTVSeriesCallCount += 1
+        creditsForTVSeriesCalledWith.append(tvSeriesID)
+
+        guard let stub = creditsForTVSeriesStub else {
+            throw .unknown()
+        }
+
+        switch stub {
+        case .success(let credits):
+            return credits
+        case .failure(let error):
+            throw error
+        }
+    }
+
+    var aggregateCreditsForTVSeriesCallCount = 0
+    var aggregateCreditsForTVSeriesCalledWith: [Int] = []
+    var aggregateCreditsForTVSeriesStub: Result<AggregateCredits, TVSeriesRemoteDataSourceError>?
+
+    func aggregateCredits(
+        forTVSeries tvSeriesID: Int
+    ) async throws(TVSeriesRemoteDataSourceError) -> AggregateCredits {
+        aggregateCreditsForTVSeriesCallCount += 1
+        aggregateCreditsForTVSeriesCalledWith.append(tvSeriesID)
+
+        guard let stub = aggregateCreditsForTVSeriesStub else {
+            throw .unknown()
+        }
+
+        switch stub {
+        case .success(let credits):
+            return credits
+        case .failure(let error):
+            throw error
+        }
+    }
+
 }

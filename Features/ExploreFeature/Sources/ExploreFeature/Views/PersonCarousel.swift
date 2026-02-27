@@ -25,6 +25,7 @@ struct PersonCarousel: View {
                 } label: {
                     ProfileCarouselCell(
                         imageURL: person.profileURL,
+                        initials: person.initials,
                         transitionID: transitionID,
                         transitionNamespace: transitionNamespace
                     ) {

@@ -126,4 +126,30 @@ struct TVSeriesDetailsMapperTests {
         #expect(result.seasons.isEmpty)
     }
 
+    @Test("map passes genres through to TV series details")
+    func map_passesGenresThroughToTVSeriesDetails() {
+        let genres = [
+            Genre(id: 18, name: "Drama"),
+            Genre(id: 80, name: "Crime")
+        ]
+        let tvSeries = TVSeries.mock(genres: genres)
+        let imageCollection = ImageCollection(id: tvSeries.id, posterPaths: [], backdropPaths: [], logoPaths: [])
+        let mapper = TVSeriesDetailsMapper()
+
+        let result = mapper.map(tvSeries, imageCollection: imageCollection, imagesConfiguration: imagesConfiguration)
+
+        #expect(result.genres == genres)
+    }
+
+    @Test("map passes nil genres through to TV series details")
+    func map_passesNilGenresThroughToTVSeriesDetails() {
+        let tvSeries = TVSeries.mock(genres: nil)
+        let imageCollection = ImageCollection(id: tvSeries.id, posterPaths: [], backdropPaths: [], logoPaths: [])
+        let mapper = TVSeriesDetailsMapper()
+
+        let result = mapper.map(tvSeries, imageCollection: imageCollection, imagesConfiguration: imagesConfiguration)
+
+        #expect(result.genres == nil)
+    }
+
 }

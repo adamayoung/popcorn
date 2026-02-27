@@ -1,0 +1,139 @@
+//
+//  TVEpisodeDetailsView.swift
+//  Popcorn
+//
+//  Copyright © 2026 Adam Young.
+//
+
+import ComposableArchitecture
+import DesignSystem
+import SwiftUI
+import TCAFoundation
+
+public struct TVEpisodeDetailsView: View {
+
+    @Bindable private var store: StoreOf<TVEpisodeDetailsFeature>
+
+    public init(store: StoreOf<TVEpisodeDetailsFeature>) {
+        self._store = .init(store)
+    }
+
+    public var body: some View {
+        ZStack {
+            switch store.viewState {
+            case .ready(let snapshot):
+                content(snapshot: snapshot)
+
+            case .error(let error):
+                ContentUnavailableView {
+                    Label(
+                        LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
+                        systemImage: "exclamationmark.triangle"
+                    )
+                } description: {
+                    Text(error.message)
+                } actions: {
+                    if error.isRetryable {
+                        Button(LocalizedStringResource("RETRY", bundle: .module)) {
+                            store.send(.fetch)
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                }
+
+            default:
+                EmptyView()
+            }
+        }
+        .navigationTitle(navigationTitle)
+        #if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
+        #endif
+            .overlay {
+                if store.viewState.isLoading {
+                    ProgressView()
+                        .accessibilityLabel(Text("LOADING", bundle: .module))
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
+            .task {
+                store.send(.didAppear)
+            }
+    }
+
+    private var navigationTitle: Text {
+        Text(verbatim: store.episodeName)
+    }
+
+    private func content(
+        snapshot: TVEpisodeDetailsFeature.ViewSnapshot
+    ) -> some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: .spacing16) {
+                StillImage(url: snapshot.stillURL)
+                    .aspectRatio(16.0 / 9.0, contentMode: .fit)
+                    .accessibilityHidden(true)
+
+                VStack(alignment: .leading, spacing: .spacing12) {
+                    if let airDate = snapshot.airDate {
+                        AirDateText(date: airDate)
+                            .textCase(.uppercase)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .accessibilityIdentifier("tv-episode-details.air-date")
+                    }
+
+                    if let overview = snapshot.overview, !overview.isEmpty {
+                        Text(verbatim: overview)
+                            .font(.body)
+                            .accessibilityIdentifier("tv-episode-details.overview")
+                    }
+                }
+                .padding(.horizontal)
+            }
+        }
+        .accessibilityIdentifier("tv-episode-details.view")
+    }
+
+}
+
+#Preview("Ready") {
+    NavigationStack {
+        TVEpisodeDetailsView(
+            store: Store(
+                initialState: TVEpisodeDetailsFeature.State(
+                    tvSeriesID: 1396,
+                    seasonNumber: 1,
+                    episodeNumber: 1,
+                    episodeName: "Pilot",
+                    viewState: .ready(
+                        .init(
+                            name: "Pilot",
+                            overview: "A high school chemistry teacher diagnosed with lung cancer.",
+                            airDate: Date(timeIntervalSince1970: 1_200_528_000),
+                            stillURL: URL(string: "https://image.tmdb.org/t/p/original/ydlY3iPfeOAvu8gVqrxPoMvzfBj.jpg")
+                        )
+                    )
+                ),
+                reducer: { EmptyReducer() }
+            )
+        )
+    }
+}
+
+#Preview("Loading") {
+    NavigationStack {
+        TVEpisodeDetailsView(
+            store: Store(
+                initialState: TVEpisodeDetailsFeature.State(
+                    tvSeriesID: 1396,
+                    seasonNumber: 1,
+                    episodeNumber: 1,
+                    episodeName: "Pilot",
+                    viewState: .loading
+                ),
+                reducer: { EmptyReducer() }
+            )
+        )
+    }
+}

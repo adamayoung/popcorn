@@ -44,6 +44,7 @@ let package = Package(
             name: "DeveloperFeatureTests",
             dependencies: [
                 "DeveloperFeature",
+                "FeatureAccess",
                 "TCAFoundation",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]

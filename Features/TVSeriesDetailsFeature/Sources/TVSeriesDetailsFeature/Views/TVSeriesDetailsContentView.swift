@@ -11,8 +11,12 @@ import SwiftUI
 struct TVSeriesDetailsContentView: View {
 
     var tvSeries: TVSeries
+    var castMembers: [CastMember]
+    var crewMembers: [CrewMember]
     var isBackdropFocalPointEnabled: Bool
     var didSelectSeason: (_ seasonNumber: Int) -> Void
+    var didSelectPerson: (_ personID: Int) -> Void
+    var navigateToCastAndCrew: (_ tvSeriesID: Int) -> Void
 
     var body: some View {
         StretchyHeaderScrollView(
@@ -22,7 +26,7 @@ struct TVSeriesDetailsContentView: View {
         )
         .navigationTitle(tvSeries.name)
         #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
+            .hideToolbarTitle()
         #endif
     }
 
@@ -49,9 +53,18 @@ extension TVSeriesDetailsContentView {
     }
 
     private var headerOverlay: some View {
-        LogoImage(url: tvSeries.logoURL)
-            .padding(.bottom, 20)
-            .frame(maxWidth: 300, maxHeight: 150, alignment: .bottom)
+        VStack(spacing: 20) {
+            LogoImage(url: tvSeries.logoURL)
+                .frame(maxWidth: 300, maxHeight: 90, alignment: .bottom)
+
+            if let genres = tvSeries.genres, !genres.isEmpty {
+                Text(verbatim: genres.prefix(4).map(\.name).joined(separator: " ∙ "))
+                    .font(.callout)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 10)
+            }
+        }
+        .padding(.bottom, 10)
     }
 
     private var content: some View {
@@ -66,8 +79,27 @@ extension TVSeriesDetailsContentView {
                 seasonsCarousel
                     .padding(.bottom)
             }
+
+            if !castMembers.isEmpty || !crewMembers.isEmpty {
+                castAndCrewCarousel
+                    .padding(.bottom)
+            }
         }
         .padding(.vertical)
+    }
+
+    private var castAndCrewCarousel: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            sectionHeader("CAST_AND_CREW") {
+                navigateToCastAndCrew(tvSeries.id)
+            }
+
+            CastAndCrewCarousel(
+                castMembers: castMembers,
+                crewMembers: crewMembers,
+                didSelectPerson: didSelectPerson
+            )
+        }
     }
 
     private var seasonsCarousel: some View {
@@ -78,7 +110,31 @@ extension TVSeriesDetailsContentView {
                 seasons: tvSeries.seasons,
                 didSelectSeason: didSelectSeason
             )
+            .accessibilityIdentifier("tv-series-details.seasons.carousel")
         }
+    }
+
+    private func sectionHeader(
+        _ key: LocalizedStringKey,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button {
+            action()
+        } label: {
+            HStack(spacing: 4) {
+                Text(key, bundle: .module)
+                    .font(.title2)
+                    .fontWeight(.bold)
+
+                Image(systemName: "chevron.right")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.secondary)
+                    .accessibilityHidden(true)
+            }
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal)
     }
 
     private func sectionHeader(_ key: LocalizedStringKey) -> some View {
@@ -94,8 +150,12 @@ extension TVSeriesDetailsContentView {
     NavigationStack {
         TVSeriesDetailsContentView(
             tvSeries: TVSeries.mock,
+            castMembers: CastMember.mocks,
+            crewMembers: CrewMember.mocks,
             isBackdropFocalPointEnabled: true,
-            didSelectSeason: { _ in }
+            didSelectSeason: { _ in },
+            didSelectPerson: { _ in },
+            navigateToCastAndCrew: { _ in }
         )
     }
 }
@@ -109,8 +169,12 @@ extension TVSeriesDetailsContentView {
                 overview: "A series with no seasons data available.",
                 seasons: []
             ),
+            castMembers: [],
+            crewMembers: [],
             isBackdropFocalPointEnabled: false,
-            didSelectSeason: { _ in }
+            didSelectSeason: { _ in },
+            didSelectPerson: { _ in },
+            navigateToCastAndCrew: { _ in }
         )
     }
 }

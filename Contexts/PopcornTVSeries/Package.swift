@@ -23,7 +23,7 @@ let package = Package(
 
     dependencies: [
         .package(path: "../../Core/CoreDomain"),
-        .package(path: "../../Platform/Caching"),
+        .package(path: "../../Platform/DataPersistenceInfrastructure"),
         .package(path: "../../Platform/Observability")
     ],
 
@@ -49,6 +49,7 @@ let package = Package(
             name: "TVSeriesApplicationTests",
             dependencies: [
                 "TVSeriesApplication",
+                "TVSeriesDomain",
                 .product(name: "CoreDomainTestHelpers", package: "CoreDomain"),
                 .product(name: "ObservabilityTestHelpers", package: "Observability")
             ]
@@ -71,7 +72,7 @@ let package = Package(
             name: "TVSeriesInfrastructure",
             dependencies: [
                 "TVSeriesDomain",
-                "Caching",
+                "DataPersistenceInfrastructure",
                 "Observability"
             ]
         ),
@@ -80,7 +81,6 @@ let package = Package(
             dependencies: [
                 "TVSeriesInfrastructure",
                 "TVSeriesDomain",
-                .product(name: "CachingTestHelpers", package: "Caching"),
                 .product(name: "CoreDomainTestHelpers", package: "CoreDomain"),
                 .product(name: "ObservabilityTestHelpers", package: "Observability")
             ]

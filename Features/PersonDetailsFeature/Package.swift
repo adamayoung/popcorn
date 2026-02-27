@@ -20,6 +20,7 @@ let package = Package(
 
     dependencies: [
         .package(path: "../../AppDependencies"),
+        .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Core/TCAFoundation"),
         .package(path: "../../Contexts/PopcornPeople"),
@@ -42,7 +43,11 @@ let package = Package(
         ),
         .testTarget(
             name: "PersonDetailsFeatureTests",
-            dependencies: ["PersonDetailsFeature"]
+            dependencies: [
+                "PersonDetailsFeature",
+                .product(name: "CoreDomain", package: "CoreDomain"),
+                .product(name: "PeopleApplication", package: "PopcornPeople")
+            ]
         )
     ]
 )

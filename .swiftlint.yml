@@ -4,6 +4,7 @@ excluded:
   - "**/DerivedData/**"
   - "**/*.xcodeproj/**"
   - "**/*.xcworkspace/**"
+  - "**/.worktrees/**"
 
 disabled_rules:
   - type_name

@@ -35,6 +35,9 @@ public struct Person: Identifiable, Equatable, Sendable {
     /// URL path to the person's profile image.
     public let profilePath: URL?
 
+    /// The person's initials derived from their name.
+    public let initials: String?
+
     ///
     /// Creates a new person instance.
     ///
@@ -45,6 +48,7 @@ public struct Person: Identifiable, Equatable, Sendable {
     ///   - knownForDepartment: The department or role they're known for.
     ///   - gender: The person's gender.
     ///   - profilePath: URL path to the profile image. Defaults to `nil`.
+    ///   - initials: The person's initials. Defaults to `nil`.
     ///
     public init(
         id: Int,
@@ -52,7 +56,8 @@ public struct Person: Identifiable, Equatable, Sendable {
         biography: String,
         knownForDepartment: String,
         gender: Gender,
-        profilePath: URL? = nil
+        profilePath: URL? = nil,
+        initials: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -60,6 +65,7 @@ public struct Person: Identifiable, Equatable, Sendable {
         self.knownForDepartment = knownForDepartment
         self.gender = gender
         self.profilePath = profilePath
+        self.initials = initials
     }
 
 }

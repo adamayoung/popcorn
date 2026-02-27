@@ -20,6 +20,16 @@ final class MockTVSeriesService: TVSeriesService, @unchecked Sendable {
         let filter: TVSeriesImageFilter?
     }
 
+    struct CreditsCall: Equatable {
+        let tvSeriesID: Int
+        let language: String?
+    }
+
+    struct AggregateCreditsCall: Equatable {
+        let tvSeriesID: Int
+        let language: String?
+    }
+
     var detailsCallCount = 0
     var detailsCalledWith: [DetailsCall] = []
     var detailsStub: Result<TVSeries, TMDbError>?
@@ -27,6 +37,14 @@ final class MockTVSeriesService: TVSeriesService, @unchecked Sendable {
     var imagesCallCount = 0
     var imagesCalledWith: [ImagesCall] = []
     var imagesStub: Result<ImageCollection, TMDbError>?
+
+    var creditsCallCount = 0
+    var creditsCalledWith: [CreditsCall] = []
+    var creditsStub: Result<ShowCredits, TMDbError>?
+
+    var aggregateCreditsCallCount = 0
+    var aggregateCreditsCalledWith: [AggregateCreditsCall] = []
+    var aggregateCreditsStub: Result<TVSeriesAggregateCredits, TMDbError>?
 
     func details(forTVSeries id: TVSeries.ID, language: String?) async throws -> TVSeries {
         detailsCallCount += 1
@@ -53,14 +71,40 @@ final class MockTVSeriesService: TVSeriesService, @unchecked Sendable {
     }
 
     func credits(forTVSeries tvSeriesID: TVSeries.ID, language: String?) async throws -> ShowCredits {
-        fatalError("Not implemented")
+        creditsCallCount += 1
+        creditsCalledWith.append(CreditsCall(tvSeriesID: tvSeriesID, language: language))
+
+        guard let stub = creditsStub else {
+            throw TMDbError.unknown
+        }
+
+        switch stub {
+        case .success(let credits):
+            return credits
+        case .failure(let error):
+            throw error
+        }
     }
 
     func aggregateCredits(
         forTVSeries tvSeriesID: TVSeries.ID,
         language: String?
     ) async throws -> TVSeriesAggregateCredits {
-        fatalError("Not implemented")
+        aggregateCreditsCallCount += 1
+        aggregateCreditsCalledWith.append(
+            AggregateCreditsCall(tvSeriesID: tvSeriesID, language: language)
+        )
+
+        guard let stub = aggregateCreditsStub else {
+            throw TMDbError.unknown
+        }
+
+        switch stub {
+        case .success(let credits):
+            return credits
+        case .failure(let error):
+            throw error
+        }
     }
 
     func reviews(

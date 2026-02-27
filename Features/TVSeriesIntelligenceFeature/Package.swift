@@ -20,6 +20,7 @@ let package = Package(
 
     dependencies: [
         .package(path: "../../AppDependencies"),
+        .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Contexts/PopcornIntelligence"),
         .package(path: "../../Contexts/PopcornTVSeries"),
@@ -44,7 +45,11 @@ let package = Package(
         ),
         .testTarget(
             name: "TVSeriesIntelligenceFeatureTests",
-            dependencies: ["TVSeriesIntelligenceFeature"]
+            dependencies: [
+                "TVSeriesIntelligenceFeature",
+                .product(name: "CoreDomain", package: "CoreDomain"),
+                .product(name: "TVSeriesApplication", package: "PopcornTVSeries")
+            ]
         )
     ]
 )

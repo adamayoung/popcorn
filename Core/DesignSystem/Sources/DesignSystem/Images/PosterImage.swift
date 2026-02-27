@@ -34,13 +34,21 @@ public struct PosterImage: View {
     public var body: some View {
         // Uses GeometryReader to fill available space while maintaining aspect ratio
         GeometryReader { proxy in
-            WebImage(url: url)
-                .resizable()
-                .transition(.fade(duration: 2.0))
-                .scaledToFit()
-                .aspectRatio(Self.aspectRatio, contentMode: .fill)
-                .frame(width: proxy.size.width, height: proxy.size.height)
-                .background(Color.secondary.opacity(0.1))
+            ZStack {
+                LinearGradient(
+                    colors: [Color.secondary.opacity(0.15), Color.secondary.opacity(0.0)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+
+                WebImage(url: url)
+                    .resizable()
+                    .transition(.fade(duration: 2.0))
+                    .scaledToFit()
+                    .aspectRatio(Self.aspectRatio, contentMode: .fill)
+                    .frame(width: proxy.size.width, height: proxy.size.height)
+                    .background(Color.secondary.opacity(0.1))
+            }
         }
         .accessibilityHidden(true)
     }

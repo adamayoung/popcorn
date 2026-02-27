@@ -14,9 +14,13 @@ enum PopcornTVSeriesFactoryKey: DependencyKey {
 
     static var liveValue: PopcornTVSeriesFactory {
         @Dependency(\.tvSeriesService) var tvSeriesService
+        @Dependency(\.tvSeasonService) var tvSeasonService
+        @Dependency(\.tvEpisodeService) var tvEpisodeService
         @Dependency(\.fetchAppConfiguration) var fetchAppConfiguration
         return PopcornTVSeriesAdaptersFactory(
             tvSeriesService: tvSeriesService,
+            tvSeasonService: tvSeasonService,
+            tvEpisodeService: tvEpisodeService,
             fetchAppConfigurationUseCase: fetchAppConfiguration
         ).makeTVSeriesFactory()
     }

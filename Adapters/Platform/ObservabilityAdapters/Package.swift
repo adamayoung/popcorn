@@ -33,7 +33,11 @@ let package = Package(
         ),
         .testTarget(
             name: "ObservabilityAdaptersTests",
-            dependencies: ["ObservabilityAdapters"]
+            dependencies: [
+                "ObservabilityAdapters",
+                "Observability",
+                .product(name: "Sentry", package: "sentry-cocoa")
+            ]
         )
     ]
 )

@@ -33,6 +33,9 @@ public struct PersonPreview: Identifiable, Equatable, Sendable {
     /// URL path to the person's profile image.
     public let profilePath: URL?
 
+    /// The person's initials derived from their name.
+    public let initials: String?
+
     ///
     /// Creates a new person preview instance.
     ///
@@ -42,19 +45,22 @@ public struct PersonPreview: Identifiable, Equatable, Sendable {
     ///   - knownForDepartment: The department the person is primarily known for. Defaults to `nil`.
     ///   - gender: The person's gender.
     ///   - profilePath: URL path to the profile image. Defaults to `nil`.
+    ///   - initials: The person's initials. Defaults to `nil`.
     ///
     public init(
         id: Int,
         name: String,
         knownForDepartment: String? = nil,
         gender: Gender,
-        profilePath: URL? = nil
+        profilePath: URL? = nil,
+        initials: String? = nil
     ) {
         self.id = id
         self.name = name
         self.knownForDepartment = knownForDepartment
         self.gender = gender
         self.profilePath = profilePath
+        self.initials = initials
     }
 
 }

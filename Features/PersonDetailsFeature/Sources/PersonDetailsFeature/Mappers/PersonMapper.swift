@@ -24,7 +24,8 @@ struct PersonMapper {
             biography: personDetails.biography,
             knownForDepartment: personDetails.knownForDepartment,
             gender: gender,
-            profileURL: personDetails.profileURLSet?.detail
+            profileURL: personDetails.profileURLSet?.detail,
+            initials: personDetails.initials
         )
     }
 

@@ -12,6 +12,9 @@ import MovieCastAndCrewFeature
 import MovieDetailsFeature
 import MovieIntelligenceFeature
 import PersonDetailsFeature
+import TVEpisodeDetailsFeature
+import TVSeasonDetailsFeature
+import TVSeriesCastAndCrewFeature
 import TVSeriesDetailsFeature
 import TVSeriesIntelligenceFeature
 
@@ -31,9 +34,11 @@ struct ExploreRootFeature {
     enum Path {
         case movieDetails(MovieDetailsFeature)
         case tvSeriesDetails(TVSeriesDetailsFeature)
-        case tvSeasonDetails(TVSeasonDetailsPlaceholder)
+        case tvSeasonDetails(TVSeasonDetailsFeature)
+        case tvEpisodeDetails(TVEpisodeDetailsFeature)
         case personDetails(PersonDetailsFeature)
         case movieCastAndCrew(MovieCastAndCrewFeature)
+        case tvSeriesCastAndCrew(TVSeriesCastAndCrewFeature)
     }
 
     enum Action {
@@ -92,10 +97,60 @@ struct ExploreRootFeature {
             case .path(.element(_, .tvSeriesDetails(.navigate(.tvSeriesIntelligence(let id))))):
                 state.tvSeriesIntelligence = TVSeriesIntelligenceFeature.State(tvSeriesID: id)
                 return .none
-            case .path(.element(_, .tvSeriesDetails(.navigate(.seasonDetails(let tvSeriesID, let seasonNumber))))):
+            case .path(
+                .element(
+                    _,
+                    .tvSeriesDetails(
+                        .navigate(.seasonDetails(let tvSeriesID, let seasonNumber, let seasonName))
+                    )
+                )
+            ):
                 state.path.append(
                     .tvSeasonDetails(
-                        TVSeasonDetailsPlaceholder.State(tvSeriesID: tvSeriesID, seasonNumber: seasonNumber)
+                        TVSeasonDetailsFeature.State(
+                            tvSeriesID: tvSeriesID,
+                            seasonNumber: seasonNumber,
+                            seasonName: seasonName
+                        )
+                    )
+                )
+                return .none
+            case .path(.element(_, .tvSeriesDetails(.navigate(.personDetails(let id))))):
+                state.path.append(.personDetails(PersonDetailsFeature.State(personID: id)))
+                return .none
+            case .path(.element(_, .tvSeriesDetails(.navigate(.castAndCrew(let id))))):
+                state.path.append(
+                    .tvSeriesCastAndCrew(TVSeriesCastAndCrewFeature.State(tvSeriesID: id))
+                )
+                return .none
+            case .path(
+                .element(_, .tvSeriesCastAndCrew(.navigate(.personDetails(let id, _))))
+            ):
+                state.path.append(
+                    .personDetails(PersonDetailsFeature.State(personID: id))
+                )
+                return .none
+            case .path(
+                .element(
+                    _,
+                    .tvSeasonDetails(
+                        .navigate(
+                            .episodeDetails(
+                                let tvSeriesID, let seasonNumber,
+                                let episodeNumber, let episodeName
+                            )
+                        )
+                    )
+                )
+            ):
+                state.path.append(
+                    .tvEpisodeDetails(
+                        TVEpisodeDetailsFeature.State(
+                            tvSeriesID: tvSeriesID,
+                            seasonNumber: seasonNumber,
+                            episodeNumber: episodeNumber,
+                            episodeName: episodeName
+                        )
                     )
                 )
                 return .none

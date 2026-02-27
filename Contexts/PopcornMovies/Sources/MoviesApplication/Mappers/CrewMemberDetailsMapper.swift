@@ -24,7 +24,8 @@ struct CrewMemberDetailsMapper {
             job: crewMember.job,
             profileURLSet: profileURLSet,
             gender: crewMember.gender,
-            department: crewMember.department
+            department: crewMember.department,
+            initials: crewMember.initials
         )
     }
 

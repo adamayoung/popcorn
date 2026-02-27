@@ -33,7 +33,6 @@ struct SeasonsCarousel: View {
                 .fixedSize(horizontal: true, vertical: false)
             }
         }
-        .accessibilityIdentifier("tv-series-details.seasons.carousel")
         .contentMargins([.leading, .trailing], 16)
     }
 

@@ -1,0 +1,78 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "EPISODES_SECTION_HEADER" : {
+      "comment" : "The header for the episodes list section.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Episodes"
+          }
+        }
+      }
+    },
+    "EPISODE_TITLE %lld %@" : {
+      "comment" : "The episode title format, showing episode number and name.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld. %2$@"
+          }
+        }
+      }
+    },
+    "LOADING" : {
+      "comment" : "Accessibility label for a loading indicator.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading"
+          }
+        }
+      }
+    },
+    "RETRY" : {
+      "comment" : "The text on a button that triggers a retry action.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry"
+          }
+        }
+      }
+    },
+    "VIEW_EPISODE_DETAILS_HINT" : {
+      "comment" : "Accessibility hint for an episode row button, indicating it navigates to episode details.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View episode details"
+          }
+        }
+      }
+    },
+    "UNABLE_TO_LOAD" : {
+      "comment" : "An error message indicating that the season information is unavailable to be displayed.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to Load"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.1"
+}

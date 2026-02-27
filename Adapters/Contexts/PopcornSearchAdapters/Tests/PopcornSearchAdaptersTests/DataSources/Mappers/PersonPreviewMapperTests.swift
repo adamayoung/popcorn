@@ -38,6 +38,7 @@ struct PersonPreviewMapperTests {
         #expect(result.knownForDepartment == "Acting")
         #expect(result.gender == .male)
         #expect(result.profilePath == profilePath)
+        #expect(result.initials == "JD")
     }
 
     @Test("map converts TMDb PersonListItem with nil optional fields")

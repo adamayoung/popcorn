@@ -225,6 +225,13 @@ private var cardTransition: AnyTransition {
 TimelineView(.animation(paused: reduceMotion)) { context in
     PulsingIndicator(date: context.date)
 }
+
+// ✅ Nil-out animation on value changes (e.g., toggle buttons, state transitions)
+.animation(reduceMotion ? nil : .default, value: item.isOnWatchlist)
+
+// ✅ Nil-out content transition animations
+.contentTransition(.opacity)
+.animation(reduceMotion ? nil : .easeInOut(duration: 1), value: viewState.isReady)
 ```
 
 ### Dim Flashing Lights
