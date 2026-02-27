@@ -10,6 +10,8 @@
   ],
   "defaultOptions" : {
     "testExecutionOrdering" : "random",
+    "testRepetitionMode" : "retryOnFailure",
+    "testRepetitionsCount" : 3,
     "testTimeoutsEnabled" : true
   },
   "testTargets" : [
