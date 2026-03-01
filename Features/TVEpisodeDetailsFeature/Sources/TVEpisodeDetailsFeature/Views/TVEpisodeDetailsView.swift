@@ -103,7 +103,7 @@ public struct TVEpisodeDetailsView: View {
     private func castAndCrewCarousel(
         snapshot: TVEpisodeDetailsFeature.ViewSnapshot
     ) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: .spacing8) {
             sectionHeader("CAST_AND_CREW") {
                 store.send(
                     .navigate(
@@ -133,7 +133,7 @@ public struct TVEpisodeDetailsView: View {
         Button {
             action()
         } label: {
-            HStack(spacing: 4) {
+            HStack(spacing: .spacing4) {
                 Text(key, bundle: .module)
                     .font(.title2)
                     .fontWeight(.bold)
