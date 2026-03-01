@@ -21,8 +21,8 @@ struct TMDbMovieRemoteDataSourceMovieTests {
         self.mockService = MockMoviesService()
     }
 
-    @Test("movie maps response and uses en language")
-    func movie_mapsResponseAndUsesEnglishLanguage() async throws {
+    @Test("movie maps response and uses default language")
+    func movie_mapsResponseAndUsesDefaultLanguage() async throws {
         let id = 550
         let posterPath = try #require(URL(string: "https://tmdb.example/poster.jpg"))
         let backdropPath = try #require(URL(string: "https://tmdb.example/backdrop.jpg"))
@@ -48,7 +48,7 @@ struct TMDbMovieRemoteDataSourceMovieTests {
         #expect(result.title == "Fight Club")
         #expect(result.tagline == "Mischief. Mayhem. Soap.")
         #expect(mockService.detailsCallCount == 1)
-        #expect(mockService.detailsCalledWith[0] == .init(id: id, language: "en"))
+        #expect(mockService.detailsCalledWith[0] == .init(id: id, language: nil))
     }
 
     @Test("movie throws notFound error for TMDb notFound")

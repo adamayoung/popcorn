@@ -62,7 +62,7 @@ struct TMDbDiscoverRemoteDataSourceTests {
         #expect(result[0].title == "Fight Club")
         #expect(mockService.moviesCallCount == 1)
         #expect(mockService.moviesCalledWith[0].page == 1)
-        #expect(mockService.moviesCalledWith[0].language == "en")
+        #expect(mockService.moviesCalledWith[0].language == nil)
     }
 
     @Test("movies with filter passes filter to service")
@@ -175,7 +175,7 @@ struct TMDbDiscoverRemoteDataSourceTests {
         #expect(result[0].name == "Breaking Bad")
         #expect(mockService.tvSeriesCallCount == 1)
         #expect(mockService.tvSeriesCalledWith[0].page == 1)
-        #expect(mockService.tvSeriesCalledWith[0].language == "en")
+        #expect(mockService.tvSeriesCalledWith[0].language == nil)
     }
 
     @Test("tvSeries with filter passes filter to service")

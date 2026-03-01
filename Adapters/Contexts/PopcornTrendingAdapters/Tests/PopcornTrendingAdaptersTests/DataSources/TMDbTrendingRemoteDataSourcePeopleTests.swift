@@ -61,7 +61,7 @@ struct TMDbTrendingRemoteDataSourcePeopleTests {
         #expect(mockService.peopleCallCount == 1)
         #expect(mockService.peopleCalledWith[0].timeWindow == .day)
         #expect(mockService.peopleCalledWith[0].page == 1)
-        #expect(mockService.peopleCalledWith[0].language == "en")
+        #expect(mockService.peopleCalledWith[0].language == nil)
     }
 
     @Test("people returns empty array when no results")

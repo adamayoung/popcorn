@@ -41,8 +41,7 @@ final class TMDbTVEpisodeRemoteDataSource: TVEpisodeRemoteDataSource {
         tmdbSpan?.setData([
             "tv_series_id": tvSeriesID,
             "season_number": seasonNumber,
-            "episode_number": episodeNumber,
-            "language": "en"
+            "episode_number": episodeNumber
         ])
 
         let tmdbEpisode: TMDb.TVEpisode
@@ -51,7 +50,7 @@ final class TMDbTVEpisodeRemoteDataSource: TVEpisodeRemoteDataSource {
                 forEpisode: episodeNumber,
                 inSeason: seasonNumber,
                 inTVSeries: tvSeriesID,
-                language: "en"
+                language: nil
             )
             tmdbSpan?.finish()
         } catch let error {

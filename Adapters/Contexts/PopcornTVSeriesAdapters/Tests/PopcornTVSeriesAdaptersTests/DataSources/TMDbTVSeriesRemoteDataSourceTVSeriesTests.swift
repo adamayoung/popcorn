@@ -23,8 +23,8 @@ struct TMDbTVSeriesRemoteDataSourceTVSeriesTests {
 
     // MARK: - tvSeries Tests (Breaking Bad ID: 1396)
 
-    @Test("tvSeries maps response and uses en language using Breaking Bad")
-    func tvSeriesMapsResponseAndUsesEnglishLanguageUsingBreakingBad() async throws {
+    @Test("tvSeries maps response and uses default language using Breaking Bad")
+    func tvSeriesMapsResponseAndUsesDefaultLanguageUsingBreakingBad() async throws {
         let id = 1396
         let posterPath = try #require(URL(string: "/3xnWaLQjelJDDF7LT1WBo6f4BRe.jpg"))
         let backdropPath = try #require(URL(string: "/tsRy63Mu5cu8etL1X7ZLyf7UP1M.jpg"))
@@ -58,7 +58,7 @@ struct TMDbTVSeriesRemoteDataSourceTVSeriesTests {
         #expect(result.posterPath == posterPath)
         #expect(result.backdropPath == backdropPath)
         #expect(mockService.detailsCallCount == 1)
-        #expect(mockService.detailsCalledWith[0] == .init(id: id, language: "en"))
+        #expect(mockService.detailsCalledWith[0] == .init(id: id, language: nil))
     }
 
     @Test("tvSeries maps all optional fields correctly")
@@ -214,8 +214,8 @@ struct TMDbTVSeriesRemoteDataSourceTVSeriesTests {
         #expect(mockService.detailsCalledWith[0].id == id)
     }
 
-    @Test("tvSeries calls service with en language")
-    func tvSeriesCallsServiceWithEnLanguage() async throws {
+    @Test("tvSeries calls service with default language")
+    func tvSeriesCallsServiceWithDefaultLanguage() async throws {
         let id = 1396
         let tmdbTVSeries = TMDb.TVSeries(
             id: id,
@@ -229,7 +229,7 @@ struct TMDbTVSeriesRemoteDataSourceTVSeriesTests {
 
         _ = try await dataSource.tvSeries(withID: id)
 
-        #expect(mockService.detailsCalledWith[0].language == "en")
+        #expect(mockService.detailsCalledWith[0].language == nil)
     }
 
 }

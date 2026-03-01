@@ -52,7 +52,7 @@ struct TMDbMediaRemoteDataSourceTests {
         #expect(mockService.searchAllCallCount == 1)
         #expect(mockService.searchAllCalledWith[0].query == query)
         #expect(mockService.searchAllCalledWith[0].page == page)
-        #expect(mockService.searchAllCalledWith[0].language == "en")
+        #expect(mockService.searchAllCalledWith[0].language == nil)
 
         guard case .movie(let moviePreview) = results[0] else {
             Issue.record("Expected movie case")
