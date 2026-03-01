@@ -143,7 +143,7 @@ extension TVEpisodeDetailsFeature {
                 return
             }
 
-            let isCastAndCrewEnabled = (try? client.isCastAndCrewEnabled()) ?? false
+            let isCastAndCrewEnabled = state.isCastAndCrewEnabled
 
             var castMembers: [CastMember] = []
             var crewMembers: [CrewMember] = []

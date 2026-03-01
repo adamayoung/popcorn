@@ -39,7 +39,7 @@ struct CrewMemberRow: View {
             .clipShape(.circle)
 
         if let namespace = transitionNamespace {
-            image.matchedTransitionSource(id: member.personID, in: namespace)
+            image.matchedTransitionSource(id: member.id, in: namespace)
         } else {
             image
         }
