@@ -137,7 +137,9 @@ extension TVEpisodeDetailsFeature {
             )
 
             async let creditsTask: Credits? = {
-                guard isCastAndCrewEnabled else { return nil }
+                guard isCastAndCrewEnabled else {
+                    return nil
+                }
                 return try? await client.fetchCredits(
                     state.tvSeriesID,
                     state.seasonNumber,
