@@ -22,6 +22,7 @@
 		66BEEA002F4331AF00CCEAB6 /* DeveloperFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66BEE9FF2F4331AF00CCEAB6 /* DeveloperFeature */; };
 		66C4E0012F5E000000000001 /* TVSeasonDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66C4E0002F5E000000000001 /* TVSeasonDetailsFeature */; };
 		66C4E0032F5E000000000002 /* TVEpisodeDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66C4E0022F5E000000000002 /* TVEpisodeDetailsFeature */; };
+		66C4E0052F5F000000000001 /* TVEpisodeCastAndCrewFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66C4E0042F5F000000000001 /* TVEpisodeCastAndCrewFeature */; };
 		66C873EF2F5B000000000001 /* WatchlistFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66C873EE2F5B000000000001 /* WatchlistFeature */; };
 		66D8F4112EE8BE8F00B8AE7A /* GamesCatalogFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66D8F4102EE8BE8F00B8AE7A /* GamesCatalogFeature */; };
 		66D8F4142EE8C93900B8AE7A /* PlotRemixGameFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66D8F4132EE8C93900B8AE7A /* PlotRemixGameFeature */; };
@@ -239,6 +240,7 @@
 				66A2E0522F0B01C0002B8706 /* TVSeriesCastAndCrewFeature in Frameworks */,
 				66C4E0012F5E000000000001 /* TVSeasonDetailsFeature in Frameworks */,
 				66C4E0032F5E000000000002 /* TVEpisodeDetailsFeature in Frameworks */,
+				66C4E0052F5F000000000001 /* TVEpisodeCastAndCrewFeature in Frameworks */,
 				666AEE492ECE0A1B0038814E /* PersonDetailsFeature in Frameworks */,
 				66D8F4142EE8C93900B8AE7A /* PlotRemixGameFeature in Frameworks */,
 				66BEEA002F4331AF00CCEAB6 /* DeveloperFeature in Frameworks */,
@@ -356,6 +358,7 @@
 				66A2E0512F0B01C0002B8706 /* TVSeriesCastAndCrewFeature */,
 				66C4E0002F5E000000000001 /* TVSeasonDetailsFeature */,
 				66C4E0022F5E000000000002 /* TVEpisodeDetailsFeature */,
+				66C4E0042F5F000000000001 /* TVEpisodeCastAndCrewFeature */,
 				66BEE9FF2F4331AF00CCEAB6 /* DeveloperFeature */,
 				66C873EE2F5B000000000001 /* WatchlistFeature */,
 			);
@@ -971,6 +974,10 @@
 		66C4E0022F5E000000000002 /* TVEpisodeDetailsFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TVEpisodeDetailsFeature;
+		};
+		66C4E0042F5F000000000001 /* TVEpisodeCastAndCrewFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TVEpisodeCastAndCrewFeature;
 		};
 		66C873EE2F5B000000000001 /* WatchlistFeature */ = {
 			isa = XCSwiftPackageProductDependency;

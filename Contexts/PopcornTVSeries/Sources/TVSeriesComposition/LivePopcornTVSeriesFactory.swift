@@ -31,6 +31,7 @@ public final class LivePopcornTVSeriesFactory: PopcornTVSeriesFactory {
             tvSeasonRepository: infrastructureFactory.makeTVSeasonRepository(),
             tvEpisodeRepository: infrastructureFactory.makeTVEpisodeRepository(),
             tvSeriesCreditsRepository: infrastructureFactory.makeTVSeriesCreditsRepository(),
+            tvEpisodeCreditsRepository: infrastructureFactory.makeTVEpisodeCreditsRepository(),
             appConfigurationProvider: appConfigurationProvider
         )
     }
@@ -53,6 +54,10 @@ public final class LivePopcornTVSeriesFactory: PopcornTVSeriesFactory {
 
     public func makeFetchTVSeriesCreditsUseCase() -> FetchTVSeriesCreditsUseCase {
         applicationFactory.makeFetchTVSeriesCreditsUseCase()
+    }
+
+    public func makeFetchTVEpisodeCreditsUseCase() -> FetchTVEpisodeCreditsUseCase {
+        applicationFactory.makeFetchTVEpisodeCreditsUseCase()
     }
 
     public func makeFetchTVSeriesAggregateCreditsUseCase()

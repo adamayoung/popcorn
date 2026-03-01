@@ -28,7 +28,10 @@ package final class TVSeriesInfrastructureFactory {
             TVSeriesCrewMemberEntity.self,
             TVSeriesAggregateCreditsEntity.self,
             TVSeriesAggregateCastMemberEntity.self,
-            TVSeriesAggregateCrewMemberEntity.self
+            TVSeriesAggregateCrewMemberEntity.self,
+            TVEpisodeCreditsEntity.self,
+            TVEpisodeCastMemberEntity.self,
+            TVEpisodeCrewMemberEntity.self
         ])
 
         let storeURL = URL.documentsDirectory.appending(path: "popcorn-tvseries.sqlite")
@@ -75,6 +78,13 @@ package final class TVSeriesInfrastructureFactory {
         )
     }
 
+    package func makeTVEpisodeCreditsRepository() -> some TVEpisodeCreditsRepository {
+        DefaultTVEpisodeCreditsRepository(
+            remoteDataSource: tvEpisodeRemoteDataSource,
+            localDataSource: Self.tvEpisodeCreditsLocalDataSource
+        )
+    }
+
     package func makeTVSeriesCreditsRepository() -> some TVSeriesCreditsRepository {
         DefaultTVSeriesCreditsRepository(
             remoteDataSource: tvSeriesRemoteDataSource,
@@ -110,6 +120,11 @@ extension TVSeriesInfrastructureFactory {
     private static let tvSeriesAggregateCreditsLocalDataSource:
         some TVSeriesAggregateCreditsLocalDataSource =
         SwiftDataTVSeriesAggregateCreditsLocalDataSource(
+            modelContainer: modelContainer
+        )
+
+    private static let tvEpisodeCreditsLocalDataSource: some TVEpisodeCreditsLocalDataSource =
+        SwiftDataTVEpisodeCreditsLocalDataSource(
             modelContainer: modelContainer
         )
 

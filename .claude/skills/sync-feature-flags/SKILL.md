@@ -7,6 +7,10 @@ description: Sync feature flags from Statsig gates to code
 
 Syncs Statsig feature gates (source of truth) to `FeatureFlag.swift` in code. Handles adding new flags, updating changed names/descriptions, and removing deleted flags with full cascading cleanup.
 
+## Direction
+
+This skill syncs **Statsig → Code** (Statsig is the source of truth). For the reverse direction — creating a new Statsig gate when adding a feature flag in code — see the "Feature Flag Creation Pattern" in `plan-feature/references/patterns.md`. New gates should be created with `mcp__statsig__Create_Gate`, enabled for `development` environment only.
+
 ## Key Files
 
 | File | Role |

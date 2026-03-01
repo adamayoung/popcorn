@@ -239,6 +239,16 @@ Write the technical implementation plan to the plan file (if in plan mode). The 
 
 After the user approves the plan, auto-execute stories using subagents. Read `references/execution.md` for the full subagent orchestration strategy, prompt template, and failure handling.
 
+### Phase 7b: Create Statsig Gates
+
+After story execution, create Statsig gates for any new feature flags added in code:
+
+1. Read a sibling gate with `mcp__statsig__Get_Gate_Details_by_ID` to match the config pattern
+2. Create each new gate with `mcp__statsig__Create_Gate` — enabled, with a "Development only" rule (`passPercentage: 100`, condition `type: "public"`, `environments: ["development"]`)
+3. Add a description with `mcp__statsig__Update_Gate_Entirely`: `"Controls access to <feature name>"`
+
+The gate ID must match the `FeatureFlag.id` in code (snake_case).
+
 ### Phase 8: Pre-PR Verification
 
 After all stories are implemented:
