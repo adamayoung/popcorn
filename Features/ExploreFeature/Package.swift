@@ -30,10 +30,7 @@ let package = Package(
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
         ),
-        .package(
-            url: "https://github.com/pointfreeco/swift-snapshot-testing",
-            from: "1.18.7"
-        )
+        .package(path: "../../Core/SnapshotTestHelpers")
     ],
 
     targets: [
@@ -67,9 +64,8 @@ let package = Package(
             dependencies: [
                 "ExploreFeature",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
-            ],
-            resources: [.copy("Views/__Snapshots__")]
+                "SnapshotTestHelpers"
+            ]
         )
     ]
 )

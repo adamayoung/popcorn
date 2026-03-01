@@ -25,7 +25,8 @@ let package = Package(
         .package(path: "../../Core/DesignSystem"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
-        )
+        ),
+        .package(path: "../../Core/SnapshotTestHelpers")
     ],
 
     targets: [
@@ -46,6 +47,15 @@ let package = Package(
                 "PlotRemixGameFeature",
                 .product(name: "GamesCatalogDomain", package: "PopcornGamesCatalog"),
                 .product(name: "PlotRemixGameDomain", package: "PopcornPlotRemixGame")
+            ]
+        ),
+        .testTarget(
+            name: "PlotRemixGameFeatureSnapshotTests",
+            dependencies: [
+                "PlotRemixGameFeature",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                "DesignSystem",
+                "SnapshotTestHelpers"
             ]
         )
     ]

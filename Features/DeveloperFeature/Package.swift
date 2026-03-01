@@ -25,7 +25,8 @@ let package = Package(
         .package(path: "../../Platform/FeatureAccess"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
-        )
+        ),
+        .package(path: "../../Core/SnapshotTestHelpers")
     ],
 
     targets: [
@@ -47,6 +48,14 @@ let package = Package(
                 "FeatureAccess",
                 "TCAFoundation",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+            ]
+        ),
+        .testTarget(
+            name: "DeveloperFeatureSnapshotTests",
+            dependencies: [
+                "DeveloperFeature",
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                "SnapshotTestHelpers"
             ]
         )
     ]

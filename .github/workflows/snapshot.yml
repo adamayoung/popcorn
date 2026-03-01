@@ -1,0 +1,73 @@
+name: Snapshot Tests
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ios-snapshot-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  snapshot-tests:
+    name: Build and Snapshot Test
+    runs-on: macos-26
+    timeout-minutes: 45
+    env:
+      XCODE_VERSION: "26.3"
+      DEVELOPER_DIR: /Applications/Xcode_26.3.app/Contents/Developer
+      SIMULATOR_NAME: "iPhone 17 Pro"
+      IOS_VERSION: "26.2"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Cache SPM packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            .spm
+            ~/Library/Caches/org.swift.swiftpm
+            DerivedData
+          key: ${{ runner.os }}-xcode-${{ env.XCODE_VERSION }}-spm-${{ hashFiles('**/Package.resolved', '**/Package.swift') }}
+          restore-keys: |
+            ${{ runner.os }}-xcode-${{ env.XCODE_VERSION }}-spm-
+
+      - name: Build
+        run: |
+          NSUnbufferedIO=YES xcodebuild \
+            -scheme Popcorn \
+            -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }},OS=${{ env.IOS_VERSION }}" \
+            -skipMacroValidation \
+            -testPlan PopcornSnapshotTests \
+            -clonedSourcePackagesDirPath .spm \
+            -derivedDataPath DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            build-for-testing
+
+      - name: Snapshot Test
+        run: |
+          NSUnbufferedIO=YES xcodebuild \
+            -scheme Popcorn \
+            -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }},OS=${{ env.IOS_VERSION }}" \
+            -skipMacroValidation \
+            -testPlan PopcornSnapshotTests \
+            -clonedSourcePackagesDirPath .spm \
+            -derivedDataPath DerivedData \
+            CODE_SIGNING_ALLOWED=NO \
+            -resultBundlePath SnapshotTestResults.xcresult \
+            test-without-building
+
+      - name: Archive test results
+        if: failure()
+        run: |
+          if [ -d SnapshotTestResults.xcresult ]; then
+            zip -r -q SnapshotTestResults.xcresult.zip SnapshotTestResults.xcresult
+          fi
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshot-test-results
+          path: SnapshotTestResults.xcresult.zip
