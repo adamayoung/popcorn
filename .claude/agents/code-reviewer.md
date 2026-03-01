@@ -29,15 +29,17 @@ Present me with the final report where both the review and the adversarial revie
 
 Before writing any findings, complete these exploration steps:
 
-1. **Read the project docs** — actually read `docs/TCA.md`, `docs/ARCHITECTURE.md`, `docs/SWIFT.md`, `docs/SWIFTUI.md`, and `docs/SWIFTDATA.md`. These contain conventions and patterns not fully captured in this prompt. Don't rely on the condensed rules below — the docs are the source of truth.
+1. **Get the full PR diff** — run `git diff main...HEAD` (or the appropriate base branch) to see ALL changes in the branch, not just the latest commit. Also run `git log main...HEAD --oneline` to understand the full commit history. Review every file in the diff — do not skip files or commits. The GitHub CI reviewer sees the complete PR diff, so you must too.
 
-2. **Read full files, not just diffs** — for every file in the diff, read the complete file. Reviewing only changed lines misses context like inconsistent access modifiers, missing guards, or patterns established by surrounding code.
+2. **Read the project docs** — actually read `docs/TCA.md`, `docs/ARCHITECTURE.md`, `docs/SWIFT.md`, `docs/SWIFTUI.md`, `docs/SWIFTDATA.md`, and `docs/TMDB_MAPPING.md`. These contain conventions and patterns not fully captured in this prompt. Don't rely on the condensed rules below — the docs are the source of truth.
 
-3. **Compare with sibling implementations** — for new features, reducers, views, or use cases, identify and read at least one existing implementation of the same type. For example, if reviewing `TVEpisodeDetailsFeature`, also read `TVSeasonDetailsFeature` or `MovieDetailsFeature` to verify the new code follows established patterns (action naming, state guards, view structure, navigation wiring).
+3. **Read full files, not just diffs** — for every file in the diff, read the complete file. Reviewing only changed lines misses context like inconsistent access modifiers, missing guards, or patterns established by surrounding code.
 
-4. **Check for cross-package duplication** — when reviewing helper functions, view components, or mappers, search for similar implementations in other packages. Flag verbatim or near-identical logic that should be extracted to a shared module.
+4. **Compare with sibling implementations** — for new features, reducers, views, or use cases, identify and read at least one existing implementation of the same type. For example, if reviewing `TVEpisodeDetailsFeature`, also read `TVSeasonDetailsFeature` or `MovieDetailsFeature` to verify the new code follows established patterns (action naming, state guards, view structure, navigation wiring).
 
-5. **Verify factory and wiring consistency** — when new types are added to factories, read the full factory file to check that access modifiers, naming patterns, and property ordering are consistent with existing entries.
+5. **Check for cross-package duplication** — when reviewing helper functions, view components, or mappers, search for similar implementations in other packages. Flag verbatim or near-identical logic that should be extracted to a shared module.
+
+6. **Verify factory and wiring consistency** — when new types are added to factories, read the full factory file to check that access modifiers, naming patterns, and property ordering are consistent with existing entries.
 
 ## Platform Targets
 
@@ -114,6 +116,9 @@ Before writing any findings, complete these exploration steps:
 - Always use Swift Testing.
 - Never force unwrap in tests; use `try #require(...)`.
 - For Observability mocks, use `ObservabilityTestHelpers` mocks.
+- **Test coverage for new features**: Every new feature must have tests at ALL layers — adapter mappers, use cases, and TCA reducers. Don't just test the happy path; include error paths and edge cases. Check sibling implementations for the test patterns to follow.
+- **Feature flag tests**: When adding or removing feature flags in a Client/Reducer, verify the corresponding `*FeatureFlagsTests` are updated (all existing tests plus new ones for the flag).
+- **Test plan registration**: When new Swift test targets are added, verify they are registered in `TestPlans/PopcornUnitTests.xctestplan` (unit tests) or `TestPlans/PopcornSnapshotTests.xctestplan` (snapshot tests). Without this, the tests won't run in CI.
 
 ## Code Change Protocol
 
@@ -134,6 +139,17 @@ Before writing any findings, complete these exploration steps:
 - Never review files in `DerivedData/`, `.swiftpm/`, or `.build/` directories (build artifacts only).
 - Style preferences already handled by SwiftLint/SwiftFormat configuration.
 
+## Project-Specific Checks
+
+These are commonly missed in local review but caught by GitHub CI. **Always check these explicitly:**
+
+- **Localization in packages**: Any user-facing string in a package must use `bundle: .module` — e.g., `Text("KEY", bundle: .module)`. Bare string literals without `bundle:` will silently fail to localize.
+- **Localization key format**: Keys must be SCREAMING_SNAKE_CASE (e.g., `MOVIE_DETAILS`, `UNABLE_TO_LOAD`).
+- **TMDb API language**: TMDb remote data source calls should use `language: nil` to inherit the client's configured device language, NOT `language: "en"`.
+- **Statsig gate creation**: When new feature flags are added in code, verify the corresponding Statsig gate exists or is being created. The gate ID must match `FeatureFlag.id` (snake_case).
+- **Hardcoded values**: Watch for hardcoded locale/region/language values that should use device settings.
+- **TMDb mapping compliance**: When new domain models are mapped from TMDb types, verify adherence to `docs/TMDB_MAPPING.md` (4-layer mapping pipeline, naming conventions, nil handling).
+
 ## Review Scope
 
 **In Scope:**
@@ -143,6 +159,7 @@ Before writing any findings, complete these exploration steps:
 - Security concerns (force unwraps, data validation, API usage)
 - Performance issues (inefficient algorithms, unnecessary work)
 - Accessibility compliance (VoiceOver labels, traits, grouping, Dynamic Type, motion preferences)
+- Project-specific checks (see above) — these are the most common source of GitHub CI review findings
 
 **Out of Scope:**
 - Style preferences when code follows SwiftLint/SwiftFormat rules
