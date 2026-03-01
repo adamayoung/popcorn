@@ -34,10 +34,7 @@ struct SearchRootView: View {
             case .movieDetails(let store):
                 MovieDetailsView(store: store)
             case .tvSeriesDetails(let store):
-                TVSeriesDetailsView(
-                    store: store,
-                    transitionNamespace: namespace
-                )
+                TVSeriesDetailsView(store: store)
             case .tvSeasonDetails(let store):
                 tvSeasonDetails(store: store)
             case .tvEpisodeDetails(let store):

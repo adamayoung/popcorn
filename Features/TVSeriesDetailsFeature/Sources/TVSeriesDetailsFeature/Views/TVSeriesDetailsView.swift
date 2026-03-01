@@ -14,37 +14,18 @@ public struct TVSeriesDetailsView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Bindable private var store: StoreOf<TVSeriesDetailsFeature>
-    private let namespace: Namespace.ID
 
-    public init(
-        store: StoreOf<TVSeriesDetailsFeature>,
-        transitionNamespace: Namespace.ID
-    ) {
+    public init(store: StoreOf<TVSeriesDetailsFeature>) {
         self._store = .init(store)
-        self.namespace = transitionNamespace
     }
 
     public var body: some View {
         ZStack {
             switch store.viewState {
             case .ready(let snapshot):
-                content(snapshot: snapshot)
+                content(snapshot)
             case .error(let error):
-                ContentUnavailableView {
-                    Label(
-                        LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
-                        systemImage: "exclamationmark.triangle"
-                    )
-                } description: {
-                    Text(error.message)
-                } actions: {
-                    if error.isRetryable {
-                        Button(LocalizedStringResource("RETRY", bundle: .module)) {
-                            store.send(.fetch)
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                }
+                errorBody(error)
             default:
                 EmptyView()
             }
@@ -52,7 +33,7 @@ public struct TVSeriesDetailsView: View {
         .accessibilityIdentifier("tv-series-details.view")
         .toolbar {
             if case .ready(let snapshot) = store.viewState, store.isIntelligenceEnabled {
-                ToolbarItem(placement: .primaryAction) {
+                ToolbarItem(placement: toolbarTrailingPlacement) {
                     Button(
                         LocalizedStringResource("INTELLIGENCE", bundle: .module),
                         systemImage: "apple.intelligence"
@@ -81,13 +62,25 @@ public struct TVSeriesDetailsView: View {
 
 extension TVSeriesDetailsView {
 
+    private var toolbarTrailingPlacement: ToolbarItemPlacement {
+        #if os(macOS)
+            .automatic
+        #else
+            .primaryAction
+        #endif
+    }
+
     private var loadingBody: some View {
         ProgressView()
             .accessibilityLabel(Text("LOADING", bundle: .module))
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private func content(snapshot: TVSeriesDetailsFeature.ViewSnapshot) -> some View {
+}
+
+extension TVSeriesDetailsView {
+
+    private func content(_ snapshot: TVSeriesDetailsFeature.ViewSnapshot) -> some View {
         TVSeriesDetailsContentView(
             tvSeries: snapshot.tvSeries,
             castMembers: snapshot.castMembers,
@@ -117,9 +110,28 @@ extension TVSeriesDetailsView {
 
 }
 
-#Preview("Ready") {
-    @Previewable @Namespace var namespace
+extension TVSeriesDetailsView {
 
+    private func errorBody(_ error: ViewStateError) -> some View {
+        ContentUnavailableView {
+            Label(LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module), systemImage: "exclamationmark.triangle")
+        } description: {
+            Text(error.message)
+        } actions: {
+            if error.isRetryable {
+                Button {
+                    store.send(.fetch)
+                } label: {
+                    Text("RETRY", bundle: .module)
+                }
+                .buttonStyle(.bordered)
+            }
+        }
+    }
+
+}
+
+#Preview("Ready") {
     NavigationStack {
         TVSeriesDetailsView(
             store: Store(
@@ -134,15 +146,12 @@ extension TVSeriesDetailsView {
                     )
                 ),
                 reducer: { EmptyReducer() }
-            ),
-            transitionNamespace: namespace
+            )
         )
     }
 }
 
 #Preview("Loading") {
-    @Previewable @Namespace var namespace
-
     NavigationStack {
         TVSeriesDetailsView(
             store: Store(
@@ -151,8 +160,21 @@ extension TVSeriesDetailsView {
                     viewState: .loading
                 ),
                 reducer: { EmptyReducer() }
-            ),
-            transitionNamespace: namespace
+            )
+        )
+    }
+}
+
+#Preview("Error") {
+    NavigationStack {
+        TVSeriesDetailsView(
+            store: Store(
+                initialState: TVSeriesDetailsFeature.State(
+                    tvSeriesID: 1,
+                    viewState: .error(ViewStateError(message: "Error loading TV series"))
+                ),
+                reducer: { EmptyReducer() }
+            )
         )
     }
 }

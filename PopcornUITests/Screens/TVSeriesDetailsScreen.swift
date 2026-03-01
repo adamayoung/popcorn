@@ -42,7 +42,7 @@ extension TVSeriesDetailsScreen {
     }
 
     private func contentView(withTitle title: String) -> XCUIElement {
-        app.navigationBars.staticTexts[title]
+        app.navigationBars[title]
     }
 
     private var seasonsCarousel: XCUIElement {

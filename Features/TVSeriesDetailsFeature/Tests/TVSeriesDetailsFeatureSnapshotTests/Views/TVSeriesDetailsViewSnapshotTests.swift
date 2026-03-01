@@ -18,37 +18,25 @@ struct TVSeriesDetailsViewSnapshotTests {
 
     @Test
     func tvSeriesDetailsView() {
-        let view = NamespaceContainer(
-            store: Store(
-                initialState: TVSeriesDetailsFeature.State(
-                    tvSeriesID: TVSeries.mock.id,
-                    viewState: .ready(
-                        .init(
-                            tvSeries: .mock,
-                            castMembers: CastMember.mocks,
-                            crewMembers: CrewMember.mocks
+        let view = NavigationStack {
+            TVSeriesDetailsView(
+                store: Store(
+                    initialState: TVSeriesDetailsFeature.State(
+                        tvSeriesID: TVSeries.mock.id,
+                        viewState: .ready(
+                            .init(
+                                tvSeries: .mock,
+                                castMembers: CastMember.mocks,
+                                crewMembers: CrewMember.mocks
+                            )
                         )
-                    )
-                ),
-                reducer: { EmptyReducer() }
+                    ),
+                    reducer: { EmptyReducer() }
+                )
             )
-        )
+        }
 
         verifyViewSnapshot(of: view)
-    }
-
-}
-
-private struct NamespaceContainer: View {
-
-    @Namespace var namespace
-
-    let store: StoreOf<TVSeriesDetailsFeature>
-
-    var body: some View {
-        NavigationStack {
-            TVSeriesDetailsView(store: store, transitionNamespace: namespace)
-        }
     }
 
 }

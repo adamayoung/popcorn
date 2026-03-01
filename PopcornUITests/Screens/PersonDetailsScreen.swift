@@ -34,7 +34,7 @@ extension PersonDetailsScreen {
     }
 
     private func contentView(withTitle title: String) -> XCUIElement {
-        app.navigationBars.staticTexts[title]
+        app.navigationBars[title]
     }
 
 }
