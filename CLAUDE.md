@@ -57,6 +57,15 @@ When making an incremental change that is **localised to a single module** and t
 - Changes spanning multiple packages (e.g., coordinator wiring, factory chain updates)
 - Final pre-PR verification (always use full-app for the last check before creating a PR)
 
+### Build & Test Output Management
+
+**Always delegate `make` commands and `swift build`/`swift test` to a subagent** using the Task tool (`subagent_type: "general-purpose"`). These commands produce large logs that fill the main conversation context. The subagent runs the command and reports back only:
+- Pass/fail status
+- Error count and specific error messages (if any)
+- Do NOT include the full log — only actionable information
+
+This applies to all build, test, lint, and format commands — both `make` targets and direct `swift` CLI invocations. Xcode MCP tool calls are exempt (they return structured results).
+
 ### Formatting
 
 | Task | Slash Command |
@@ -120,6 +129,7 @@ Localization: [SWIFTUI.md § Localization](docs/SWIFTUI.md) — SCREAMING_SNAKE_
 ### Project-Specific Rules
 
 - When adding or removing feature flags in a Client/Reducer, always update the corresponding `*FeatureFlagsTests` (all existing tests and add new ones for the flag)
+- **Statsig gate creation**: When adding a new feature flag in code, also create the corresponding Statsig gate using the Statsig MCP (`mcp__statsig__Create_Gate`). Enable it for the `development` environment only (not a full public rollout). Use `mcp__statsig__Get_Gate_Details_by_ID` on a sibling gate to match the naming/config pattern. The gate ID must match the `FeatureFlag.id` in code (snake_case).
 - **Test plan registration**: When adding new Swift test targets that contain unit tests (NOT snapshot tests), add the target to `TestPlans/PopcornUnitTests.xctestplan`. Without this, the tests won't run when executing the test plan. Each entry needs `containerPath` (relative path from workspace root prefixed with `container:`), `identifier` (test target name), and `name` (test target name)
 - **Test coverage for new features**: Every new feature must have tests at ALL layers — adapter mappers, use cases, and TCA reducers. Don't just test the happy path; include error paths and edge cases. Check sibling implementations for the test patterns to follow.
 

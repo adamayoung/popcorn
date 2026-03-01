@@ -90,9 +90,63 @@ public struct TVEpisodeDetailsView: View {
                     }
                 }
                 .padding(.horizontal)
+
+                if !snapshot.castMembers.isEmpty || !snapshot.crewMembers.isEmpty {
+                    castAndCrewCarousel(snapshot: snapshot)
+                        .padding(.bottom)
+                }
             }
         }
         .accessibilityIdentifier("tv-episode-details.view")
+    }
+
+    private func castAndCrewCarousel(
+        snapshot: TVEpisodeDetailsFeature.ViewSnapshot
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            sectionHeader("CAST_AND_CREW") {
+                store.send(
+                    .navigate(
+                        .castAndCrew(
+                            tvSeriesID: store.tvSeriesID,
+                            seasonNumber: store.seasonNumber,
+                            episodeNumber: store.episodeNumber
+                        )
+                    )
+                )
+            }
+
+            CastAndCrewCarousel(
+                castMembers: snapshot.castMembers,
+                crewMembers: snapshot.crewMembers,
+                didSelectPerson: { personID in
+                    store.send(.navigate(.personDetails(id: personID)))
+                }
+            )
+        }
+    }
+
+    private func sectionHeader(
+        _ key: LocalizedStringKey,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button {
+            action()
+        } label: {
+            HStack(spacing: 4) {
+                Text(key, bundle: .module)
+                    .font(.title2)
+                    .fontWeight(.bold)
+
+                Image(systemName: "chevron.right")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.secondary)
+                    .accessibilityHidden(true)
+            }
+        }
+        .buttonStyle(.plain)
+        .padding(.horizontal)
     }
 
 }

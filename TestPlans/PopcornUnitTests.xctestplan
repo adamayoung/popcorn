@@ -516,6 +516,13 @@
         "identifier" : "PopcornTVSeriesAdaptersTests",
         "name" : "PopcornTVSeriesAdaptersTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TVEpisodeCastAndCrewFeature",
+        "identifier" : "TVEpisodeCastAndCrewFeatureTests",
+        "name" : "TVEpisodeCastAndCrewFeatureTests"
+      }
     }
   ],
   "version" : 1

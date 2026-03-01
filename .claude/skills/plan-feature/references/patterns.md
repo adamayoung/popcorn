@@ -239,6 +239,31 @@ When adding new unit test targets, register them in `TestPlans/PopcornUnitTests.
 }
 ```
 
+## Feature Flag Creation Pattern
+
+When a story adds a new feature flag, two things must happen:
+
+### 1. Code — Add to `FeatureFlag.swift`
+
+Add a `static let` property and register it in `allFlags`. Update `FeatureFlagTests.swift` (count + ID list).
+
+### 2. Statsig — Create the Gate via MCP
+
+Create the corresponding Statsig gate using the Statsig MCP. Enable it for the **development environment only** (not a full public rollout):
+
+```
+1. mcp__statsig__Get_Gate_Details_by_ID — read a sibling gate to match config pattern
+2. mcp__statsig__Create_Gate — create with:
+   - id: matching FeatureFlag.id (snake_case)
+   - name: Title Case version of the ID
+   - rule: "Development only", passPercentage 100, condition type "public",
+     environments: ["development"]
+3. mcp__statsig__Update_Gate_Entirely — add description:
+   "Controls access to <feature name>"
+```
+
+The gate ID in Statsig **must** match the `FeatureFlag.id` in code.
+
 ## Factory Chain Pattern
 
 When adding a new data source or use case, the factory init chain must be updated atomically:

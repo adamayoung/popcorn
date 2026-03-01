@@ -5,7 +5,7 @@ description: Run snapshot tests
 
 # Run snapshot tests
 
-Run `make test-snapshots` from the project root.
+**Run via a subagent** (Task tool, `subagent_type: "general-purpose"`) to keep large logs out of the main context. The subagent should run `make test-snapshots` from the project root and report back pass/fail with any test failures.
 
 This builds and runs the `PopcornSnapshotTests` test plan on the iOS Simulator.
 

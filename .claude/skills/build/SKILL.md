@@ -15,4 +15,4 @@ Use the Xcode MCP if available, otherwise fall back to Make.
 
 ## Fallback
 
-Run `make build` from the project root.
+**Run via a subagent** (Task tool, `subagent_type: "general-purpose"`) to keep large logs out of the main context. The subagent should run `make build` from the project root and report back pass/fail with any errors.

@@ -71,6 +71,57 @@ final class TMDbTVEpisodeRemoteDataSource: TVEpisodeRemoteDataSource {
         return episode
     }
 
+    func credits(
+        forEpisode episodeNumber: Int,
+        inSeason seasonNumber: Int,
+        inTVSeries tvSeriesID: Int
+    ) async throws(TVEpisodeRemoteDataSourceError) -> TVSeriesDomain.Credits {
+        let span = SpanContext.startChild(
+            operation: .remoteDataSourceGet,
+            description: "Get Episode Credits S\(seasonNumber)E\(episodeNumber) TV#\(tvSeriesID)"
+        )
+        span?.setData([
+            "tv_series_id": tvSeriesID,
+            "season_number": seasonNumber,
+            "episode_number": episodeNumber
+        ])
+
+        let tmdbSpan = SpanContext.startChild(
+            operation: .tmdbClient,
+            description: "Get Episode Credits S\(seasonNumber)E\(episodeNumber) TV#\(tvSeriesID)"
+        )
+        tmdbSpan?.setData([
+            "tv_series_id": tvSeriesID,
+            "season_number": seasonNumber,
+            "episode_number": episodeNumber
+        ])
+
+        let tmdbCredits: TMDb.ShowCredits
+        do {
+            tmdbCredits = try await tvEpisodeService.credits(
+                forEpisode: episodeNumber,
+                inSeason: seasonNumber,
+                inTVSeries: tvSeriesID,
+                language: nil
+            )
+            tmdbSpan?.finish()
+        } catch let error {
+            tmdbSpan?.setData(error: error)
+            tmdbSpan?.finish(status: .internalError)
+
+            let dataSourceError = TVEpisodeRemoteDataSourceError(error)
+            span?.setData(error: dataSourceError)
+            span?.finish(status: .internalError)
+            throw dataSourceError
+        }
+
+        let mapper = CreditsMapper()
+        let credits = mapper.map(tmdbCredits)
+
+        span?.finish()
+        return credits
+    }
+
 }
 
 private extension TVEpisodeRemoteDataSourceError {
