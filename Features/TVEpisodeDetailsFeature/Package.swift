@@ -23,6 +23,7 @@ let package = Package(
         .package(path: "../../Core/TCAFoundation"),
         .package(path: "../../Contexts/PopcornTVSeries"),
         .package(path: "../../Core/CoreDomain"),
+        .package(path: "../../Platform/FeatureAccess"),
         .package(path: "../../Platform/Observability"),
         .package(url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"),
         .package(path: "../../Core/SnapshotTestHelpers")
@@ -36,6 +37,7 @@ let package = Package(
                 "DesignSystem",
                 "TCAFoundation",
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
+                "FeatureAccess",
                 "Observability",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ],
@@ -46,11 +48,13 @@ let package = Package(
         .testTarget(
             name: "TVEpisodeDetailsFeatureTests",
             dependencies: [
+                "AppDependencies",
                 "TVEpisodeDetailsFeature",
-                .product(name: "CoreDomain", package: "CoreDomain"),
                 "TCAFoundation",
-                .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
+                .product(name: "CoreDomain", package: "CoreDomain"),
+                .product(name: "FeatureAccessTestHelpers", package: "FeatureAccess"),
+                .product(name: "TVSeriesApplication", package: "PopcornTVSeries")
             ]
         ),
         .testTarget(

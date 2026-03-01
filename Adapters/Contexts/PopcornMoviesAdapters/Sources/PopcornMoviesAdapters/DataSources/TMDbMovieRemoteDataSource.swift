@@ -21,7 +21,7 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
     func movie(withID id: Int) async throws(MovieRemoteDataSourceError) -> MoviesDomain.Movie {
         let tmdbMovie: TMDb.Movie
         do {
-            tmdbMovie = try await movieService.details(forMovie: id, language: "en")
+            tmdbMovie = try await movieService.details(forMovie: id, language: nil)
         } catch let error {
             throw MovieRemoteDataSourceError(error)
         }

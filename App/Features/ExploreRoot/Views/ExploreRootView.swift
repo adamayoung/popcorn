@@ -12,6 +12,7 @@ import MovieDetailsFeature
 import MovieIntelligenceFeature
 import PersonDetailsFeature
 import SwiftUI
+import TVEpisodeCastAndCrewFeature
 import TVEpisodeDetailsFeature
 import TVSeasonDetailsFeature
 import TVSeriesCastAndCrewFeature
@@ -48,6 +49,8 @@ struct ExploreRootView: View {
                 movieCastAndCrew(store: store)
             case .tvSeriesCastAndCrew(let store):
                 tvSeriesCastAndCrew(store: store)
+            case .tvEpisodeCastAndCrew(let store):
+                tvEpisodeCastAndCrew(store: store)
             }
         }
         #if !os(macOS)
@@ -102,18 +105,12 @@ struct ExploreRootView: View {
     @ViewBuilder
     private func tvSeriesDetails(store: StoreOf<TVSeriesDetailsFeature>) -> some View {
         if let transitionID = store.transitionID {
-            TVSeriesDetailsView(
-                store: store,
-                transitionNamespace: namespace
-            )
+            TVSeriesDetailsView(store: store)
             #if os(iOS)
-            .navigationTransition(.zoom(sourceID: transitionID, in: namespace))
+                .navigationTransition(.zoom(sourceID: transitionID, in: namespace))
             #endif
         } else {
-            TVSeriesDetailsView(
-                store: store,
-                transitionNamespace: namespace
-            )
+            TVSeriesDetailsView(store: store)
         }
     }
 
@@ -152,6 +149,13 @@ struct ExploreRootView: View {
 
     private func tvSeriesCastAndCrew(store: StoreOf<TVSeriesCastAndCrewFeature>) -> some View {
         TVSeriesCastAndCrewView(
+            store: store,
+            transitionNamespace: namespace
+        )
+    }
+
+    private func tvEpisodeCastAndCrew(store: StoreOf<TVEpisodeCastAndCrewFeature>) -> some View {
+        TVEpisodeCastAndCrewView(
             store: store,
             transitionNamespace: namespace
         )

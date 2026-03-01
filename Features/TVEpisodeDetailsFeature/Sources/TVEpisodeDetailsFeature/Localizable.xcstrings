@@ -1,6 +1,18 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "CAST_AND_CREW" : {
+      "comment" : "Section header for the Cast and Crew section.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cast & Crew"
+          }
+        }
+      }
+    },
     "LOADING" : {
       "comment" : "Accessibility label for a loading indicator.",
       "extractionState" : "manual",
@@ -21,6 +33,18 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Retry"
+          }
+        }
+      }
+    },
+    "VIEW_PERSON_DETAILS_HINT" : {
+      "comment" : "Accessibility hint for tapping on a person to view their details.",
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View person details"
           }
         }
       }

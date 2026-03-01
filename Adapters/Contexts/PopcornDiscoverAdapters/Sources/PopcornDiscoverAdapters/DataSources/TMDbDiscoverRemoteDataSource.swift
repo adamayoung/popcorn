@@ -33,7 +33,7 @@ final class TMDbDiscoverRemoteDataSource: DiscoverRemoteDataSource {
                 filter: filterMapper.compactMap(filter),
                 sortedBy: nil,
                 page: page,
-                language: "en"
+                language: nil
             ).results
         } catch let error {
             throw DiscoverRemoteDataSourceError(error)
@@ -58,7 +58,7 @@ final class TMDbDiscoverRemoteDataSource: DiscoverRemoteDataSource {
                 filter: filterMapper.compactMap(filter),
                 sortedBy: nil,
                 page: page,
-                language: "en"
+                language: nil
             ).results
         } catch let error {
             throw DiscoverRemoteDataSourceError(error)

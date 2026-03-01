@@ -12,6 +12,7 @@ import MovieCastAndCrewFeature
 import MovieDetailsFeature
 import MovieIntelligenceFeature
 import PersonDetailsFeature
+import TVEpisodeCastAndCrewFeature
 import TVEpisodeDetailsFeature
 import TVSeasonDetailsFeature
 import TVSeriesCastAndCrewFeature
@@ -39,6 +40,7 @@ struct ExploreRootFeature {
         case personDetails(PersonDetailsFeature)
         case movieCastAndCrew(MovieCastAndCrewFeature)
         case tvSeriesCastAndCrew(TVSeriesCastAndCrewFeature)
+        case tvEpisodeCastAndCrew(TVEpisodeCastAndCrewFeature)
     }
 
     enum Action {
@@ -152,6 +154,36 @@ struct ExploreRootFeature {
                             episodeName: episodeName
                         )
                     )
+                )
+                return .none
+            case .path(
+                .element(
+                    _,
+                    .tvEpisodeDetails(
+                        .navigate(
+                            .castAndCrew(let tvSeriesID, let seasonNumber, let episodeNumber)
+                        )
+                    )
+                )
+            ):
+                state.path.append(
+                    .tvEpisodeCastAndCrew(
+                        TVEpisodeCastAndCrewFeature.State(
+                            tvSeriesID: tvSeriesID,
+                            seasonNumber: seasonNumber,
+                            episodeNumber: episodeNumber
+                        )
+                    )
+                )
+                return .none
+            case .path(.element(_, .tvEpisodeDetails(.navigate(.personDetails(let id))))):
+                state.path.append(.personDetails(PersonDetailsFeature.State(personID: id)))
+                return .none
+            case .path(
+                .element(_, .tvEpisodeCastAndCrew(.navigate(.personDetails(let id, _))))
+            ):
+                state.path.append(
+                    .personDetails(PersonDetailsFeature.State(personID: id))
                 )
                 return .none
             default:

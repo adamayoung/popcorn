@@ -25,7 +25,7 @@ final class TMDbMediaRemoteDataSource: MediaRemoteDataSource {
                 query: query,
                 filter: nil,
                 page: page,
-                language: "en"
+                language: nil
             ).results
         } catch let error {
             throw MediaRemoteDataSourceError(error)

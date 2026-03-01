@@ -5,4 +5,4 @@ description: Format code with swiftlint and swiftformat
 
 # Format code
 
-Run `make format` from the project root to clean SPM caches and fix code style issues.
+**Run via a subagent** (Task tool, `subagent_type: "general-purpose"`) to keep large logs out of the main context. The subagent should run `make format` from the project root and report back pass/fail with any errors or files changed.

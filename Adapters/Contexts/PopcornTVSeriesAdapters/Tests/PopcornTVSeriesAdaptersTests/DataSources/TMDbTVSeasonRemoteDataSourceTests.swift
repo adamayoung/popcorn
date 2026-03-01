@@ -113,7 +113,7 @@ struct TMDbTVSeasonRemoteDataSourceTests {
         #expect(mockService.detailsCallCount == 1)
         #expect(mockService.detailsCalledWith[0].seasonNumber == 3)
         #expect(mockService.detailsCalledWith[0].tvSeriesID == 456)
-        #expect(mockService.detailsCalledWith[0].language == "en")
+        #expect(mockService.detailsCalledWith[0].language == nil)
     }
 
     @Test("season throws notFound for TMDb notFound")

@@ -17,7 +17,7 @@ Testing is a two-step process: build with warnings-as-errors first, then run tes
 
 ## Fallback
 
-Run from the package directory:
+**Run via a subagent** (Task tool, `subagent_type: "general-purpose"`) to keep large logs out of the main context. The subagent should run the commands from the package directory and report back pass/fail with any errors or test failures.
 
 ```
 cd <package-dir> && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1 && swift test --skip-build 2>&1

@@ -14,6 +14,7 @@ package final class TVSeriesApplicationFactory: Sendable {
     private let tvSeasonRepository: any TVSeasonRepository
     private let tvEpisodeRepository: any TVEpisodeRepository
     private let tvSeriesCreditsRepository: any TVSeriesCreditsRepository
+    private let tvEpisodeCreditsRepository: any TVEpisodeCreditsRepository
     private let appConfigurationProvider: any AppConfigurationProviding
 
     package init(
@@ -21,12 +22,14 @@ package final class TVSeriesApplicationFactory: Sendable {
         tvSeasonRepository: some TVSeasonRepository,
         tvEpisodeRepository: some TVEpisodeRepository,
         tvSeriesCreditsRepository: some TVSeriesCreditsRepository,
+        tvEpisodeCreditsRepository: some TVEpisodeCreditsRepository,
         appConfigurationProvider: some AppConfigurationProviding
     ) {
         self.tvSeriesRepository = tvSeriesRepository
         self.tvSeasonRepository = tvSeasonRepository
         self.tvEpisodeRepository = tvEpisodeRepository
         self.tvSeriesCreditsRepository = tvSeriesCreditsRepository
+        self.tvEpisodeCreditsRepository = tvEpisodeCreditsRepository
         self.appConfigurationProvider = appConfigurationProvider
     }
 
@@ -62,6 +65,13 @@ package final class TVSeriesApplicationFactory: Sendable {
     package func makeFetchTVSeriesCreditsUseCase() -> some FetchTVSeriesCreditsUseCase {
         DefaultFetchTVSeriesCreditsUseCase(
             tvSeriesCreditsRepository: tvSeriesCreditsRepository,
+            appConfigurationProvider: appConfigurationProvider
+        )
+    }
+
+    package func makeFetchTVEpisodeCreditsUseCase() -> some FetchTVEpisodeCreditsUseCase {
+        DefaultFetchTVEpisodeCreditsUseCase(
+            tvEpisodeCreditsRepository: tvEpisodeCreditsRepository,
             appConfigurationProvider: appConfigurationProvider
         )
     }

@@ -34,12 +34,11 @@ final class TMDbTVSeriesRemoteDataSource: TVSeriesRemoteDataSource {
             description: "Get TV Series #\(id)"
         )
         tmdbSpan?.setData([
-            "tv_series_id": id,
-            "language": "en"
+            "tv_series_id": id
         ])
         let tmdbTVSeries: TMDb.TVSeries
         do {
-            tmdbTVSeries = try await tvSeriesService.details(forTVSeries: id, language: "en")
+            tmdbTVSeries = try await tvSeriesService.details(forTVSeries: id, language: nil)
             tmdbSpan?.finish()
         } catch let error {
             tmdbSpan?.setData(error: error)

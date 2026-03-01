@@ -38,8 +38,7 @@ final class TMDbTVSeasonRemoteDataSource: TVSeasonRemoteDataSource {
         )
         tmdbSpan?.setData([
             "tv_series_id": tvSeriesID,
-            "season_number": seasonNumber,
-            "language": "en"
+            "season_number": seasonNumber
         ])
 
         let tmdbSeason: TMDb.TVSeason
@@ -47,7 +46,7 @@ final class TMDbTVSeasonRemoteDataSource: TVSeasonRemoteDataSource {
             tmdbSeason = try await tvSeasonService.details(
                 forSeason: seasonNumber,
                 inTVSeries: tvSeriesID,
-                language: "en"
+                language: nil
             )
             tmdbSpan?.finish()
         } catch let error {

@@ -9,7 +9,7 @@ Build a single Swift package including its test targets. Use this when you only 
 
 ## Command
 
-Run from the package directory:
+**Run via a subagent** (Task tool, `subagent_type: "general-purpose"`) to keep large logs out of the main context. The subagent should run the command from the package directory and report back pass/fail with any errors.
 
 ```
 cd <package-dir> && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1

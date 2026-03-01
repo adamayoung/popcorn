@@ -21,7 +21,7 @@ final class TMDbGenreRemoteDataSource: GenreRemoteDataSource {
     func movieGenres() async throws(GenreRemoteDataSourceError) -> [GenresDomain.Genre] {
         let tmdbGenres: [TMDb.Genre]
         do {
-            tmdbGenres = try await genreService.movieGenres(language: "en")
+            tmdbGenres = try await genreService.movieGenres(language: nil)
         } catch let error {
             throw GenreRemoteDataSourceError(error)
         }
@@ -33,7 +33,7 @@ final class TMDbGenreRemoteDataSource: GenreRemoteDataSource {
     func tvSeriesGenres() async throws(GenreRemoteDataSourceError) -> [GenresDomain.Genre] {
         let tmdbGenres: [TMDb.Genre]
         do {
-            tmdbGenres = try await genreService.tvSeriesGenres(language: "en")
+            tmdbGenres = try await genreService.tvSeriesGenres(language: nil)
         } catch let error {
             throw GenreRemoteDataSourceError(error)
         }

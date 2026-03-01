@@ -22,7 +22,7 @@ final class TMDbPersonRemoteDataSource: PersonRemoteDataSource {
     func person(withID id: Int) async throws(PersonRepositoryError) -> PeopleDomain.Person {
         let tmdbPerson: TMDb.Person
         do {
-            tmdbPerson = try await personService.details(forPerson: id, language: "en")
+            tmdbPerson = try await personService.details(forPerson: id, language: nil)
         } catch let error {
             throw PersonRepositoryError(error)
         }

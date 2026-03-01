@@ -57,13 +57,41 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         throw TMDbError.unknown
     }
 
+    struct CreditsCall: Equatable {
+        let episodeNumber: Int
+        let seasonNumber: Int
+        let tvSeriesID: Int
+        let language: String?
+    }
+
+    var creditsCallCount = 0
+    var creditsCalledWith: [CreditsCall] = []
+    var creditsStub: Result<ShowCredits, TMDbError>?
+
     func credits(
         forEpisode episodeNumber: Int,
         inSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID,
         language: String?
     ) async throws -> ShowCredits {
-        throw TMDbError.unknown
+        creditsCallCount += 1
+        creditsCalledWith.append(CreditsCall(
+            episodeNumber: episodeNumber,
+            seasonNumber: seasonNumber,
+            tvSeriesID: tvSeriesID,
+            language: language
+        ))
+
+        guard let stub = creditsStub else {
+            throw TMDbError.unknown
+        }
+
+        switch stub {
+        case .success(let credits):
+            return credits
+        case .failure(let error):
+            throw error
+        }
     }
 
     func images(

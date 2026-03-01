@@ -10,6 +10,7 @@ import MediaSearchFeature
 import MovieDetailsFeature
 import PersonDetailsFeature
 import SwiftUI
+import TVEpisodeCastAndCrewFeature
 import TVEpisodeDetailsFeature
 import TVSeasonDetailsFeature
 import TVSeriesCastAndCrewFeature
@@ -33,10 +34,7 @@ struct SearchRootView: View {
             case .movieDetails(let store):
                 MovieDetailsView(store: store)
             case .tvSeriesDetails(let store):
-                TVSeriesDetailsView(
-                    store: store,
-                    transitionNamespace: namespace
-                )
+                TVSeriesDetailsView(store: store)
             case .tvSeasonDetails(let store):
                 tvSeasonDetails(store: store)
             case .tvEpisodeDetails(let store):
@@ -48,6 +46,8 @@ struct SearchRootView: View {
                 )
             case .tvSeriesCastAndCrew(let store):
                 tvSeriesCastAndCrew(store: store)
+            case .tvEpisodeCastAndCrew(let store):
+                tvEpisodeCastAndCrew(store: store)
             }
         }
     }
@@ -62,6 +62,13 @@ struct SearchRootView: View {
 
     private func tvSeriesCastAndCrew(store: StoreOf<TVSeriesCastAndCrewFeature>) -> some View {
         TVSeriesCastAndCrewView(
+            store: store,
+            transitionNamespace: namespace
+        )
+    }
+
+    private func tvEpisodeCastAndCrew(store: StoreOf<TVEpisodeCastAndCrewFeature>) -> some View {
+        TVEpisodeCastAndCrewView(
             store: store,
             transitionNamespace: namespace
         )

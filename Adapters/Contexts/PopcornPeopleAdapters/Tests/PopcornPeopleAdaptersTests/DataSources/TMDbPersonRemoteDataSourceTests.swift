@@ -22,8 +22,8 @@ struct TMDbPersonRemoteDataSourceTests {
         self.mockService = MockPersonService()
     }
 
-    @Test("person maps response and uses en language")
-    func person_mapsResponseAndUsesEnglishLanguage() async throws {
+    @Test("person maps response and uses default language")
+    func person_mapsResponseAndUsesDefaultLanguage() async throws {
         let id = 287
         let profilePath = try #require(URL(string: "/profile/brad-pitt.jpg"))
         let tmdbPerson = TMDb.Person(
@@ -58,7 +58,7 @@ struct TMDbPersonRemoteDataSourceTests {
             initials: "BP"
         ))
         #expect(mockService.detailsCallCount == 1)
-        #expect(mockService.detailsCalledWith[0] == .init(id: id, language: "en"))
+        #expect(mockService.detailsCalledWith[0] == .init(id: id, language: nil))
     }
 
     @Test("person throws notFound error for TMDb notFound")
@@ -223,7 +223,7 @@ struct TMDbPersonRemoteDataSourceTests {
 
         #expect(mockService.detailsCalledWith.count == 1)
         #expect(mockService.detailsCalledWith[0].id == id)
-        #expect(mockService.detailsCalledWith[0].language == "en")
+        #expect(mockService.detailsCalledWith[0].language == nil)
     }
 
 }

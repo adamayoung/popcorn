@@ -24,7 +24,7 @@ final class TMDbTrendingRemoteDataSource: TrendingRemoteDataSource {
             tmdbMovies = try await trendingService.movies(
                 inTimeWindow: .day,
                 page: page,
-                language: "en"
+                language: nil
             ).results
         } catch let error {
             throw TrendingRepositoryError(error)
@@ -42,7 +42,7 @@ final class TMDbTrendingRemoteDataSource: TrendingRemoteDataSource {
             tmdbTVSeries = try await trendingService.tvSeries(
                 inTimeWindow: .day,
                 page: page,
-                language: "en"
+                language: nil
             ).results
         } catch let error {
             throw TrendingRepositoryError(error)
@@ -60,7 +60,7 @@ final class TMDbTrendingRemoteDataSource: TrendingRemoteDataSource {
             tmdbPeople = try await trendingService.people(
                 inTimeWindow: .day,
                 page: page,
-                language: "en"
+                language: nil
             ).results
         } catch let error {
             throw TrendingRepositoryError(error)

@@ -87,7 +87,7 @@ struct TMDbTVEpisodeRemoteDataSourceTests {
         #expect(call.episodeNumber == 5)
         #expect(call.seasonNumber == 3)
         #expect(call.tvSeriesID == 456)
-        #expect(call.language == "en")
+        #expect(call.language == nil)
     }
 
     @Test("episode throws notFound for TMDb notFound")

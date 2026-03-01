@@ -45,8 +45,8 @@ struct TMDbGenreRemoteDataSourceTests {
         #expect(result[2].name == "Animation")
     }
 
-    @Test("movieGenres calls service with en language")
-    func movieGenresCallsServiceWithEnLanguage() async throws {
+    @Test("movieGenres calls service with default language")
+    func movieGenresCallsServiceWithDefaultLanguage() async throws {
         mockService.movieGenresStub = .success([])
 
         let dataSource = TMDbGenreRemoteDataSource(genreService: mockService)
@@ -54,7 +54,7 @@ struct TMDbGenreRemoteDataSourceTests {
         _ = try await dataSource.movieGenres()
 
         #expect(mockService.movieGenresCallCount == 1)
-        #expect(mockService.movieGenresCalledWith[0].language == "en")
+        #expect(mockService.movieGenresCalledWith[0].language == nil)
     }
 
     @Test("movieGenres returns empty array when service returns empty")
@@ -140,8 +140,8 @@ struct TMDbGenreRemoteDataSourceTests {
         #expect(result[2].name == "Drama")
     }
 
-    @Test("tvSeriesGenres calls service with en language")
-    func tvSeriesGenresCallsServiceWithEnLanguage() async throws {
+    @Test("tvSeriesGenres calls service with default language")
+    func tvSeriesGenresCallsServiceWithDefaultLanguage() async throws {
         mockService.tvSeriesGenresStub = .success([])
 
         let dataSource = TMDbGenreRemoteDataSource(genreService: mockService)
@@ -149,7 +149,7 @@ struct TMDbGenreRemoteDataSourceTests {
         _ = try await dataSource.tvSeriesGenres()
 
         #expect(mockService.tvSeriesGenresCallCount == 1)
-        #expect(mockService.tvSeriesGenresCalledWith[0].language == "en")
+        #expect(mockService.tvSeriesGenresCalledWith[0].language == nil)
     }
 
     @Test("tvSeriesGenres returns empty array when service returns empty")

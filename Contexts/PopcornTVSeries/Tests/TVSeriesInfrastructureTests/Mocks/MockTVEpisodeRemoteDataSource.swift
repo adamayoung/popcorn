@@ -39,4 +39,32 @@ final class MockTVEpisodeRemoteDataSource: TVEpisodeRemoteDataSource, @unchecked
         }
     }
 
+    var creditsCallCount = 0
+    var creditsCalledWith: [(episodeNumber: Int, seasonNumber: Int, tvSeriesID: Int)] = []
+    var creditsStub: Result<Credits, TVEpisodeRemoteDataSourceError>?
+
+    func credits(
+        forEpisode episodeNumber: Int,
+        inSeason seasonNumber: Int,
+        inTVSeries tvSeriesID: Int
+    ) async throws(TVEpisodeRemoteDataSourceError) -> Credits {
+        creditsCallCount += 1
+        creditsCalledWith.append((
+            episodeNumber: episodeNumber,
+            seasonNumber: seasonNumber,
+            tvSeriesID: tvSeriesID
+        ))
+
+        guard let stub = creditsStub else {
+            throw .unknown()
+        }
+
+        switch stub {
+        case .success(let credits):
+            return credits
+        case .failure(let error):
+            throw error
+        }
+    }
+
 }

@@ -65,11 +65,11 @@ You are implementing user story US-{N}: {Title} for the Popcorn app.
 - Sibling views must use consistent fonts/styles — check existing views before writing new ones
 
 ## Verification
-After implementation, run:
+After implementation, run (these produce large logs — keep them inside the subagent):
 1. `swift build` in the package directory — must succeed with no warnings
 2. `swift test` in the package directory — all tests must pass
 3. If the story changed public interfaces or spans multiple packages, also verify with a full-app build
-4. Report any build or test failures
+4. Report back only: pass/fail status, error count, and specific error messages
 ```
 
 ## Parallel Execution Rules

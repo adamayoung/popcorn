@@ -43,6 +43,7 @@ public extension FeatureFlag {
         .movieDetailsCastAndCrew,
         .movieDetailsRecommendedMovies,
         .tvSeriesDetailsCastAndCrew,
+        .tvEpisodeDetailsCastAndCrew,
         .backdropFocalPoint
     ]
 
@@ -196,6 +197,15 @@ public extension FeatureFlag {
         id: "tv_series_details_cast_and_crew",
         name: "TV Series Details Cast and Crew",
         description: "Show Cast and Crew section on the TV Series Details screen"
+    )
+
+    // MARK: - TV Episode Details
+
+    /// Controls the Cast and Crew section on the TV Episode Details screen.
+    static let tvEpisodeDetailsCastAndCrew = FeatureFlag(
+        id: "tv_episode_details_cast_and_crew",
+        name: "TV Episode Details Cast and Crew",
+        description: "Show Cast and Crew section on the TV Episode Details screen"
     )
 
     // MARK: - Artwork

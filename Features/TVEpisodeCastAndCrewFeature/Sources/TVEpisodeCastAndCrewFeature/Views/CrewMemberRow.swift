@@ -1,0 +1,56 @@
+//
+//  CrewMemberRow.swift
+//  Popcorn
+//
+//  Copyright © 2026 Adam Young.
+//
+
+import DesignSystem
+import SwiftUI
+
+struct CrewMemberRow: View {
+
+    let member: CrewMember
+    let transitionNamespace: Namespace.ID?
+
+    var body: some View {
+        HStack(spacing: 12) {
+            profileImage
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(verbatim: member.personName)
+                    .font(.headline)
+
+                Text(verbatim: member.job)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+        }
+        .accessibilityElement(children: .combine)
+        .contentShape(Rectangle())
+    }
+
+    @ViewBuilder
+    private var profileImage: some View {
+        let image = ProfileImage(url: member.profileURL, initials: member.initials)
+            .frame(width: 50, height: 50)
+            .clipShape(.circle)
+
+        if let namespace = transitionNamespace {
+            image.matchedTransitionSource(id: member.id, in: namespace)
+        } else {
+            image
+        }
+    }
+
+}
+
+#Preview {
+    List {
+        ForEach(CrewMember.mocks) { member in
+            CrewMemberRow(member: member, transitionNamespace: nil)
+        }
+    }
+}

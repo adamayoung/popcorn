@@ -16,7 +16,9 @@ Run a subset of the app's test suite by specifying a test target, class, or meth
 
 ## Fallback
 
-Run `make test TEST_TARGET=<specifier>` from the project root, where `<specifier>` is the `-only-testing` value (e.g. a test target or `Target/ClassName/methodName`).
+**Run via a subagent** (Task tool, `subagent_type: "general-purpose"`) to keep large logs out of the main context. The subagent should run `make test TEST_TARGET=<specifier>` from the project root and report back pass/fail with any test failures.
+
+`<specifier>` is the `-only-testing` value (e.g. a test target or `Target/ClassName/methodName`).
 
 ### Examples
 
