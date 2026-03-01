@@ -33,7 +33,7 @@ struct CrewSection: View {
             Section {
                 ForEach(crewByDepartment[department, default: []]) { member in
                     Button {
-                        didSelectPerson(member.personID, String(member.personID))
+                        didSelectPerson(member.personID, member.id)
                     } label: {
                         CrewMemberRow(member: member, transitionNamespace: transitionNamespace)
                     }

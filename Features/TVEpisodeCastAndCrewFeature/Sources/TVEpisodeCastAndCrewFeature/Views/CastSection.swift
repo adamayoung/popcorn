@@ -17,7 +17,7 @@ struct CastSection: View {
         Section {
             ForEach(castMembers) { member in
                 Button {
-                    didSelectPerson(member.personID, String(member.personID))
+                    didSelectPerson(member.personID, member.id)
                 } label: {
                     CastMemberRow(member: member, transitionNamespace: transitionNamespace)
                 }

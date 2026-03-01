@@ -128,13 +128,26 @@ extension TVEpisodeDetailsFeature {
                 "Fetching episode details [tvSeriesID: \(state.tvSeriesID, privacy: .private), S\(state.seasonNumber)E\(state.episodeNumber)]"
             )
 
-            let episodeDetails: EpisodeDetails
-            do {
-                episodeDetails = try await client.fetchEpisodeDetails(
+            let isCastAndCrewEnabled = state.isCastAndCrewEnabled
+
+            async let episodeDetailsTask = client.fetchEpisodeDetails(
+                state.tvSeriesID,
+                state.seasonNumber,
+                state.episodeNumber
+            )
+
+            async let creditsTask: Credits? = {
+                guard isCastAndCrewEnabled else { return nil }
+                return try? await client.fetchCredits(
                     state.tvSeriesID,
                     state.seasonNumber,
                     state.episodeNumber
                 )
+            }()
+
+            let episodeDetails: EpisodeDetails
+            do {
+                episodeDetails = try await episodeDetailsTask
             } catch {
                 Self.logger.error(
                     "Failed fetching episode details [tvSeriesID: \(state.tvSeriesID, privacy: .private), S\(state.seasonNumber)E\(state.episodeNumber)]: \(error.localizedDescription, privacy: .public)"
@@ -143,24 +156,11 @@ extension TVEpisodeDetailsFeature {
                 return
             }
 
-            let isCastAndCrewEnabled = state.isCastAndCrewEnabled
-
-            var castMembers: [CastMember] = []
-            var crewMembers: [CrewMember] = []
-            if isCastAndCrewEnabled {
-                do {
-                    let credits = try await client.fetchCredits(
-                        state.tvSeriesID,
-                        state.seasonNumber,
-                        state.episodeNumber
-                    )
-                    castMembers = credits.castMembers
-                    crewMembers = credits.crewMembers
-                } catch {
-                    Self.logger.warning(
-                        "Failed fetching episode credits [tvSeriesID: \(state.tvSeriesID, privacy: .private), S\(state.seasonNumber)E\(state.episodeNumber)]: \(error.localizedDescription, privacy: .public)"
-                    )
-                }
+            let credits = await creditsTask
+            if isCastAndCrewEnabled, credits == nil {
+                Self.logger.warning(
+                    "Failed fetching episode credits [tvSeriesID: \(state.tvSeriesID, privacy: .private), S\(state.seasonNumber)E\(state.episodeNumber)]"
+                )
             }
 
             let snapshot = ViewSnapshot(
@@ -168,8 +168,8 @@ extension TVEpisodeDetailsFeature {
                 overview: episodeDetails.overview,
                 airDate: episodeDetails.airDate,
                 stillURL: episodeDetails.stillURL,
-                castMembers: castMembers,
-                crewMembers: crewMembers
+                castMembers: credits?.castMembers ?? [],
+                crewMembers: credits?.crewMembers ?? []
             )
             await send(.loaded(snapshot))
         }
