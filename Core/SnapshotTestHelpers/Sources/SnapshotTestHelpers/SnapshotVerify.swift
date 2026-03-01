@@ -9,6 +9,7 @@ import Foundation
 import SnapshotTesting
 import SwiftUI
 import Testing
+import UIKit
 
 public func verifyViewSnapshot(
     of view: some View,
@@ -60,7 +61,14 @@ private func attachSnapshotImages(from failure: String, sourceLocation: SourceLo
 
 extension ViewImageConfig {
 
-    /// Pinned to iPhone 13 Pro dimensions (390 x 844 pt) for a stable baseline.
-    static let snapshotLayout: ViewImageConfig = .iPhone13Pro
+    /// Pinned to iPhone 13 Pro dimensions (390 x 844 pt) in light mode for a stable baseline.
+    static let snapshotLayout: ViewImageConfig = {
+        var config = ViewImageConfig.iPhone13Pro
+        config.traits = UITraitCollection(traitsFrom: [
+            config.traits,
+            UITraitCollection(userInterfaceStyle: .light)
+        ])
+        return config
+    }()
 
 }
