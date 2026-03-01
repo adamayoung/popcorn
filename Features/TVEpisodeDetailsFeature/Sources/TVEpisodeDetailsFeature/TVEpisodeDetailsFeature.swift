@@ -88,16 +88,17 @@ public struct TVEpisodeDetailsFeature: Sendable {
         Reduce { state, action in
             switch action {
             case .didAppear:
+                guard case .initial = state.viewState else {
+                    return .none
+                }
                 return .run { send in
                     await send(.updateFeatureFlags)
+                    await send(.fetch)
                 }
 
             case .updateFeatureFlags:
                 state.isCastAndCrewEnabled = (try? client.isCastAndCrewEnabled()) ?? false
-                guard case .initial = state.viewState else {
-                    return .none
-                }
-                return .send(.fetch)
+                return .none
 
             case .fetch:
                 state.viewState = .loading
@@ -151,6 +152,7 @@ extension TVEpisodeDetailsFeature {
             do {
                 episodeDetails = try await episodeDetailsTask
             } catch {
+                _ = await creditsTask
                 Self.logger.error(
                     "Failed fetching episode details [tvSeriesID: \(state.tvSeriesID, privacy: .private), S\(state.seasonNumber)E\(state.episodeNumber)]: \(error.localizedDescription, privacy: .public)"
                 )

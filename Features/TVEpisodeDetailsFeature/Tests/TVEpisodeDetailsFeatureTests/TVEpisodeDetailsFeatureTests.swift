@@ -70,12 +70,9 @@ struct TVEpisodeDetailsFeatureTests {
             )
         ) {
             TVEpisodeDetailsFeature()
-        } withDependencies: {
-            $0.tvEpisodeDetailsClient.isCastAndCrewEnabled = { false }
         }
 
         await store.send(.didAppear)
-        await store.receive(\.updateFeatureFlags)
     }
 
     @Test("didAppear does not trigger fetch when state is ready")
@@ -97,12 +94,9 @@ struct TVEpisodeDetailsFeatureTests {
             )
         ) {
             TVEpisodeDetailsFeature()
-        } withDependencies: {
-            $0.tvEpisodeDetailsClient.isCastAndCrewEnabled = { false }
         }
 
         await store.send(.didAppear)
-        await store.receive(\.updateFeatureFlags)
     }
 
     @Test("fetch handles error")
