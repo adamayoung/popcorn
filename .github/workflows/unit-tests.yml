@@ -60,7 +60,10 @@ jobs:
 
       - name: Archive test results
         if: failure()
-        run: zip -r -q UnitTestResults.xcresult.zip UnitTestResults.xcresult
+        run: |
+          if [ -d UnitTestResults.xcresult ]; then
+            zip -r -q UnitTestResults.xcresult.zip UnitTestResults.xcresult
+          fi
 
       - name: Upload test results
         if: failure()

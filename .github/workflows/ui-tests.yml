@@ -62,7 +62,10 @@ jobs:
 
       - name: Archive test results
         if: failure()
-        run: zip -r -q UITestResults.xcresult.zip UITestResults.xcresult
+        run: |
+          if [ -d UITestResults.xcresult ]; then
+            zip -r -q UITestResults.xcresult.zip UITestResults.xcresult
+          fi
 
       - name: Upload test results
         if: failure()
