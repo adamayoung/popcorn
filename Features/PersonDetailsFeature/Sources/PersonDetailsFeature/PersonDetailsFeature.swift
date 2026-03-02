@@ -71,10 +71,7 @@ public struct PersonDetailsFeature: Sendable {
                     return .none
                 }
 
-                if state.viewState.isReady || state.viewState.isError {
-                    state.viewState = .loading
-                }
-
+                state.viewState = .loading
                 return handleFetchPerson(&state)
 
             case .loaded(let snapshot):

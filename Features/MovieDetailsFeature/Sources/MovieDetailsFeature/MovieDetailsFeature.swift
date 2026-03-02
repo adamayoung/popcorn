@@ -103,6 +103,7 @@ public struct MovieDetailsFeature: Sendable {
                     return .none
                 }
 
+                state.viewState = .loading
                 return handleFetch(&state)
 
             case .loaded(let snapshot):

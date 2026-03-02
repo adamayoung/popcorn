@@ -105,11 +105,12 @@ public extension TVSeriesIntelligenceFeature.State {
 
     /// `session` is a protocol existential and cannot be meaningfully compared,
     /// so it is excluded from equality. `tvSeries` is identified by `tvSeriesID` and
-    /// does not change after session start, so it is also excluded.
+    /// does not change after session start, so it is also excluded. `error` is an
+    /// untyped `Error` existential; state changes from errors are already reflected
+    /// in `messages` (an error message is appended on every failure path).
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.tvSeriesID == rhs.tvSeriesID
             && lhs.isThinking == rhs.isThinking
-            && lhs.error?.localizedDescription == rhs.error?.localizedDescription
             && lhs.messages == rhs.messages
     }
 

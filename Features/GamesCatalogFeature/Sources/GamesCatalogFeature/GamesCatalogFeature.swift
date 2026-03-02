@@ -58,10 +58,7 @@ public struct GamesCatalogFeature: Sendable {
                     return .none
                 }
 
-                if state.viewState.isReady || state.viewState.isError {
-                    state.viewState = .loading
-                }
-
+                state.viewState = .loading
                 return handleFetchGames()
 
             case .loaded(let snapshot):
