@@ -6,11 +6,8 @@
 //
 
 import Foundation
-import OSLog
 
 struct AnalyticsService: Analysing, AnalyticsInitialising {
-
-    private static let logger = Logger.analytics
 
     private let provider: any AnalyticsProviding
 
