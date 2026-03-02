@@ -66,6 +66,7 @@ struct MovieMapperTests {
         #expect(result.genres?[2].name == "Thriller")
         #expect(result.releaseDate == releaseDate)
         #expect(result.posterURL == URL(string: "https://example.com/detail.jpg"))
+        #expect(result.smallPosterURL == URL(string: "https://example.com/thumbnail.jpg"))
         #expect(result.backdropURL == URL(string: "https://example.com/full.jpg"))
         #expect(result.logoURL == URL(string: "https://example.com/detail.jpg"))
         #expect(result.budget == 100_000_000)
@@ -103,6 +104,7 @@ struct MovieMapperTests {
         #expect(result.genres == nil)
         #expect(result.releaseDate == nil)
         #expect(result.posterURL == nil)
+        #expect(result.smallPosterURL == nil)
         #expect(result.backdropURL == nil)
         #expect(result.logoURL == nil)
         #expect(result.budget == nil)
@@ -163,6 +165,7 @@ struct MovieMapperTests {
         let result = mapper.map(movieDetails)
 
         #expect(result.posterURL == URL(string: "https://example.com/poster-detail.jpg"))
+        #expect(result.smallPosterURL == URL(string: "https://example.com/poster-thumbnail.jpg"))
         #expect(result.backdropURL == URL(string: "https://example.com/backdrop-full.jpg"))
         #expect(result.logoURL == URL(string: "https://example.com/logo-detail.jpg"))
     }

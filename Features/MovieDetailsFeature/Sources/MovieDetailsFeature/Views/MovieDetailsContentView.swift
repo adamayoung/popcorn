@@ -19,16 +19,44 @@ struct MovieDetailsContentView: View {
     var didSelectMovie: (_ movieID: Int) -> Void
     var navigateToCastAndCrew: (_ movieID: Int) -> Void
 
+    @State private var scrollOffset: CGFloat = 0
+    @State private var showToolbarHeader = false
+
     var body: some View {
         StretchyHeaderScrollView(
             header: { header },
             headerOverlay: { headerOverlay },
-            content: { content }
+            content: { content },
+            onScrollGeometryChange: {
+                scrollOffset = $0.contentOffset.y
+            }
         )
         .navigationTitle(movie.title)
-        #if os(iOS)
-            .hideToolbarTitle()
-        #endif
+        .onChange(of: scrollOffset) { _, newValue in
+            let shouldShow = newValue > 400
+            if shouldShow != showToolbarHeader {
+                withAnimation {
+                    showToolbarHeader = shouldShow
+                }
+            }
+        }
+#if os(iOS)
+        .toolbarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                ZStack {
+                    Color.clear.frame(height: 0)
+                    if showToolbarHeader {
+                        ToolbarHeader(
+                            title: movie.title,
+                            posterURL: movie.smallPosterURL
+                        )
+                        .transition(.opacity)
+                    }
+                }
+            }
+        }
+#endif
     }
 
 }
@@ -38,9 +66,9 @@ extension MovieDetailsContentView {
     private var header: some View {
         backdropImage
             .flexibleHeaderContent(height: 600)
-        #if os(macOS)
+#if os(macOS)
             .backgroundExtensionEffect()
-        #endif
+#endif
     }
 
     @ViewBuilder

@@ -30,6 +30,7 @@ struct MovieMapper {
             genres: genres,
             releaseDate: movieDetails.releaseDate,
             posterURL: movieDetails.posterURLSet?.detail,
+            smallPosterURL: movieDetails.posterURLSet?.thumbnail,
             backdropURL: movieDetails.backdropURLSet?.full,
             logoURL: movieDetails.logoURLSet?.detail,
             budget: movieDetails.budget,
