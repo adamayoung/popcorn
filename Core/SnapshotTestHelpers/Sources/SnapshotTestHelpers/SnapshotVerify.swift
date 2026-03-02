@@ -64,10 +64,9 @@ extension ViewImageConfig {
     /// Pinned to iPhone 13 Pro dimensions (390 x 844 pt) in light mode for a stable baseline.
     static let snapshotLayout: ViewImageConfig = {
         var config = ViewImageConfig.iPhone13Pro
-        config.traits = UITraitCollection(traitsFrom: [
-            config.traits,
-            UITraitCollection(userInterfaceStyle: .light)
-        ])
+        config.traits = config.traits.modifyingTraits { traits in
+            traits.userInterfaceStyle = .light
+        }
         return config
     }()
 
