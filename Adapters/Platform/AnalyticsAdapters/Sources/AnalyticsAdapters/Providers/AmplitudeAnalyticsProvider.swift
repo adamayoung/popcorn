@@ -10,6 +10,8 @@ import Analytics
 import Foundation
 import OSLog
 
+// @unchecked Sendable: `amplitude` is written once during `start()` at app launch
+// and only read thereafter. The Amplitude SDK class is not Sendable.
 final class AmplitudeAnalyticsProvider: AnalyticsProviding, @unchecked Sendable {
 
     private static let logger = Logger.analytics

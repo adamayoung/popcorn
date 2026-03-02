@@ -48,6 +48,13 @@ struct AmplitudeAnalyticsProviderTests {
         provider.setUserId("user-456")
     }
 
+    @Test("setUserProperties does not crash before start")
+    func setUserPropertiesDoesNotCrashBeforeStart() {
+        let provider = AmplitudeAnalyticsProvider()
+
+        provider.setUserProperties(["key": "value"])
+    }
+
     @Test("reset does not crash before start")
     func resetDoesNotCrashBeforeStart() {
         let provider = AmplitudeAnalyticsProvider()
