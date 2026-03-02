@@ -74,8 +74,17 @@ struct FeatureFlagServiceTests {
 
     // MARK: - isEnabled
 
+    @Test("isEnabled returns false when provider is not initialised and no override exists")
+    func isEnabledReturnsFalseWhenNotInitialisedAndNoOverride() {
+        provider.isInitialized = false
+        provider.enabledKeys = [FeatureFlag.explore.id]
+
+        #expect(service.isEnabled(.explore) == false)
+    }
+
     @Test("isEnabled returns provider value when no override exists")
     func isEnabledReturnsProviderValueWhenNoOverride() {
+        provider.isInitialized = true
         provider.enabledKeys = [FeatureFlag.explore.id]
 
         #expect(service.isEnabled(.explore) == true)
@@ -90,8 +99,17 @@ struct FeatureFlagServiceTests {
         #expect(service.isEnabled(.explore) == true)
     }
 
+    @Test("isEnabled returns override value when provider is not initialised")
+    func isEnabledReturnsOverrideValueWhenNotInitialised() {
+        provider.isInitialized = false
+        service.setOverrideValue(true, for: .explore)
+
+        #expect(service.isEnabled(.explore) == true)
+    }
+
     @Test("isEnabled returns false override even when provider returns true")
     func isEnabledReturnsFalseOverrideEvenWhenProviderReturnsTrue() {
+        provider.isInitialized = true
         provider.enabledKeys = [FeatureFlag.explore.id]
         service.setOverrideValue(false, for: .explore)
 
