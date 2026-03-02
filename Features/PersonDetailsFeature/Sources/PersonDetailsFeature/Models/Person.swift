@@ -55,7 +55,7 @@ extension Person {
                 string: "https://image.tmdb.org/t/p/h632/q4TanMDI5Rgsvw4SfyNbPBh4URr.jpg"
             ),
             smallProfileURL: URL(
-                string: "https://image.tmdb.org/t/p/h632/q4TanMDI5Rgsvw4SfyNbPBh4URr.jpg"
+                string: "https://image.tmdb.org/t/p/w185/q4TanMDI5Rgsvw4SfyNbPBh4URr.jpg"
             ),
             initials: "ST"
         )

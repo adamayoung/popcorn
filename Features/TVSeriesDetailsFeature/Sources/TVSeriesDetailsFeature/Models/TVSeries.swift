@@ -60,7 +60,7 @@ extension TVSeries {
                 string: "https://image.tmdb.org/t/p/w780/cVxVGwHce6xnW8UaVUggaPXbmoE.jpg"
             ),
             smallPosterURL: URL(
-                string: "https://image.tmdb.org/t/p/w780/cVxVGwHce6xnW8UaVUggaPXbmoE.jpg"
+                string: "https://image.tmdb.org/t/p/w185/cVxVGwHce6xnW8UaVUggaPXbmoE.jpg"
             ),
             backdropURL: URL(
                 string: "https://image.tmdb.org/t/p/w1280/56v2KjBlU4XaOv9rVYEQypROD7P.jpg"

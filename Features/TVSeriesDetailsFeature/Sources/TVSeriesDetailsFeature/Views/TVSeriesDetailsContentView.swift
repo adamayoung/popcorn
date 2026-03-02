@@ -18,7 +18,8 @@ struct TVSeriesDetailsContentView: View {
     var didSelectPerson: (_ personID: Int) -> Void
     var navigateToCastAndCrew: (_ tvSeriesID: Int) -> Void
 
-    @State private var scrollOffset: CGFloat = 0
+    private static let toolbarHeaderScrollThreshold: CGFloat = 400
+
     @State private var showToolbarHeader = false
 
     var body: some View {
@@ -26,35 +27,32 @@ struct TVSeriesDetailsContentView: View {
             header: { header },
             headerOverlay: { headerOverlay },
             content: { content },
-            onScrollGeometryChange: {
-                scrollOffset = $0.contentOffset.y
-            }
-        )
-        .navigationTitle(tvSeries.name)
-        .onChange(of: scrollOffset) { _, newValue in
-            let shouldShow = newValue > 400
-            if shouldShow != showToolbarHeader {
-                withAnimation {
-                    showToolbarHeader = shouldShow
-                }
-            }
-        }
-        #if os(iOS)
-        .toolbarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                ZStack {
-                    Color.clear.frame(height: 0)
-                    if showToolbarHeader {
-                        MediaToolbarHeader(
-                            title: tvSeries.name,
-                            posterURL: tvSeries.smallPosterURL
-                        )
-                        .transition(.opacity)
+            onScrollGeometryChange: { geometry in
+                let shouldShow = geometry.contentOffset.y > Self.toolbarHeaderScrollThreshold
+                if shouldShow != showToolbarHeader {
+                    withAnimation {
+                        showToolbarHeader = shouldShow
                     }
                 }
             }
-        }
+        )
+        .navigationTitle(tvSeries.name)
+        #if os(iOS)
+            .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    ZStack {
+                        Color.clear.frame(height: 0)
+                        if showToolbarHeader {
+                            MediaToolbarHeader(
+                                title: tvSeries.name,
+                                posterURL: tvSeries.smallPosterURL
+                            )
+                            .transition(.opacity)
+                        }
+                    }
+                }
+            }
         #endif
     }
 

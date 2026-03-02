@@ -13,10 +13,10 @@ struct PersonDetailsContentView: View {
     var person: Person
     var isFocalPointEnabled: Bool
 
-    @State private var scrollOffset: CGFloat = 0
-    @State private var showToolbarHeader = false
-
+    private static let toolbarHeaderScrollThreshold: CGFloat = 200
     private static let maxProfileSize: CGFloat = 300
+
+    @State private var showToolbarHeader = false
 
     var body: some View {
         ScrollView {
@@ -39,37 +39,33 @@ struct PersonDetailsContentView: View {
             .padding(.horizontal)
             .padding(.bottom)
         }
-        .onScrollGeometryChange(for: CGFloat.self) { geometry in
-            geometry.contentOffset.y
-        } action: { _, newValue in
-            scrollOffset = newValue
-        }
-        .navigationTitle(person.name)
-        .onChange(of: scrollOffset) { _, newValue in
-            let shouldShow = newValue > 200
+        .onScrollGeometryChange(for: Bool.self) { geometry in
+            geometry.contentOffset.y > Self.toolbarHeaderScrollThreshold
+        } action: { _, shouldShow in
             if shouldShow != showToolbarHeader {
                 withAnimation {
                     showToolbarHeader = shouldShow
                 }
             }
         }
+        .navigationTitle(person.name)
         #if os(iOS)
-        .toolbarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                ZStack {
-                    Color.clear.frame(height: 0)
-                    if showToolbarHeader {
-                        PersonToolbarHeader(
-                            name: person.name,
-                            profileURL: person.smallProfileURL,
-                            initials: person.initials
-                        )
-                        .transition(.opacity)
+            .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    ZStack {
+                        Color.clear.frame(height: 0)
+                        if showToolbarHeader {
+                            PersonToolbarHeader(
+                                name: person.name,
+                                profileURL: person.smallProfileURL,
+                                initials: person.initials
+                            )
+                            .transition(.opacity)
+                        }
                     }
                 }
             }
-        }
         #endif
     }
 

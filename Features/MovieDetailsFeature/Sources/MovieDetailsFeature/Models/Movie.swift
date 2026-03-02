@@ -85,7 +85,7 @@ extension Movie {
                 string: "https://image.tmdb.org/t/p/w780/dKL78O9zxczVgjtNcQ9UkbYLzqX.jpg"
             ),
             smallPosterURL: URL(
-                string: "https://image.tmdb.org/t/p/w780/dKL78O9zxczVgjtNcQ9UkbYLzqX.jpg"
+                string: "https://image.tmdb.org/t/p/w185/dKL78O9zxczVgjtNcQ9UkbYLzqX.jpg"
             ),
             backdropURL: URL(
                 string: "https://image.tmdb.org/t/p/w1280/docDyCJrhPoFXAckB1aOiIv9Mz0.jpg"

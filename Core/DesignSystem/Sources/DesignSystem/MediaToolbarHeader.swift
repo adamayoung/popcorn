@@ -9,8 +9,8 @@ import SwiftUI
 
 public struct MediaToolbarHeader: View {
 
-    var title: String
-    var posterURL: URL?
+    private let title: String
+    private let posterURL: URL?
 
     public init(title: String, posterURL: URL? = nil) {
         self.title = title

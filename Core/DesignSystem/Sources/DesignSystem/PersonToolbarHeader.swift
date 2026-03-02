@@ -9,9 +9,9 @@ import SwiftUI
 
 public struct PersonToolbarHeader: View {
 
-    var name: String
-    var profileURL: URL?
-    var initials: String?
+    private let name: String
+    private let profileURL: URL?
+    private let initials: String?
 
     public init(name: String, profileURL: URL? = nil, initials: String? = nil) {
         self.name = name
