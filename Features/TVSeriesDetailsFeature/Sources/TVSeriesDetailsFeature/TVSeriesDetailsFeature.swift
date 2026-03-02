@@ -81,9 +81,7 @@ public struct TVSeriesDetailsFeature: Sendable {
         Reduce { state, action in
             switch action {
             case .didAppear:
-                return .run { send in
-                    await send(.updateFeatureFlags)
-                }
+                return .send(.updateFeatureFlags)
 
             case .updateFeatureFlags:
                 state.isCastAndCrewEnabled = (try? client.isCastAndCrewEnabled()) ?? false
@@ -92,6 +90,10 @@ public struct TVSeriesDetailsFeature: Sendable {
                 return .none
 
             case .fetch:
+                guard !state.viewState.isLoading else {
+                    return .none
+                }
+
                 return handleFetchTVSeries(&state)
 
             case .loaded(let snapshot):

@@ -14,7 +14,7 @@ struct CastMemberRow: View {
     let transitionNamespace: Namespace.ID?
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: .spacing12) {
             profileImage
 
             VStack(alignment: .leading, spacing: 2) {

@@ -21,7 +21,7 @@ public struct TVSeriesIntelligenceFeature: Sendable {
     @Dependency(\.observability) private var observability
 
     @ObservableState
-    public struct State: Sendable {
+    public struct State: Equatable, Sendable {
         let tvSeriesID: Int
         var tvSeries: TVSeries?
         var session: LLMSession?
@@ -70,6 +70,7 @@ public struct TVSeriesIntelligenceFeature: Sendable {
                 return handleSendPrompt(&state, prompt: "Introduce yourself and what you're for")
 
             case .sessionStartFailed(let error):
+                state.isThinking = false
                 state.error = error
 
                 let message = Message(role: .assistant, textContent: "There was a problem and I can't help you.")
@@ -96,6 +97,20 @@ public struct TVSeriesIntelligenceFeature: Sendable {
                 return .none
             }
         }
+    }
+
+}
+
+public extension TVSeriesIntelligenceFeature.State {
+
+    /// `session` is a protocol existential and cannot be meaningfully compared,
+    /// so it is excluded from equality. `tvSeries` is identified by `tvSeriesID` and
+    /// does not change after session start, so it is also excluded.
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.tvSeriesID == rhs.tvSeriesID
+            && lhs.isThinking == rhs.isThinking
+            && lhs.error?.localizedDescription == rhs.error?.localizedDescription
+            && lhs.messages == rhs.messages
     }
 
 }

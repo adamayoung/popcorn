@@ -80,7 +80,7 @@ extension MovieDetailsContentView {
     }
 
     private var headerOverlay: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: .spacing20) {
             LogoImage(url: movie.logoURL)
                 .frame(maxWidth: 300, maxHeight: 90, alignment: .bottom)
 
@@ -92,7 +92,7 @@ extension MovieDetailsContentView {
                     }
                 }
 
-                HStack(spacing: 4) {
+                HStack(spacing: .spacing4) {
                     if let releaseDate = movie.releaseDate {
                         Text(releaseDate, format: .dateTime.year())
                     }
@@ -104,8 +104,8 @@ extension MovieDetailsContentView {
                     if let certification = movie.certification {
                         Text(certification)
                             .font(.caption)
-                            .padding(.horizontal, 6)
-                            .padding(.vertical, 2)
+                            .padding(.horizontal, .spacing6)
+                            .padding(.vertical, .spacing2)
                             .overlay {
                                 RoundedRectangle(cornerRadius: 4)
                                     .stroke(lineWidth: 1)
@@ -114,20 +114,20 @@ extension MovieDetailsContentView {
                 }
             }
             .font(.callout)
-            .padding(.horizontal, 10)
+            .padding(.horizontal, .spacing10)
         }
-        .padding(.bottom, 10)
+        .padding(.bottom, .spacing10)
     }
 
     private var content: some View {
-        LazyVStack(alignment: .leading, spacing: 10) {
+        LazyVStack(alignment: .leading, spacing: .spacing10) {
             Section {
                 Text(verbatim: movie.overview)
                     .multilineTextAlignment(.leading)
                     .fixedSize(horizontal: false, vertical: true)
                     .padding(.horizontal)
             }
-            .padding(.bottom, 40)
+            .padding(.bottom, .spacing40)
 
             if !castMembers.isEmpty || !crewMembers.isEmpty {
                 castAndCrewCarousel
@@ -174,7 +174,7 @@ extension MovieDetailsContentView {
         Button {
             action()
         } label: {
-            HStack(spacing: 4) {
+            HStack(spacing: .spacing4) {
                 Text(key, bundle: .module)
                     .font(.title2)
                     .fontWeight(.bold)

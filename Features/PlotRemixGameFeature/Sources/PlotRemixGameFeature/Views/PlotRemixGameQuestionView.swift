@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import DesignSystem
 import SwiftUI
 
 struct PlotRemixGameQuestionView: View {
@@ -12,15 +13,15 @@ struct PlotRemixGameQuestionView: View {
     var question: GameQuestion
 
     var body: some View {
-        VStack(spacing: 50) {
+        VStack(spacing: .spacing50) {
             Spacer()
 
             Text(verbatim: "\(question.riddle)")
 
             Spacer()
 
-            GlassEffectContainer(spacing: 16) {
-                VStack(spacing: 16) {
+            GlassEffectContainer(spacing: .spacing16) {
+                VStack(spacing: .spacing16) {
                     ForEach(question.options) { option in
                         AnswerButton(
                             title: "\(option.title) \(option.isCorrect ? "✅" : "")",

@@ -33,7 +33,7 @@ public struct MessageTextField: View {
                     .focused($focusedField, equals: .message)
                     .padding(.vertical, 11)
                     .padding(.leading, 13)
-                    .padding(.trailing, 50)
+                    .padding(.trailing, .spacing50)
                     .glassEffect(
                         in: RoundedRectangle(
                             cornerRadius: 22,

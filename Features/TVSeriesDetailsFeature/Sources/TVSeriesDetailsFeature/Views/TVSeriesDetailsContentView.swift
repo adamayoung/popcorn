@@ -79,7 +79,7 @@ extension TVSeriesDetailsContentView {
     }
 
     private var headerOverlay: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: .spacing20) {
             LogoImage(url: tvSeries.logoURL)
                 .frame(maxWidth: 300, maxHeight: 90, alignment: .bottom)
 
@@ -87,19 +87,19 @@ extension TVSeriesDetailsContentView {
                 Text(verbatim: genres.prefix(4).map(\.name).joined(separator: " ∙ "))
                     .font(.callout)
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal, 10)
+                    .padding(.horizontal, .spacing10)
             }
         }
-        .padding(.bottom, 10)
+        .padding(.bottom, .spacing10)
     }
 
     private var content: some View {
-        LazyVStack(alignment: .leading, spacing: 10) {
+        LazyVStack(alignment: .leading, spacing: .spacing10) {
             Text(verbatim: tvSeries.overview)
                 .multilineTextAlignment(.leading)
                 .fixedSize(horizontal: false, vertical: true)
                 .padding(.horizontal)
-                .padding(.bottom, 40)
+                .padding(.bottom, .spacing40)
 
             if !tvSeries.seasons.isEmpty {
                 seasonsCarousel
@@ -147,7 +147,7 @@ extension TVSeriesDetailsContentView {
         Button {
             action()
         } label: {
-            HStack(spacing: 4) {
+            HStack(spacing: .spacing4) {
                 Text(key, bundle: .module)
                     .font(.title2)
                     .fontWeight(.bold)

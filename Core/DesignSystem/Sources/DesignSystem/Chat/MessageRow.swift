@@ -23,9 +23,9 @@ public struct MessageRow: View {
 
             VStack(
                 alignment: message.role == .user ? .trailing : .leading,
-                spacing: 10
+                spacing: .spacing10
             ) {
-                HStack(alignment: .bottom, spacing: 4) {
+                HStack(alignment: .bottom, spacing: .spacing4) {
                     if message.role == .assistant {
                         AvatarImage(role: message.role)
                     }
@@ -37,8 +37,8 @@ public struct MessageRow: View {
                     }
                 }
             }
-            .padding(.leading, message.role == .user ? 40 : 0)
-            .padding(.trailing, message.role == .assistant ? 40 : 0)
+            .padding(.leading, message.role == .user ? .spacing40 : 0)
+            .padding(.trailing, message.role == .assistant ? .spacing40 : 0)
 
             if message.role == .assistant {
                 Spacer()
@@ -53,8 +53,8 @@ public struct MessageRow: View {
         case .text(let textContent):
             Text(verbatim: textContent)
                 .foregroundStyle(role.textColor)
-                .padding(.vertical, 10)
-                .padding(.horizontal, 15)
+                .padding(.vertical, .spacing10)
+                .padding(.horizontal, .spacing15)
                 .background {
                     RoundedRectangle(cornerRadius: 20)
                         .fill(message.role.bubbleColour)

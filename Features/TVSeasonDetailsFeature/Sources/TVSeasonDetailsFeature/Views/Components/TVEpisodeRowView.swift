@@ -16,16 +16,16 @@ struct TVEpisodeRowView: View {
     let episode: TVEpisode
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: .spacing12) {
             StillImage(url: episode.stillURL)
                 .stillHeight(stillHeight)
-                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .clipShape(.rect(cornerRadius: 8))
                 .overlay {
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(Color.gray.opacity(0.3), lineWidth: 1)
                 }
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: .spacing2) {
                 Text(
                     "EPISODE_TITLE \(episode.episodeNumber) \(episode.name)",
                     bundle: .module

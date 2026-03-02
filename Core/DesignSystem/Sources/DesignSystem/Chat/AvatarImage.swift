@@ -14,7 +14,7 @@ struct AvatarImage: View {
     var body: some View {
         Image(systemName: role.avatarSymbol)
             .foregroundStyle(role.avatarSymbolColor)
-            .padding(5)
+            .padding(.spacing5)
             .background(
                 Circle().fill(role.bubbleColour.opacity(0.4))
             )

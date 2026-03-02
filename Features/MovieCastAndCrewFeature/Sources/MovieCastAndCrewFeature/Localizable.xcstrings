@@ -1,6 +1,17 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "CAST" : {
+      "comment" : "The section header for the cast list.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cast"
+          }
+        }
+      }
+    },
     "CAST_AND_CREW" : {
       "comment" : "The title of the view.",
       "localizations" : {
@@ -41,6 +52,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unable to Load"
+          }
+        }
+      }
+    },
+    "VIEW_PERSON_DETAILS_HINT" : {
+      "comment" : "Accessibility hint for a button that navigates to person details.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View person details"
           }
         }
       }

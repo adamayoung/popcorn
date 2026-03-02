@@ -72,7 +72,7 @@ public struct PosterCarouselCell<CellLabel: View>: View {
         }
         .accessibilityElement(children: .combine)
         #if os(visionOS)
-            .padding(20)
+            .padding(.spacing20)
             .contentShape(.hoverEffect, .rect(cornerRadius: 15))
             .hoverEffect()
         #endif
@@ -94,7 +94,7 @@ public struct PosterCarouselCell<CellLabel: View>: View {
     PosterCarouselCell(
         imageURL: URL(string: "https://image.tmdb.org/t/p/w780/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg")
     ) {
-        HStack(alignment: .top, spacing: 15) {
+        HStack(alignment: .top, spacing: .spacing15) {
             Text(verbatim: "1")
                 .font(.title)
                 .bold()

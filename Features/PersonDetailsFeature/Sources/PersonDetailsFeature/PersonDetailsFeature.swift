@@ -60,15 +60,17 @@ public struct PersonDetailsFeature: Sendable {
         Reduce { state, action in
             switch action {
             case .didAppear:
-                return .run { send in
-                    await send(.updateFeatureFlags)
-                }
+                return .send(.updateFeatureFlags)
 
             case .updateFeatureFlags:
                 state.isFocalPointEnabled = (try? client.isFocalPointEnabled()) ?? false
                 return .none
 
             case .fetch:
+                guard !state.viewState.isLoading else {
+                    return .none
+                }
+
                 if state.viewState.isReady || state.viewState.isError {
                     state.viewState = .loading
                 }

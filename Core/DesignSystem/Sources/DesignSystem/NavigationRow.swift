@@ -31,15 +31,15 @@ public struct NavigationRow<Content: View>: View {
                 content
                 Spacer()
                 Image(systemName: "chevron.right")
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                     .imageScale(.small)
                     .accessibilityHidden(true)
             }
-            .padding(.vertical, 8)
+            .padding(.vertical, .spacing8)
             .contentShape(Rectangle())
             .background(
                 isPressed
-                    ? Color(.systemFill)
+                    ? Color.secondary.opacity(0.15)
                     : Color.clear
             )
         }

@@ -17,7 +17,7 @@ struct PlotRemixGameStartView: View {
     var startGameAction: () -> Void
 
     var body: some View {
-        VStack(spacing: 50) {
+        VStack(spacing: .spacing50) {
             VStack {
                 Image(systemName: metadata.iconSystemName)
                     .resizable()
@@ -57,7 +57,7 @@ struct PlotRemixGameStartView: View {
         TimelineView(.animation(minimumInterval: 1.0 / 60.0, paused: reduceMotion)) { timeline in
             let time = timeline.date.timeIntervalSinceReferenceDate
 
-            VStack(spacing: 20) {
+            VStack(spacing: .spacing20) {
                 ZStack {
                     // Background circle
                     Circle()

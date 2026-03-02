@@ -36,6 +36,7 @@ struct CrewSection: View {
                             CrewMemberRow(member: member, transitionNamespace: transitionNamespace)
                         }
                         .buttonStyle(.plain)
+                        .accessibilityHint(Text("VIEW_PERSON_DETAILS_HINT", bundle: .module))
                     }
                 }
             } header: {
