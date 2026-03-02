@@ -70,6 +70,7 @@ struct TVSeriesMapperTests {
         #expect(result.genres?[1].name == "Action & Adventure")
         #expect(result.overview == "A fantasy epic about noble houses fighting for control.")
         #expect(result.posterURL == URL(string: "https://example.com/poster-detail.jpg"))
+        #expect(result.smallPosterURL == URL(string: "https://example.com/poster-thumbnail.jpg"))
         #expect(result.backdropURL == URL(string: "https://example.com/backdrop-full.jpg"))
         #expect(result.logoURL == URL(string: "https://example.com/logo-detail.jpg"))
     }
@@ -89,6 +90,7 @@ struct TVSeriesMapperTests {
         #expect(result.name == "Test Series")
         #expect(result.overview == "Test overview")
         #expect(result.posterURL == nil)
+        #expect(result.smallPosterURL == nil)
         #expect(result.backdropURL == nil)
         #expect(result.logoURL == nil)
     }

@@ -28,6 +28,7 @@ struct TVSeriesMapper {
             genres: genres,
             overview: tvSeriesDetails.overview,
             posterURL: tvSeriesDetails.posterURLSet?.detail,
+            smallPosterURL: tvSeriesDetails.posterURLSet?.thumbnail,
             backdropURL: tvSeriesDetails.backdropURLSet?.full,
             logoURL: tvSeriesDetails.logoURLSet?.detail,
             seasons: tvSeriesDetails.seasons.map(tvSeasonPreviewMapper.map)

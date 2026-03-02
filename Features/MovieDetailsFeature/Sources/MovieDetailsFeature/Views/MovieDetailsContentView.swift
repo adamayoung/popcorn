@@ -40,14 +40,14 @@ struct MovieDetailsContentView: View {
                 }
             }
         }
-#if os(iOS)
+        #if os(iOS)
         .toolbarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
                 ZStack {
                     Color.clear.frame(height: 0)
                     if showToolbarHeader {
-                        ToolbarHeader(
+                        MediaToolbarHeader(
                             title: movie.title,
                             posterURL: movie.smallPosterURL
                         )
@@ -56,7 +56,7 @@ struct MovieDetailsContentView: View {
                 }
             }
         }
-#endif
+        #endif
     }
 
 }
@@ -66,9 +66,9 @@ extension MovieDetailsContentView {
     private var header: some View {
         backdropImage
             .flexibleHeaderContent(height: 600)
-#if os(macOS)
+        #if os(macOS)
             .backgroundExtensionEffect()
-#endif
+        #endif
     }
 
     @ViewBuilder

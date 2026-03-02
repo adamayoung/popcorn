@@ -18,15 +18,43 @@ struct TVSeriesDetailsContentView: View {
     var didSelectPerson: (_ personID: Int) -> Void
     var navigateToCastAndCrew: (_ tvSeriesID: Int) -> Void
 
+    @State private var scrollOffset: CGFloat = 0
+    @State private var showToolbarHeader = false
+
     var body: some View {
         StretchyHeaderScrollView(
             header: { header },
             headerOverlay: { headerOverlay },
-            content: { content }
+            content: { content },
+            onScrollGeometryChange: {
+                scrollOffset = $0.contentOffset.y
+            }
         )
         .navigationTitle(tvSeries.name)
+        .onChange(of: scrollOffset) { _, newValue in
+            let shouldShow = newValue > 400
+            if shouldShow != showToolbarHeader {
+                withAnimation {
+                    showToolbarHeader = shouldShow
+                }
+            }
+        }
         #if os(iOS)
-            .hideToolbarTitle()
+        .toolbarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                ZStack {
+                    Color.clear.frame(height: 0)
+                    if showToolbarHeader {
+                        MediaToolbarHeader(
+                            title: tvSeries.name,
+                            posterURL: tvSeries.smallPosterURL
+                        )
+                        .transition(.opacity)
+                    }
+                }
+            }
+        }
         #endif
     }
 

@@ -1,19 +1,23 @@
 //
-//  ToolbarHeader.swift
-//  MovieDetailsFeature
+//  MediaToolbarHeader.swift
+//  DesignSystem
 //
-//  Created by Adam Young on 02/03/2026.
+//  Copyright © 2026 Adam Young.
 //
 
-import DesignSystem
 import SwiftUI
 
-struct ToolbarHeader: View {
+public struct MediaToolbarHeader: View {
 
     var title: String
     var posterURL: URL?
 
-    var body: some View {
+    public init(title: String, posterURL: URL? = nil) {
+        self.title = title
+        self.posterURL = posterURL
+    }
+
+    public var body: some View {
         VStack(spacing: 0) {
             PosterImage(url: posterURL)
                 .posterHeight(50)

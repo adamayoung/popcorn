@@ -19,18 +19,7 @@ struct MovieMapperTests {
 
     @Test("Maps all properties from MovieDetails to Movie")
     func mapsAllProperties() throws {
-        let imageURLSet = try ImageURLSet(
-            path: #require(URL(string: "https://example.com/path.jpg")),
-            thumbnail: #require(URL(string: "https://example.com/thumbnail.jpg")),
-            card: #require(URL(string: "https://example.com/card.jpg")),
-            detail: #require(URL(string: "https://example.com/detail.jpg")),
-            full: #require(URL(string: "https://example.com/full.jpg"))
-        )
-        let genres = [
-            MoviesDomain.Genre(id: 28, name: "Action"),
-            MoviesDomain.Genre(id: 878, name: "Science Fiction"),
-            MoviesDomain.Genre(id: 53, name: "Thriller")
-        ]
+        let imageURLSet = try Self.makeImageURLSet()
         let releaseDate = Date(timeIntervalSince1970: 1_748_390_400)
 
         let movieDetails = MovieDetails(
@@ -39,7 +28,7 @@ struct MovieMapperTests {
             tagline: "The race for survival begins.",
             overview: "A thrilling action movie.",
             runtime: 120,
-            genres: genres,
+            genres: Self.genres,
             releaseDate: releaseDate,
             posterURLSet: imageURLSet,
             backdropURLSet: imageURLSet,
@@ -168,6 +157,26 @@ struct MovieMapperTests {
         #expect(result.smallPosterURL == URL(string: "https://example.com/poster-thumbnail.jpg"))
         #expect(result.backdropURL == URL(string: "https://example.com/backdrop-full.jpg"))
         #expect(result.logoURL == URL(string: "https://example.com/logo-detail.jpg"))
+    }
+
+}
+
+extension MovieMapperTests {
+
+    private static let genres = [
+        MoviesDomain.Genre(id: 28, name: "Action"),
+        MoviesDomain.Genre(id: 878, name: "Science Fiction"),
+        MoviesDomain.Genre(id: 53, name: "Thriller")
+    ]
+
+    private static func makeImageURLSet() throws -> ImageURLSet {
+        try ImageURLSet(
+            path: #require(URL(string: "https://example.com/path.jpg")),
+            thumbnail: #require(URL(string: "https://example.com/thumbnail.jpg")),
+            card: #require(URL(string: "https://example.com/card.jpg")),
+            detail: #require(URL(string: "https://example.com/detail.jpg")),
+            full: #require(URL(string: "https://example.com/full.jpg"))
+        )
     }
 
 }
