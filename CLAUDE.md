@@ -18,7 +18,7 @@ Popcorn is a modular SwiftUI application for browsing movies and TV series acros
 
 ### Configuration
 
-Copy `Configs/Secrets.example.xcconfig` to `Configs/Secrets.xcconfig` and fill in `TMDB_API_KEY` (required), `SENTRY_DSN` and `STATSIG_SDK_KEY` (optional).
+Copy `Configs/Secrets.example.xcconfig` to `Configs/Secrets.xcconfig` and fill in `TMDB_API_KEY` (required), `SENTRY_DSN`, `STATSIG_SDK_KEY` and `AMPLITUDE_API_KEY` (optional).
 
 ### MCP Servers
 
