@@ -1,6 +1,6 @@
 //
 //  AmplitudeAnalyticsProvider.swift
-//  AnalyticsAdapters
+//  Popcorn
 //
 //  Copyright © 2026 Adam Young.
 //
@@ -10,8 +10,8 @@ import Analytics
 import Foundation
 import OSLog
 
-// @unchecked Sendable: `amplitude` is written once during `start()` at app launch
-// and only read thereafter. The Amplitude SDK class is not Sendable.
+/// @unchecked Sendable: `amplitude` is written once during `start()` at app launch
+/// and only read thereafter. The Amplitude SDK class is not Sendable.
 final class AmplitudeAnalyticsProvider: AnalyticsProviding, @unchecked Sendable {
 
     private static let logger = Logger.analytics
@@ -32,7 +32,7 @@ final class AmplitudeAnalyticsProvider: AnalyticsProviding, @unchecked Sendable 
 
         let amplitudeInstance = Amplitude(configuration: configuration)
         amplitudeInstance.setUserId(userId: config.userID)
-        self.amplitude = amplitudeInstance
+        amplitude = amplitudeInstance
 
         Self.logger.info(
             "Amplitude enabled (environment: \(config.environment.rawValue, privacy: .public))"

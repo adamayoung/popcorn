@@ -1,6 +1,6 @@
 //
 //  AnalyticsAdaptersFactoryTests.swift
-//  AnalyticsAdapters
+//  Popcorn
 //
 //  Copyright © 2026 Adam Young.
 //
