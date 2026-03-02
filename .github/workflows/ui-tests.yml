@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 concurrency:
@@ -34,6 +37,12 @@ jobs:
           key: ${{ runner.os }}-xcode-${{ env.XCODE_VERSION }}-spm-${{ hashFiles('**/Package.resolved', '**/Package.swift') }}
           restore-keys: |
             ${{ runner.os }}-xcode-${{ env.XCODE_VERSION }}-spm-
+
+      - name: Create Secrets
+        env:
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+        run: |
+          printf 'TMDB_API_KEY = %s\n' "$TMDB_API_KEY" > Configs/Secrets.xcconfig
 
       - name: Build
         run: |
