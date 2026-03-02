@@ -27,7 +27,8 @@ final class AmplitudeAnalyticsProvider: AnalyticsProviding, @unchecked Sendable 
     func start(_ config: AnalyticsConfiguration) async throws {
         let configuration = Configuration(
             apiKey: config.apiKey,
-            autocapture: [.sessions, .appLifecycles]
+            serverZone: .EU,
+            autocapture: [.sessions, .appLifecycles, .screenViews, .networkTracking],
         )
 
         let amplitudeInstance = Amplitude(configuration: configuration)

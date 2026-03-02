@@ -17,6 +17,7 @@ public struct MovieDetailsFeature: Sendable {
     private static let logger = Logger.movieDetails
 
     @Dependency(\.movieDetailsClient) private var client
+    @Dependency(\.analytics) private var analytics
 
     @ObservableState
     public struct State: Sendable, Equatable {
@@ -127,6 +128,14 @@ public struct MovieDetailsFeature: Sendable {
             case .toggleOnWatchlist:
                 guard state.isWatchlistEnabled else {
                     return .none
+                }
+
+                if let movie = state.viewState.content?.movie {
+                    if movie.isOnWatchlist {
+                        analytics.track(event: "movie_add_to_watchlist", properties: ["movie_id": movie.id])
+                    } else {
+                        analytics.track(event: "movie_remove_from_watchlist", properties: ["movie_id": movie.id])
+                    }
                 }
 
                 return handleToggleMovieOnWatchlist(&state)
