@@ -7,6 +7,11 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - "App/**"
+      - "**/*.swift"
+      - "Configs/**"
+      - ".github/workflows/ui-tests.yml"
   workflow_dispatch:
 
 concurrency:
@@ -33,15 +38,20 @@ jobs:
           path: |
             .spm
             ~/Library/Caches/org.swift.swiftpm
-            DerivedData
           key: ${{ runner.os }}-xcode-${{ env.XCODE_VERSION }}-spm-${{ hashFiles('**/Package.resolved', '**/Package.swift') }}
           restore-keys: |
             ${{ runner.os }}-xcode-${{ env.XCODE_VERSION }}-spm-
 
+      # Note: secrets are not available for PRs from forks (GitHub security policy).
+      # Fork PRs will fail at this step with a clear error message.
       - name: Create Secrets
         env:
           TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
         run: |
+          if [ -z "$TMDB_API_KEY" ]; then
+            echo "::error::TMDB_API_KEY secret is not set. Add it to the repository secrets."
+            exit 1
+          fi
           printf 'TMDB_API_KEY = %s\n' "$TMDB_API_KEY" > Configs/Secrets.xcconfig
 
       - name: Build
@@ -72,12 +82,17 @@ jobs:
       - name: Collect crash logs
         if: failure()
         run: |
-          DEVICE_ID=$(xcrun simctl list devices | grep "${{ env.SIMULATOR_NAME }}" | grep -oE '[A-F0-9-]{36}' | head -1)
-          echo "Simulator device: $DEVICE_ID"
+          DEVICE_ID=$(xcrun simctl list devices | grep "${{ env.SIMULATOR_NAME }}" | grep -oiE '[A-F0-9-]{36}' | head -1)
 
           echo "=== App crash logs ==="
-          find ~/Library/Logs/DiagnosticReports -name "Popcorn*" -newer UITestResults.xcresult 2>/dev/null -exec cat {} \; || true
+          find ~/Library/Logs/DiagnosticReports -name "Popcorn*" -mmin -60 2>/dev/null -exec cat {} \; || true
 
+          if [ -z "$DEVICE_ID" ]; then
+            echo "WARNING: simulator device not found, skipping system log collection"
+            exit 0
+          fi
+
+          echo "Simulator device: $DEVICE_ID"
           echo "=== Simulator system log (Popcorn) ==="
           xcrun simctl spawn "$DEVICE_ID" log show --style compact --last 10m \
             --predicate 'process == "Popcorn" AND (messageType == error OR messageType == fault)' 2>/dev/null | tail -100 || true
