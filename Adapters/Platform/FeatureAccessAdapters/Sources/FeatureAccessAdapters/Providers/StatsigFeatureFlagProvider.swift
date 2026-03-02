@@ -57,7 +57,11 @@ struct StatsigFeatureFlagProvider: FeatureFlagProviding {
     }
 
     func isEnabled(_ key: String) -> Bool {
-        Statsig.checkGate(key)
+        guard isInitialized else {
+            return false
+        }
+
+        return Statsig.checkGate(key)
     }
 }
 

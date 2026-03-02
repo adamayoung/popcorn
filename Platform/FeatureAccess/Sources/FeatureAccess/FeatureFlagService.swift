@@ -56,6 +56,10 @@ extension FeatureFlagService {
             return overrideValue
         }
 
+        guard isInitialised else {
+            return false
+        }
+
         return actualValue(for: featureFlag)
     }
 
