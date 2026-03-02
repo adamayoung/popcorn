@@ -13,7 +13,10 @@ struct PersonDetailsContentView: View {
     var person: Person
     var isFocalPointEnabled: Bool
 
+    private static let toolbarHeaderScrollThreshold: CGFloat = 200
     private static let maxProfileSize: CGFloat = 300
+
+    @State private var showToolbarHeader = false
 
     var body: some View {
         ScrollView {
@@ -36,9 +39,33 @@ struct PersonDetailsContentView: View {
             .padding(.horizontal)
             .padding(.bottom)
         }
+        .onScrollGeometryChange(for: Bool.self) { geometry in
+            geometry.contentOffset.y > Self.toolbarHeaderScrollThreshold
+        } action: { _, shouldShow in
+            if shouldShow != showToolbarHeader {
+                withAnimation {
+                    showToolbarHeader = shouldShow
+                }
+            }
+        }
         .navigationTitle(person.name)
         #if os(iOS)
-            .hideToolbarTitle()
+            .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    ZStack {
+                        Color.clear.frame(height: 0)
+                        if showToolbarHeader {
+                            PersonToolbarHeader(
+                                name: person.name,
+                                profileURL: person.smallProfileURL,
+                                initials: person.initials
+                            )
+                            .transition(.opacity)
+                        }
+                    }
+                }
+            }
         #endif
     }
 

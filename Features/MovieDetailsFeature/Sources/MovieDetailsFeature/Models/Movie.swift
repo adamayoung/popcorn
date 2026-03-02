@@ -17,6 +17,7 @@ public struct Movie: Identifiable, Sendable, Equatable, Hashable {
     public let genres: [Genre]?
     public let releaseDate: Date?
     public let posterURL: URL?
+    public let smallPosterURL: URL?
     public let backdropURL: URL?
     public let logoURL: URL?
     public let budget: Double?
@@ -34,6 +35,7 @@ public struct Movie: Identifiable, Sendable, Equatable, Hashable {
         genres: [Genre]? = nil,
         releaseDate: Date? = nil,
         posterURL: URL? = nil,
+        smallPosterURL: URL? = nil,
         backdropURL: URL? = nil,
         logoURL: URL? = nil,
         budget: Double? = nil,
@@ -50,6 +52,7 @@ public struct Movie: Identifiable, Sendable, Equatable, Hashable {
         self.genres = genres
         self.releaseDate = releaseDate
         self.posterURL = posterURL
+        self.smallPosterURL = smallPosterURL
         self.backdropURL = backdropURL
         self.logoURL = logoURL
         self.budget = budget
@@ -80,6 +83,9 @@ extension Movie {
             releaseDate: Date(timeIntervalSince1970: 1_748_390_400),
             posterURL: URL(
                 string: "https://image.tmdb.org/t/p/w780/dKL78O9zxczVgjtNcQ9UkbYLzqX.jpg"
+            ),
+            smallPosterURL: URL(
+                string: "https://image.tmdb.org/t/p/w185/dKL78O9zxczVgjtNcQ9UkbYLzqX.jpg"
             ),
             backdropURL: URL(
                 string: "https://image.tmdb.org/t/p/w1280/docDyCJrhPoFXAckB1aOiIv9Mz0.jpg"

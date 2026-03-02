@@ -44,6 +44,7 @@ struct PersonMapperTests {
         #expect(result.knownForDepartment == "Acting")
         #expect(result.gender == .male)
         #expect(result.profileURL == URL(string: "https://example.com/detail.jpg"))
+        #expect(result.smallProfileURL == URL(string: "https://example.com/thumbnail.jpg"))
         #expect(result.initials == "GP")
     }
 
@@ -65,6 +66,7 @@ struct PersonMapperTests {
         #expect(result.knownForDepartment == "Directing")
         #expect(result.gender == .female)
         #expect(result.profileURL == nil)
+        #expect(result.smallProfileURL == nil)
         #expect(result.initials == nil)
     }
 

@@ -25,6 +25,7 @@ struct PersonMapper {
             knownForDepartment: personDetails.knownForDepartment,
             gender: gender,
             profileURL: personDetails.profileURLSet?.detail,
+            smallProfileURL: personDetails.profileURLSet?.thumbnail,
             initials: personDetails.initials
         )
     }

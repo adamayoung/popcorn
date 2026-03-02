@@ -14,6 +14,7 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
     public let genres: [Genre]?
     public let overview: String
     public let posterURL: URL?
+    public let smallPosterURL: URL?
     public let backdropURL: URL?
     public let logoURL: URL?
     public let seasons: [TVSeasonPreview]
@@ -24,6 +25,7 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
         genres: [Genre]? = nil,
         overview: String,
         posterURL: URL? = nil,
+        smallPosterURL: URL? = nil,
         backdropURL: URL? = nil,
         logoURL: URL? = nil,
         seasons: [TVSeasonPreview] = []
@@ -33,6 +35,7 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
         self.genres = genres
         self.overview = overview
         self.posterURL = posterURL
+        self.smallPosterURL = smallPosterURL
         self.backdropURL = backdropURL
         self.logoURL = logoURL
         self.seasons = seasons
@@ -55,6 +58,9 @@ extension TVSeries {
             "When a young boy vanishes, a small town uncovers a mystery involving secret experiments, terrifying supernatural forces, and one strange little girl.",
             posterURL: URL(
                 string: "https://image.tmdb.org/t/p/w780/cVxVGwHce6xnW8UaVUggaPXbmoE.jpg"
+            ),
+            smallPosterURL: URL(
+                string: "https://image.tmdb.org/t/p/w185/cVxVGwHce6xnW8UaVUggaPXbmoE.jpg"
             ),
             backdropURL: URL(
                 string: "https://image.tmdb.org/t/p/w1280/56v2KjBlU4XaOv9rVYEQypROD7P.jpg"

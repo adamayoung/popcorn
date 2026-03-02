@@ -15,6 +15,7 @@ public struct Person: Identifiable, Equatable, Sendable {
     public let knownForDepartment: String
     public let gender: Gender
     public let profileURL: URL?
+    public let smallProfileURL: URL?
     public let initials: String?
 
     public init(
@@ -24,6 +25,7 @@ public struct Person: Identifiable, Equatable, Sendable {
         knownForDepartment: String,
         gender: Gender,
         profileURL: URL? = nil,
+        smallProfileURL: URL? = nil,
         initials: String? = nil
     ) {
         self.id = id
@@ -32,6 +34,7 @@ public struct Person: Identifiable, Equatable, Sendable {
         self.knownForDepartment = knownForDepartment
         self.gender = gender
         self.profileURL = profileURL
+        self.smallProfileURL = smallProfileURL
         self.initials = initials
     }
 
@@ -50,6 +53,9 @@ extension Person {
             gender: .male,
             profileURL: URL(
                 string: "https://image.tmdb.org/t/p/h632/q4TanMDI5Rgsvw4SfyNbPBh4URr.jpg"
+            ),
+            smallProfileURL: URL(
+                string: "https://image.tmdb.org/t/p/w185/q4TanMDI5Rgsvw4SfyNbPBh4URr.jpg"
             ),
             initials: "ST"
         )

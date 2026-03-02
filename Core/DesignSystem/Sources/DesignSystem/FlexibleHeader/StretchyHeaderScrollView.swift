@@ -12,15 +12,18 @@ public struct StretchyHeaderScrollView<Header: View, HeaderOverlay: View, Conten
     private var header: Header
     private var headerOverlay: HeaderOverlay
     private var content: Content
+    private var onScrollGeometryChange: ((ScrollGeometry) -> Void)?
 
     public init(
         @ViewBuilder header: () -> Header,
         @ViewBuilder headerOverlay: () -> HeaderOverlay,
-        @ViewBuilder content: () -> Content
+        @ViewBuilder content: () -> Content,
+        onScrollGeometryChange: ((ScrollGeometry) -> Void)? = nil
     ) {
         self.header = header()
         self.headerOverlay = headerOverlay()
         self.content = content()
+        self.onScrollGeometryChange = onScrollGeometryChange
     }
 
     public var body: some View {
@@ -49,8 +52,7 @@ public struct StretchyHeaderScrollView<Header: View, HeaderOverlay: View, Conten
                 content
             }
         }
-        .flexibleHeaderScrollView()
-        .toolbar(removing: .title)
+        .flexibleHeaderScrollView(onChange: onScrollGeometryChange)
         .ignoresSafeArea(edges: .top)
     }
 

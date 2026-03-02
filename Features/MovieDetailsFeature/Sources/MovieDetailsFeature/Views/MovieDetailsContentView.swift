@@ -19,15 +19,41 @@ struct MovieDetailsContentView: View {
     var didSelectMovie: (_ movieID: Int) -> Void
     var navigateToCastAndCrew: (_ movieID: Int) -> Void
 
+    private static let toolbarHeaderScrollThreshold: CGFloat = 400
+
+    @State private var showToolbarHeader = false
+
     var body: some View {
         StretchyHeaderScrollView(
             header: { header },
             headerOverlay: { headerOverlay },
-            content: { content }
+            content: { content },
+            onScrollGeometryChange: { geometry in
+                let shouldShow = geometry.contentOffset.y > Self.toolbarHeaderScrollThreshold
+                if shouldShow != showToolbarHeader {
+                    withAnimation {
+                        showToolbarHeader = shouldShow
+                    }
+                }
+            }
         )
         .navigationTitle(movie.title)
         #if os(iOS)
-            .hideToolbarTitle()
+            .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    ZStack {
+                        Color.clear.frame(height: 0)
+                        if showToolbarHeader {
+                            MediaToolbarHeader(
+                                title: movie.title,
+                                posterURL: movie.smallPosterURL
+                            )
+                            .transition(.opacity)
+                        }
+                    }
+                }
+            }
         #endif
     }
 
