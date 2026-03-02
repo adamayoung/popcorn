@@ -69,6 +69,19 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             test-without-building
 
+      - name: Collect crash logs
+        if: failure()
+        run: |
+          DEVICE_ID=$(xcrun simctl list devices | grep "${{ env.SIMULATOR_NAME }}" | grep -oE '[A-F0-9-]{36}' | head -1)
+          echo "Simulator device: $DEVICE_ID"
+
+          echo "=== App crash logs ==="
+          find ~/Library/Logs/DiagnosticReports -name "Popcorn*" -newer UITestResults.xcresult 2>/dev/null -exec cat {} \; || true
+
+          echo "=== Simulator system log (Popcorn) ==="
+          xcrun simctl spawn "$DEVICE_ID" log show --style compact --last 10m \
+            --predicate 'process == "Popcorn" AND (messageType == error OR messageType == fault)' 2>/dev/null | tail -100 || true
+
       - name: Archive test results
         if: failure()
         run: |
