@@ -15,6 +15,20 @@
   "testTargets" : [
     {
       "target" : {
+        "containerPath" : "container:Platform\/Analytics",
+        "identifier" : "AnalyticsTests",
+        "name" : "AnalyticsTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Adapters\/Platform\/AnalyticsAdapters",
+        "identifier" : "AnalyticsAdaptersTests",
+        "name" : "AnalyticsAdaptersTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Features\/TrendingTVSeriesFeature",
         "identifier" : "TrendingTVSeriesFeatureTests",
         "name" : "TrendingTVSeriesFeatureTests"

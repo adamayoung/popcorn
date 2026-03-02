@@ -1,6 +1,33 @@
 {
-  "originHash" : "96ea3d5eeb42409aa9d2e36b09f6fa22f587053265be0efb899252755cb94b6f",
+  "originHash" : "b951706b73536be640d246b21772cdc523f48c200098a15c0647eaa819c4145c",
   "pins" : [
+    {
+      "identity" : "amplitude-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/amplitude/Amplitude-Swift.git",
+      "state" : {
+        "revision" : "b9da4c5e28830375dccdd9b49cc62da60b7f1895",
+        "version" : "1.17.3"
+      }
+    },
+    {
+      "identity" : "amplitudecore-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/amplitude/AmplitudeCore-Swift.git",
+      "state" : {
+        "revision" : "1be727864d2e7ead7198f975ffc30cf5a7ba6fd3",
+        "version" : "1.4.3"
+      }
+    },
+    {
+      "identity" : "analytics-connector-ios",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/amplitude/analytics-connector-ios.git",
+      "state" : {
+        "revision" : "4adbfe85486e6dcdcdca5fa9362097ffe5ec712b",
+        "version" : "1.3.1"
+      }
+    },
     {
       "identity" : "combine-schedulers",
       "kind" : "remoteSourceControl",

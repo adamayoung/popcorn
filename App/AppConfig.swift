@@ -5,11 +5,36 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import Analytics
 import FeatureAccess
 import Foundation
 import Observability
 
 enum AppConfig {
+
+    enum Amplitude {
+        static let apiKey: String? = AppConfig.resolveValue(
+            infoPlistKey: "AmplitudeAPIKey",
+            environmentKey: "AMPLITUDE_API_KEY"
+        )
+
+        static let environment: AnalyticsConfiguration.Environment? = {
+            guard
+                let raw = AppConfig.resolveValue(
+                    infoPlistKey: "AmplitudeEnvironment",
+                    environmentKey: "AMPLITUDE_ENVIRONMENT"
+                )
+            else {
+                return nil
+            }
+
+            guard let value = AnalyticsConfiguration.Environment(rawValue: raw) else {
+                return nil
+            }
+
+            return value
+        }()
+    }
 
     enum Sentry {
         static let dsn: String? = AppConfig.resolveValue(

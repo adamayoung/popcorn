@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import Analytics
 import AppDependencies
 import ComposableArchitecture
 import FeatureAccess
@@ -17,6 +18,7 @@ struct AppRootClient: Sendable {
 
     var setupObservability: @Sendable () async throws -> Void
     var setupFeatureFlags: @Sendable () async throws -> Void
+    var setupAnalytics: @Sendable () async throws -> Void
 
     var isExploreEnabled: @Sendable () throws -> Bool
     var isWatchlistEnabled: @Sendable () throws -> Bool
@@ -30,6 +32,7 @@ extension AppRootClient: DependencyKey {
     private static let logger = Logger.appRoot
 
     static var liveValue: AppRootClient {
+        @Dependency(\.analyticsInitialiser) var analyticsInitialiser
         @Dependency(\.featureFlags) var featureFlags
         @Dependency(\.featureFlagsInitialiser) var featureFlagsInitialiser
         @Dependency(\.observability) var observability
@@ -90,6 +93,33 @@ extension AppRootClient: DependencyKey {
                         "Feature flags failed to initialise: \(error.localizedDescription, privacy: .public)"
                     )
                     throw error
+                }
+            },
+            setupAnalytics: {
+                guard let apiKey = AppConfig.Amplitude.apiKey else {
+                    Self.logger.warning("Amplitude API key not configured. Disabling analytics.")
+                    return
+                }
+
+                guard let environment = AppConfig.Amplitude.environment else {
+                    Self.logger.warning(
+                        "Amplitude environment not configured. Disabling analytics."
+                    )
+                    return
+                }
+
+                let config = AnalyticsConfiguration(
+                    apiKey: apiKey,
+                    environment: environment,
+                    userID: userID
+                )
+
+                do {
+                    try await analyticsInitialiser.start(config)
+                } catch let error {
+                    Self.logger.error(
+                        "Analytics failed to initialise: \(error.localizedDescription, privacy: .public)"
+                    )
                 }
             },
             isExploreEnabled: {

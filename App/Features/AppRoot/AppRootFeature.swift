@@ -141,8 +141,9 @@ extension AppRootFeature {
             do {
                 async let observability: Void = appRootClient.setupObservability()
                 async let featureFlags: Void = appRootClient.setupFeatureFlags()
+                async let analytics: Void = appRootClient.setupAnalytics()
 
-                _ = try await (observability, featureFlags)
+                _ = try await (observability, featureFlags, analytics)
                 await send(.setupComplete)
             } catch let error {
                 await send(.setupFailed(error))

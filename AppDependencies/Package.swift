@@ -36,6 +36,7 @@ let package = Package(
         .package(path: "../Contexts/PopcornTVSeries"),
 
         // Platform Packages
+        .package(path: "../Platform/Analytics"),
         .package(path: "../Platform/FeatureAccess"),
         .package(path: "../Platform/Observability"),
 
@@ -53,6 +54,7 @@ let package = Package(
         .package(path: "../Adapters/Contexts/PopcornTVSeriesAdapters"),
 
         // Platform Adapters
+        .package(path: "../Adapters/Platform/AnalyticsAdapters"),
         .package(path: "../Adapters/Platform/FeatureAccessAdapters"),
         .package(path: "../Adapters/Platform/ObservabilityAdapters")
     ],
@@ -89,6 +91,7 @@ let package = Package(
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
 
                 // Platform
+                "Analytics",
                 "FeatureAccess",
                 "Observability",
 
@@ -106,6 +109,7 @@ let package = Package(
                 "PopcornTVSeriesAdapters",
 
                 // Platform Adapters
+                "AnalyticsAdapters",
                 "FeatureAccessAdapters",
                 "ObservabilityAdapters"
             ]
