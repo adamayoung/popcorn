@@ -45,7 +45,7 @@ public struct MovieRow: View {
         HStack {
             PosterImage(url: posterURL)
                 .posterWidth(80)
-                .cornerRadius(10)
+                .clipShape(.rect(cornerRadius: 10))
                 .clipped()
 
             Text(verbatim: title)

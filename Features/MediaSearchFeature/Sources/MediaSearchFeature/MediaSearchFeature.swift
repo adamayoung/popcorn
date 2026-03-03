@@ -16,6 +16,7 @@ public struct MediaSearchFeature: Sendable {
     private static let logger = Logger.mediaSearch
 
     @Dependency(\.mediaSearchClient) private var client
+    @Dependency(\.mainQueue) private var mainQueue
 
     @ObservableState
     public struct State: Sendable {
@@ -150,7 +151,7 @@ public struct MediaSearchFeature: Sendable {
                     .debounce(
                         id: CancelID.search,
                         for: .milliseconds(300),
-                        scheduler: DispatchQueue.main
+                        scheduler: mainQueue
                     )
                 }
 

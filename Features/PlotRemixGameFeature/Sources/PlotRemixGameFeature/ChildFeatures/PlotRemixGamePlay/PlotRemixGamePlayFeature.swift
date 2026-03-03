@@ -7,6 +7,7 @@
 
 import ComposableArchitecture
 import Foundation
+import TCAFoundation
 
 @Reducer
 public struct PlotRemixGamePlayFeature: Sendable {
@@ -15,7 +16,7 @@ public struct PlotRemixGamePlayFeature: Sendable {
     @Dependency(\.dismiss) private var dismiss
 
     @ObservableState
-    public struct State: Sendable {
+    public struct State: Equatable, Sendable {
         public var metadata: GameMetadata
         public var viewState: ViewState
 
@@ -42,14 +43,14 @@ public struct PlotRemixGamePlayFeature: Sendable {
         }
     }
 
-    public enum ViewState: Sendable {
+    public enum ViewState: Equatable, Sendable {
         case initial
         case generating(Float = 0.0)
         case ready(ViewSnapshot)
-        case error(Error)
+        case error(ViewStateError)
     }
 
-    public struct ViewSnapshot: Sendable {
+    public struct ViewSnapshot: Equatable, Sendable {
         public let game: Game
 
         public init(game: Game) {
@@ -61,7 +62,7 @@ public struct PlotRemixGamePlayFeature: Sendable {
         case generate
         case generating(Float)
         case generated(ViewSnapshot)
-        case generateFailed(Error)
+        case generateFailed(ViewStateError)
         case close
     }
 
@@ -131,7 +132,7 @@ extension PlotRemixGamePlayFeature {
                 guard !Task.isCancelled else {
                     return
                 }
-                await send(.generateFailed(error))
+                await send(.generateFailed(ViewStateError(error)))
                 return
             }
 

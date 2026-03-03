@@ -34,7 +34,9 @@ struct MovieDetailsFeatureFetchFeatureFlagsTests {
             $0.movieDetailsClient.fetchRecommendedMovies = { _ in recommendations }
         }
 
-        await store.send(.fetch)
+        await store.send(.fetch) {
+            $0.viewState = .loading
+        }
 
         await store.receive(\.loaded) {
             $0.viewState = .ready(MovieDetailsFeature.ViewSnapshot(
@@ -65,7 +67,9 @@ struct MovieDetailsFeatureFetchFeatureFlagsTests {
             $0.movieDetailsClient.fetchCredits = { _ in credits }
         }
 
-        await store.send(.fetch)
+        await store.send(.fetch) {
+            $0.viewState = .loading
+        }
 
         await store.receive(\.loaded) {
             $0.viewState = .ready(MovieDetailsFeature.ViewSnapshot(
@@ -94,7 +98,9 @@ struct MovieDetailsFeatureFetchFeatureFlagsTests {
             }
         }
 
-        await store.send(.fetch)
+        await store.send(.fetch) {
+            $0.viewState = .loading
+        }
 
         await store.receive(\.loaded) {
             $0.viewState = .ready(MovieDetailsFeature.ViewSnapshot(
@@ -123,7 +129,9 @@ struct MovieDetailsFeatureFetchFeatureFlagsTests {
             }
         }
 
-        await store.send(.fetch)
+        await store.send(.fetch) {
+            $0.viewState = .loading
+        }
 
         await store.receive(\.loaded) {
             $0.viewState = .ready(MovieDetailsFeature.ViewSnapshot(

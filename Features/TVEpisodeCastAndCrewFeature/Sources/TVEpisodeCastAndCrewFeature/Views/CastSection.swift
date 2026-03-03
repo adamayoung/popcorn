@@ -22,6 +22,7 @@ struct CastSection: View {
                     CastMemberRow(member: member, transitionNamespace: transitionNamespace)
                 }
                 .buttonStyle(.plain)
+                .accessibilityHint(Text("VIEW_PERSON_DETAILS_HINT", bundle: .module))
             }
         } header: {
             Text("CAST", bundle: .module)

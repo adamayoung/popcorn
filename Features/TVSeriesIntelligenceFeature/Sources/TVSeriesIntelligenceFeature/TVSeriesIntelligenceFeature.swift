@@ -21,7 +21,7 @@ public struct TVSeriesIntelligenceFeature: Sendable {
     @Dependency(\.observability) private var observability
 
     @ObservableState
-    public struct State: Sendable {
+    public struct State: Equatable, Sendable {
         let tvSeriesID: Int
         var tvSeries: TVSeries?
         var session: LLMSession?
@@ -70,6 +70,7 @@ public struct TVSeriesIntelligenceFeature: Sendable {
                 return handleSendPrompt(&state, prompt: "Introduce yourself and what you're for")
 
             case .sessionStartFailed(let error):
+                state.isThinking = false
                 state.error = error
 
                 let message = Message(role: .assistant, textContent: "There was a problem and I can't help you.")
@@ -93,9 +94,28 @@ public struct TVSeriesIntelligenceFeature: Sendable {
             case .sendPromptFailed(let error):
                 state.error = error
                 state.isThinking = false
+
+                let message = Message(role: .assistant, textContent: "I couldn't respond to that. Please try again.")
+                state.messages.append(message)
+
                 return .none
             }
         }
+    }
+
+}
+
+public extension TVSeriesIntelligenceFeature.State {
+
+    /// `session` is a protocol existential and cannot be meaningfully compared,
+    /// so it is excluded from equality. `tvSeries` is identified by `tvSeriesID` and
+    /// does not change after session start, so it is also excluded. `error` is an
+    /// untyped `Error` existential; state changes are observable via `isThinking`
+    /// and `messages` (an error message is appended on every failure path).
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.tvSeriesID == rhs.tvSeriesID
+            && lhs.isThinking == rhs.isThinking
+            && lhs.messages == rhs.messages
     }
 
 }

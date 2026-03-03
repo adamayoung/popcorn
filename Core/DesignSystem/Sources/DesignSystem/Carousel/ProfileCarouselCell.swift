@@ -94,7 +94,7 @@ public struct ProfileCarouselCell<CellLabel: View>: View {
     ProfileCarouselCell(
         imageURL: URL(string: "https://image.tmdb.org/t/p/h632/q4TanMDI5Rgsvw4SfyNbPBh4URr.jpg")
     ) {
-        HStack(alignment: .top, spacing: 15) {
+        HStack(alignment: .top, spacing: .spacing15) {
             Text(verbatim: "1")
                 .font(.title)
                 .bold()

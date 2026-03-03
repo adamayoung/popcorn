@@ -8,13 +8,16 @@
 import ComposableArchitecture
 import Foundation
 import MediaSearchFeature
+import MovieCastAndCrewFeature
 import MovieDetailsFeature
+import MovieIntelligenceFeature
 import PersonDetailsFeature
 import TVEpisodeCastAndCrewFeature
 import TVEpisodeDetailsFeature
 import TVSeasonDetailsFeature
 import TVSeriesCastAndCrewFeature
 import TVSeriesDetailsFeature
+import TVSeriesIntelligenceFeature
 
 @Reducer
 struct SearchRootFeature {
@@ -23,6 +26,9 @@ struct SearchRootFeature {
     struct State {
         var path = StackState<Path.State>()
         var mediaSearch = MediaSearchFeature.State()
+
+        @Presents var movieIntelligence: MovieIntelligenceFeature.State?
+        @Presents var tvSeriesIntelligence: TVSeriesIntelligenceFeature.State?
     }
 
     @Reducer
@@ -32,6 +38,7 @@ struct SearchRootFeature {
         case tvSeasonDetails(TVSeasonDetailsFeature)
         case tvEpisodeDetails(TVEpisodeDetailsFeature)
         case personDetails(PersonDetailsFeature)
+        case movieCastAndCrew(MovieCastAndCrewFeature)
         case tvSeriesCastAndCrew(TVSeriesCastAndCrewFeature)
         case tvEpisodeCastAndCrew(TVEpisodeCastAndCrewFeature)
     }
@@ -41,6 +48,8 @@ struct SearchRootFeature {
         case movieDetails(MovieDetailsFeature.Action)
         case tvSeriesDetails(TVSeriesDetailsFeature.Action)
         case personDetails(PersonDetailsFeature.Action)
+        case movieIntelligence(PresentationAction<MovieIntelligenceFeature.Action>)
+        case tvSeriesIntelligence(PresentationAction<TVSeriesIntelligenceFeature.Action>)
         case path(StackActionOf<Path>)
     }
 
@@ -58,8 +67,27 @@ struct SearchRootFeature {
             case .mediaSearch(.navigate(.personDetails(let id))):
                 state.path.append(.personDetails(PersonDetailsFeature.State(personID: id)))
                 return .none
+            case .path(.element(_, .movieDetails(.navigate(.movieIntelligence(let id))))):
+                state.movieIntelligence = MovieIntelligenceFeature.State(movieID: id)
+                return .none
             case .path(.element(_, .movieDetails(.navigate(.movieDetails(let id))))):
                 state.path.append(.movieDetails(MovieDetailsFeature.State(movieID: id)))
+                return .none
+            case .path(.element(_, .movieDetails(.navigate(.personDetails(let id))))):
+                state.path.append(.personDetails(PersonDetailsFeature.State(personID: id)))
+                return .none
+            case .path(.element(_, .movieDetails(.navigate(.castAndCrew(let id))))):
+                state.path.append(.movieCastAndCrew(MovieCastAndCrewFeature.State(movieID: id)))
+                return .none
+            case .path(
+                .element(_, .movieCastAndCrew(.navigate(.personDetails(let id, _))))
+            ):
+                state.path.append(
+                    .personDetails(PersonDetailsFeature.State(personID: id))
+                )
+                return .none
+            case .path(.element(_, .tvSeriesDetails(.navigate(.tvSeriesIntelligence(let id))))):
+                state.tvSeriesIntelligence = TVSeriesIntelligenceFeature.State(tvSeriesID: id)
                 return .none
             case .path(
                 .element(
@@ -153,6 +181,12 @@ struct SearchRootFeature {
             }
         }
         .forEach(\.path, action: \.path)
+        .ifLet(\.$movieIntelligence, action: \.movieIntelligence) {
+            MovieIntelligenceFeature()
+        }
+        .ifLet(\.$tvSeriesIntelligence, action: \.tvSeriesIntelligence) {
+            TVSeriesIntelligenceFeature()
+        }
     }
 
 }

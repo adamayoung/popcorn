@@ -55,6 +55,17 @@
           }
         }
       }
+    },
+    "VIEW_PERSON_DETAILS_HINT" : {
+      "comment" : "Accessibility hint for a button that navigates to person details.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View person details"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"

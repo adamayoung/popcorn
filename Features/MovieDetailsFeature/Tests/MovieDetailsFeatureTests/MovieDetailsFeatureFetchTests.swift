@@ -46,7 +46,9 @@ struct MovieDetailsFeatureFetchTests {
             }
         }
 
-        await store.send(.fetch)
+        await store.send(.fetch) {
+            $0.viewState = .loading
+        }
 
         await store.receive(\.loaded) {
             $0.viewState = .ready(expectedSnapshot)
@@ -74,7 +76,9 @@ struct MovieDetailsFeatureFetchTests {
             }
         }
 
-        await store.send(.fetch)
+        await store.send(.fetch) {
+            $0.viewState = .loading
+        }
 
         await store.receive(\.loadFailed) {
             $0.viewState = .error(ViewStateError(TestError.generic))
@@ -111,7 +115,9 @@ struct MovieDetailsFeatureFetchTests {
             $0.movieDetailsClient.fetchCredits = { _ in credits }
         }
 
-        await store.send(.fetch)
+        await store.send(.fetch) {
+            $0.viewState = .loading
+        }
 
         await store.receive(\.loaded) {
             $0.viewState = .ready(Self.testViewSnapshot)

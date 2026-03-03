@@ -96,7 +96,7 @@ extension GamesCatalogView {
             Text(verbatim: game.name)
                 .font(.headline)
         }
-        .foregroundColor(.white)
+        .foregroundStyle(.white)
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
         .frame(height: 140)

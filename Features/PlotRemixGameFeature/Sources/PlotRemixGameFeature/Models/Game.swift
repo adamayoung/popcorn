@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Game: Identifiable, Sendable {
+public struct Game: Identifiable, Equatable, Sendable {
 
     public let id: UUID
     public let questions: [GameQuestion]

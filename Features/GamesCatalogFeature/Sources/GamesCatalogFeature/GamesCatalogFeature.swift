@@ -54,10 +54,11 @@ public struct GamesCatalogFeature: Sendable {
         Reduce { state, action in
             switch action {
             case .fetch:
-                if state.viewState.isReady {
-                    state.viewState = .loading
+                guard !state.viewState.isLoading else {
+                    return .none
                 }
 
+                state.viewState = .loading
                 return handleFetchGames()
 
             case .loaded(let snapshot):

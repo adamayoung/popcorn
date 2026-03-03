@@ -31,9 +31,10 @@ public struct MessageTextField: View {
                     .textFieldStyle(.plain)
                     .onSubmit(sendMessage)
                     .focused($focusedField, equals: .message)
+                    // Precise insets to vertically centre text and clear the send button
                     .padding(.vertical, 11)
                     .padding(.leading, 13)
-                    .padding(.trailing, 50)
+                    .padding(.trailing, .spacing50)
                     .glassEffect(
                         in: RoundedRectangle(
                             cornerRadius: 22,

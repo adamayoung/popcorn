@@ -86,15 +86,15 @@ extension PlotRemixGamePlayFeatureView {
 
     private func content(game: Game) -> some View {
         ForEach(game.questions) { question in
-            VStack(spacing: 50) {
+            VStack(spacing: .spacing50) {
                 Spacer()
 
                 Text(verbatim: "\(question.riddle)")
 
                 Spacer()
 
-                GlassEffectContainer(spacing: 16) {
-                    VStack(spacing: 16) {
+                GlassEffectContainer(spacing: .spacing16) {
+                    VStack(spacing: .spacing16) {
                         ForEach(question.options) { option in
                             AnswerButton(
                                 title: "\(option.title) \(option.isCorrect ? "✅" : "")",
@@ -119,8 +119,8 @@ struct AnswerButton: View {
             Text(title)
                 .font(.headline)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.vertical, 5)
-                .padding(.horizontal, 20)
+                .padding(.vertical, .spacing5)
+                .padding(.horizontal, .spacing20)
         }
         .buttonStyle(.glassProminent)
     }

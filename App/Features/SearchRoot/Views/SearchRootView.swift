@@ -7,7 +7,9 @@
 
 import ComposableArchitecture
 import MediaSearchFeature
+import MovieCastAndCrewFeature
 import MovieDetailsFeature
+import MovieIntelligenceFeature
 import PersonDetailsFeature
 import SwiftUI
 import TVEpisodeCastAndCrewFeature
@@ -15,6 +17,7 @@ import TVEpisodeDetailsFeature
 import TVSeasonDetailsFeature
 import TVSeriesCastAndCrewFeature
 import TVSeriesDetailsFeature
+import TVSeriesIntelligenceFeature
 
 struct SearchRootView: View {
 
@@ -44,12 +47,49 @@ struct SearchRootView: View {
                     store: store,
                     transitionNamespace: namespace
                 )
+            case .movieCastAndCrew(let store):
+                movieCastAndCrew(store: store)
             case .tvSeriesCastAndCrew(let store):
                 tvSeriesCastAndCrew(store: store)
             case .tvEpisodeCastAndCrew(let store):
                 tvEpisodeCastAndCrew(store: store)
             }
         }
+        #if !os(macOS)
+        .fullScreenCover(
+            item: $store.scope(
+                state: \.movieIntelligence,
+                action: \.movieIntelligence
+            )
+        ) { store in
+            MovieChatView(store: store)
+        }
+        .fullScreenCover(
+            item: $store.scope(
+                state: \.tvSeriesIntelligence,
+                action: \.tvSeriesIntelligence
+            )
+        ) { store in
+            TVSeriesChatView(store: store)
+        }
+        #else
+        .sheet(
+                    item: $store.scope(
+                        state: \.movieIntelligence,
+                        action: \.movieIntelligence
+                    )
+                ) { store in
+                    MovieChatView(store: store)
+                }
+                .sheet(
+                    item: $store.scope(
+                        state: \.tvSeriesIntelligence,
+                        action: \.tvSeriesIntelligence
+                    )
+                ) { store in
+                    TVSeriesChatView(store: store)
+                }
+        #endif
     }
 
     private func tvSeasonDetails(store: StoreOf<TVSeasonDetailsFeature>) -> some View {
@@ -58,6 +98,13 @@ struct SearchRootView: View {
 
     private func tvEpisodeDetails(store: StoreOf<TVEpisodeDetailsFeature>) -> some View {
         TVEpisodeDetailsView(store: store)
+    }
+
+    private func movieCastAndCrew(store: StoreOf<MovieCastAndCrewFeature>) -> some View {
+        MovieCastAndCrewView(
+            store: store,
+            transitionNamespace: namespace
+        )
     }
 
     private func tvSeriesCastAndCrew(store: StoreOf<TVSeriesCastAndCrewFeature>) -> some View {

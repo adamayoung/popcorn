@@ -90,9 +90,7 @@ public struct MovieDetailsFeature: Sendable {
         Reduce { state, action in
             switch action {
             case .didAppear:
-                return .run { send in
-                    await send(.updateFeatureFlags)
-                }
+                return .send(.updateFeatureFlags)
 
             case .updateFeatureFlags:
                 state.isWatchlistEnabled = (try? client.isWatchlistEnabled()) ?? false
@@ -101,6 +99,11 @@ public struct MovieDetailsFeature: Sendable {
                 return .none
 
             case .fetch:
+                guard !state.viewState.isLoading else {
+                    return .none
+                }
+
+                state.viewState = .loading
                 return handleFetch(&state)
 
             case .loaded(let snapshot):

@@ -81,7 +81,7 @@ public struct BackdropCarouselCell<CellLabel: View>: View {
         }
         .accessibilityElement(children: .combine)
         #if os(visionOS)
-            .padding(20)
+            .padding(.spacing20)
             .contentShape(.hoverEffect, .rect(cornerRadius: 30))
             .hoverEffect()
         #endif
@@ -101,13 +101,13 @@ public struct BackdropCarouselCell<CellLabel: View>: View {
 
 #Preview {
     ScrollView(.horizontal, showsIndicators: false) {
-        LazyHStack(alignment: .top, spacing: 20) {
+        LazyHStack(alignment: .top, spacing: .spacing20) {
             BackdropCarouselCell(
                 imageURL: URL(
                     string: "https://image.tmdb.org/t/p/w1280/xRyINp9KfMLVjRiO5nCsoRDdvvF.jpg"
                 )
             ) {
-                HStack(alignment: .top, spacing: 15) {
+                HStack(alignment: .top, spacing: .spacing15) {
                     Text(verbatim: "1")
                         .font(.title)
                         .bold()

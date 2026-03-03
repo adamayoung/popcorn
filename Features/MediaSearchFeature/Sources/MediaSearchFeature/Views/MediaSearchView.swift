@@ -107,7 +107,7 @@ extension MediaSearchView {
             HStack {
                 PosterImage(url: movie.posterURL)
                     .posterWidth(60)
-                    .cornerRadius(5)
+                    .clipShape(.rect(cornerRadius: 5))
                     .clipped()
 
                 Text(verbatim: movie.title)
@@ -123,7 +123,7 @@ extension MediaSearchView {
             HStack {
                 PosterImage(url: tvSeries.posterURL)
                     .posterWidth(60)
-                    .cornerRadius(5)
+                    .clipShape(.rect(cornerRadius: 5))
                     .clipped()
 
                 Text(verbatim: tvSeries.name)
