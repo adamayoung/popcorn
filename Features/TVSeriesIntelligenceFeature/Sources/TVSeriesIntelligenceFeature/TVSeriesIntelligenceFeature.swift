@@ -94,6 +94,10 @@ public struct TVSeriesIntelligenceFeature: Sendable {
             case .sendPromptFailed(let error):
                 state.error = error
                 state.isThinking = false
+
+                let message = Message(role: .assistant, textContent: "I couldn't respond to that. Please try again.")
+                state.messages.append(message)
+
                 return .none
             }
         }
@@ -106,8 +110,8 @@ public extension TVSeriesIntelligenceFeature.State {
     /// `session` is a protocol existential and cannot be meaningfully compared,
     /// so it is excluded from equality. `tvSeries` is identified by `tvSeriesID` and
     /// does not change after session start, so it is also excluded. `error` is an
-    /// untyped `Error` existential; state changes from errors are already reflected
-    /// in `messages` (an error message is appended on every failure path).
+    /// untyped `Error` existential; state changes are observable via `isThinking`
+    /// and `messages` (an error message is appended on every failure path).
     static func == (lhs: Self, rhs: Self) -> Bool {
         lhs.tvSeriesID == rhs.tvSeriesID
             && lhs.isThinking == rhs.isThinking

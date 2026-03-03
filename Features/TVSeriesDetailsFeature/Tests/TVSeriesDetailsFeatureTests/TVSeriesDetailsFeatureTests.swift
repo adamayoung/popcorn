@@ -45,7 +45,9 @@ struct TVSeriesDetailsFeatureTests {
             $0.tvSeriesDetailsClient.isBackdropFocalPointEnabled = { false }
         }
 
-        await store.send(.fetch)
+        await store.send(.fetch) {
+            $0.viewState = .loading
+        }
         await store.receive(\.loaded) {
             $0.viewState = .ready(TVSeriesDetailsFeature.ViewSnapshot(tvSeries: tvSeriesWithSeasons))
         }
@@ -78,7 +80,9 @@ struct TVSeriesDetailsFeatureTests {
             $0.tvSeriesDetailsClient.isBackdropFocalPointEnabled = { false }
         }
 
-        await store.send(.fetch)
+        await store.send(.fetch) {
+            $0.viewState = .loading
+        }
         await store.receive(\.loaded) {
             $0.viewState = .ready(
                 TVSeriesDetailsFeature.ViewSnapshot(
@@ -118,7 +122,9 @@ struct TVSeriesDetailsFeatureTests {
             $0.tvSeriesDetailsClient.isBackdropFocalPointEnabled = { false }
         }
 
-        await store.send(.fetch)
+        await store.send(.fetch) {
+            $0.viewState = .loading
+        }
         await store.receive(\.loaded) {
             $0.viewState = .ready(TVSeriesDetailsFeature.ViewSnapshot(tvSeries: tvSeries))
         }

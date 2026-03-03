@@ -21,7 +21,6 @@ public extension CGFloat {
     static let spacing20: CGFloat = 20
     static let spacing24: CGFloat = 24
     static let spacing40: CGFloat = 40
-    static let spacing48: CGFloat = 48
     static let spacing50: CGFloat = 50
 
 }

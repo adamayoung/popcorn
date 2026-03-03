@@ -31,7 +31,9 @@ struct PersonDetailsFeatureFetchTests {
             }
         }
 
-        await store.send(.fetch)
+        await store.send(.fetch) {
+            $0.viewState = .loading
+        }
 
         await store.receive(\.loaded) {
             $0.viewState = .ready(expectedSnapshot)
@@ -50,7 +52,9 @@ struct PersonDetailsFeatureFetchTests {
             }
         }
 
-        await store.send(.fetch)
+        await store.send(.fetch) {
+            $0.viewState = .loading
+        }
 
         await store.receive(\.loadFailed) {
             $0.viewState = .error(ViewStateError(TestError.generic))
