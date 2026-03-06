@@ -54,6 +54,9 @@ public struct GamesCatalogFeature: Sendable {
         Reduce { state, action in
             switch action {
             case .fetch:
+                guard !state.viewState.isReady else {
+                    return .none
+                }
                 guard !state.viewState.isLoading else {
                     return .none
                 }

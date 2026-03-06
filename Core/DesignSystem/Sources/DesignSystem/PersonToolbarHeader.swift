@@ -27,12 +27,38 @@ public struct PersonToolbarHeader: View {
                 .zIndex(1)
 
             Text(verbatim: name)
-                .padding(8)
+                .multilineTextAlignment(.center)
+                .lineLimit(2)
+                .padding(.spacing8)
                 .glassEffect(.regular, in: .capsule)
                 .offset(y: -5)
         }
         .font(.headline)
-        .padding(.top, 30)
+        .padding(.top, .spacing30)
     }
 
+}
+
+#Preview {
+    let name = "Quentin Tarantino"
+    let profileURL = URL(string: "https://image.tmdb.org/t/p/w185/1gjcpAa99FAOWGnrUvHEXXsRs7o.jpg")
+
+    NavigationStack {
+        List {}
+            .navigationTitle(name)
+            .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    ZStack {
+                        Color.clear.frame(height: 0)
+                        PersonToolbarHeader(
+                            name: name,
+                            profileURL: profileURL,
+                            initials: "QT"
+                        )
+                        .transition(.opacity)
+                    }
+                }
+            }
+    }
 }

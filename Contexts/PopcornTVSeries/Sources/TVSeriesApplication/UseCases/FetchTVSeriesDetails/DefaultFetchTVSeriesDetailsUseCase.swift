@@ -14,13 +14,16 @@ final class DefaultFetchTVSeriesDetailsUseCase: FetchTVSeriesDetailsUseCase {
 
     private let repository: any TVSeriesRepository
     private let appConfigurationProvider: any AppConfigurationProviding
+    private let themeColorProvider: (any ThemeColorProviding)?
 
     init(
         repository: some TVSeriesRepository,
-        appConfigurationProvider: some AppConfigurationProviding
+        appConfigurationProvider: some AppConfigurationProviding,
+        themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
         self.repository = repository
         self.appConfigurationProvider = appConfigurationProvider
+        self.themeColorProvider = themeColorProvider
     }
 
     func execute(id: TVSeries.ID) async throws(FetchTVSeriesDetailsError) -> TVSeriesDetails {
@@ -46,15 +49,39 @@ final class DefaultFetchTVSeriesDetailsUseCase: FetchTVSeriesDetailsUseCase {
             throw detailsError
         }
 
+        let themeColor = await extractThemeColor(
+            posterPath: tvSeries.posterPath,
+            imagesConfiguration: appConfiguration.images
+        )
+
         let mapper = TVSeriesDetailsMapper()
         let tvSeriesDetails = mapper.map(
             tvSeries,
             imageCollection: imageCollection,
-            imagesConfiguration: appConfiguration.images
+            imagesConfiguration: appConfiguration.images,
+            themeColor: themeColor
         )
 
         span?.finish()
         return tvSeriesDetails
+    }
+
+}
+
+extension DefaultFetchTVSeriesDetailsUseCase {
+
+    private func extractThemeColor(
+        posterPath: URL?,
+        imagesConfiguration: ImagesConfiguration
+    ) async -> ThemeColor? {
+        guard
+            let themeColorProvider,
+            let thumbnailURL = imagesConfiguration.posterURLSet(for: posterPath)?.thumbnail
+        else {
+            return nil
+        }
+
+        return await themeColorProvider.themeColor(for: thumbnailURL)
     }
 
 }

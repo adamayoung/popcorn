@@ -26,9 +26,13 @@ extension PersonDetailsClient: DependencyKey {
 
         return PersonDetailsClient(
             fetchPerson: { id in
-                let person = try await fetchPersonDetails.execute(id: id)
-                let mapper = PersonMapper()
-                return mapper.map(person)
+                do {
+                    let person = try await fetchPersonDetails.execute(id: id)
+                    let mapper = PersonMapper()
+                    return mapper.map(person)
+                } catch let error as FetchPersonDetailsError {
+                    throw FetchPersonError(error)
+                }
             },
             // Shares the backdropFocalPoint gate intentionally — focal point
             // alignment is a single feature covering both backdrop and profile images.

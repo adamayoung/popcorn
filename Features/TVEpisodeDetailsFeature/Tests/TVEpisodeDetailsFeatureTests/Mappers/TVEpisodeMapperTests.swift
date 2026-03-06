@@ -21,11 +21,15 @@ struct TVEpisodeMapperTests {
         let fullURL = try #require(URL(string: "https://example.com/full.jpg"))
         let cardURL = try #require(URL(string: "https://example.com/card.jpg"))
         let stillPath = try #require(URL(string: "/still.jpg"))
-        let summary = TVEpisodeSummary(
+        let details = TVEpisodeDetails(
             id: 62085,
             name: "Pilot",
             episodeNumber: 1,
             seasonNumber: 1,
+            tvSeasonID: 3572,
+            tvSeriesID: 1396,
+            tvSeasonName: "Season 1",
+            tvSeriesName: "Breaking Bad",
             overview: "Overview",
             airDate: Date(timeIntervalSince1970: 1_200_528_000),
             runtime: 58,
@@ -38,22 +42,26 @@ struct TVEpisodeMapperTests {
             )
         )
 
-        let result = mapper.map(summary)
+        let result = mapper.map(details)
 
         #expect(result.stillURL == fullURL)
     }
 
     @Test("map returns nil still URL when URL set is nil")
     func mapReturnsNilStillURLWhenURLSetIsNil() {
-        let summary = TVEpisodeSummary(
+        let details = TVEpisodeDetails(
             id: 62085,
             name: "Pilot",
             episodeNumber: 1,
             seasonNumber: 1,
+            tvSeasonID: 3572,
+            tvSeriesID: 1396,
+            tvSeasonName: "Season 1",
+            tvSeriesName: "Breaking Bad",
             stillURLSet: nil
         )
 
-        let result = mapper.map(summary)
+        let result = mapper.map(details)
 
         #expect(result.stillURL == nil)
     }
@@ -61,34 +69,47 @@ struct TVEpisodeMapperTests {
     @Test("map maps all properties")
     func mapMapsAllProperties() {
         let airDate = Date(timeIntervalSince1970: 1_200_528_000)
-        let summary = TVEpisodeSummary(
+        let details = TVEpisodeDetails(
             id: 62085,
             name: "Pilot",
             episodeNumber: 1,
             seasonNumber: 1,
+            tvSeasonID: 3572,
+            tvSeriesID: 1396,
+            tvSeasonName: "Season 1",
+            tvSeriesName: "Breaking Bad",
             overview: "Episode overview",
             airDate: airDate,
             runtime: 58,
             stillURLSet: nil
         )
 
-        let result = mapper.map(summary)
+        let result = mapper.map(details)
 
+        #expect(result.id == 62085)
         #expect(result.name == "Pilot")
+        #expect(result.episodeNumber == 1)
+        #expect(result.seasonNumber == 1)
+        #expect(result.tvSeasonID == 3572)
+        #expect(result.tvSeriesID == 1396)
         #expect(result.overview == "Episode overview")
         #expect(result.airDate == airDate)
     }
 
     @Test("map handles nil optionals")
     func mapHandlesNilOptionals() {
-        let summary = TVEpisodeSummary(
+        let details = TVEpisodeDetails(
             id: 62085,
             name: "Pilot",
             episodeNumber: 1,
-            seasonNumber: 1
+            seasonNumber: 1,
+            tvSeasonID: 3572,
+            tvSeriesID: 1396,
+            tvSeasonName: "Season 1",
+            tvSeriesName: "Breaking Bad"
         )
 
-        let result = mapper.map(summary)
+        let result = mapper.map(details)
 
         #expect(result.overview == nil)
         #expect(result.airDate == nil)

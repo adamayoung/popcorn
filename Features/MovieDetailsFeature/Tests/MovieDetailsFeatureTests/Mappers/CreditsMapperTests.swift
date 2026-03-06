@@ -49,7 +49,9 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 798_645,
             cast: [castMemberDetails],
-            crew: [crewMemberDetails]
+            crewByDepartment: [
+                CrewDepartmentGroup(department: "Directing", members: [crewMemberDetails])
+            ]
         )
 
         let result = mapper.map(creditsDetails)
@@ -90,7 +92,7 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 123,
             cast: castMembers,
-            crew: []
+            crewByDepartment: []
         )
 
         let result = mapper.map(creditsDetails)
@@ -109,14 +111,16 @@ struct CreditsMapperTests {
                 personName: "Person \(index)",
                 job: "Job \(index)",
                 gender: .unknown,
-                department: "Department \(index)"
+                department: "Department"
             )
         }
 
         let creditsDetails = CreditsDetails(
             id: 123,
             cast: [],
-            crew: crewMembers
+            crewByDepartment: [
+                CrewDepartmentGroup(department: "Department", members: crewMembers)
+            ]
         )
 
         let result = mapper.map(creditsDetails)
@@ -153,7 +157,10 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 456,
             cast: castMembers,
-            crew: crewMembers
+            crewByDepartment: [
+                CrewDepartmentGroup(department: "Department 1", members: [crewMembers[0]]),
+                CrewDepartmentGroup(department: "Department 2", members: [crewMembers[1]])
+            ]
         )
 
         let result = mapper.map(creditsDetails)
@@ -167,7 +174,7 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 789,
             cast: [],
-            crew: []
+            crewByDepartment: []
         )
 
         let result = mapper.map(creditsDetails)
@@ -202,7 +209,9 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 123,
             cast: [castMemberDetails],
-            crew: [crewMemberDetails]
+            crewByDepartment: [
+                CrewDepartmentGroup(department: "Directing", members: [crewMemberDetails])
+            ]
         )
 
         let result = mapper.map(creditsDetails)
@@ -243,7 +252,7 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 123,
             cast: castMembers,
-            crew: []
+            crewByDepartment: []
         )
 
         let result = mapper.map(creditsDetails)

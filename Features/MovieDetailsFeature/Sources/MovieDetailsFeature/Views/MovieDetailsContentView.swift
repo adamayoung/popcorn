@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import DesignSystem
 import SwiftUI
 
@@ -37,6 +38,15 @@ struct MovieDetailsContentView: View {
                 }
             }
         )
+        .background {
+            ZStack {
+                if let themeColor = movie.themeColor {
+                    Color(red: themeColor.red, green: themeColor.green, blue: themeColor.blue)
+                        .opacity(0.5)
+                        .ignoresSafeArea()
+                }
+            }
+        }
         .navigationTitle(movie.title)
         #if os(iOS)
             .toolbarTitleDisplayMode(.inline)

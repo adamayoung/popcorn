@@ -67,6 +67,9 @@ public struct PersonDetailsFeature: Sendable {
                 return .none
 
             case .fetch:
+                guard !state.viewState.isReady else {
+                    return .none
+                }
                 guard !state.viewState.isLoading else {
                     return .none
                 }

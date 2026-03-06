@@ -6,6 +6,7 @@
 //
 
 import ConfigurationApplication
+import CoreDomain
 import DiscoverComposition
 import Foundation
 import GenresApplication
@@ -21,6 +22,7 @@ public final class PopcornDiscoverAdaptersFactory {
     private let fetchTVSeriesGenresUseCase: any FetchTVSeriesGenresUseCase
     private let fetchMovieImageCollectionUseCase: any FetchMovieImageCollectionUseCase
     private let fetchTVSeriesImageCollectionUseCase: any FetchTVSeriesImageCollectionUseCase
+    private let themeColorProvider: (any ThemeColorProviding)?
 
     public init(
         discoverService: some DiscoverService,
@@ -28,7 +30,8 @@ public final class PopcornDiscoverAdaptersFactory {
         fetchMovieGenresUseCase: some FetchMovieGenresUseCase,
         fetchTVSeriesGenresUseCase: some FetchTVSeriesGenresUseCase,
         fetchMovieImageCollectionUseCase: some FetchMovieImageCollectionUseCase,
-        fetchTVSeriesImageCollectionUseCase: some FetchTVSeriesImageCollectionUseCase
+        fetchTVSeriesImageCollectionUseCase: some FetchTVSeriesImageCollectionUseCase,
+        themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
         self.discoverService = discoverService
         self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
@@ -36,6 +39,7 @@ public final class PopcornDiscoverAdaptersFactory {
         self.fetchTVSeriesGenresUseCase = fetchTVSeriesGenresUseCase
         self.fetchMovieImageCollectionUseCase = fetchMovieImageCollectionUseCase
         self.fetchTVSeriesImageCollectionUseCase = fetchTVSeriesImageCollectionUseCase
+        self.themeColorProvider = themeColorProvider
     }
 
     public func makeDiscoverFactory() -> some PopcornDiscoverFactory {
@@ -64,7 +68,8 @@ public final class PopcornDiscoverAdaptersFactory {
             appConfigurationProvider: appConfigurationProvider,
             genreProvider: genreProvider,
             movieLogoImageProvider: movieLogoProvider,
-            tvSeriesLogoImageProvider: tvSeriesLogoProvider
+            tvSeriesLogoImageProvider: tvSeriesLogoProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 

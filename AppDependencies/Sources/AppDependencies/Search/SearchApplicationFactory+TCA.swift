@@ -18,12 +18,14 @@ enum PopcornSearchFactoryKey: DependencyKey {
         @Dependency(\.fetchMovieDetails) var fetchMovieDetails
         @Dependency(\.fetchTVSeriesDetails) var fetchTVSeriesDetails
         @Dependency(\.fetchPersonDetails) var fetchPersonDetails
+        @Dependency(\.themeColorProvider) var themeColorProvider
         return PopcornSearchAdaptersFactory(
             searchService: searchService,
             fetchAppConfigurationUseCase: fetchAppConfiguration,
             fetchMovieDetailsUseCase: fetchMovieDetails,
             fetchTVSeriesDetailsUseCase: fetchTVSeriesDetails,
-            fetchPersonDetailsUseCase: fetchPersonDetails
+            fetchPersonDetailsUseCase: fetchPersonDetails,
+            themeColorProvider: themeColorProvider
         ).makeSearchFactory()
     }
 

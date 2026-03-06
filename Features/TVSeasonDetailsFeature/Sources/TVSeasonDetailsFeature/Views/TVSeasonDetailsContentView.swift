@@ -5,17 +5,18 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import DesignSystem
 import SwiftUI
 
 struct TVSeasonDetailsContentView: View {
 
-    var overview: String?
+    var season: TVSeason
     var episodes: [TVEpisode]
-    var didSelectEpisode: (_ episodeNumber: Int, _ episodeName: String) -> Void
+    var didSelectEpisode: (_ episodeNumber: Int) -> Void
 
     var body: some View {
         List {
-            if let overview, !overview.isEmpty {
+            if let overview = season.overview, !overview.isEmpty {
                 Section {
                     Text(verbatim: overview)
                         .font(.subheadline)
@@ -27,7 +28,7 @@ struct TVSeasonDetailsContentView: View {
             Section {
                 ForEach(episodes) { episode in
                     Button {
-                        didSelectEpisode(episode.episodeNumber, episode.name)
+                        didSelectEpisode(episode.episodeNumber)
                     } label: {
                         TVEpisodeRowView(episode: episode)
                     }
@@ -43,6 +44,9 @@ struct TVSeasonDetailsContentView: View {
         #if os(iOS)
         .listStyle(.insetGrouped)
         #endif
+        .navigationBarTitleDisplayMode(.large)
+        .navigationTitle(Text(verbatim: season.name))
+        .navigationSubtitle(Text(verbatim: season.tvSeriesName))
         .accessibilityIdentifier("tv-season-details.view")
     }
 
@@ -51,9 +55,9 @@ struct TVSeasonDetailsContentView: View {
 #Preview {
     NavigationStack {
         TVSeasonDetailsContentView(
-            overview: "The first season of Breaking Bad.",
+            season: TVSeason.mock,
             episodes: TVEpisode.mocks,
-            didSelectEpisode: { _, _ in }
+            didSelectEpisode: { _ in }
         )
         .navigationTitle("Season 1")
     }
@@ -62,9 +66,9 @@ struct TVSeasonDetailsContentView: View {
 #Preview("No Overview") {
     NavigationStack {
         TVSeasonDetailsContentView(
-            overview: nil,
+            season: TVSeason.mock,
             episodes: TVEpisode.mocks,
-            didSelectEpisode: { _, _ in }
+            didSelectEpisode: { _ in }
         )
         .navigationTitle("Season 1")
     }

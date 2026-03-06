@@ -87,14 +87,11 @@ extension TVSeriesDetailsView {
             crewMembers: snapshot.crewMembers,
             isBackdropFocalPointEnabled: store.isBackdropFocalPointEnabled,
             didSelectSeason: { seasonNumber in
-                let seasonName = snapshot.tvSeries.seasons
-                    .first { $0.seasonNumber == seasonNumber }?.name ?? "Season \(seasonNumber)"
                 store.send(
                     .navigate(
                         .seasonDetails(
                             tvSeriesID: snapshot.tvSeries.id,
-                            seasonNumber: seasonNumber,
-                            seasonName: seasonName
+                            seasonNumber: seasonNumber
                         )
                     )
                 )
@@ -113,20 +110,13 @@ extension TVSeriesDetailsView {
 extension TVSeriesDetailsView {
 
     private func errorBody(_ error: ViewStateError) -> some View {
-        ContentUnavailableView {
-            Label(LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module), systemImage: "exclamationmark.triangle")
-        } description: {
-            Text(error.message)
-        } actions: {
-            if error.isRetryable {
-                Button {
-                    store.send(.fetch)
-                } label: {
-                    Text("RETRY", bundle: .module)
-                }
-                .buttonStyle(.bordered)
-            }
-        }
+        ContentLoadErrorView(
+            message: error.message,
+            systemImage: "tv",
+            reason: error.reason,
+            isRetryable: error.isRetryable,
+            retryAction: { store.send(.fetch) }
+        )
     }
 
 }
@@ -171,7 +161,7 @@ extension TVSeriesDetailsView {
             store: Store(
                 initialState: TVSeriesDetailsFeature.State(
                     tvSeriesID: 1,
-                    viewState: .error(ViewStateError(message: "Error loading TV series"))
+                    viewState: .error(ViewStateError(FetchTVSeriesError.notFound()))
                 ),
                 reducer: { EmptyReducer() }
             )

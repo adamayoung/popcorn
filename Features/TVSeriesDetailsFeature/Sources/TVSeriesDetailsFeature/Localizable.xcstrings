@@ -34,13 +34,68 @@
         }
       }
     },
-    "RETRY" : {
-      "comment" : "The label of a button that triggers a retry action.",
+    "TV_SERIES_NOT_FOUND_ERROR_DESCRIPTION" : {
+      "comment" : "Description of an error that occurs when a TV series cannot be found.",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Retry"
+            "value" : "TV Series Not Found"
+          }
+        }
+      }
+    },
+    "TV_SERIES_NOT_FOUND_ERROR_REASON" : {
+      "comment" : "Reason for displaying when a TV series cannot be found.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This TV series could not be found."
+          }
+        }
+      }
+    },
+    "TV_SERIES_NOT_FOUND_ERROR_RECOVERY" : {
+      "comment" : "Suggestion for recovering from a TV series not found error.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try again later."
+          }
+        }
+      }
+    },
+    "UNKNOWN_ERROR_DESCRIPTION" : {
+      "comment" : "Description of an unknown error.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An Unknown Error Occurred"
+          }
+        }
+      }
+    },
+    "UNKNOWN_ERROR_REASON" : {
+      "comment" : "Reason for displaying when an unknown error occurs.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Something unexpected went wrong."
+          }
+        }
+      }
+    },
+    "UNKNOWN_ERROR_RECOVERY" : {
+      "comment" : "Suggestion for recovering from an unknown error.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try again later."
           }
         }
       }
@@ -52,17 +107,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Seasons"
-          }
-        }
-      }
-    },
-    "UNABLE_TO_LOAD" : {
-      "comment" : "A label describing an error when a feature is unable to load its data.",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unable to Load"
           }
         }
       }

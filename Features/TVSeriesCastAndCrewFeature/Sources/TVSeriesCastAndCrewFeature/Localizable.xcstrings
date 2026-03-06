@@ -57,24 +57,68 @@
         }
       }
     },
-    "RETRY" : {
-      "comment" : "The text on a button that triggers a retry action.",
+    "CREDITS_NOT_FOUND_FOR_TV_SERIES_ERROR_DESCRIPTION" : {
+      "comment" : "Description of an error that occurs when the credits for a specific TV series cannot be fetched.",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Retry"
+            "value" : "Credits Not Found"
           }
         }
       }
     },
-    "UNABLE_TO_LOAD" : {
-      "comment" : "An error message indicating that the cast and crew information is unavailable to be displayed.",
+    "CREDITS_NOT_FOUND_FOR_TV_SERIES_ERROR_REASON" : {
+      "comment" : "Reason for displaying when a fetch credits error indicates that the credits for a specific TV series were not found.",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Unable to Load"
+            "value" : "Credits are not available for this TV series."
+          }
+        }
+      }
+    },
+    "CREDITS_NOT_FOUND_FOR_TV_SERIES_ERROR_RECOVERY" : {
+      "comment" : "Suggestion for recovering from a credits not found error for a TV series.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try again later."
+          }
+        }
+      }
+    },
+    "UNKNOWN_ERROR_DESCRIPTION" : {
+      "comment" : "Description of an unknown error.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An Unknown Error Occurred"
+          }
+        }
+      }
+    },
+    "UNKNOWN_ERROR_REASON" : {
+      "comment" : "Reason for displaying when an unknown error occurs.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Something unexpected went wrong."
+          }
+        }
+      }
+    },
+    "UNKNOWN_ERROR_RECOVERY" : {
+      "comment" : "Suggestion for recovering from an unknown error.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try again later."
           }
         }
       }

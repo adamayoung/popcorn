@@ -23,24 +23,35 @@
         }
       }
     },
-    "RETRY" : {
-      "comment" : "The label of a button that triggers a retry action.",
+    "GAMES_LOAD_ERROR_DESCRIPTION" : {
+      "comment" : "Description of an error that occurs when the games catalog cannot be loaded.",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Retry"
+            "value" : "Unable to Load Games"
           }
         }
       }
     },
-    "UNABLE_TO_LOAD" : {
-      "comment" : "A label describing an error when the games catalog cannot be loaded.",
+    "GAMES_LOAD_ERROR_REASON" : {
+      "comment" : "Reason for displaying when the games catalog cannot be loaded.",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Unable to Load"
+            "value" : "The games catalog could not be loaded."
+          }
+        }
+      }
+    },
+    "GAMES_LOAD_ERROR_RECOVERY" : {
+      "comment" : "Suggestion for recovering from a games catalog load error.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try again later."
           }
         }
       }

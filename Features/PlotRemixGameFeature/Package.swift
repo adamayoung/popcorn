@@ -37,6 +37,7 @@ let package = Package(
                 "AppDependencies",
                 .product(name: "GamesCatalogApplication", package: "PopcornGamesCatalog"),
                 .product(name: "GamesCatalogDomain", package: "PopcornGamesCatalog"),
+                .product(name: "PlotRemixGameApplication", package: "PopcornPlotRemixGame"),
                 "DesignSystem",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 "TCAFoundation"

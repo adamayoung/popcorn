@@ -37,14 +37,68 @@
         }
       }
     },
-    "RETRY" : {
-      "comment" : "The text on a button that triggers a retry action.",
-      "extractionState" : "manual",
+    "SEASON_NOT_FOUND_ERROR_DESCRIPTION" : {
+      "comment" : "Description of an error that occurs when a TV season cannot be found.",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Retry"
+            "value" : "Season Not Found"
+          }
+        }
+      }
+    },
+    "SEASON_NOT_FOUND_ERROR_REASON" : {
+      "comment" : "Reason for displaying when a season cannot be found.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This season could not be found."
+          }
+        }
+      }
+    },
+    "SEASON_NOT_FOUND_ERROR_RECOVERY" : {
+      "comment" : "Suggestion for recovering from a season not found error.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try again later."
+          }
+        }
+      }
+    },
+    "UNKNOWN_ERROR_DESCRIPTION" : {
+      "comment" : "Description of an unknown error.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An Unknown Error Occurred"
+          }
+        }
+      }
+    },
+    "UNKNOWN_ERROR_REASON" : {
+      "comment" : "Reason for displaying when an unknown error occurs.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Something unexpected went wrong."
+          }
+        }
+      }
+    },
+    "UNKNOWN_ERROR_RECOVERY" : {
+      "comment" : "Suggestion for recovering from an unknown error.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try again later."
           }
         }
       }
@@ -61,18 +115,6 @@
         }
       }
     },
-    "UNABLE_TO_LOAD" : {
-      "comment" : "An error message indicating that the season information is unavailable to be displayed.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unable to Load"
-          }
-        }
-      }
-    }
   },
   "version" : "1.1"
 }

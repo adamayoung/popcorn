@@ -14,7 +14,7 @@ struct TVSeasonPreviewMapper {
             id: tvSeasonSummary.id,
             seasonNumber: tvSeasonSummary.seasonNumber,
             name: tvSeasonSummary.name,
-            posterURL: tvSeasonSummary.posterURL
+            posterURL: tvSeasonSummary.posterURLSet?.detail
         )
     }
 

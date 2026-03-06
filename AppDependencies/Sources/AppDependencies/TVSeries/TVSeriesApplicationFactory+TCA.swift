@@ -17,11 +17,13 @@ enum PopcornTVSeriesFactoryKey: DependencyKey {
         @Dependency(\.tvSeasonService) var tvSeasonService
         @Dependency(\.tvEpisodeService) var tvEpisodeService
         @Dependency(\.fetchAppConfiguration) var fetchAppConfiguration
+        @Dependency(\.themeColorProvider) var themeColorProvider
         return PopcornTVSeriesAdaptersFactory(
             tvSeriesService: tvSeriesService,
             tvSeasonService: tvSeasonService,
             tvEpisodeService: tvEpisodeService,
-            fetchAppConfigurationUseCase: fetchAppConfiguration
+            fetchAppConfigurationUseCase: fetchAppConfiguration,
+            themeColorProvider: themeColorProvider
         ).makeTVSeriesFactory()
     }
 

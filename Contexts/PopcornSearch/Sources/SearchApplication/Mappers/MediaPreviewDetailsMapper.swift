@@ -11,16 +11,21 @@ import SearchDomain
 
 struct MediaPreviewDetailsMapper {
 
-    func map(_ mediaPreview: MediaPreview, imagesConfiguration: ImagesConfiguration)
-    -> MediaPreviewDetails {
+    func map(
+        _ mediaPreview: MediaPreview,
+        imagesConfiguration: ImagesConfiguration,
+        themeColor: ThemeColor? = nil
+    ) -> MediaPreviewDetails {
         switch mediaPreview {
         case .movie(let moviePreview):
             let mapper = MoviePreviewDetailsMapper()
-            return .movie(mapper.map(moviePreview, imagesConfiguration: imagesConfiguration))
+            return .movie(mapper.map(moviePreview, imagesConfiguration: imagesConfiguration, themeColor: themeColor))
 
         case .tvSeries(let tvSeriesPreview):
             let mapper = TVSeriesPreviewDetailsMapper()
-            return .tvSeries(mapper.map(tvSeriesPreview, imagesConfiguration: imagesConfiguration))
+            return .tvSeries(
+                mapper.map(tvSeriesPreview, imagesConfiguration: imagesConfiguration, themeColor: themeColor)
+            )
 
         case .person(let personPreview):
             let mapper = PersonPreviewDetailsMapper()

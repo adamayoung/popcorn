@@ -29,21 +29,7 @@ public struct GamesCatalogView: View {
             case .ready(let snapshot):
                 content(games: snapshot.games)
             case .error(let error):
-                ContentUnavailableView {
-                    Label(
-                        LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
-                        systemImage: "exclamationmark.triangle"
-                    )
-                } description: {
-                    Text(error.message)
-                } actions: {
-                    if error.isRetryable {
-                        Button(LocalizedStringResource("RETRY", bundle: .module)) {
-                            store.send(.fetch)
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                }
+                errorBody(error)
             default:
                 EmptyView()
             }
@@ -61,6 +47,16 @@ public struct GamesCatalogView: View {
 }
 
 extension GamesCatalogView {
+
+    private func errorBody(_ error: ViewStateError) -> some View {
+        ContentLoadErrorView(
+            message: error.message,
+            systemImage: "gamecontroller",
+            reason: error.reason,
+            isRetryable: error.isRetryable,
+            retryAction: { store.send(.fetch) }
+        )
+    }
 
     private var loadingBody: some View {
         ProgressView()
@@ -139,6 +135,22 @@ extension GamesCatalogView {
             store: Store(
                 initialState: GamesCatalogFeature.State(
                     viewState: .loading
+                ),
+                reducer: { EmptyReducer() }
+            ),
+            transitionNamespace: namespace
+        )
+    }
+}
+
+#Preview("Error") {
+    @Previewable @Namespace var namespace
+
+    NavigationStack {
+        GamesCatalogView(
+            store: Store(
+                initialState: GamesCatalogFeature.State(
+                    viewState: .error(ViewStateError(FetchGamesCatalogError.unknown()))
                 ),
                 reducer: { EmptyReducer() }
             ),

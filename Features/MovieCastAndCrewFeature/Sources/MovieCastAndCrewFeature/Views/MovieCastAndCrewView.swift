@@ -12,6 +12,7 @@ import TCAFoundation
 
 public struct MovieCastAndCrewView: View {
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Bindable private var store: StoreOf<MovieCastAndCrewFeature>
     private let namespace: Namespace.ID
 
@@ -27,68 +28,61 @@ public struct MovieCastAndCrewView: View {
         ZStack {
             switch store.viewState {
             case .ready(let snapshot):
-                content(snapshot: snapshot)
-
+                content(snapshot)
             case .error(let error):
-                ContentUnavailableView {
-                    Label(
-                        LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
-                        systemImage: "exclamationmark.triangle"
-                    )
-                } description: {
-                    Text(error.message)
-                } actions: {
-                    if error.isRetryable {
-                        Button(LocalizedStringResource("RETRY", bundle: .module)) {
-                            store.send(.fetch)
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                }
-
+                errorBody(error)
             default:
                 EmptyView()
             }
         }
-        .navigationTitle(Text("CAST_AND_CREW", bundle: .module))
-        #if os(iOS)
-            .navigationBarTitleDisplayMode(.large)
-        #endif
-            .overlay {
-                if store.viewState.isLoading {
-                    ProgressView()
-                        .accessibilityLabel(Text("LOADING", bundle: .module))
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
-            }
-            .task {
-                store.send(.fetch)
-            }
-    }
-
-    private func content(snapshot: MovieCastAndCrewFeature.ViewSnapshot) -> some View {
-        List {
-            if !snapshot.castMembers.isEmpty {
-                CastSection(
-                    castMembers: snapshot.castMembers,
-                    transitionNamespace: namespace
-                ) { personID, transitionID in
-                    store.send(.navigate(.personDetails(id: personID, transitionID: transitionID)))
-                }
-            }
-
-            if !snapshot.crewMembers.isEmpty {
-                CrewSection(
-                    crewByDepartment: snapshot.crewByDepartment,
-                    transitionNamespace: namespace
-                ) { personID, transitionID in
-                    store.send(.navigate(.personDetails(id: personID, transitionID: transitionID)))
-                }
+        .contentTransition(.opacity)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 1), value: store.viewState.isReady)
+        .overlay {
+            if store.viewState.isLoading {
+                loadingBody
             }
         }
-        #if os(iOS)
-        .listStyle(.insetGrouped)
-        #endif
+        .task {
+            store.send(.fetch)
+        }
+    }
+
+}
+
+extension MovieCastAndCrewView {
+
+    private var loadingBody: some View {
+        ProgressView()
+            .accessibilityLabel(Text("LOADING", bundle: .module))
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+}
+
+extension MovieCastAndCrewView {
+
+    private func content(_ snapshot: MovieCastAndCrewFeature.ViewSnapshot) -> some View {
+        MovieCastAndCrewContentView(
+            castMembers: snapshot.castMembers,
+            crewByDepartment: snapshot.crewByDepartment,
+            transitionNamespace: namespace
+        ) { personID, transitionID in
+            store.send(.navigate(.personDetails(id: personID, transitionID: transitionID)))
+        }
+    }
+
+}
+
+extension MovieCastAndCrewView {
+
+    private func errorBody(_ error: ViewStateError) -> some View {
+        ContentLoadErrorView(
+            message: error.message,
+            systemImage: "person.2",
+            reason: error.reason,
+            isRetryable: error.isRetryable,
+            retryAction: { store.send(.fetch) }
+        )
     }
 
 }
@@ -104,7 +98,7 @@ public struct MovieCastAndCrewView: View {
                     viewState: .ready(
                         .init(
                             castMembers: CastMember.mocks,
-                            crewMembers: CrewMember.mocks
+                            crewByDepartment: CrewDepartment.mocks
                         )
                     )
                 ),
@@ -126,6 +120,23 @@ public struct MovieCastAndCrewView: View {
                 initialState: MovieCastAndCrewFeature.State(
                     movieID: 798_645,
                     viewState: .loading
+                ),
+                reducer: { EmptyReducer() }
+            ),
+            transitionNamespace: namespace
+        )
+    }
+}
+
+#Preview("Error") {
+    @Previewable @Namespace var namespace
+
+    NavigationStack {
+        MovieCastAndCrewView(
+            store: Store(
+                initialState: MovieCastAndCrewFeature.State(
+                    movieID: 798_645,
+                    viewState: .error(ViewStateError(FetchCreditsError.notFound()))
                 ),
                 reducer: { EmptyReducer() }
             ),

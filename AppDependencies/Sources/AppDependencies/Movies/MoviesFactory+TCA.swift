@@ -15,9 +15,11 @@ enum PopcornMoviesFactoryKey: DependencyKey {
     static var liveValue: PopcornMoviesFactory {
         @Dependency(\.movieService) var movieService
         @Dependency(\.fetchAppConfiguration) var fetchAppConfiguration
+        @Dependency(\.themeColorProvider) var themeColorProvider
         return PopcornMoviesAdaptersFactory(
             movieService: movieService,
-            fetchAppConfigurationUseCase: fetchAppConfiguration
+            fetchAppConfigurationUseCase: fetchAppConfiguration,
+            themeColorProvider: themeColorProvider
         ).makeMoviesFactory()
     }
 

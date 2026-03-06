@@ -26,9 +26,13 @@ extension WatchlistClient: DependencyKey {
 
         return WatchlistClient(
             fetchWatchlistMovies: {
-                let moviePreviews = try await fetchWatchlistMovies.execute()
-                let mapper = MoviePreviewMapper()
-                return moviePreviews.map(mapper.map)
+                do {
+                    let moviePreviews = try await fetchWatchlistMovies.execute()
+                    let mapper = MoviePreviewMapper()
+                    return moviePreviews.map(mapper.map)
+                } catch let error as FetchWatchlistMoviesError {
+                    throw FetchWatchlistError(error)
+                }
             },
             streamWatchlistMovies: {
                 let moviesStream = await streamWatchlistMovies.stream()

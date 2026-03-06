@@ -34,24 +34,35 @@
         }
       }
     },
-    "RETRY" : {
-      "comment" : "The label of a button that triggers a retry action.",
+    "WATCHLIST_LOAD_ERROR_DESCRIPTION" : {
+      "comment" : "Description of an error that occurs when the watchlist cannot be loaded.",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Retry"
+            "value" : "Unable to Load Watchlist"
           }
         }
       }
     },
-    "UNABLE_TO_LOAD" : {
-      "comment" : "A label describing an error when the watchlist cannot be loaded.",
+    "WATCHLIST_LOAD_ERROR_REASON" : {
+      "comment" : "Reason for displaying when the watchlist cannot be loaded.",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Unable to Load"
+            "value" : "Your watchlist could not be loaded."
+          }
+        }
+      }
+    },
+    "WATCHLIST_LOAD_ERROR_RECOVERY" : {
+      "comment" : "Suggestion for recovering from a watchlist load error.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check your connection and try again."
           }
         }
       }

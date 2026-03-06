@@ -37,7 +37,7 @@ struct CreditsMapperTests {
             initials: "MB"
         )
 
-        let creditsDetails = CreditsDetails(id: 66732, cast: [castMemberDetails], crew: [])
+        let creditsDetails = CreditsDetails(id: 66732, cast: [castMemberDetails], crewByDepartment: [])
         let result = mapper.map(creditsDetails)
 
         #expect(result.id == 66732)
@@ -73,7 +73,11 @@ struct CreditsMapperTests {
             initials: "DB"
         )
 
-        let creditsDetails = CreditsDetails(id: 66732, cast: [], crew: [crewMemberDetails])
+        let creditsDetails = CreditsDetails(
+            id: 66732,
+            cast: [],
+            crewByDepartment: [CrewDepartmentGroup(department: "Writing", members: [crewMemberDetails])]
+        )
         let result = mapper.map(creditsDetails)
 
         #expect(result.crewMembers.count == 1)
@@ -104,7 +108,7 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 123,
             cast: castMembers,
-            crew: []
+            crewByDepartment: []
         )
 
         let result = mapper.map(creditsDetails)
@@ -127,17 +131,19 @@ struct CreditsMapperTests {
             )
         }
 
+        let groups = Dictionary(grouping: crewMembers, by: \.department).map { department, members in
+            CrewDepartmentGroup(department: department, members: members)
+        }
+
         let creditsDetails = CreditsDetails(
             id: 123,
             cast: [],
-            crew: crewMembers
+            crewByDepartment: groups
         )
 
         let result = mapper.map(creditsDetails)
 
         #expect(result.crewMembers.count == 5)
-        #expect(result.crewMembers[0].id == "crew-1")
-        #expect(result.crewMembers[4].id == "crew-5")
     }
 
     @Test("Maps with empty cast and crew arrays")
@@ -145,7 +151,7 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 789,
             cast: [],
-            crew: []
+            crewByDepartment: []
         )
 
         let result = mapper.map(creditsDetails)
@@ -180,7 +186,7 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 123,
             cast: [castMemberDetails],
-            crew: [crewMemberDetails]
+            crewByDepartment: [CrewDepartmentGroup(department: "Writing", members: [crewMemberDetails])]
         )
 
         let result = mapper.map(creditsDetails)

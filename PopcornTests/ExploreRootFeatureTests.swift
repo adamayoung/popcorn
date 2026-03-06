@@ -28,7 +28,7 @@ struct ExploreRootFeatureTests {
             action: .path(.element(
                 id: 0,
                 action: .tvSeriesDetails(
-                    .navigate(.seasonDetails(tvSeriesID: 66732, seasonNumber: 1, seasonName: "Season 1"))
+                    .navigate(.seasonDetails(tvSeriesID: 66732, seasonNumber: 1))
                 )
             ))
         )
@@ -40,7 +40,6 @@ struct ExploreRootFeatureTests {
         #expect(state.path.count == 2)
         #expect(seasonState.tvSeriesID == 66732)
         #expect(seasonState.seasonNumber == 1)
-        #expect(seasonState.seasonName == "Season 1")
     }
 
     @Test("tvSeriesDetails navigate personDetails appends personDetails to path")
@@ -72,8 +71,7 @@ struct ExploreRootFeatureTests {
             .tvSeasonDetails(
                 TVSeasonDetailsFeature.State(
                     tvSeriesID: 1396,
-                    seasonNumber: 1,
-                    seasonName: "Season 1"
+                    seasonNumber: 1
                 )
             )
         )
@@ -84,7 +82,7 @@ struct ExploreRootFeatureTests {
                 id: 0,
                 action: .tvSeasonDetails(
                     .navigate(
-                        .episodeDetails(tvSeriesID: 1396, seasonNumber: 1, episodeNumber: 1, episodeName: "Pilot")
+                        .episodeDetails(tvSeriesID: 1396, seasonNumber: 1, episodeNumber: 1)
                     )
                 )
             ))
@@ -98,7 +96,6 @@ struct ExploreRootFeatureTests {
         #expect(episodeState.tvSeriesID == 1396)
         #expect(episodeState.seasonNumber == 1)
         #expect(episodeState.episodeNumber == 1)
-        #expect(episodeState.episodeName == "Pilot")
     }
 
     @Test("tvSeriesDetails navigate castAndCrew appends tvSeriesCastAndCrew to path")

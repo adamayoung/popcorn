@@ -31,7 +31,8 @@ struct TVSeriesMapper {
             smallPosterURL: tvSeriesDetails.posterURLSet?.thumbnail,
             backdropURL: tvSeriesDetails.backdropURLSet?.full,
             logoURL: tvSeriesDetails.logoURLSet?.detail,
-            seasons: tvSeriesDetails.seasons.map(tvSeasonPreviewMapper.map)
+            seasons: tvSeriesDetails.seasons.map(tvSeasonPreviewMapper.map),
+            themeColor: tvSeriesDetails.themeColor
         )
     }
 

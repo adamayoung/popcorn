@@ -23,17 +23,11 @@ public struct TVEpisodeSummary: Identifiable, Equatable, Sendable {
     /// The episode's number within its season.
     public let episodeNumber: Int
 
-    /// The season number this episode belongs to.
-    public let seasonNumber: Int
-
     /// A brief description or summary of the episode, if available.
     public let overview: String?
 
     /// The date the episode first aired, if available.
     public let airDate: Date?
-
-    /// The runtime of the episode in minutes, if available.
-    public let runtime: Int?
 
     /// Resolved URL set for the episode's still image, if available.
     public let stillURLSet: ImageURLSet?
@@ -42,19 +36,15 @@ public struct TVEpisodeSummary: Identifiable, Equatable, Sendable {
         id: Int,
         name: String,
         episodeNumber: Int,
-        seasonNumber: Int,
         overview: String? = nil,
         airDate: Date? = nil,
-        runtime: Int? = nil,
         stillURLSet: ImageURLSet? = nil
     ) {
         self.id = id
         self.name = name
         self.episodeNumber = episodeNumber
-        self.seasonNumber = seasonNumber
         self.overview = overview
         self.airDate = airDate
-        self.runtime = runtime
         self.stillURLSet = stillURLSet
     }
 

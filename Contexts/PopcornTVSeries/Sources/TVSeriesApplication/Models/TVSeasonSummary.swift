@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import Foundation
 
 /// A single season within a TV series in the application model.
@@ -22,19 +23,19 @@ public struct TVSeasonSummary: Identifiable, Equatable, Sendable {
     /// The season's number within its TV series (e.g., 1 for the first season).
     public let seasonNumber: Int
 
-    /// Resolved URL for the season's poster image, if available.
-    public let posterURL: URL?
+    /// Resolved URL set for the season's poster image, if available.
+    public let posterURLSet: ImageURLSet?
 
     public init(
         id: Int,
         name: String,
         seasonNumber: Int,
-        posterURL: URL? = nil
+        posterURLSet: ImageURLSet? = nil
     ) {
         self.id = id
         self.name = name
         self.seasonNumber = seasonNumber
-        self.posterURL = posterURL
+        self.posterURLSet = posterURLSet
     }
 
 }

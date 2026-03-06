@@ -10,12 +10,17 @@ import TVSeriesApplication
 
 struct TVEpisodeMapper {
 
-    func map(_ summary: TVEpisodeSummary) -> EpisodeDetails {
-        EpisodeDetails(
-            name: summary.name,
-            overview: summary.overview,
-            airDate: summary.airDate,
-            stillURL: summary.stillURLSet?.full
+    func map(_ details: TVEpisodeDetails) -> TVEpisode {
+        TVEpisode(
+            id: details.id,
+            name: details.name,
+            episodeNumber: details.episodeNumber,
+            seasonNumber: details.seasonNumber,
+            tvSeasonID: details.tvSeasonID,
+            tvSeriesID: details.tvSeriesID,
+            overview: details.overview,
+            airDate: details.airDate,
+            stillURL: details.stillURLSet?.full
         )
     }
 

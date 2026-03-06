@@ -22,7 +22,6 @@ public struct TVEpisodeDetailsFeature: Sendable {
         public let tvSeriesID: Int
         public let seasonNumber: Int
         public let episodeNumber: Int
-        public var episodeName: String
         public var viewState: ViewState<ViewSnapshot>
         public var isCastAndCrewEnabled: Bool
 
@@ -30,39 +29,28 @@ public struct TVEpisodeDetailsFeature: Sendable {
             tvSeriesID: Int,
             seasonNumber: Int,
             episodeNumber: Int,
-            episodeName: String,
             viewState: ViewState<ViewSnapshot> = .initial,
             isCastAndCrewEnabled: Bool = false
         ) {
             self.tvSeriesID = tvSeriesID
             self.seasonNumber = seasonNumber
             self.episodeNumber = episodeNumber
-            self.episodeName = episodeName
             self.viewState = viewState
             self.isCastAndCrewEnabled = isCastAndCrewEnabled
         }
     }
 
     public struct ViewSnapshot: Equatable, Sendable {
-        public let name: String
-        public let overview: String?
-        public let airDate: Date?
-        public let stillURL: URL?
+        public let episode: TVEpisode
         public let castMembers: [CastMember]
         public let crewMembers: [CrewMember]
 
         public init(
-            name: String,
-            overview: String?,
-            airDate: Date?,
-            stillURL: URL?,
+            episode: TVEpisode,
             castMembers: [CastMember] = [],
             crewMembers: [CrewMember] = []
         ) {
-            self.name = name
-            self.overview = overview
-            self.airDate = airDate
-            self.stillURL = stillURL
+            self.episode = episode
             self.castMembers = castMembers
             self.crewMembers = crewMembers
         }
@@ -106,7 +94,6 @@ public struct TVEpisodeDetailsFeature: Sendable {
 
             case .loaded(let snapshot):
                 state.viewState = .ready(snapshot)
-                state.episodeName = snapshot.name
                 return .none
 
             case .loadFailed(let error):
@@ -131,7 +118,7 @@ extension TVEpisodeDetailsFeature {
 
             let isCastAndCrewEnabled = state.isCastAndCrewEnabled
 
-            async let episodeDetailsTask = client.fetchEpisodeDetails(
+            async let episodeTask = client.fetchEpisode(
                 state.tvSeriesID,
                 state.seasonNumber,
                 state.episodeNumber
@@ -148,9 +135,9 @@ extension TVEpisodeDetailsFeature {
                 )
             }()
 
-            let episodeDetails: EpisodeDetails
+            let episode: TVEpisode
             do {
-                episodeDetails = try await episodeDetailsTask
+                episode = try await episodeTask
             } catch {
                 _ = await creditsTask
                 Self.logger.error(
@@ -168,10 +155,7 @@ extension TVEpisodeDetailsFeature {
             }
 
             let snapshot = ViewSnapshot(
-                name: episodeDetails.name,
-                overview: episodeDetails.overview,
-                airDate: episodeDetails.airDate,
-                stillURL: episodeDetails.stillURL,
+                episode: episode,
                 castMembers: credits?.castMembers ?? [],
                 crewMembers: credits?.crewMembers ?? []
             )

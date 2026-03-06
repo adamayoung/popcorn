@@ -16,7 +16,7 @@ struct TVSeasonSummaryMapper {
             id: season.id,
             name: season.name,
             seasonNumber: season.seasonNumber,
-            posterURL: imagesConfiguration.posterURLSet(for: season.posterPath)?.detail
+            posterURLSet: imagesConfiguration.posterURLSet(for: season.posterPath)
         )
     }
 

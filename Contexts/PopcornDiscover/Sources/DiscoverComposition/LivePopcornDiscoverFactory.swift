@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import DiscoverApplication
 import DiscoverDomain
 import DiscoverInfrastructure
@@ -19,7 +20,8 @@ public final class LivePopcornDiscoverFactory: PopcornDiscoverFactory {
         appConfigurationProvider: some AppConfigurationProviding,
         genreProvider: some GenreProviding,
         movieLogoImageProvider: some MovieLogoImageProviding,
-        tvSeriesLogoImageProvider: some TVSeriesLogoImageProviding
+        tvSeriesLogoImageProvider: some TVSeriesLogoImageProviding,
+        themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
         let infrastructureFactory = DiscoverInfrastructureFactory(
             discoverRemoteDataSource: discoverRemoteDataSource
@@ -30,7 +32,8 @@ public final class LivePopcornDiscoverFactory: PopcornDiscoverFactory {
             genreProvider: genreProvider,
             appConfigurationProvider: appConfigurationProvider,
             movieLogoImageProvider: movieLogoImageProvider,
-            tvSeriesLogoImageProvider: tvSeriesLogoImageProvider
+            tvSeriesLogoImageProvider: tvSeriesLogoImageProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 

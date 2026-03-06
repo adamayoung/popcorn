@@ -25,7 +25,7 @@ struct MovieCastAndCrewViewSnapshotTests {
                     viewState: .ready(
                         .init(
                             castMembers: CastMember.mocks,
-                            crewMembers: CrewMember.mocks
+                            crewByDepartment: CrewDepartment.mocks
                         )
                     )
                 ),

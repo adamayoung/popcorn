@@ -80,22 +80,17 @@ SwiftDataFetchStreaming {
         let mapper = CreditsEntityMapper()
 
         if let existing {
-            // Delete existing cast/crew first (cascade only triggers on parent delete)
-            existing.cast.forEach { modelContext.delete($0) }
-            existing.crew.forEach { modelContext.delete($0) }
+            modelContext.delete(existing)
 
-            // Commit deletes before creating new entities with the same unique creditIDs
             do {
                 try modelContext.save()
             } catch let error {
                 throw .persistence(error)
             }
-
-            mapper.map(credits, tvSeriesID: tvSeriesID, to: existing)
-        } else {
-            let entity = mapper.map(credits, tvSeriesID: tvSeriesID)
-            modelContext.insert(entity)
         }
+
+        let entity = mapper.map(credits, tvSeriesID: tvSeriesID)
+        modelContext.insert(entity)
 
         do {
             try modelContext.save()

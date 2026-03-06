@@ -11,16 +11,20 @@ public struct Credits: Identifiable, Equatable, Sendable {
 
     public let id: Int
     public let castMembers: [CastMember]
-    public let crewMembers: [CrewMember]
+    public let crewByDepartment: [CrewDepartment]
+
+    public var crewMembers: [CrewMember] {
+        crewByDepartment.flatMap(\.members)
+    }
 
     public init(
         id: Int,
         castMembers: [CastMember],
-        crewMembers: [CrewMember]
+        crewByDepartment: [CrewDepartment]
     ) {
         self.id = id
         self.castMembers = castMembers
-        self.crewMembers = crewMembers
+        self.crewByDepartment = crewByDepartment
     }
 
 }
@@ -31,7 +35,7 @@ extension Credits {
         Credits(
             id: 1396,
             castMembers: CastMember.mocks,
-            crewMembers: CrewMember.mocks
+            crewByDepartment: CrewDepartment.mocks
         )
     }
 

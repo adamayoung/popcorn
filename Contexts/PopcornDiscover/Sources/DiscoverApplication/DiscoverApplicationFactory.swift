@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import DiscoverDomain
 import Foundation
 
@@ -16,6 +17,7 @@ package final class DiscoverApplicationFactory: Sendable {
     private let appConfigurationProvider: any AppConfigurationProviding
     private let movieLogoImageProvider: any MovieLogoImageProviding
     private let tvSeriesLogoImageProvider: any TVSeriesLogoImageProviding
+    private let themeColorProvider: (any ThemeColorProviding)?
 
     package init(
         discoverMovieRepository: some DiscoverMovieRepository,
@@ -23,7 +25,8 @@ package final class DiscoverApplicationFactory: Sendable {
         genreProvider: some GenreProviding,
         appConfigurationProvider: some AppConfigurationProviding,
         movieLogoImageProvider: some MovieLogoImageProviding,
-        tvSeriesLogoImageProvider: some TVSeriesLogoImageProviding
+        tvSeriesLogoImageProvider: some TVSeriesLogoImageProviding,
+        themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
         self.discoverMovieRepository = discoverMovieRepository
         self.discoverTVSeriesRepository = discoverTVSeriesRepository
@@ -31,6 +34,7 @@ package final class DiscoverApplicationFactory: Sendable {
         self.appConfigurationProvider = appConfigurationProvider
         self.movieLogoImageProvider = movieLogoImageProvider
         self.tvSeriesLogoImageProvider = tvSeriesLogoImageProvider
+        self.themeColorProvider = themeColorProvider
     }
 
     package func makeFetchDiscoverMoviesUseCase() -> some FetchDiscoverMoviesUseCase {
@@ -38,7 +42,8 @@ package final class DiscoverApplicationFactory: Sendable {
             repository: discoverMovieRepository,
             genreProvider: genreProvider,
             appConfigurationProvider: appConfigurationProvider,
-            logoImageProvider: movieLogoImageProvider
+            logoImageProvider: movieLogoImageProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 
@@ -47,7 +52,8 @@ package final class DiscoverApplicationFactory: Sendable {
             repository: discoverTVSeriesRepository,
             genreProvider: genreProvider,
             appConfigurationProvider: appConfigurationProvider,
-            logoImageProvider: tvSeriesLogoImageProvider
+            logoImageProvider: tvSeriesLogoImageProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 

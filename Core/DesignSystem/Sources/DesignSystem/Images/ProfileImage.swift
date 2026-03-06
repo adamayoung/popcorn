@@ -30,7 +30,8 @@ public struct ProfileImage: View {
     private var detectFocalPoint = false
 
     @State private var imageLoadFailed = false
-    @State private var focalOffset: CGSize = .zero
+    @State private var focalPoint: UnitPoint?
+    @State private var imageSize: CGSize?
     @State private var focalPointResolved = false
 
     private var isInitialsVisible: Bool {
@@ -69,7 +70,7 @@ public struct ProfileImage: View {
                             imageLoadFailed = false
                         }
                         if detectFocalPoint, !focalPointResolved {
-                            analyzeImage(image, frameSize: proxy.size)
+                            analyzeImage(image)
                         }
                     }
                     .onFailure { _ in
@@ -82,7 +83,7 @@ public struct ProfileImage: View {
                     }
                     .resizable()
                     .scaledToFill()
-                    .offset(focalOffset)
+                    .offset(currentFocalOffset(frameSize: proxy.size))
                     .frame(width: proxy.size.width, height: proxy.size.height, alignment: .center)
                     .background(Color.secondary.opacity(0.1))
                     .clipped()
@@ -97,7 +98,8 @@ public struct ProfileImage: View {
         .onChange(of: url) { _, newURL in
             if newURL != nil {
                 imageLoadFailed = false
-                focalOffset = .zero
+                focalPoint = nil
+                imageSize = nil
                 focalPointResolved = false
             }
         }
@@ -132,7 +134,15 @@ extension ProfileImage {
         detectFocalPoint ? (focalPointResolved ? 1 : 0) : 1
     }
 
-    private func analyzeImage(_ image: SDWebImageSwiftUI.PlatformImage, frameSize: CGSize) {
+    private func currentFocalOffset(frameSize: CGSize) -> CGSize {
+        guard let focalPoint, let imageSize else {
+            return .zero
+        }
+
+        return focalPointOffset(focalPoint: focalPoint, imageSize: imageSize, frameSize: frameSize)
+    }
+
+    private func analyzeImage(_ image: SDWebImageSwiftUI.PlatformImage) {
         guard let url else {
             focalPointResolved = true
             return
@@ -150,14 +160,16 @@ extension ProfileImage {
             return
         }
 
-        let imageSize = CGSize(width: cgImage.width, height: cgImage.height)
+        let resolvedImageSize = CGSize(width: cgImage.width, height: cgImage.height)
 
         Task {
             let point = await FocalPointAnalyzer.shared.focalPoint(for: cgImage, url: url)
-            let offset = point.map { focalPointOffset(focalPoint: $0, imageSize: imageSize, frameSize: frameSize) }
 
             await MainActor.run {
-                if let offset { focalOffset = offset }
+                if let point {
+                    self.focalPoint = point
+                    self.imageSize = resolvedImageSize
+                }
                 if reduceMotion {
                     focalPointResolved = true
                 } else {

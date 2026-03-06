@@ -9,6 +9,7 @@ import AppDependencies
 import ComposableArchitecture
 import Foundation
 import GamesCatalogApplication
+import PlotRemixGameApplication
 import PlotRemixGameDomain
 import PopcornGamesCatalogAdapters
 import PopcornPlotRemixGameAdapters
@@ -28,18 +29,22 @@ extension PlotRemixGamePlayClient: DependencyKey {
 
         return PlotRemixGamePlayClient(
             generateGame: { progress in
-                let config = GameConfig(
-                    theme: .child,
-                    genreID: 10751,
-                    primaryReleaseYearFilter: .betweenYears(start: 2015, end: 2025)
-                )
-                let game = try await generatePlotRemixGame.execute(
-                    config: config,
-                    progress: progress
-                )
-                let mapper = GameMapper()
+                do {
+                    let config = GameConfig(
+                        theme: .child,
+                        genreID: 10751,
+                        primaryReleaseYearFilter: .betweenYears(start: 2015, end: 2025)
+                    )
+                    let game = try await generatePlotRemixGame.execute(
+                        config: config,
+                        progress: progress
+                    )
+                    let mapper = GameMapper()
 
-                return mapper.map(game)
+                    return mapper.map(game)
+                } catch let error as GeneratePlotRemixGameError {
+                    throw GenerateGameError(error)
+                }
             }
         )
     }

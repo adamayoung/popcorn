@@ -14,7 +14,7 @@ struct CreditsMapper {
         Credits(
             id: creditsDetails.id,
             castMembers: creditsDetails.cast.map(map),
-            crewMembers: creditsDetails.crew.map(map)
+            crewByDepartment: creditsDetails.crewByDepartment.map(map)
         )
     }
 
@@ -26,6 +26,13 @@ struct CreditsMapper {
             personName: castMemberDetails.personName,
             profileURL: castMemberDetails.profileURLSet?.detail,
             initials: castMemberDetails.initials
+        )
+    }
+
+    private func map(_ group: CrewDepartmentGroup) -> CrewDepartment {
+        CrewDepartment(
+            department: group.department,
+            members: group.members.map(map)
         )
     }
 

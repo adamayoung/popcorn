@@ -15,27 +15,33 @@ import Testing
 @Suite("TVEpisodeDetailsFeature Tests")
 struct TVEpisodeDetailsFeatureTests {
 
+    private typealias Feature = TVEpisodeDetailsFeature
+
     @Test("didAppear triggers fetch when state is initial")
     func didAppearTriggersFetchWhenInitial() async {
-        let episodeDetails = EpisodeDetails(
+        let episode = TVEpisode(
+            id: 62085,
             name: "Pilot",
+            episodeNumber: 1,
+            seasonNumber: 1,
+            tvSeasonID: 3572,
+            tvSeriesID: 1396,
             overview: "A chemistry teacher begins cooking meth.",
             airDate: Date(timeIntervalSince1970: 1_200_528_000),
             stillURL: URL(string: "https://example.com/still.jpg")
         )
 
         let store = TestStore(
-            initialState: TVEpisodeDetailsFeature.State(
+            initialState: Feature.State(
                 tvSeriesID: 1396,
                 seasonNumber: 1,
-                episodeNumber: 1,
-                episodeName: "Episode 1"
+                episodeNumber: 1
             )
         ) {
-            TVEpisodeDetailsFeature()
+            Feature()
         } withDependencies: {
-            $0.tvEpisodeDetailsClient.fetchEpisodeDetails = { _, _, _ in
-                episodeDetails
+            $0.tvEpisodeDetailsClient.fetchEpisode = { _, _, _ in
+                episode
             }
             $0.tvEpisodeDetailsClient.isCastAndCrewEnabled = { false }
         }
@@ -46,14 +52,8 @@ struct TVEpisodeDetailsFeatureTests {
             $0.viewState = .loading
         }
         await store.receive(\.loaded) {
-            $0.episodeName = "Pilot"
             $0.viewState = .ready(
-                TVEpisodeDetailsFeature.ViewSnapshot(
-                    name: "Pilot",
-                    overview: "A chemistry teacher begins cooking meth.",
-                    airDate: Date(timeIntervalSince1970: 1_200_528_000),
-                    stillURL: URL(string: "https://example.com/still.jpg")
-                )
+                Feature.ViewSnapshot(episode: episode)
             )
         }
     }
@@ -61,15 +61,14 @@ struct TVEpisodeDetailsFeatureTests {
     @Test("didAppear does not trigger fetch when state is loading")
     func didAppearDoesNotTriggerFetchWhenLoading() async {
         let store = TestStore(
-            initialState: TVEpisodeDetailsFeature.State(
+            initialState: Feature.State(
                 tvSeriesID: 1396,
                 seasonNumber: 1,
                 episodeNumber: 1,
-                episodeName: "Pilot",
                 viewState: .loading
             )
         ) {
-            TVEpisodeDetailsFeature()
+            Feature()
         }
 
         await store.send(.didAppear)
@@ -78,22 +77,16 @@ struct TVEpisodeDetailsFeatureTests {
     @Test("didAppear does not trigger fetch when state is ready")
     func didAppearDoesNotTriggerFetchWhenReady() async {
         let store = TestStore(
-            initialState: TVEpisodeDetailsFeature.State(
+            initialState: Feature.State(
                 tvSeriesID: 1396,
                 seasonNumber: 1,
                 episodeNumber: 1,
-                episodeName: "Pilot",
                 viewState: .ready(
-                    .init(
-                        name: "Pilot",
-                        overview: nil,
-                        airDate: nil,
-                        stillURL: nil
-                    )
+                    Feature.ViewSnapshot(episode: TVEpisode.mock)
                 )
             )
         ) {
-            TVEpisodeDetailsFeature()
+            Feature()
         }
 
         await store.send(.didAppear)
@@ -102,16 +95,15 @@ struct TVEpisodeDetailsFeatureTests {
     @Test("fetch handles error")
     func fetchHandlesError() async {
         let store = TestStore(
-            initialState: TVEpisodeDetailsFeature.State(
+            initialState: Feature.State(
                 tvSeriesID: 1396,
                 seasonNumber: 1,
-                episodeNumber: 1,
-                episodeName: "Pilot"
+                episodeNumber: 1
             )
         ) {
-            TVEpisodeDetailsFeature()
+            Feature()
         } withDependencies: {
-            $0.tvEpisodeDetailsClient.fetchEpisodeDetails = { _, _, _ in
+            $0.tvEpisodeDetailsClient.fetchEpisode = { _, _, _ in
                 throw NSError(domain: "test", code: 1)
             }
             $0.tvEpisodeDetailsClient.isCastAndCrewEnabled = { false }
@@ -129,8 +121,13 @@ struct TVEpisodeDetailsFeatureTests {
 
     @Test("fetch with castAndCrew enabled includes credits in snapshot")
     func fetchWithCastAndCrewEnabledIncludesCredits() async {
-        let episodeDetails = EpisodeDetails(
+        let episode = TVEpisode(
+            id: 62085,
             name: "Pilot",
+            episodeNumber: 1,
+            seasonNumber: 1,
+            tvSeasonID: 3572,
+            tvSeriesID: 1396,
             overview: "A chemistry teacher begins cooking meth.",
             airDate: Date(timeIntervalSince1970: 1_200_528_000),
             stillURL: URL(string: "https://example.com/still.jpg")
@@ -138,18 +135,17 @@ struct TVEpisodeDetailsFeatureTests {
         let credits = Credits.mock
 
         let store = TestStore(
-            initialState: TVEpisodeDetailsFeature.State(
+            initialState: Feature.State(
                 tvSeriesID: 1396,
                 seasonNumber: 1,
                 episodeNumber: 1,
-                episodeName: "Episode 1",
                 isCastAndCrewEnabled: true
             )
         ) {
-            TVEpisodeDetailsFeature()
+            Feature()
         } withDependencies: {
-            $0.tvEpisodeDetailsClient.fetchEpisodeDetails = { _, _, _ in
-                episodeDetails
+            $0.tvEpisodeDetailsClient.fetchEpisode = { _, _, _ in
+                episode
             }
             $0.tvEpisodeDetailsClient.fetchCredits = { _, _, _ in
                 credits
@@ -161,13 +157,9 @@ struct TVEpisodeDetailsFeatureTests {
             $0.viewState = .loading
         }
         await store.receive(\.loaded) {
-            $0.episodeName = "Pilot"
             $0.viewState = .ready(
-                TVEpisodeDetailsFeature.ViewSnapshot(
-                    name: "Pilot",
-                    overview: "A chemistry teacher begins cooking meth.",
-                    airDate: Date(timeIntervalSince1970: 1_200_528_000),
-                    stillURL: URL(string: "https://example.com/still.jpg"),
+                Feature.ViewSnapshot(
+                    episode: episode,
                     castMembers: credits.castMembers,
                     crewMembers: credits.crewMembers
                 )
@@ -177,26 +169,30 @@ struct TVEpisodeDetailsFeatureTests {
 
     @Test("fetch continues when credits fetch fails")
     func fetchContinuesWhenCreditsFetchFails() async {
-        let episodeDetails = EpisodeDetails(
+        let episode = TVEpisode(
+            id: 62085,
             name: "Pilot",
+            episodeNumber: 1,
+            seasonNumber: 1,
+            tvSeasonID: 3572,
+            tvSeriesID: 1396,
             overview: "A chemistry teacher begins cooking meth.",
             airDate: Date(timeIntervalSince1970: 1_200_528_000),
             stillURL: URL(string: "https://example.com/still.jpg")
         )
 
         let store = TestStore(
-            initialState: TVEpisodeDetailsFeature.State(
+            initialState: Feature.State(
                 tvSeriesID: 1396,
                 seasonNumber: 1,
                 episodeNumber: 1,
-                episodeName: "Episode 1",
                 isCastAndCrewEnabled: true
             )
         ) {
-            TVEpisodeDetailsFeature()
+            Feature()
         } withDependencies: {
-            $0.tvEpisodeDetailsClient.fetchEpisodeDetails = { _, _, _ in
-                episodeDetails
+            $0.tvEpisodeDetailsClient.fetchEpisode = { _, _, _ in
+                episode
             }
             $0.tvEpisodeDetailsClient.fetchCredits = { _, _, _ in
                 throw NSError(domain: "test", code: 1)
@@ -208,34 +204,42 @@ struct TVEpisodeDetailsFeatureTests {
             $0.viewState = .loading
         }
         await store.receive(\.loaded) {
-            $0.episodeName = "Pilot"
             $0.viewState = .ready(
-                TVEpisodeDetailsFeature.ViewSnapshot(
-                    name: "Pilot",
-                    overview: "A chemistry teacher begins cooking meth.",
-                    airDate: Date(timeIntervalSince1970: 1_200_528_000),
-                    stillURL: URL(string: "https://example.com/still.jpg")
-                )
+                Feature.ViewSnapshot(episode: episode)
             )
         }
     }
 
-    @Test("navigate action returns none")
-    func navigateActionReturnsNone() async {
+    @Test("navigate to cast and crew uses tvSeriesID from state")
+    func navigateToCastAndCrewUsesTVSeriesIDFromState() async {
         let store = TestStore(
-            initialState: TVEpisodeDetailsFeature.State(
+            initialState: Feature.State(
                 tvSeriesID: 1396,
-                seasonNumber: 1,
-                episodeNumber: 1,
-                episodeName: "Pilot"
+                seasonNumber: 2,
+                episodeNumber: 3
             )
         ) {
-            TVEpisodeDetailsFeature()
+            Feature()
         }
 
         await store.send(
-            .navigate(.castAndCrew(tvSeriesID: 1396, seasonNumber: 1, episodeNumber: 1))
+            .navigate(.castAndCrew(tvSeriesID: 1396, seasonNumber: 2, episodeNumber: 3))
         )
+    }
+
+    @Test("navigate to person details returns none")
+    func navigateToPersonDetailsReturnsNone() async {
+        let store = TestStore(
+            initialState: Feature.State(
+                tvSeriesID: 1396,
+                seasonNumber: 1,
+                episodeNumber: 1
+            )
+        ) {
+            Feature()
+        }
+
+        await store.send(.navigate(.personDetails(id: 500)))
     }
 
 }

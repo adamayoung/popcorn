@@ -15,7 +15,8 @@ struct MoviePreviewDetailsMapper {
         _ moviePreview: MoviePreview,
         genresLookup: [Genre.ID: Genre],
         logoURLSet: ImageURLSet?,
-        imagesConfiguration: ImagesConfiguration
+        imagesConfiguration: ImagesConfiguration,
+        themeColor: ThemeColor? = nil
     ) -> MoviePreviewDetails {
         let genres = moviePreview.genreIDs.compactMap { genresLookup[$0] }
         let posterURLSet = imagesConfiguration.posterURLSet(for: moviePreview.posterPath)
@@ -29,7 +30,8 @@ struct MoviePreviewDetailsMapper {
             genres: genres,
             posterURLSet: posterURLSet,
             backdropURLSet: backdropURLSet,
-            logoURLSet: logoURLSet
+            logoURLSet: logoURLSet,
+            themeColor: themeColor
         )
     }
 

@@ -86,31 +86,22 @@ SwiftDataFetchStreaming {
         let mapper = TVEpisodeCreditsEntityMapper()
 
         if let existing {
-            existing.cast.forEach { modelContext.delete($0) }
-            existing.crew.forEach { modelContext.delete($0) }
+            modelContext.delete(existing)
 
             do {
                 try modelContext.save()
             } catch let error {
                 throw .persistence(error)
             }
-
-            mapper.map(
-                credits,
-                tvSeriesID: tvSeriesID,
-                seasonNumber: seasonNumber,
-                episodeNumber: episodeNumber,
-                to: existing
-            )
-        } else {
-            let entity = mapper.map(
-                credits,
-                tvSeriesID: tvSeriesID,
-                seasonNumber: seasonNumber,
-                episodeNumber: episodeNumber
-            )
-            modelContext.insert(entity)
         }
+
+        let entity = mapper.map(
+            credits,
+            tvSeriesID: tvSeriesID,
+            seasonNumber: seasonNumber,
+            episodeNumber: episodeNumber
+        )
+        modelContext.insert(entity)
 
         do {
             try modelContext.save()

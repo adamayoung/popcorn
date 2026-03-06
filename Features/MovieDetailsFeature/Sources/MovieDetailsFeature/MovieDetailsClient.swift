@@ -39,9 +39,13 @@ extension MovieDetailsClient: DependencyKey {
 
         return MovieDetailsClient(
             fetchMovie: { id in
-                let movie = try await fetchMovieDetails.execute(id: id)
-                let mapper = MovieMapper()
-                return mapper.map(movie)
+                do {
+                    let movie = try await fetchMovieDetails.execute(id: id)
+                    let mapper = MovieMapper()
+                    return mapper.map(movie)
+                } catch let error as FetchMovieDetailsError {
+                    throw FetchMovieError(error)
+                }
             },
             streamMovie: { id in
                 let movieStream = await streamMovieDetails.stream(id: id)

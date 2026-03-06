@@ -14,15 +14,18 @@ final class DefaultFetchTrendingMoviesUseCase: FetchTrendingMoviesUseCase {
     private let repository: any TrendingRepository
     private let appConfigurationProvider: any AppConfigurationProviding
     private let logoImageProvider: any MovieLogoImageProviding
+    private let themeColorProvider: (any ThemeColorProviding)?
 
     init(
         repository: some TrendingRepository,
         appConfigurationProvider: some AppConfigurationProviding,
-        logoImageProvider: some MovieLogoImageProviding
+        logoImageProvider: some MovieLogoImageProviding,
+        themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
         self.repository = repository
         self.appConfigurationProvider = appConfigurationProvider
         self.logoImageProvider = logoImageProvider
+        self.themeColorProvider = themeColorProvider
     }
 
     func execute() async throws(FetchTrendingMoviesError) -> [MoviePreviewDetails] {
@@ -41,10 +44,46 @@ final class DefaultFetchTrendingMoviesUseCase: FetchTrendingMoviesUseCase {
             throw FetchTrendingMoviesError(error)
         }
 
+        let themeColors = await extractThemeColors(
+            for: moviePreviews,
+            imagesConfiguration: appConfiguration.images
+        )
+
         let mapper = MoviePreviewDetailsMapper()
         return moviePreviews.map {
-            mapper.map($0, imagesConfiguration: appConfiguration.images)
+            mapper.map(
+                $0,
+                imagesConfiguration: appConfiguration.images,
+                themeColor: themeColors[$0.id]
+            )
         }
+    }
+
+}
+
+extension DefaultFetchTrendingMoviesUseCase {
+
+    private func extractThemeColors(
+        for moviePreviews: [MoviePreview],
+        imagesConfiguration: ImagesConfiguration
+    ) async -> [Int: ThemeColor] {
+        guard let themeColorProvider else {
+            return [:]
+        }
+
+        var results: [Int: ThemeColor] = [:]
+
+        for moviePreview in moviePreviews {
+            guard let thumbnailURL = imagesConfiguration.posterURLSet(for: moviePreview.posterPath)?.thumbnail
+            else {
+                continue
+            }
+            if let themeColor = await themeColorProvider.themeColor(for: thumbnailURL) {
+                results[moviePreview.id] = themeColor
+            }
+        }
+
+        return results
     }
 
 }

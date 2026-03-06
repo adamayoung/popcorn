@@ -43,7 +43,7 @@ struct CreditsProviderAdapterTests {
         let creditsDetails = CreditsDetails(
             id: 550,
             cast: [castMember],
-            crew: [crewMember]
+            crewByDepartment: [CrewDepartmentGroup(department: "Directing", members: [crewMember])]
         )
 
         let mockUseCase = MockFetchMovieCreditsUseCase()
@@ -148,7 +148,7 @@ struct CreditsProviderAdapterTests {
         let creditsDetails = CreditsDetails(
             id: 12345,
             cast: [],
-            crew: []
+            crewByDepartment: []
         )
 
         let mockUseCase = MockFetchMovieCreditsUseCase()
@@ -166,7 +166,7 @@ struct CreditsProviderAdapterTests {
         let creditsDetails = CreditsDetails(
             id: 550,
             cast: [],
-            crew: []
+            crewByDepartment: []
         )
 
         let mockUseCase = MockFetchMovieCreditsUseCase()
@@ -205,7 +205,9 @@ struct CreditsProviderAdapterTests {
         let creditsDetails = CreditsDetails(
             id: 550,
             cast: [castMember],
-            crew: [crewMember]
+            crewByDepartment: [
+                CrewDepartmentGroup(department: "Department", members: [crewMember])
+            ]
         )
 
         let mockUseCase = MockFetchMovieCreditsUseCase()

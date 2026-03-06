@@ -24,12 +24,35 @@ public struct MediaToolbarHeader: View {
                 .zIndex(1)
 
             Text(verbatim: title)
-                .padding(8)
+                .padding(.spacing8)
                 .glassEffect(.regular, in: .capsule)
                 .offset(y: -5)
         }
         .font(.headline)
-        .padding(.top, 30)
+        .padding(.top, .spacing30)
     }
 
+}
+
+#Preview {
+    let title = "Fight Club"
+    let posterURL = URL(string: "https://image.tmdb.org/t/p/w500/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg")
+
+    NavigationStack {
+        List {}
+            .navigationTitle(title)
+            .toolbarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    ZStack {
+                        Color.clear.frame(height: 0)
+                        MediaToolbarHeader(
+                            title: title,
+                            posterURL: posterURL
+                        )
+                        .transition(.opacity)
+                    }
+                }
+            }
+    }
 }

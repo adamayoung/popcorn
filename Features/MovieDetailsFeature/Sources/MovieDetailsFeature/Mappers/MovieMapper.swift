@@ -37,7 +37,8 @@ struct MovieMapper {
             revenue: movieDetails.revenue,
             homepageURL: movieDetails.homepageURL,
             certification: movieDetails.certification,
-            isOnWatchlist: movieDetails.isOnWatchlist
+            isOnWatchlist: movieDetails.isOnWatchlist,
+            themeColor: movieDetails.themeColor
         )
     }
 

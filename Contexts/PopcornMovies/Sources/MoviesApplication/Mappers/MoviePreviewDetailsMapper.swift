@@ -14,7 +14,8 @@ struct MoviePreviewDetailsMapper {
     func map(
         _ moviePreview: MoviePreview,
         imageCollection: ImageCollection?,
-        imagesConfiguration: ImagesConfiguration
+        imagesConfiguration: ImagesConfiguration,
+        themeColor: ThemeColor? = nil
     ) -> MoviePreviewDetails {
         let posterURLSet = imagesConfiguration.posterURLSet(for: moviePreview.posterPath)
         let backdropURLSet = imagesConfiguration.posterURLSet(for: moviePreview.backdropPath)
@@ -26,7 +27,8 @@ struct MoviePreviewDetailsMapper {
             overview: moviePreview.overview,
             posterURLSet: posterURLSet,
             backdropURLSet: backdropURLSet,
-            logoURLSet: logoURLSet
+            logoURLSet: logoURLSet,
+            themeColor: themeColor
         )
     }
 

@@ -72,20 +72,13 @@ extension FeatureFlagsView {
     }
 
     private func errorBody(_ error: ViewStateError) -> some View {
-        ContentUnavailableView {
-            Label(LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module), systemImage: "exclamationmark.triangle")
-        } description: {
-            Text(error.message)
-        } actions: {
-            if error.isRetryable {
-                Button {
-                    store.send(.load)
-                } label: {
-                    Text("RETRY", bundle: .module)
-                }
-                .buttonStyle(.bordered)
-            }
-        }
+        ContentLoadErrorView(
+            message: error.message,
+            systemImage: "flag",
+            reason: error.reason,
+            isRetryable: error.isRetryable,
+            retryAction: { store.send(.load) }
+        )
     }
 
 }
@@ -113,6 +106,19 @@ extension FeatureFlagsView {
             store: Store(
                 initialState: FeatureFlagsFeature.State(
                     viewState: .loading
+                ),
+                reducer: { EmptyReducer() }
+            )
+        )
+    }
+}
+
+#Preview("Error") {
+    NavigationStack {
+        FeatureFlagsView(
+            store: Store(
+                initialState: FeatureFlagsFeature.State(
+                    viewState: .error(ViewStateError(FetchFeatureFlagsError.unknown()))
                 ),
                 reducer: { EmptyReducer() }
             )

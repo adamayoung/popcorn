@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import DesignSystem
 import SwiftUI
 
@@ -36,6 +37,13 @@ struct TVSeriesDetailsContentView: View {
                 }
             }
         )
+        .background {
+            if let themeColor = tvSeries.themeColor {
+                Color(red: themeColor.red, green: themeColor.green, blue: themeColor.blue)
+                    .opacity(0.5)
+                    .ignoresSafeArea()
+            }
+        }
         .navigationTitle(tvSeries.name)
         #if os(iOS)
             .toolbarTitleDisplayMode(.inline)

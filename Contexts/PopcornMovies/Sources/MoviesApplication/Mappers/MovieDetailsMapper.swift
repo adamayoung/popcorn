@@ -16,7 +16,8 @@ struct MovieDetailsMapper {
         imageCollection: ImageCollection,
         certification: String?,
         isOnWatchlist: Bool = false,
-        imagesConfiguration: ImagesConfiguration
+        imagesConfiguration: ImagesConfiguration,
+        themeColor: ThemeColor? = nil
     ) -> MovieDetails {
         let posterURLSet = imagesConfiguration.posterURLSet(for: movie.posterPath)
         let backdropURLSet = imagesConfiguration.posterURLSet(for: movie.backdropPath)
@@ -51,7 +52,8 @@ struct MovieDetailsMapper {
             hasVideo: movie.hasVideo,
             isAdultOnly: movie.isAdultOnly,
             certification: certification,
-            isOnWatchlist: isOnWatchlist
+            isOnWatchlist: isOnWatchlist,
+            themeColor: themeColor
         )
     }
 

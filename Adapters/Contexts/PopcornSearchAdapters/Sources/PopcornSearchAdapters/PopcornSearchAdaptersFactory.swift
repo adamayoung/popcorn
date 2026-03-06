@@ -6,6 +6,7 @@
 //
 
 import ConfigurationApplication
+import CoreDomain
 import Foundation
 import MoviesApplication
 import PeopleApplication
@@ -23,19 +24,22 @@ public final class PopcornSearchAdaptersFactory {
     private let fetchMovieDetailsUseCase: any FetchMovieDetailsUseCase
     private let fetchTVSeriesDetailsUseCase: any FetchTVSeriesDetailsUseCase
     private let fetchPersonDetailsUseCase: any FetchPersonDetailsUseCase
+    private let themeColorProvider: (any ThemeColorProviding)?
 
     public init(
         searchService: some SearchService,
         fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase,
         fetchMovieDetailsUseCase: some FetchMovieDetailsUseCase,
         fetchTVSeriesDetailsUseCase: some FetchTVSeriesDetailsUseCase,
-        fetchPersonDetailsUseCase: some FetchPersonDetailsUseCase
+        fetchPersonDetailsUseCase: some FetchPersonDetailsUseCase,
+        themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
         self.searchService = searchService
         self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
         self.fetchMovieDetailsUseCase = fetchMovieDetailsUseCase
         self.fetchTVSeriesDetailsUseCase = fetchTVSeriesDetailsUseCase
         self.fetchPersonDetailsUseCase = fetchPersonDetailsUseCase
+        self.themeColorProvider = themeColorProvider
     }
 
     public func makeSearchFactory() -> some PopcornSearchFactory {
@@ -54,7 +58,8 @@ public final class PopcornSearchAdaptersFactory {
         return LivePopcornSearchFactory(
             mediaRemoteDataSource: mediaRemoteDataSource,
             appConfigurationProvider: appConfigurationProvider,
-            mediaProvider: mediaProvider
+            mediaProvider: mediaProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 

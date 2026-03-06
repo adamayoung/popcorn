@@ -6,6 +6,7 @@
 //
 
 import ConfigurationApplication
+import CoreDomain
 import Foundation
 import TMDb
 import TVSeriesComposition
@@ -16,17 +17,20 @@ public final class PopcornTVSeriesAdaptersFactory {
     private let tvSeasonService: any TVSeasonService
     private let tvEpisodeService: any TVEpisodeService
     private let fetchAppConfigurationUseCase: any FetchAppConfigurationUseCase
+    private let themeColorProvider: (any ThemeColorProviding)?
 
     public init(
         tvSeriesService: some TVSeriesService,
         tvSeasonService: some TVSeasonService,
         tvEpisodeService: some TVEpisodeService,
-        fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase
+        fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase,
+        themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
         self.tvSeriesService = tvSeriesService
         self.tvSeasonService = tvSeasonService
         self.tvEpisodeService = tvEpisodeService
         self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
+        self.themeColorProvider = themeColorProvider
     }
 
     public func makeTVSeriesFactory() -> some PopcornTVSeriesFactory {
@@ -50,7 +54,8 @@ public final class PopcornTVSeriesAdaptersFactory {
             tvSeriesRemoteDataSource: tvSeriesRemoteDataSource,
             tvSeasonRemoteDataSource: tvSeasonRemoteDataSource,
             tvEpisodeRemoteDataSource: tvEpisodeRemoteDataSource,
-            appConfigurationProvider: appConfigurationProvider
+            appConfigurationProvider: appConfigurationProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 

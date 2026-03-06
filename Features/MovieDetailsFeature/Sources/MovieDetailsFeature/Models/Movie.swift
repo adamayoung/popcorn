@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import Foundation
 
 public struct Movie: Identifiable, Sendable, Equatable, Hashable {
@@ -25,6 +26,7 @@ public struct Movie: Identifiable, Sendable, Equatable, Hashable {
     public let homepageURL: URL?
     public let certification: String?
     public let isOnWatchlist: Bool
+    public let themeColor: ThemeColor?
 
     public init(
         id: Int,
@@ -42,7 +44,8 @@ public struct Movie: Identifiable, Sendable, Equatable, Hashable {
         revenue: Double? = nil,
         homepageURL: URL? = nil,
         certification: String? = nil,
-        isOnWatchlist: Bool
+        isOnWatchlist: Bool,
+        themeColor: ThemeColor? = nil
     ) {
         self.id = id
         self.title = title
@@ -60,6 +63,7 @@ public struct Movie: Identifiable, Sendable, Equatable, Hashable {
         self.homepageURL = homepageURL
         self.certification = certification
         self.isOnWatchlist = isOnWatchlist
+        self.themeColor = themeColor
     }
 
 }

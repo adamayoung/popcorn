@@ -21,10 +21,8 @@ struct TVEpisodeSummaryMapper {
             id: episode.id,
             name: episode.name,
             episodeNumber: episode.episodeNumber,
-            seasonNumber: episode.seasonNumber,
             overview: episode.overview,
             airDate: episode.airDate,
-            runtime: episode.runtime,
             stillURLSet: stillURLSet
         )
     }

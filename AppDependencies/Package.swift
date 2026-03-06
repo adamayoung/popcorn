@@ -22,6 +22,9 @@ let package = Package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
         ),
 
+        // Core Packages
+        .package(path: "../Core/CoreDomain"),
+
         // Context Packages
         .package(path: "../Contexts/PopcornConfiguration"),
         .package(path: "../Contexts/PopcornDiscover"),
@@ -36,8 +39,10 @@ let package = Package(
         .package(path: "../Contexts/PopcornTVSeries"),
 
         // Platform Packages
+        .package(path: "../Platform/Caching"),
         .package(path: "../Platform/FeatureAccess"),
         .package(path: "../Platform/Observability"),
+        .package(path: "../Platform/ThemeColorProvider"),
 
         // Context Adapters
         .package(path: "../Adapters/Contexts/PopcornConfigurationAdapters"),
@@ -88,9 +93,14 @@ let package = Package(
                 .product(name: "TVSeriesComposition", package: "PopcornTVSeries"),
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
 
+                // Core
+                .product(name: "CoreDomain", package: "CoreDomain"),
+
                 // Platform
+                "Caching",
                 "FeatureAccess",
                 "Observability",
+                "ThemeColorProvider",
 
                 // Context Adapters
                 "PopcornConfigurationAdapters",

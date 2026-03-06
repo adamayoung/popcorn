@@ -386,6 +386,13 @@
     },
     {
       "target" : {
+        "containerPath" : "container:Platform\/ThemeColorProvider",
+        "identifier" : "ThemeColorProviderTests",
+        "name" : "ThemeColorProviderTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Contexts\/PopcornDiscover",
         "identifier" : "DiscoverDomainTests",
         "name" : "DiscoverDomainTests"
@@ -522,6 +529,13 @@
         "containerPath" : "container:Features\/TVEpisodeCastAndCrewFeature",
         "identifier" : "TVEpisodeCastAndCrewFeatureTests",
         "name" : "TVEpisodeCastAndCrewFeatureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Core\/CrewOrdering",
+        "identifier" : "CrewOrderingTests",
+        "name" : "CrewOrderingTests"
       }
     }
   ],

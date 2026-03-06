@@ -27,10 +27,8 @@ struct TVEpisodeSummaryMapperTests {
         #expect(result.id == episode.id)
         #expect(result.name == episode.name)
         #expect(result.episodeNumber == episode.episodeNumber)
-        #expect(result.seasonNumber == episode.seasonNumber)
         #expect(result.overview == episode.overview)
         #expect(result.airDate == episode.airDate)
-        #expect(result.runtime == episode.runtime)
         #expect(result.stillURLSet != nil)
     }
 
@@ -56,7 +54,6 @@ struct TVEpisodeSummaryMapperTests {
 
         #expect(result.overview == nil)
         #expect(result.airDate == nil)
-        #expect(result.runtime == nil)
         #expect(result.stillURLSet == nil)
     }
 
@@ -79,10 +76,8 @@ struct TVEpisodeSummaryMapperTests {
         #expect(result.id == 99)
         #expect(result.name == "Test Episode")
         #expect(result.episodeNumber == 5)
-        #expect(result.seasonNumber == 2)
         #expect(result.overview == "Test overview")
         #expect(result.airDate == airDate)
-        #expect(result.runtime == 45)
     }
 
     @Test("map episode with still path but handler returns nil URL set")
