@@ -29,12 +29,12 @@ public struct PersonToolbarHeader: View {
             Text(verbatim: name)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
-                .padding(8)
+                .padding(.spacing8)
                 .glassEffect(.regular, in: .capsule)
                 .offset(y: -5)
         }
         .font(.headline)
-        .padding(.top, 30)
+        .padding(.top, .spacing30)
     }
 
 }

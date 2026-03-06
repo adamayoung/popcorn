@@ -24,12 +24,12 @@ public struct MediaToolbarHeader: View {
                 .zIndex(1)
 
             Text(verbatim: title)
-                .padding(8)
+                .padding(.spacing8)
                 .glassEffect(.regular, in: .capsule)
                 .offset(y: -5)
         }
         .font(.headline)
-        .padding(.top, 30)
+        .padding(.top, .spacing30)
     }
 
 }

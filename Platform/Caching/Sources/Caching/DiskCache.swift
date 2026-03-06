@@ -29,8 +29,8 @@ actor DiskCache: Caching {
 
     init(subdirectory: String, defaultExpiresIn: TimeInterval = 7 * 24 * 60 * 60) {
         self.defaultExpiresIn = defaultExpiresIn
-        let cachesDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-        self.directoryURL = cachesDirectory.appendingPathComponent(subdirectory, isDirectory: true)
+        let cachesDirectory = URL.cachesDirectory
+        self.directoryURL = cachesDirectory.appending(path: subdirectory, directoryHint: .isDirectory)
         Self.createDirectoryIfNeeded(at: directoryURL)
     }
 
@@ -172,7 +172,7 @@ extension DiskCache {
     private func fileURL(forKey key: CacheKey) -> URL {
         let safeFilename = key.rawValue
             .addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? key.rawValue
-        return directoryURL.appendingPathComponent(safeFilename)
+        return directoryURL.appending(path: safeFilename)
     }
 
     private static func createDirectoryIfNeeded(at url: URL) {

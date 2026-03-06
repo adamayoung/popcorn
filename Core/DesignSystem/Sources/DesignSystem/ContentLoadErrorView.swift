@@ -34,7 +34,11 @@ public struct ContentLoadErrorView: View {
 
     public var body: some View {
         ContentUnavailableView {
-            Label(message, systemImage: systemImage)
+            Label {
+                Text(verbatim: message)
+            } icon: {
+                Image(systemName: systemImage)
+            }
         } description: {
             VStack(spacing: .spacing8) {
                 if let reason {

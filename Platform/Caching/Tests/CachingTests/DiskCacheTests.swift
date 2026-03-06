@@ -95,10 +95,10 @@ struct DiskCacheTests {
     func corruptedJSONFileReturnsNil() async {
         let cache = makeCache()
 
-        let cachesDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-        let dirURL = cachesDirectory.appendingPathComponent(subdirectory, isDirectory: true)
+        let cachesDirectory = URL.cachesDirectory
+        let dirURL = cachesDirectory.appending(path: subdirectory, directoryHint: .isDirectory)
         let safeFilename = "corrupt".addingPercentEncoding(withAllowedCharacters: .alphanumerics) ?? "corrupt"
-        let fileURL = dirURL.appendingPathComponent(safeFilename)
+        let fileURL = dirURL.appending(path: safeFilename)
         try? Data("not valid json{{{".utf8).write(to: fileURL, options: .atomic)
 
         let result: String? = await cache.item(forKey: CacheKey("corrupt"), ofType: String.self)

@@ -11,7 +11,7 @@ import Foundation
 
 /// Default implementation of ``ThemeColorProviding`` that downloads poster thumbnails,
 /// extracts the average color, and caches the result to disk.
-public final class DefaultThemeColorProvider: ThemeColorProviding, @unchecked Sendable {
+public final class DefaultThemeColorProvider: ThemeColorProviding, Sendable {
 
     private let cache: any Caching
     private let urlSession: URLSession

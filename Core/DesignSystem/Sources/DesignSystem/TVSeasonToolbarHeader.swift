@@ -29,7 +29,7 @@ public struct TVSeasonToolbarHeader: View {
                 .posterHeight(50)
                 .zIndex(1)
 
-            VStack(spacing: 2) {
+            VStack(spacing: .spacing2) {
                 Text(verbatim: name)
                     .font(.headline)
 
@@ -37,11 +37,11 @@ public struct TVSeasonToolbarHeader: View {
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
-            .padding(8)
+            .padding(.spacing8)
             .glassEffect(.regular, in: .capsule)
             .offset(y: -5)
         }
-        .padding(.top, 50)
+        .padding(.top, .spacing50)
     }
 
 }
