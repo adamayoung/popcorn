@@ -101,7 +101,7 @@ private struct GenreGridPreview: View {
                 }
                 .padding(.horizontal)
             }
-            .navigationTitle("Search")
+            .navigationTitle(Text(verbatim: "Search"))
         }
     }
 

@@ -56,7 +56,7 @@ private let tmdbImageBase = "https://image.tmdb.org/t/p/w780"
             genres: .previewData,
             onGenreTapped: { _ in }
         )
-        .navigationTitle("Search")
+        .navigationTitle(Text(verbatim: "Search"))
     }
 }
 

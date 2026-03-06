@@ -51,6 +51,6 @@ struct MediaSearchHistoryContentView: View {
             onTVSeriesTapped: { _ in },
             onPersonTapped: { _ in }
         )
-        .navigationTitle("Search")
+        .navigationTitle(Text(verbatim: "Search"))
     }
 }
