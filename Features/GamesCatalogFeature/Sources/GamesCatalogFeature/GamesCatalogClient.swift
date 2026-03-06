@@ -25,9 +25,13 @@ extension GamesCatalogClient: DependencyKey {
 
         return GamesCatalogClient(
             fetchGames: {
-                let games = try await fetchGames.execute()
-                let mapper = GameMetadataMapper()
-                return games.map(mapper.map)
+                do {
+                    let games = try await fetchGames.execute()
+                    let mapper = GameMetadataMapper()
+                    return games.map(mapper.map)
+                } catch let error as FetchGamesError {
+                    throw FetchGamesCatalogError(error)
+                }
             }
         )
     }

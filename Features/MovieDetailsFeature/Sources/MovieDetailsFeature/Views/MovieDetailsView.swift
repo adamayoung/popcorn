@@ -127,20 +127,13 @@ extension MovieDetailsView {
 extension MovieDetailsView {
 
     private func errorBody(_ error: ViewStateError) -> some View {
-        ContentUnavailableView {
-            Label(LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module), systemImage: "exclamationmark.triangle")
-        } description: {
-            Text(error.message)
-        } actions: {
-            if error.isRetryable {
-                Button {
-                    store.send(.fetch)
-                } label: {
-                    Text("RETRY", bundle: .module)
-                }
-                .buttonStyle(.bordered)
-            }
-        }
+        ContentLoadErrorView(
+            message: error.message,
+            systemImage: "film",
+            reason: error.reason,
+            isRetryable: error.isRetryable,
+            retryAction: { store.send(.fetch) }
+        )
     }
 
 }
@@ -188,7 +181,7 @@ extension MovieDetailsView {
             store: Store(
                 initialState: MovieDetailsFeature.State(
                     movieID: Movie.mock.id,
-                    viewState: .error(ViewStateError(message: "Error loading movie"))
+                    viewState: .error(ViewStateError(FetchMovieError.notFound()))
                 ),
                 reducer: { EmptyReducer() }
             )

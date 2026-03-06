@@ -38,21 +38,7 @@ public struct ExploreView: View {
                     )
 
                 case .error(let error):
-                    ContentUnavailableView {
-                        Label(
-                            LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
-                            systemImage: "exclamationmark.triangle"
-                        )
-                    } description: {
-                        Text(error.message)
-                    } actions: {
-                        if error.isRetryable {
-                            Button(LocalizedStringResource("RETRY", bundle: .module)) {
-                                store.send(.load)
-                            }
-                            .buttonStyle(.bordered)
-                        }
-                    }
+                    errorBody(error)
 
                 default:
                     EmptyView()
@@ -75,6 +61,16 @@ public struct ExploreView: View {
 }
 
 extension ExploreView {
+
+    private func errorBody(_ error: ViewStateError) -> some View {
+        ContentLoadErrorView(
+            message: error.message,
+            systemImage: "popcorn",
+            reason: error.reason,
+            isRetryable: error.isRetryable,
+            retryAction: { store.send(.load) }
+        )
+    }
 
     private var loadingBody: some View {
         ProgressView()
@@ -263,6 +259,22 @@ extension ExploreView {
             store: Store(
                 initialState: ExploreFeature.State(
                     viewState: .loading
+                ),
+                reducer: { EmptyReducer() }
+            ),
+            transitionNamespace: namespace
+        )
+    }
+}
+
+#Preview("Error") {
+    @Previewable @Namespace var namespace
+
+    NavigationStack {
+        ExploreView(
+            store: Store(
+                initialState: ExploreFeature.State(
+                    viewState: .error(ViewStateError(FetchExploreContentError.unknown()))
                 ),
                 reducer: { EmptyReducer() }
             ),

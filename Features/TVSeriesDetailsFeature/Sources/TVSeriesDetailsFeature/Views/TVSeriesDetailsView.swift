@@ -110,20 +110,13 @@ extension TVSeriesDetailsView {
 extension TVSeriesDetailsView {
 
     private func errorBody(_ error: ViewStateError) -> some View {
-        ContentUnavailableView {
-            Label(LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module), systemImage: "exclamationmark.triangle")
-        } description: {
-            Text(error.message)
-        } actions: {
-            if error.isRetryable {
-                Button {
-                    store.send(.fetch)
-                } label: {
-                    Text("RETRY", bundle: .module)
-                }
-                .buttonStyle(.bordered)
-            }
-        }
+        ContentLoadErrorView(
+            message: error.message,
+            systemImage: "tv",
+            reason: error.reason,
+            isRetryable: error.isRetryable,
+            retryAction: { store.send(.fetch) }
+        )
     }
 
 }
@@ -168,7 +161,7 @@ extension TVSeriesDetailsView {
             store: Store(
                 initialState: TVSeriesDetailsFeature.State(
                     tvSeriesID: 1,
-                    viewState: .error(ViewStateError(message: "Error loading TV series"))
+                    viewState: .error(ViewStateError(FetchTVSeriesError.notFound()))
                 ),
                 reducer: { EmptyReducer() }
             )

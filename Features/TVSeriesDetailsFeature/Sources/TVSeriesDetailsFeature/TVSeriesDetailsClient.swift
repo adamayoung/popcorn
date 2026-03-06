@@ -47,7 +47,7 @@ extension TVSeriesDetailsClient: DependencyKey {
                 } catch let error {
                     span?.setData(error: error)
                     span?.finish(status: .internalError)
-                    throw error
+                    throw FetchTVSeriesError(error)
                 }
             },
             fetchCredits: { tvSeriesID in

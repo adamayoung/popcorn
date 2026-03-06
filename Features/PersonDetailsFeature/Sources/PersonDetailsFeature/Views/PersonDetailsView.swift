@@ -6,6 +6,7 @@
 //
 
 import ComposableArchitecture
+import DesignSystem
 import SwiftUI
 import TCAFoundation
 
@@ -84,23 +85,13 @@ extension PersonDetailsView {
 extension PersonDetailsView {
 
     private func errorBody(_ error: ViewStateError) -> some View {
-        ContentUnavailableView {
-            Label(
-                LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
-                systemImage: "exclamationmark.triangle"
-            )
-        } description: {
-            Text(error.message)
-        } actions: {
-            if error.isRetryable {
-                Button {
-                    store.send(.fetch)
-                } label: {
-                    Text("RETRY", bundle: .module)
-                }
-                .buttonStyle(.bordered)
-            }
-        }
+        ContentLoadErrorView(
+            message: error.message,
+            systemImage: "person",
+            reason: error.reason,
+            isRetryable: error.isRetryable,
+            retryAction: { store.send(.fetch) }
+        )
     }
 
 }
@@ -137,6 +128,23 @@ extension PersonDetailsView {
                 reducer: {
                     EmptyReducer()
                 }
+            ),
+            transitionNamespace: namespace
+        )
+    }
+}
+
+#Preview("Error") {
+    @Previewable @Namespace var namespace
+
+    NavigationStack {
+        PersonDetailsView(
+            store: Store(
+                initialState: PersonDetailsFeature.State(
+                    personID: Person.mock.id,
+                    viewState: .error(ViewStateError(FetchPersonError.notFound()))
+                ),
+                reducer: { EmptyReducer() }
             ),
             transitionNamespace: namespace
         )

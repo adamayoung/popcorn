@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import DesignSystem
 import SwiftUI
+import TCAFoundation
 
 public struct PlotRemixGamePlayFeatureView: View {
 
@@ -42,14 +43,13 @@ public struct PlotRemixGamePlayFeatureView: View {
                     generatingBody(progress: progress)
                         .padding()
 
-                case .error:
-                    ContentUnavailableView(
-                        LocalizedStringResource("GAME_CANNOT_BE_GENERATED", bundle: .module),
-                        systemImage: "exclamationmark.triangle.fill",
-                        description: Text(
-                            "THERE_WAS_A_PROBLEM_WHILE_GENERATING_THE_GAME_TRY_AGAIN",
-                            bundle: .module
-                        )
+                case .error(let error):
+                    ContentLoadErrorView(
+                        message: error.message,
+                        systemImage: "gamecontroller",
+                        reason: error.reason,
+                        isRetryable: error.isRetryable,
+                        retryAction: { store.send(.generate) }
                     )
 
                 default:
@@ -126,7 +126,7 @@ struct AnswerButton: View {
     }
 }
 
-#Preview {
+#Preview("Ready") {
     PlotRemixGamePlayFeatureView(
         store: Store(
             initialState: PlotRemixGamePlayFeature.State(
@@ -134,6 +134,20 @@ struct AnswerButton: View {
                 viewState: .ready(
                     .init(game: Game.mock)
                 )
+            ),
+            reducer: {
+                EmptyReducer()
+            }
+        )
+    )
+}
+
+#Preview("Error") {
+    PlotRemixGamePlayFeatureView(
+        store: Store(
+            initialState: PlotRemixGamePlayFeature.State(
+                metadata: GameMetadata.mock,
+                viewState: .error(ViewStateError(GenerateGameError.riddleGeneration()))
             ),
             reducer: {
                 EmptyReducer()

@@ -29,21 +29,7 @@ public struct TVEpisodeDetailsView: View {
                 )
 
             case .error(let error):
-                ContentUnavailableView {
-                    Label(
-                        LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
-                        systemImage: "exclamationmark.triangle"
-                    )
-                } description: {
-                    Text(error.message)
-                } actions: {
-                    if error.isRetryable {
-                        Button(LocalizedStringResource("RETRY", bundle: .module)) {
-                            store.send(.fetch)
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                }
+                errorBody(error)
 
             default:
                 EmptyView()
@@ -59,6 +45,16 @@ public struct TVEpisodeDetailsView: View {
         .task {
             store.send(.didAppear)
         }
+    }
+
+    private func errorBody(_ error: ViewStateError) -> some View {
+        ContentLoadErrorView(
+            message: error.message,
+            systemImage: "tv",
+            reason: error.reason,
+            isRetryable: error.isRetryable,
+            retryAction: { store.send(.fetch) }
+        )
     }
 
     private func content(
@@ -120,6 +116,22 @@ public struct TVEpisodeDetailsView: View {
                     seasonNumber: 1,
                     episodeNumber: 1,
                     viewState: .loading
+                ),
+                reducer: { EmptyReducer() }
+            )
+        )
+    }
+}
+
+#Preview("Error") {
+    NavigationStack {
+        TVEpisodeDetailsView(
+            store: Store(
+                initialState: TVEpisodeDetailsFeature.State(
+                    tvSeriesID: 1396,
+                    seasonNumber: 1,
+                    episodeNumber: 1,
+                    viewState: .error(ViewStateError(FetchEpisodeDetailsError.notFound()))
                 ),
                 reducer: { EmptyReducer() }
             )

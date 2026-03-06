@@ -9,6 +9,7 @@ import AppDependencies
 import ComposableArchitecture
 import FeatureAccess
 import Foundation
+import TVSeriesApplication
 
 @DependencyClient
 struct TVEpisodeDetailsClient: Sendable {
@@ -38,13 +39,17 @@ extension TVEpisodeDetailsClient: DependencyKey {
 
         return TVEpisodeDetailsClient(
             fetchEpisode: { tvSeriesID, seasonNumber, episodeNumber in
-                let details = try await fetchTVEpisodeDetails.execute(
-                    tvSeriesID: tvSeriesID,
-                    seasonNumber: seasonNumber,
-                    episodeNumber: episodeNumber
-                )
-                let mapper = TVEpisodeMapper()
-                return mapper.map(details)
+                do {
+                    let details = try await fetchTVEpisodeDetails.execute(
+                        tvSeriesID: tvSeriesID,
+                        seasonNumber: seasonNumber,
+                        episodeNumber: episodeNumber
+                    )
+                    let mapper = TVEpisodeMapper()
+                    return mapper.map(details)
+                } catch let error as FetchTVEpisodeDetailsError {
+                    throw FetchEpisodeDetailsError(error)
+                }
             },
             fetchCredits: { tvSeriesID, seasonNumber, episodeNumber in
                 let creditsDetails = try await fetchTVEpisodeCredits.execute(

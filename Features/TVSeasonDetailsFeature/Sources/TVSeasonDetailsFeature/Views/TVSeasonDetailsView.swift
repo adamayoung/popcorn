@@ -25,21 +25,7 @@ public struct TVSeasonDetailsView: View {
                 content(season: snapshot.season, episodes: snapshot.episodes)
 
             case .error(let error):
-                ContentUnavailableView {
-                    Label(
-                        LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
-                        systemImage: "exclamationmark.triangle"
-                    )
-                } description: {
-                    Text(error.message)
-                } actions: {
-                    if error.isRetryable {
-                        Button(LocalizedStringResource("RETRY", bundle: .module)) {
-                            store.send(.fetch)
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                }
+                errorBody(error)
 
             default:
                 EmptyView()
@@ -55,6 +41,16 @@ public struct TVSeasonDetailsView: View {
         .task {
             store.send(.fetch)
         }
+    }
+
+    private func errorBody(_ error: ViewStateError) -> some View {
+        ContentLoadErrorView(
+            message: error.message,
+            systemImage: "tv",
+            reason: error.reason,
+            isRetryable: error.isRetryable,
+            retryAction: { store.send(.fetch) }
+        )
     }
 
     private func content(
@@ -109,6 +105,21 @@ public struct TVSeasonDetailsView: View {
                     tvSeriesID: 1396,
                     seasonNumber: 1,
                     viewState: .loading
+                ),
+                reducer: { EmptyReducer() }
+            )
+        )
+    }
+}
+
+#Preview("Error") {
+    NavigationStack {
+        TVSeasonDetailsView(
+            store: Store(
+                initialState: TVSeasonDetailsFeature.State(
+                    tvSeriesID: 1396,
+                    seasonNumber: 1,
+                    viewState: .error(ViewStateError(FetchSeasonDetailsError.notFound()))
                 ),
                 reducer: { EmptyReducer() }
             )

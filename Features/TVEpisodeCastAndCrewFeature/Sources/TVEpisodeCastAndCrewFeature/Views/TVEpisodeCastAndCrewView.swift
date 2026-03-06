@@ -79,7 +79,7 @@ extension TVEpisodeCastAndCrewView {
     private func errorBody(_ error: ViewStateError) -> some View {
         ContentLoadErrorView(
             message: error.message,
-            systemImage: "tv.slash",
+            systemImage: "person.2",
             reason: error.reason,
             isRetryable: error.isRetryable,
             retryAction: { store.send(.fetch) }
@@ -125,6 +125,25 @@ extension TVEpisodeCastAndCrewView {
                     seasonNumber: 1,
                     episodeNumber: 1,
                     viewState: .loading
+                ),
+                reducer: { EmptyReducer() }
+            ),
+            transitionNamespace: namespace
+        )
+    }
+}
+
+#Preview("Error") {
+    @Previewable @Namespace var namespace
+
+    NavigationStack {
+        TVEpisodeCastAndCrewView(
+            store: Store(
+                initialState: TVEpisodeCastAndCrewFeature.State(
+                    tvSeriesID: 1396,
+                    seasonNumber: 1,
+                    episodeNumber: 1,
+                    viewState: .error(ViewStateError(FetchCreditsError.notFound()))
                 ),
                 reducer: { EmptyReducer() }
             ),

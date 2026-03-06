@@ -56,7 +56,7 @@ extension ExploreClient: DependencyKey {
                 } catch let error {
                     span?.setData(error: error)
                     span?.finish(status: .internalError)
-                    throw error
+                    throw FetchExploreContentError(error)
                 }
             },
             fetchTrendingMovies: {
@@ -73,7 +73,7 @@ extension ExploreClient: DependencyKey {
                 } catch let error {
                     span?.setData(error: error)
                     span?.finish(status: .internalError)
-                    throw error
+                    throw FetchExploreContentError(error)
                 }
             },
             fetchPopularMovies: {
@@ -90,7 +90,7 @@ extension ExploreClient: DependencyKey {
                 } catch let error {
                     span?.setData(error: error)
                     span?.finish(status: .internalError)
-                    throw error
+                    throw FetchExploreContentError(error)
                 }
             },
             fetchTrendingTVSeries: {
@@ -107,7 +107,7 @@ extension ExploreClient: DependencyKey {
                 } catch let error {
                     span?.setData(error: error)
                     span?.finish(status: .internalError)
-                    throw error
+                    throw FetchExploreContentError(error)
                 }
             },
             fetchTrendingPeople: {
@@ -124,7 +124,7 @@ extension ExploreClient: DependencyKey {
                 } catch let error {
                     span?.setData(error: error)
                     span?.finish(status: .internalError)
-                    throw error
+                    throw FetchExploreContentError(error)
                 }
             },
             isDiscoverMoviesEnabled: {

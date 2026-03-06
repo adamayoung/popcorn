@@ -39,22 +39,8 @@ public struct WatchlistView: View {
                     content(movies: snapshot.movies)
                 }
             case .error(let error):
-                ContentUnavailableView {
-                    Label(
-                        LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
-                        systemImage: "exclamationmark.triangle"
-                    )
-                } description: {
-                    Text(error.message)
-                } actions: {
-                    if error.isRetryable {
-                        Button(LocalizedStringResource("RETRY", bundle: .module)) {
-                            store.send(.fetch)
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                }
-                .containerRelativeFrame(.vertical)
+                errorBody(error)
+                    .containerRelativeFrame(.vertical)
             default:
                 EmptyView()
             }
@@ -74,6 +60,16 @@ public struct WatchlistView: View {
 }
 
 extension WatchlistView {
+
+    private func errorBody(_ error: ViewStateError) -> some View {
+        ContentLoadErrorView(
+            message: error.message,
+            systemImage: "eye",
+            reason: error.reason,
+            isRetryable: error.isRetryable,
+            retryAction: { store.send(.fetch) }
+        )
+    }
 
     private var emptyBody: some View {
         ContentUnavailableView {
@@ -157,6 +153,22 @@ extension WatchlistView {
             store: Store(
                 initialState: WatchlistFeature.State(
                     viewState: .ready(.init(movies: []))
+                ),
+                reducer: { EmptyReducer() }
+            ),
+            transitionNamespace: namespace
+        )
+    }
+}
+
+#Preview("Error") {
+    @Previewable @Namespace var namespace
+
+    NavigationStack {
+        WatchlistView(
+            store: Store(
+                initialState: WatchlistFeature.State(
+                    viewState: .error(ViewStateError(FetchWatchlistError.unknown()))
                 ),
                 reducer: { EmptyReducer() }
             ),

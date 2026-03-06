@@ -8,6 +8,7 @@
 import AppDependencies
 import ComposableArchitecture
 import Foundation
+import MoviesApplication
 
 @DependencyClient
 struct MovieCastAndCrewClient: Sendable {
@@ -24,9 +25,13 @@ extension MovieCastAndCrewClient: DependencyKey {
 
         return MovieCastAndCrewClient(
             fetchCredits: { movieID in
-                let credits = try await fetchMovieCredits.execute(movieID: movieID)
-                let mapper = CreditsMapper()
-                return mapper.map(credits)
+                do {
+                    let credits = try await fetchMovieCredits.execute(movieID: movieID)
+                    let mapper = CreditsMapper()
+                    return mapper.map(credits)
+                } catch let error as FetchMovieCreditsError {
+                    throw FetchCreditsError(error)
+                }
             }
         )
     }

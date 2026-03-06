@@ -77,21 +77,13 @@ extension TVSeriesCastAndCrewView {
 extension TVSeriesCastAndCrewView {
 
     private func errorBody(_ error: ViewStateError) -> some View {
-        ContentUnavailableView {
-            Label(
-                LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
-                systemImage: "exclamationmark.triangle"
-            )
-        } description: {
-            Text(error.message)
-        } actions: {
-            if error.isRetryable {
-                Button(LocalizedStringResource("RETRY", bundle: .module)) {
-                    store.send(.fetch)
-                }
-                .buttonStyle(.bordered)
-            }
-        }
+        ContentLoadErrorView(
+            message: error.message,
+            systemImage: "person.2",
+            reason: error.reason,
+            isRetryable: error.isRetryable,
+            retryAction: { store.send(.fetch) }
+        )
     }
 
 }
@@ -129,6 +121,23 @@ extension TVSeriesCastAndCrewView {
                 initialState: TVSeriesCastAndCrewFeature.State(
                     tvSeriesID: 66732,
                     viewState: .loading
+                ),
+                reducer: { EmptyReducer() }
+            ),
+            transitionNamespace: namespace
+        )
+    }
+}
+
+#Preview("Error") {
+    @Previewable @Namespace var namespace
+
+    NavigationStack {
+        TVSeriesCastAndCrewView(
+            store: Store(
+                initialState: TVSeriesCastAndCrewFeature.State(
+                    tvSeriesID: 66732,
+                    viewState: .error(ViewStateError(FetchCreditsError.notFound()))
                 ),
                 reducer: { EmptyReducer() }
             ),

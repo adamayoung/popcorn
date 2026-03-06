@@ -8,6 +8,7 @@
 import AppDependencies
 import ComposableArchitecture
 import Foundation
+import TVSeriesApplication
 
 @DependencyClient
 struct TVSeasonDetailsClient: Sendable {
@@ -26,17 +27,21 @@ extension TVSeasonDetailsClient: DependencyKey {
 
         return TVSeasonDetailsClient(
             fetchSeasonAndEpisodes: { tvSeriesID, seasonNumber in
-                let details = try await fetchTVSeasonDetails.execute(
-                    tvSeriesID: tvSeriesID,
-                    seasonNumber: seasonNumber
-                )
-                let seasonMapper = TVSeasonMapper()
-                let episodeMapper = TVEpisodeMapper()
+                do {
+                    let details = try await fetchTVSeasonDetails.execute(
+                        tvSeriesID: tvSeriesID,
+                        seasonNumber: seasonNumber
+                    )
+                    let seasonMapper = TVSeasonMapper()
+                    let episodeMapper = TVEpisodeMapper()
 
-                let season = seasonMapper.map(details)
-                let episodes = details.episodes.map(episodeMapper.map)
+                    let season = seasonMapper.map(details)
+                    let episodes = details.episodes.map(episodeMapper.map)
 
-                return (season, episodes)
+                    return (season, episodes)
+                } catch let error as FetchTVSeasonDetailsError {
+                    throw FetchSeasonDetailsError(error)
+                }
             }
         )
     }
