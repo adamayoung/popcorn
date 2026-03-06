@@ -45,9 +45,6 @@
         }
       }
     },
-    "Search" : {
-
-    },
     "SEARCH" : {
       "comment" : "The navigation title for the search screen.",
       "localizations" : {
