@@ -32,7 +32,8 @@ public struct BackdropImage: View {
     /// Whether to detect and align to the focal point of the image.
     private var detectFocalPoint = false
 
-    @State private var focalOffset: CGSize = .zero
+    @State private var focalPoint: UnitPoint?
+    @State private var imageSize: CGSize?
     @State private var focalPointResolved = false
 
     public init(
@@ -55,7 +56,7 @@ public struct BackdropImage: View {
                 WebImage(url: url, options: detectFocalPoint ? [] : .forceTransition)
                     .onSuccess { image, _, _ in
                         if detectFocalPoint, !focalPointResolved {
-                            analyzeImage(image, frameSize: proxy.size)
+                            analyzeImage(image)
                         }
                     }
                     .onFailure { _ in
@@ -67,7 +68,7 @@ public struct BackdropImage: View {
                     .transition(.fade(duration: 2.0))
                     .scaledToFill()
                     .aspectRatio(Self.aspectRatio, contentMode: .fill)
-                    .offset(focalOffset)
+                    .offset(currentFocalOffset(frameSize: proxy.size))
                     .frame(width: proxy.size.width, height: proxy.size.height, alignment: .center)
                     .clipped()
                     .opacity(imageOpacity)
@@ -136,7 +137,15 @@ extension BackdropImage {
         detectFocalPoint ? (focalPointResolved ? 1 : 0) : 1
     }
 
-    private func analyzeImage(_ image: SDWebImageSwiftUI.PlatformImage, frameSize: CGSize) {
+    private func currentFocalOffset(frameSize: CGSize) -> CGSize {
+        guard let focalPoint, let imageSize else {
+            return .zero
+        }
+
+        return focalPointOffset(focalPoint: focalPoint, imageSize: imageSize, frameSize: frameSize)
+    }
+
+    private func analyzeImage(_ image: SDWebImageSwiftUI.PlatformImage) {
         guard let url else {
             focalPointResolved = true
             return
@@ -154,14 +163,16 @@ extension BackdropImage {
             return
         }
 
-        let imageSize = CGSize(width: cgImage.width, height: cgImage.height)
+        let resolvedImageSize = CGSize(width: cgImage.width, height: cgImage.height)
 
         Task {
             let point = await FocalPointAnalyzer.shared.focalPoint(for: cgImage, url: url)
-            let offset = point.map { focalPointOffset(focalPoint: $0, imageSize: imageSize, frameSize: frameSize) }
 
             await MainActor.run {
-                if let offset { focalOffset = offset }
+                if let point {
+                    self.focalPoint = point
+                    self.imageSize = resolvedImageSize
+                }
                 if reduceMotion {
                     focalPointResolved = true
                 } else {
