@@ -39,7 +39,7 @@ public struct TVSeasonToolbarHeader: View {
             }
             .padding(.spacing8)
             .glassEffect(.regular, in: .capsule)
-            .offset(y: -5)
+            .offset(y: -.spacing5)
         }
         .padding(.top, .spacing50)
     }

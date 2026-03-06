@@ -31,7 +31,7 @@ public struct PersonToolbarHeader: View {
                 .lineLimit(2)
                 .padding(.spacing8)
                 .glassEffect(.regular, in: .capsule)
-                .offset(y: -5)
+                .offset(y: -.spacing5)
         }
         .font(.headline)
         .padding(.top, .spacing30)

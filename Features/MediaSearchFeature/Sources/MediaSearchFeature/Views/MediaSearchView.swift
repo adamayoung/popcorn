@@ -6,7 +6,6 @@
 //
 
 import ComposableArchitecture
-import DesignSystem
 import SwiftUI
 
 public struct MediaSearchView: View {
@@ -19,16 +18,28 @@ public struct MediaSearchView: View {
     }
 
     public var body: some View {
-        List {
+        ZStack {
             switch store.viewState {
             case .genres(let snapshot):
-                genresContent(snapshot.genres)
+                MediaSearchGenresContentView(genres: snapshot.genres) { genre in
+                    store.send(.navigate(.genre(id: genre.id)))
+                }
 
             case .searchHistory(let snapshot):
-                searchHistoryContent(snapshot.media)
+                MediaSearchHistoryContentView(
+                    media: snapshot.media,
+                    onMovieTapped: { store.send(.navigate(.movieDetails(id: $0.id))) },
+                    onTVSeriesTapped: { store.send(.navigate(.tvSeriesDetails(id: $0.id))) },
+                    onPersonTapped: { store.send(.navigate(.personDetails(id: $0.id))) }
+                )
 
             case .searchResults(let snapshot):
-                searchResultsContent(snapshot.results)
+                MediaSearchResultsContentView(
+                    results: snapshot.results,
+                    onMovieTapped: { store.send(.navigate(.movieDetails(id: $0.id))) },
+                    onTVSeriesTapped: { store.send(.navigate(.tvSeriesDetails(id: $0.id))) },
+                    onPersonTapped: { store.send(.navigate(.personDetails(id: $0.id))) }
+                )
 
             default:
                 EmptyView()
@@ -37,7 +48,11 @@ public struct MediaSearchView: View {
         .accessibilityIdentifier("media-search.view")
         .overlay {
             if case .noSearchResults(let snapshot) = store.viewState {
-                noSearchResultsContent(snapshot.query)
+                ContentUnavailableView(
+                    LocalizedStringResource("NO_RESULTS", bundle: .module),
+                    systemImage: "magnifyingglass",
+                    description: Text("NO_RESULTS_FOR_\(snapshot.query)_TRY_AGAIN", bundle: .module)
+                )
             }
         }
         .scrollDismissesKeyboard(.interactively)
@@ -50,101 +65,6 @@ public struct MediaSearchView: View {
         .bind($store.focusedField.sending(\.focusChanged), to: $focusedField)
         .task { store.send(.fetchGenresAndSearchHistory) }
         .navigationTitle(Text("SEARCH", bundle: .module))
-    }
-
-    private func genresContent(_ genres: [Genre]) -> some View {
-        Section {
-            Text("GENRES_PLACEHOLDER", bundle: .module)
-        }
-    }
-
-    private func searchHistoryContent(_ media: [MediaPreview]) -> some View {
-        Section {
-            ForEach(media) { media in
-                mediaRow(for: media)
-            }
-        } header: {
-            Text("RECENTLY_SEARCHED", bundle: .module)
-        }
-    }
-
-    private func searchResultsContent(_ results: [MediaPreview]) -> some View {
-        Section {
-            ForEach(results) { media in
-                mediaRow(for: media)
-            }
-        }
-    }
-
-    private func noSearchResultsContent(_ query: String) -> some View {
-        ContentUnavailableView(
-            LocalizedStringResource("NO_RESULTS", bundle: .module),
-            systemImage: "magnifyingglass",
-            description: Text("NO_RESULTS_FOR_\(query)_TRY_AGAIN", bundle: .module)
-        )
-    }
-
-}
-
-extension MediaSearchView {
-
-    @ViewBuilder
-    private func mediaRow(for media: MediaPreview) -> some View {
-        switch media {
-        case .movie(let movie):
-            movieRow(for: movie)
-        case .tvSeries(let tvSeries):
-            tvSeriesRow(for: tvSeries)
-        case .person(let person):
-            personRow(for: person)
-        }
-    }
-
-    private func movieRow(for movie: MoviePreview) -> some View {
-        Button {
-            store.send(.navigate(.movieDetails(id: movie.id)))
-        } label: {
-            HStack {
-                PosterImage(url: movie.posterURL)
-                    .posterWidth(60)
-                    .clipShape(.rect(cornerRadius: 5))
-                    .clipped()
-
-                Text(verbatim: movie.title)
-            }
-        }
-        .buttonStyle(.plain)
-    }
-
-    private func tvSeriesRow(for tvSeries: TVSeriesPreview) -> some View {
-        Button {
-            store.send(.navigate(.tvSeriesDetails(id: tvSeries.id)))
-        } label: {
-            HStack {
-                PosterImage(url: tvSeries.posterURL)
-                    .posterWidth(60)
-                    .clipShape(.rect(cornerRadius: 5))
-                    .clipped()
-
-                Text(verbatim: tvSeries.name)
-            }
-        }
-        .buttonStyle(.plain)
-    }
-
-    private func personRow(for person: PersonPreview) -> some View {
-        Button {
-            store.send(.navigate(.personDetails(id: person.id)))
-        } label: {
-            HStack {
-                ProfileImage(url: person.profileURL, initials: person.initials)
-                    .frame(width: 60, height: 60)
-                    .clipShape(.circle)
-
-                Text(verbatim: person.name)
-            }
-        }
-        .buttonStyle(.plain)
     }
 
 }

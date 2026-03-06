@@ -26,7 +26,7 @@ public struct MediaToolbarHeader: View {
             Text(verbatim: title)
                 .padding(.spacing8)
                 .glassEffect(.regular, in: .capsule)
-                .offset(y: -5)
+                .offset(y: -.spacing5)
         }
         .font(.headline)
         .padding(.top, .spacing30)

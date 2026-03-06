@@ -14,8 +14,12 @@ enum PopcornGenresFactoryKey: DependencyKey {
 
     static var liveValue: PopcornGenresFactory {
         @Dependency(\.genreService) var genreService
+        @Dependency(\.discoverService) var discoverService
+        @Dependency(\.fetchAppConfiguration) var fetchAppConfiguration
         return PopcornGenresAdaptersFactory(
-            genreService: genreService
+            genreService: genreService,
+            discoverService: discoverService,
+            fetchAppConfigurationUseCase: fetchAppConfiguration
         ).makeGenresFactory()
     }
 
