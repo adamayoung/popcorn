@@ -22,6 +22,7 @@ let package = Package(
     ],
 
     dependencies: [
+        .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Platform/Caching")
     ],
 
@@ -39,20 +40,24 @@ let package = Package(
         .target(
             name: "GenresApplication",
             dependencies: [
-                "GenresDomain"
+                "GenresDomain",
+                "CoreDomain"
             ]
         ),
         .testTarget(
             name: "GenresApplicationTests",
             dependencies: [
                 "GenresApplication",
-                "GenresDomain"
+                "GenresDomain",
+                .product(name: "CoreDomainTestHelpers", package: "CoreDomain")
             ]
         ),
 
         .target(
             name: "GenresDomain",
-            dependencies: []
+            dependencies: [
+                "CoreDomain"
+            ]
         ),
         .testTarget(
             name: "GenresDomainTests",

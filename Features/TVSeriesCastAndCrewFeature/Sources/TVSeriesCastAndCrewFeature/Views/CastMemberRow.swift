@@ -17,7 +17,7 @@ struct CastMemberRow: View {
         HStack(spacing: .spacing12) {
             profileImage
 
-            VStack(alignment: .leading, spacing: 2) {
+            VStack(alignment: .leading, spacing: .spacing2) {
                 Text(verbatim: member.personName)
                     .font(.headline)
 

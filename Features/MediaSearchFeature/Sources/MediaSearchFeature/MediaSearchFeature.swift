@@ -104,6 +104,7 @@ public struct MediaSearchFeature: Sendable {
     }
 
     public enum Navigation: Equatable, Hashable {
+        case genre(id: Int)
         case movieDetails(id: Int)
         case tvSeriesDetails(id: Int)
         case personDetails(id: Int)
@@ -176,6 +177,9 @@ public struct MediaSearchFeature: Sendable {
                 )
                 effect = .none
 
+            case .navigate(.genre):
+                effect = .none
+
             case .navigate(.movieDetails(let movieID)):
                 effect = handleAddMovieSearchHistoryEntry(movieID: movieID)
 
@@ -222,11 +226,13 @@ extension MediaSearchFeature {
         .run { [client] send in
             Self.logger.info("User fetching genres and search history")
 
-            let genresSnapshot: GenresViewSnapshot
+            let genres: [Genre]
             let searchHistoryMedia: [MediaPreview]
             do {
-                genresSnapshot = GenresViewSnapshot(genres: [])
-                searchHistoryMedia = try await client.fetchMediaSearchHistory()
+                async let genresTask = client.fetchGenres()
+                async let historyTask = client.fetchMediaSearchHistory()
+                genres = try await genresTask
+                searchHistoryMedia = try await historyTask
             } catch let error {
                 Self.logger.error(
                     "Failed fetching genres and search history: \(error.localizedDescription, privacy: .public)"
@@ -235,6 +241,7 @@ extension MediaSearchFeature {
                 return
             }
 
+            let genresSnapshot = GenresViewSnapshot(genres: genres)
             let searchHistorySnapshot = SearchHistoryViewSnapshot(media: searchHistoryMedia)
             await send(.genresAndSearchHistoryLoaded(genresSnapshot, searchHistorySnapshot))
         }

@@ -43,7 +43,7 @@ extension MovieDetailsClient: DependencyKey {
                     let movie = try await fetchMovieDetails.execute(id: id)
                     let mapper = MovieMapper()
                     return mapper.map(movie)
-                } catch let error as FetchMovieDetailsError {
+                } catch {
                     throw FetchMovieError(error)
                 }
             },

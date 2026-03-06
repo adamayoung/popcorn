@@ -8,11 +8,13 @@
 import AppDependencies
 import ComposableArchitecture
 import Foundation
+import GenresApplication
 import SearchApplication
 
 @DependencyClient
 struct MediaSearchClient: Sendable {
 
+    var fetchGenres: @Sendable () async throws -> [Genre]
     var search: @Sendable (String) async throws -> [MediaPreview]
     var fetchMediaSearchHistory: @Sendable () async throws -> [MediaPreview]
     var addMovieSearchHistoryEntry: @Sendable (Int) async throws -> Void
@@ -24,11 +26,17 @@ struct MediaSearchClient: Sendable {
 extension MediaSearchClient: DependencyKey {
 
     static var liveValue: MediaSearchClient {
+        @Dependency(\.fetchAllGenres) var fetchAllGenres
         @Dependency(\.searchMedia) var searchMedia
         @Dependency(\.fetchMediaSearchHistory) var fetchMediaSearchHistory
         @Dependency(\.addMediaSearchHistoryEntry) var addMediaSearchHistoryEntry
 
         return MediaSearchClient(
+            fetchGenres: {
+                let genres = try await fetchAllGenres.execute()
+                let mapper = GenreMapper()
+                return genres.map(mapper.map)
+            },
             search: { query in
                 let media = try await searchMedia.execute(query: query)
                 let mapper = MediaPreviewMapper()
@@ -53,6 +61,9 @@ extension MediaSearchClient: DependencyKey {
 
     static var previewValue: MediaSearchClient {
         MediaSearchClient(
+            fetchGenres: {
+                Genre.mocks
+            },
             search: { _ in
                 try await Task.sleep(for: .seconds(2))
                 return MediaPreview.mocks

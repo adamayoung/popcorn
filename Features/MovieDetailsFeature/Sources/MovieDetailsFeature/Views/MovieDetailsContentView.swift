@@ -39,12 +39,10 @@ struct MovieDetailsContentView: View {
             }
         )
         .background {
-            ZStack {
-                if let themeColor = movie.themeColor {
-                    Color(red: themeColor.red, green: themeColor.green, blue: themeColor.blue)
-                        .opacity(0.5)
-                        .ignoresSafeArea()
-                }
+            if let themeColor = movie.themeColor {
+                Color(red: themeColor.red, green: themeColor.green, blue: themeColor.blue)
+                    .opacity(0.5)
+                    .ignoresSafeArea()
             }
         }
         .navigationTitle(movie.title)
