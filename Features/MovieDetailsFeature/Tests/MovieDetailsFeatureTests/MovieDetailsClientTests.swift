@@ -173,14 +173,19 @@ struct MovieDetailsClientTests {
                     order: 0
                 )
             ],
-            crew: [
-                MoviesApplication.CrewMemberDetails(
-                    id: "crew-1",
-                    personID: 12345,
-                    personName: "Christopher Nolan",
-                    job: "Director",
-                    gender: .male,
-                    department: "Directing"
+            crewByDepartment: [
+                MoviesApplication.CrewDepartmentGroup(
+                    department: "Directing",
+                    members: [
+                        MoviesApplication.CrewMemberDetails(
+                            id: "crew-1",
+                            personID: 12345,
+                            personName: "Christopher Nolan",
+                            job: "Director",
+                            gender: .male,
+                            department: "Directing"
+                        )
+                    ]
                 )
             ]
         )

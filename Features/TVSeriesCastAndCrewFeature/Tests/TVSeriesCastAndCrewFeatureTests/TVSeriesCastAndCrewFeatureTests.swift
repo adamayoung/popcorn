@@ -40,7 +40,7 @@ struct TVSeriesCastAndCrewFeatureTests {
 
         let expectedSnapshot = Feature.ViewSnapshot(
             castMembers: credits.castMembers,
-            crewMembers: credits.crewMembers
+            crewByDepartment: credits.crewByDepartment
         )
 
         await store.send(.fetch) {
@@ -81,7 +81,7 @@ struct TVSeriesCastAndCrewFeatureTests {
     func fetchWhenReadyReturnsNone() async {
         let snapshot = Feature.ViewSnapshot(
             castMembers: [],
-            crewMembers: []
+            crewByDepartment: []
         )
 
         let store = TestStore(

@@ -16,8 +16,8 @@ struct CreditsMapperTests {
 
     private let mapper = CreditsMapper()
 
-    @Test("Maps AggregateCreditsDetails to Credits with all properties")
-    func mapsAggregateCreditsDetailsWithAllProperties() throws {
+    @Test("Maps cast member properties from AggregateCreditsDetails")
+    func mapsCastMemberProperties() throws {
         let profileURLSet = try ImageURLSet(
             path: #require(URL(string: "https://example.com/path.jpg")),
             thumbnail: #require(URL(string: "https://example.com/thumbnail.jpg")),
@@ -35,6 +35,37 @@ struct CreditsMapperTests {
             totalEpisodeCount: 34
         )
 
+        let creditsDetails = AggregateCreditsDetails(
+            id: 66732,
+            cast: [castMemberDetails],
+            crewByDepartment: []
+        )
+
+        let result = mapper.map(creditsDetails)
+
+        #expect(result.id == 66732)
+        #expect(result.castMembers.count == 1)
+
+        let castMember = result.castMembers[0]
+        #expect(castMember.id == 17419)
+        #expect(castMember.personName == "Millie Bobby Brown")
+        #expect(castMember.profileURL == URL(string: "https://example.com/detail.jpg"))
+        #expect(castMember.roles.count == 1)
+        #expect(castMember.roles[0].character == "Eleven")
+        #expect(castMember.roles[0].episodeCount == 34)
+        #expect(castMember.totalEpisodeCount == 34)
+    }
+
+    @Test("Maps crew member properties from AggregateCreditsDetails")
+    func mapsCrewMemberProperties() throws {
+        let profileURLSet = try ImageURLSet(
+            path: #require(URL(string: "https://example.com/path.jpg")),
+            thumbnail: #require(URL(string: "https://example.com/thumbnail.jpg")),
+            card: #require(URL(string: "https://example.com/card.jpg")),
+            detail: #require(URL(string: "https://example.com/detail.jpg")),
+            full: #require(URL(string: "https://example.com/full.jpg"))
+        )
+
         let crewMemberDetails = AggregateCrewMemberDetails(
             id: 1_222_585,
             name: "Matt Duffer",
@@ -47,24 +78,16 @@ struct CreditsMapperTests {
 
         let creditsDetails = AggregateCreditsDetails(
             id: 66732,
-            cast: [castMemberDetails],
-            crew: [crewMemberDetails]
+            cast: [],
+            crewByDepartment: [
+                AggregateCrewDepartmentGroup(department: "Production", members: [crewMemberDetails])
+            ]
         )
 
         let result = mapper.map(creditsDetails)
 
-        #expect(result.id == 66732)
-        #expect(result.castMembers.count == 1)
+        #expect(result.crewByDepartment.count == 1)
         #expect(result.crewMembers.count == 1)
-
-        let castMember = result.castMembers[0]
-        #expect(castMember.id == 17419)
-        #expect(castMember.personName == "Millie Bobby Brown")
-        #expect(castMember.profileURL == URL(string: "https://example.com/detail.jpg"))
-        #expect(castMember.roles.count == 1)
-        #expect(castMember.roles[0].character == "Eleven")
-        #expect(castMember.roles[0].episodeCount == 34)
-        #expect(castMember.totalEpisodeCount == 34)
 
         let crewMember = result.crewMembers[0]
         #expect(crewMember.id == 1_222_585)
@@ -92,7 +115,7 @@ struct CreditsMapperTests {
         let creditsDetails = AggregateCreditsDetails(
             id: 66732,
             cast: castMembers,
-            crew: []
+            crewByDepartment: []
         )
 
         let result = mapper.map(creditsDetails)
@@ -107,7 +130,7 @@ struct CreditsMapperTests {
                 id: index,
                 name: "Person \(index)",
                 gender: .unknown,
-                department: "Department \(index)",
+                department: "Department",
                 jobs: [CrewJobDetails(creditID: "j-\(index)", job: "Job", episodeCount: 1)],
                 totalEpisodeCount: 1
             )
@@ -116,7 +139,9 @@ struct CreditsMapperTests {
         let creditsDetails = AggregateCreditsDetails(
             id: 66732,
             cast: [],
-            crew: crewMembers
+            crewByDepartment: [
+                AggregateCrewDepartmentGroup(department: "Department", members: crewMembers)
+            ]
         )
 
         let result = mapper.map(creditsDetails)
@@ -129,14 +154,14 @@ struct CreditsMapperTests {
         let creditsDetails = AggregateCreditsDetails(
             id: 66732,
             cast: [],
-            crew: []
+            crewByDepartment: []
         )
 
         let result = mapper.map(creditsDetails)
 
         #expect(result.id == 66732)
         #expect(result.castMembers.isEmpty)
-        #expect(result.crewMembers.isEmpty)
+        #expect(result.crewByDepartment.isEmpty)
     }
 
     @Test("Maps with nil profile URL sets")
@@ -163,7 +188,9 @@ struct CreditsMapperTests {
         let creditsDetails = AggregateCreditsDetails(
             id: 66732,
             cast: [castMemberDetails],
-            crew: [crewMemberDetails]
+            crewByDepartment: [
+                AggregateCrewDepartmentGroup(department: "Production", members: [crewMemberDetails])
+            ]
         )
 
         let result = mapper.map(creditsDetails)
@@ -188,7 +215,7 @@ struct CreditsMapperTests {
         let creditsDetails = AggregateCreditsDetails(
             id: 66732,
             cast: [castMemberDetails],
-            crew: []
+            crewByDepartment: []
         )
 
         let result = mapper.map(creditsDetails)
@@ -216,7 +243,9 @@ struct CreditsMapperTests {
         let creditsDetails = AggregateCreditsDetails(
             id: 66732,
             cast: [],
-            crew: [crewMemberDetails]
+            crewByDepartment: [
+                AggregateCrewDepartmentGroup(department: "Production", members: [crewMemberDetails])
+            ]
         )
 
         let result = mapper.map(creditsDetails)

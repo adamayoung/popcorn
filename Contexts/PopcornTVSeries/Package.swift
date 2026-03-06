@@ -23,6 +23,7 @@ let package = Package(
 
     dependencies: [
         .package(path: "../../Core/CoreDomain"),
+        .package(path: "../../Core/CrewOrdering"),
         .package(path: "../../Platform/DataPersistenceInfrastructure"),
         .package(path: "../../Platform/Observability")
     ],
@@ -42,6 +43,7 @@ let package = Package(
             dependencies: [
                 "TVSeriesDomain",
                 "CoreDomain",
+                "CrewOrdering",
                 "Observability"
             ]
         ),

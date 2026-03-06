@@ -39,7 +39,7 @@ struct TVEpisodeCastAndCrewFeatureTests {
 
         let expectedSnapshot = Feature.ViewSnapshot(
             castMembers: credits.castMembers,
-            crewMembers: credits.crewMembers
+            crewByDepartment: credits.crewByDepartment
         )
 
         await store.send(.fetch) {
@@ -80,7 +80,7 @@ struct TVEpisodeCastAndCrewFeatureTests {
     func fetchWhenReadyReturnsNone() async {
         let snapshot = Feature.ViewSnapshot(
             castMembers: [],
-            crewMembers: []
+            crewByDepartment: []
         )
 
         let store = TestStore(
@@ -122,42 +122,6 @@ struct TVEpisodeCastAndCrewFeatureTests {
         }
 
         await store.send(Feature.Action.navigate(.personDetails(id: 123, transitionID: nil)))
-    }
-
-    @Test("ViewSnapshot groups crew members by department")
-    func viewSnapshotGroupsCrewByDepartment() {
-        let crewMembers: [CrewMember] = [
-            CrewMember(
-                id: "crew-1",
-                personID: 1,
-                personName: "Matt Duffer",
-                job: "Director",
-                department: "Directing",
-                initials: "MD"
-            ),
-            CrewMember(
-                id: "crew-2",
-                personID: 2,
-                personName: "Ross Duffer",
-                job: "Writer",
-                department: "Writing",
-                initials: "RD"
-            ),
-            CrewMember(
-                id: "crew-3",
-                personID: 3,
-                personName: "Shawn Levy",
-                job: "Director",
-                department: "Directing",
-                initials: "SL"
-            )
-        ]
-
-        let snapshot = Feature.ViewSnapshot(castMembers: [], crewMembers: crewMembers)
-
-        #expect(snapshot.crewByDepartment.count == 2)
-        #expect(snapshot.crewByDepartment["Directing"]?.count == 2)
-        #expect(snapshot.crewByDepartment["Writing"]?.count == 1)
     }
 
 }

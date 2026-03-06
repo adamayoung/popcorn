@@ -11,16 +11,20 @@ public struct AggregateCreditsDetails: Identifiable, Equatable, Sendable {
 
     public let id: Int
     public let cast: [AggregateCastMemberDetails]
-    public let crew: [AggregateCrewMemberDetails]
+    public let crewByDepartment: [AggregateCrewDepartmentGroup]
+
+    public var crew: [AggregateCrewMemberDetails] {
+        crewByDepartment.flatMap(\.members)
+    }
 
     public init(
         id: Int,
         cast: [AggregateCastMemberDetails],
-        crew: [AggregateCrewMemberDetails]
+        crewByDepartment: [AggregateCrewDepartmentGroup]
     ) {
         self.id = id
         self.cast = cast
-        self.crew = crew
+        self.crewByDepartment = crewByDepartment
     }
 
 }

@@ -41,13 +41,14 @@ struct CreditsDetailsMapperTests {
             #expect(result.cast[index].profileURLSet == expectedProfileURLSet)
         }
 
-        for (index, crewMember) in credits.crew.enumerated() {
+        for crewMember in credits.crew {
             let expectedProfileURLSet = imagesConfiguration.profileURLSet(
                 for: crewMember.profilePath
             )
-            #expect(result.crew[index].id == crewMember.id)
-            #expect(result.crew[index].personID == crewMember.personID)
-            #expect(result.crew[index].profileURLSet == expectedProfileURLSet)
+            let mappedMember = result.crew.first { $0.id == crewMember.id }
+            #expect(mappedMember != nil)
+            #expect(mappedMember?.personID == crewMember.personID)
+            #expect(mappedMember?.profileURLSet == expectedProfileURLSet)
         }
     }
 
@@ -60,7 +61,7 @@ struct CreditsDetailsMapperTests {
 
         #expect(result.id == credits.id)
         #expect(result.cast.isEmpty)
-        #expect(result.crew.isEmpty)
+        #expect(result.crewByDepartment.isEmpty)
     }
 
 }

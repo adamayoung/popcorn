@@ -9,38 +9,24 @@ import SwiftUI
 
 struct CrewSection: View {
 
-    let crewByDepartment: [String: [CrewMember]]
+    let crewByDepartment: [CrewDepartment]
     let transitionNamespace: Namespace.ID?
     let didSelectPerson: (Int, String?) -> Void
 
-    private var sortedDepartments: [String] {
-        let priority = ["Directing", "Writing", "Production", "Camera", "Editing", "Sound", "Art"]
-        return crewByDepartment.keys.sorted { lhs, rhs in
-            let lhsIndex = priority.firstIndex(of: lhs) ?? Int.max
-            let rhsIndex = priority.firstIndex(of: rhs) ?? Int.max
-            if lhsIndex != rhsIndex {
-                return lhsIndex < rhsIndex
-            }
-            return lhs < rhs
-        }
-    }
-
     var body: some View {
-        ForEach(sortedDepartments, id: \.self) { department in
+        ForEach(crewByDepartment, id: \.department) { group in
             Section {
-                if let members = crewByDepartment[department] {
-                    ForEach(members) { member in
-                        Button {
-                            didSelectPerson(member.personID, member.id)
-                        } label: {
-                            CrewMemberRow(member: member, transitionNamespace: transitionNamespace)
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityHint(Text("VIEW_PERSON_DETAILS_HINT", bundle: .module))
+                ForEach(group.members) { member in
+                    Button {
+                        didSelectPerson(member.personID, member.id)
+                    } label: {
+                        CrewMemberRow(member: member, transitionNamespace: transitionNamespace)
                     }
+                    .buttonStyle(.plain)
+                    .accessibilityHint(Text("VIEW_PERSON_DETAILS_HINT", bundle: .module))
                 }
             } header: {
-                Text(verbatim: department)
+                Text(verbatim: group.department)
             }
         }
     }
@@ -50,7 +36,7 @@ struct CrewSection: View {
 #Preview {
     List {
         CrewSection(
-            crewByDepartment: Dictionary(grouping: CrewMember.mocks, by: \.department),
+            crewByDepartment: CrewDepartment.mocks,
             transitionNamespace: nil,
             didSelectPerson: { _, _ in }
         )

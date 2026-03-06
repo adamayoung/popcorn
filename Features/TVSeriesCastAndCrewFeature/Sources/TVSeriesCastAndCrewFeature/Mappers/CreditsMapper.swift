@@ -14,7 +14,7 @@ struct CreditsMapper {
         Credits(
             id: aggregateCreditsDetails.id,
             castMembers: aggregateCreditsDetails.cast.map(map),
-            crewMembers: aggregateCreditsDetails.crew.map(map)
+            crewByDepartment: aggregateCreditsDetails.crewByDepartment.map(map)
         )
     }
 
@@ -33,6 +33,13 @@ struct CreditsMapper {
             roles: roles,
             totalEpisodeCount: castMemberDetails.totalEpisodeCount,
             initials: castMemberDetails.initials
+        )
+    }
+
+    private func map(_ group: AggregateCrewDepartmentGroup) -> CrewDepartment {
+        CrewDepartment(
+            department: group.department,
+            members: group.members.map(map)
         )
     }
 

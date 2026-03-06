@@ -523,6 +523,13 @@
         "identifier" : "TVEpisodeCastAndCrewFeatureTests",
         "name" : "TVEpisodeCastAndCrewFeatureTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Core\/CrewOrdering",
+        "identifier" : "CrewOrderingTests",
+        "name" : "CrewOrderingTests"
+      }
     }
   ],
   "version" : 1

@@ -9,29 +9,14 @@ import SwiftUI
 
 struct CrewSection: View {
 
-    let crewByDepartment: [String: [CrewMember]]
+    let crewByDepartment: [CrewDepartment]
     let transitionNamespace: Namespace.ID?
     let didSelectPerson: (Int, String?) -> Void
 
-    private static let departmentPriority = [
-        "Directing", "Writing", "Production", "Camera", "Editing", "Sound", "Art"
-    ]
-
-    private var sortedDepartments: [String] {
-        crewByDepartment.keys.sorted { lhs, rhs in
-            let lhsIndex = Self.departmentPriority.firstIndex(of: lhs) ?? Int.max
-            let rhsIndex = Self.departmentPriority.firstIndex(of: rhs) ?? Int.max
-            if lhsIndex != rhsIndex {
-                return lhsIndex < rhsIndex
-            }
-            return lhs < rhs
-        }
-    }
-
     var body: some View {
-        ForEach(sortedDepartments, id: \.self) { department in
+        ForEach(crewByDepartment, id: \.department) { group in
             Section {
-                ForEach(crewByDepartment[department, default: []]) { member in
+                ForEach(group.members) { member in
                     Button {
                         didSelectPerson(member.personID, member.id)
                     } label: {
@@ -41,7 +26,7 @@ struct CrewSection: View {
                     .accessibilityHint(Text("VIEW_PERSON_DETAILS_HINT", bundle: .module))
                 }
             } header: {
-                Text(verbatim: department)
+                Text(verbatim: group.department)
             }
         }
     }
@@ -51,7 +36,7 @@ struct CrewSection: View {
 #Preview {
     List {
         CrewSection(
-            crewByDepartment: Dictionary(grouping: CrewMember.mocks, by: \.department),
+            crewByDepartment: CrewDepartment.mocks,
             transitionNamespace: nil,
             didSelectPerson: { _, _ in }
         )

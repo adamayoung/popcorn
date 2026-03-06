@@ -37,7 +37,11 @@ struct CreditsMapperTests {
             initials: "MB"
         )
 
-        let creditsDetails = CreditsDetails(id: 1396, cast: [castMemberDetails], crew: [])
+        let creditsDetails = CreditsDetails(
+            id: 1396,
+            cast: [castMemberDetails],
+            crewByDepartment: []
+        )
         let result = mapper.map(creditsDetails)
 
         #expect(result.id == 1396)
@@ -73,7 +77,13 @@ struct CreditsMapperTests {
             initials: "MD"
         )
 
-        let creditsDetails = CreditsDetails(id: 1396, cast: [], crew: [crewMemberDetails])
+        let creditsDetails = CreditsDetails(
+            id: 1396,
+            cast: [],
+            crewByDepartment: [
+                CrewDepartmentGroup(department: "Directing", members: [crewMemberDetails])
+            ]
+        )
         let result = mapper.map(creditsDetails)
 
         #expect(result.crewMembers.count == 1)
@@ -104,7 +114,7 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 1396,
             cast: castMembers,
-            crew: []
+            crewByDepartment: []
         )
 
         let result = mapper.map(creditsDetails)
@@ -121,14 +131,16 @@ struct CreditsMapperTests {
                 personName: "Person \(index)",
                 job: "Job \(index)",
                 gender: .unknown,
-                department: "Department \(index)"
+                department: "Department"
             )
         }
 
         let creditsDetails = CreditsDetails(
             id: 1396,
             cast: [],
-            crew: crewMembers
+            crewByDepartment: [
+                CrewDepartmentGroup(department: "Department", members: crewMembers)
+            ]
         )
 
         let result = mapper.map(creditsDetails)
@@ -141,14 +153,14 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 1396,
             cast: [],
-            crew: []
+            crewByDepartment: []
         )
 
         let result = mapper.map(creditsDetails)
 
         #expect(result.id == 1396)
         #expect(result.castMembers.isEmpty)
-        #expect(result.crewMembers.isEmpty)
+        #expect(result.crewByDepartment.isEmpty)
     }
 
     @Test("Maps with nil profile URL sets")
@@ -176,7 +188,9 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 1396,
             cast: [castMemberDetails],
-            crew: [crewMemberDetails]
+            crewByDepartment: [
+                CrewDepartmentGroup(department: "Directing", members: [crewMemberDetails])
+            ]
         )
 
         let result = mapper.map(creditsDetails)
@@ -200,7 +214,7 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 1396,
             cast: [castMemberDetails],
-            crew: []
+            crewByDepartment: []
         )
 
         let result = mapper.map(creditsDetails)
@@ -223,7 +237,9 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 1396,
             cast: [],
-            crew: [crewMemberDetails]
+            crewByDepartment: [
+                CrewDepartmentGroup(department: "Production", members: [crewMemberDetails])
+            ]
         )
 
         let result = mapper.map(creditsDetails)

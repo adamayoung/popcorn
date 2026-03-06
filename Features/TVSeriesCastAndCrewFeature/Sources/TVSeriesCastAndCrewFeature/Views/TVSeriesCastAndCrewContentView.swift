@@ -10,8 +10,7 @@ import SwiftUI
 struct TVSeriesCastAndCrewContentView: View {
 
     var castMembers: [CastMember]
-    var crewMembers: [CrewMember]
-    var crewByDepartment: [String: [CrewMember]]
+    var crewByDepartment: [CrewDepartment]
     var transitionNamespace: Namespace.ID
     var didSelectPerson: (_ personID: Int, _ transitionID: String?) -> Void
 
@@ -26,7 +25,7 @@ struct TVSeriesCastAndCrewContentView: View {
                 }
             }
 
-            if !crewMembers.isEmpty {
+            if !crewByDepartment.isEmpty {
                 CrewSection(
                     crewByDepartment: crewByDepartment,
                     transitionNamespace: transitionNamespace
@@ -50,8 +49,7 @@ struct TVSeriesCastAndCrewContentView: View {
     NavigationStack {
         TVSeriesCastAndCrewContentView(
             castMembers: CastMember.mocks,
-            crewMembers: CrewMember.mocks,
-            crewByDepartment: Dictionary(grouping: CrewMember.mocks, by: \.department),
+            crewByDepartment: CrewDepartment.mocks,
             transitionNamespace: namespace,
             didSelectPerson: { _, _ in }
         )

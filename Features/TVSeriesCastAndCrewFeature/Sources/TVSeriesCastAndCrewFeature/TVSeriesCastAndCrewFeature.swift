@@ -34,16 +34,14 @@ public struct TVSeriesCastAndCrewFeature: Sendable {
 
     public struct ViewSnapshot: Equatable, Sendable {
         public let castMembers: [CastMember]
-        public let crewMembers: [CrewMember]
-        public let crewByDepartment: [String: [CrewMember]]
+        public let crewByDepartment: [CrewDepartment]
 
         public init(
             castMembers: [CastMember],
-            crewMembers: [CrewMember]
+            crewByDepartment: [CrewDepartment]
         ) {
             self.castMembers = castMembers
-            self.crewMembers = crewMembers
-            self.crewByDepartment = Dictionary(grouping: crewMembers, by: \.department)
+            self.crewByDepartment = crewByDepartment
         }
     }
 
@@ -111,7 +109,7 @@ extension TVSeriesCastAndCrewFeature {
 
             let viewSnapshot = ViewSnapshot(
                 castMembers: credits.castMembers,
-                crewMembers: credits.crewMembers
+                crewByDepartment: credits.crewByDepartment
             )
 
             await send(.loaded(viewSnapshot))

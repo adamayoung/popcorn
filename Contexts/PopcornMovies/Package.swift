@@ -23,6 +23,7 @@ let package = Package(
 
     dependencies: [
         .package(path: "../../Core/CoreDomain"),
+        .package(path: "../../Core/CrewOrdering"),
         .package(path: "../../Platform/DataPersistenceInfrastructure"),
         .package(path: "../../Platform/Caching")
     ],
@@ -41,7 +42,8 @@ let package = Package(
             name: "MoviesApplication",
             dependencies: [
                 "MoviesDomain",
-                "CoreDomain"
+                "CoreDomain",
+                "CrewOrdering"
             ]
         ),
         .testTarget(

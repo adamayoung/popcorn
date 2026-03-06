@@ -6,6 +6,7 @@
 //
 
 import CoreDomain
+import CrewOrdering
 import Foundation
 import MoviesDomain
 
@@ -18,10 +19,21 @@ struct CreditsDetailsMapper {
         let castMapper = CastMemberDetailsMapper()
         let crewMapper = CrewMemberDetailsMapper()
 
+        let crewMembers = credits.crew.map {
+            crewMapper.map($0, imagesConfiguration: imagesConfiguration)
+        }
+
+        let crewByDepartment = CrewOrdering.groupedByDepartment(
+            crewMembers,
+            department: \.department,
+            jobSortOrder: { CrewOrdering.jobSortOrder($0.job) },
+            name: \.personName
+        ).map { CrewDepartmentGroup(department: $0.department, members: $0.members) }
+
         return CreditsDetails(
             id: credits.id,
             cast: credits.cast.map { castMapper.map($0, imagesConfiguration: imagesConfiguration) },
-            crew: credits.crew.map { crewMapper.map($0, imagesConfiguration: imagesConfiguration) }
+            crewByDepartment: crewByDepartment
         )
     }
 

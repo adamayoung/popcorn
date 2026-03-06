@@ -64,7 +64,6 @@ extension MovieCastAndCrewView {
     private func content(_ snapshot: MovieCastAndCrewFeature.ViewSnapshot) -> some View {
         MovieCastAndCrewContentView(
             castMembers: snapshot.castMembers,
-            crewMembers: snapshot.crewMembers,
             crewByDepartment: snapshot.crewByDepartment,
             transitionNamespace: namespace
         ) { personID, transitionID in
@@ -99,7 +98,7 @@ extension MovieCastAndCrewView {
                     viewState: .ready(
                         .init(
                             castMembers: CastMember.mocks,
-                            crewMembers: CrewMember.mocks
+                            crewByDepartment: CrewDepartment.mocks
                         )
                     )
                 ),

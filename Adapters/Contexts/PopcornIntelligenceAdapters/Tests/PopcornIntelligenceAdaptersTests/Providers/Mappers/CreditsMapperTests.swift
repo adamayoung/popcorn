@@ -45,7 +45,7 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 550,
             cast: [castMember],
-            crew: [crewMember]
+            crewByDepartment: [CrewDepartmentGroup(department: "Directing", members: [crewMember])]
         )
 
         let result = mapper.map(creditsDetails)
@@ -78,7 +78,7 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 550,
             cast: [],
-            crew: []
+            crewByDepartment: []
         )
 
         let result = mapper.map(creditsDetails)
@@ -103,7 +103,7 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 550,
             cast: [castMember],
-            crew: []
+            crewByDepartment: []
         )
 
         let result = mapper.map(creditsDetails)
@@ -127,7 +127,7 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 550,
             cast: [],
-            crew: [crewMember]
+            crewByDepartment: [CrewDepartmentGroup(department: "Directing", members: [crewMember])]
         )
 
         let result = mapper.map(creditsDetails)
@@ -168,7 +168,7 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 550,
             cast: [castMember1, castMember2, castMember3],
-            crew: []
+            crewByDepartment: []
         )
 
         let result = mapper.map(creditsDetails)
@@ -202,7 +202,10 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 550,
             cast: [],
-            crew: [crewMember1, crewMember2]
+            crewByDepartment: [
+                CrewDepartmentGroup(department: "Directing", members: [crewMember1]),
+                CrewDepartmentGroup(department: "Production", members: [crewMember2])
+            ]
         )
 
         let result = mapper.map(creditsDetails)
@@ -253,7 +256,7 @@ struct CreditsMapperTests {
         let creditsDetails = CreditsDetails(
             id: 550,
             cast: [unknownGenderCast, femaleCast, maleCast, otherGenderCast],
-            crew: []
+            crewByDepartment: []
         )
 
         let result = mapper.map(creditsDetails)
