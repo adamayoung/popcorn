@@ -14,12 +14,18 @@ public final class LivePopcornGenresFactory: PopcornGenresFactory {
 
     private let applicationFactory: GenresApplicationFactory
 
-    public init(genreRemoteDataSource: some GenreRemoteDataSource) {
+    public init(
+        genreRemoteDataSource: some GenreRemoteDataSource,
+        appConfigurationProvider: some AppConfigurationProviding,
+        genreBackdropProvider: some GenreBackdropProviding
+    ) {
         let infrastructureFactory = GenresInfrastructureFactory(
             genreRemoteDataSource: genreRemoteDataSource
         )
         self.applicationFactory = GenresApplicationFactory(
-            genreRepository: infrastructureFactory.makeGenreRepository()
+            genreRepository: infrastructureFactory.makeGenreRepository(),
+            appConfigurationProvider: appConfigurationProvider,
+            genreBackdropProvider: genreBackdropProvider
         )
     }
 
@@ -29,6 +35,10 @@ public final class LivePopcornGenresFactory: PopcornGenresFactory {
 
     public func makeFetchTVSeriesGenresUseCase() -> FetchTVSeriesGenresUseCase {
         applicationFactory.makeFetchTVSeriesGenresUseCase()
+    }
+
+    public func makeFetchAllGenresUseCase() -> FetchAllGenresUseCase {
+        applicationFactory.makeFetchAllGenresUseCase()
     }
 
 }

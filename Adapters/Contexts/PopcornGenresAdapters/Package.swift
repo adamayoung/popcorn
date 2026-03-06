@@ -20,6 +20,8 @@ let package = Package(
 
     dependencies: [
         .package(path: "../../../Contexts/PopcornGenres"),
+        .package(path: "../../../Contexts/PopcornConfiguration"),
+        .package(path: "../../../Core/CoreDomain"),
         .package(url: "https://github.com/adamayoung/TMDb.git", from: "16.0.0")
     ],
 
@@ -30,6 +32,8 @@ let package = Package(
                 .product(name: "GenresComposition", package: "PopcornGenres"),
                 .product(name: "GenresDomain", package: "PopcornGenres"),
                 .product(name: "GenresInfrastructure", package: "PopcornGenres"),
+                .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),
+                "CoreDomain",
                 "TMDb"
             ]
         ),
@@ -39,6 +43,8 @@ let package = Package(
                 "PopcornGenresAdapters",
                 .product(name: "GenresDomain", package: "PopcornGenres"),
                 .product(name: "GenresInfrastructure", package: "PopcornGenres"),
+                .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),
+                .product(name: "CoreDomainTestHelpers", package: "CoreDomain"),
                 "TMDb"
             ]
         )

@@ -1,17 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "GENRES_PLACEHOLDER" : {
-      "comment" : "A placeholder text displayed in the genres section.",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Genres..."
-          }
-        }
-      }
-    },
     "MOVIES_TV_OR_PEOPLE" : {
       "comment" : "A search prompt placeholder suggesting movies, TV or people as search categories.",
       "localizations" : {
@@ -40,7 +29,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "There were no results for \u201c%@\u201d. Try a new search."
+            "value" : "There were no results for “%@”. Try a new search."
           }
         }
       }
