@@ -14,18 +14,19 @@ import Testing
 @Suite("TVEpisodeDetailsFeature updateFeatureFlags Tests")
 struct TVEpisodeDetailsFeatureFeatureFlagsTests {
 
+    private typealias Feature = TVEpisodeDetailsFeature
+
     @Test("updateFeatureFlags enables castAndCrew when client returns true")
     func updateFeatureFlagsEnablesCastAndCrew() async {
         let store = TestStore(
-            initialState: TVEpisodeDetailsFeature.State(
+            initialState: Feature.State(
                 tvSeriesID: 1396,
                 seasonNumber: 1,
                 episodeNumber: 1,
-                episodeName: "Pilot",
                 viewState: .loading
             )
         ) {
-            TVEpisodeDetailsFeature()
+            Feature()
         } withDependencies: {
             $0.tvEpisodeDetailsClient.isCastAndCrewEnabled = { true }
         }
@@ -38,16 +39,15 @@ struct TVEpisodeDetailsFeatureFeatureFlagsTests {
     @Test("updateFeatureFlags disables castAndCrew when client returns false")
     func updateFeatureFlagsDisablesCastAndCrew() async {
         let store = TestStore(
-            initialState: TVEpisodeDetailsFeature.State(
+            initialState: Feature.State(
                 tvSeriesID: 1396,
                 seasonNumber: 1,
                 episodeNumber: 1,
-                episodeName: "Pilot",
                 viewState: .loading,
                 isCastAndCrewEnabled: true
             )
         ) {
-            TVEpisodeDetailsFeature()
+            Feature()
         } withDependencies: {
             $0.tvEpisodeDetailsClient.isCastAndCrewEnabled = { false }
         }
@@ -60,16 +60,15 @@ struct TVEpisodeDetailsFeatureFeatureFlagsTests {
     @Test("updateFeatureFlags defaults to false when client throws")
     func updateFeatureFlagsDefaultsToFalseOnError() async {
         let store = TestStore(
-            initialState: TVEpisodeDetailsFeature.State(
+            initialState: Feature.State(
                 tvSeriesID: 1396,
                 seasonNumber: 1,
                 episodeNumber: 1,
-                episodeName: "Pilot",
                 viewState: .loading,
                 isCastAndCrewEnabled: true
             )
         ) {
-            TVEpisodeDetailsFeature()
+            Feature()
         } withDependencies: {
             $0.tvEpisodeDetailsClient.isCastAndCrewEnabled = { throw TestError.generic }
         }

@@ -70,7 +70,7 @@ public struct TVSeriesDetailsFeature: Sendable {
 
     public enum Navigation: Equatable, Hashable {
         case tvSeriesIntelligence(id: Int)
-        case seasonDetails(tvSeriesID: Int, seasonNumber: Int, seasonName: String)
+        case seasonDetails(tvSeriesID: Int, seasonNumber: Int)
         case personDetails(id: Int)
         case castAndCrew(tvSeriesID: Int)
     }
@@ -90,6 +90,9 @@ public struct TVSeriesDetailsFeature: Sendable {
                 return .none
 
             case .fetch:
+                guard !state.viewState.isReady else {
+                    return .none
+                }
                 guard !state.viewState.isLoading else {
                     return .none
                 }

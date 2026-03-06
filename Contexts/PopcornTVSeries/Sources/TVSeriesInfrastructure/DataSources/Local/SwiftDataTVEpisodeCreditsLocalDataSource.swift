@@ -88,6 +88,8 @@ SwiftDataFetchStreaming {
         if let existing {
             existing.cast.forEach { modelContext.delete($0) }
             existing.crew.forEach { modelContext.delete($0) }
+            existing.cast.removeAll()
+            existing.crew.removeAll()
 
             do {
                 try modelContext.save()

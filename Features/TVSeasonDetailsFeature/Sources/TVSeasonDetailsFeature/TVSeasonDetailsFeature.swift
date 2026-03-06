@@ -21,28 +21,28 @@ public struct TVSeasonDetailsFeature: Sendable {
     public struct State: Sendable, Equatable {
         public let tvSeriesID: Int
         public let seasonNumber: Int
-        public let seasonName: String
         public var viewState: ViewState<ViewSnapshot>
 
         public init(
             tvSeriesID: Int,
             seasonNumber: Int,
-            seasonName: String,
             viewState: ViewState<ViewSnapshot> = .initial
         ) {
             self.tvSeriesID = tvSeriesID
             self.seasonNumber = seasonNumber
-            self.seasonName = seasonName
             self.viewState = viewState
         }
     }
 
     public struct ViewSnapshot: Equatable, Sendable {
-        public let overview: String?
+        public let season: TVSeason
         public let episodes: [TVEpisode]
 
-        public init(overview: String?, episodes: [TVEpisode]) {
-            self.overview = overview
+        public init(
+            season: TVSeason,
+            episodes: [TVEpisode]
+        ) {
+            self.season = season
             self.episodes = episodes
         }
     }
@@ -55,7 +55,7 @@ public struct TVSeasonDetailsFeature: Sendable {
     }
 
     public enum Navigation: Equatable, Hashable, Sendable {
-        case episodeDetails(tvSeriesID: Int, seasonNumber: Int, episodeNumber: Int, episodeName: String)
+        case episodeDetails(tvSeriesID: Int, seasonNumber: Int, episodeNumber: Int)
     }
 
     public init() {}
@@ -95,9 +95,9 @@ extension TVSeasonDetailsFeature {
                 "Fetching season details [tvSeriesID: \(state.tvSeriesID, privacy: .private), seasonNumber: \(state.seasonNumber)]"
             )
 
-            let seasonDetails: SeasonDetails
+            let (season, episodes): (TVSeason, [TVEpisode])
             do {
-                seasonDetails = try await client.fetchSeasonDetails(
+                (season, episodes) = try await client.fetchSeasonAndEpisodes(
                     state.tvSeriesID,
                     state.seasonNumber
                 )
@@ -109,10 +109,7 @@ extension TVSeasonDetailsFeature {
                 return
             }
 
-            let snapshot = ViewSnapshot(
-                overview: seasonDetails.overview,
-                episodes: seasonDetails.episodes
-            )
+            let snapshot = ViewSnapshot(season: season, episodes: episodes)
             await send(.loaded(snapshot))
         }
     }

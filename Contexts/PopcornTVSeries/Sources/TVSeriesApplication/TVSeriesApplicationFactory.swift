@@ -51,6 +51,7 @@ package final class TVSeriesApplicationFactory: Sendable {
     package func makeFetchTVSeasonDetailsUseCase() -> some FetchTVSeasonDetailsUseCase {
         DefaultFetchTVSeasonDetailsUseCase(
             repository: tvSeasonRepository,
+            tvSeriesRepository: tvSeriesRepository,
             appConfigurationProvider: appConfigurationProvider
         )
     }
@@ -58,6 +59,8 @@ package final class TVSeriesApplicationFactory: Sendable {
     package func makeFetchTVEpisodeDetailsUseCase() -> some FetchTVEpisodeDetailsUseCase {
         DefaultFetchTVEpisodeDetailsUseCase(
             repository: tvEpisodeRepository,
+            tvSeasonRepository: tvSeasonRepository,
+            tvSeriesRepository: tvSeriesRepository,
             appConfigurationProvider: appConfigurationProvider
         )
     }

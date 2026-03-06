@@ -24,11 +24,9 @@ struct TVSeasonDetailsViewSnapshotTests {
                     initialState: TVSeasonDetailsFeature.State(
                         tvSeriesID: 1396,
                         seasonNumber: 1,
-                        seasonName: "Season 1",
                         viewState: .ready(
                             .init(
-                                // swiftlint:disable:next line_length
-                                overview: "High school chemistry teacher Walter White's life is changed when he is diagnosed with stage III lung cancer.",
+                                season: TVSeason.mock,
                                 episodes: TVEpisode.mocks
                             )
                         )

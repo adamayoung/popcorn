@@ -6,6 +6,7 @@
 //
 
 import ComposableArchitecture
+import DesignSystem
 import SwiftUI
 import TCAFoundation
 
@@ -21,7 +22,7 @@ public struct TVSeasonDetailsView: View {
         ZStack {
             switch store.viewState {
             case .ready(let snapshot):
-                content(snapshot: snapshot)
+                content(season: snapshot.season, episodes: snapshot.episodes)
 
             case .error(let error):
                 ContentUnavailableView {
@@ -44,36 +45,32 @@ public struct TVSeasonDetailsView: View {
                 EmptyView()
             }
         }
-        .navigationTitle(Text(verbatim: store.seasonName))
-        #if os(iOS)
-            .navigationBarTitleDisplayMode(.large)
-        #endif
-            .overlay {
-                if store.viewState.isLoading {
-                    ProgressView()
-                        .accessibilityLabel(Text("LOADING", bundle: .module))
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
+        .overlay {
+            if store.viewState.isLoading {
+                ProgressView()
+                    .accessibilityLabel(Text("LOADING", bundle: .module))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .task {
-                store.send(.fetch)
-            }
+        }
+        .task {
+            store.send(.fetch)
+        }
     }
 
     private func content(
-        snapshot: TVSeasonDetailsFeature.ViewSnapshot
+        season: TVSeason,
+        episodes: [TVEpisode]
     ) -> some View {
         TVSeasonDetailsContentView(
-            overview: snapshot.overview,
-            episodes: snapshot.episodes,
-            didSelectEpisode: { episodeNumber, episodeName in
+            season: season,
+            episodes: episodes,
+            didSelectEpisode: { episodeNumber in
                 store.send(
                     .navigate(
                         .episodeDetails(
-                            tvSeriesID: store.tvSeriesID,
-                            seasonNumber: store.seasonNumber,
-                            episodeNumber: episodeNumber,
-                            episodeName: episodeName
+                            tvSeriesID: season.tvSeriesID,
+                            seasonNumber: season.seasonNumber,
+                            episodeNumber: episodeNumber
                         )
                     )
                 )
@@ -90,15 +87,15 @@ public struct TVSeasonDetailsView: View {
                 initialState: TVSeasonDetailsFeature.State(
                     tvSeriesID: 1396,
                     seasonNumber: 1,
-                    seasonName: "Season 1",
                     viewState: .ready(
                         .init(
-                            overview: "The first season of Breaking Bad.",
+                            season: TVSeason.mock,
                             episodes: TVEpisode.mocks
                         )
                     )
                 ),
-                reducer: { EmptyReducer() }
+                reducer: { EmptyReducer()
+                }
             )
         )
     }
@@ -111,7 +108,6 @@ public struct TVSeasonDetailsView: View {
                 initialState: TVSeasonDetailsFeature.State(
                     tvSeriesID: 1396,
                     seasonNumber: 1,
-                    seasonName: "Season 1",
                     viewState: .loading
                 ),
                 reducer: { EmptyReducer() }

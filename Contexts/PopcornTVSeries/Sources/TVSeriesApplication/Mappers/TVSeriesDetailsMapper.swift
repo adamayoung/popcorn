@@ -14,7 +14,8 @@ struct TVSeriesDetailsMapper {
     private let seasonMapper = TVSeasonSummaryMapper()
 
     func map(
-        _ tvSeries: TVSeries, imageCollection: ImageCollection,
+        _ tvSeries: TVSeries,
+        imageCollection: ImageCollection,
         imagesConfiguration: ImagesConfiguration
     ) -> TVSeriesDetails {
         let posterURLSet = imagesConfiguration.posterURLSet(for: tvSeries.posterPath)

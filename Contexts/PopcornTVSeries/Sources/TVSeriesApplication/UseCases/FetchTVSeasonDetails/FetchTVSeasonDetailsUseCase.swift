@@ -12,6 +12,6 @@ public protocol FetchTVSeasonDetailsUseCase: Sendable {
     func execute(
         tvSeriesID: Int,
         seasonNumber: Int
-    ) async throws(FetchTVSeasonDetailsError) -> TVSeasonDetailsSummary
+    ) async throws(FetchTVSeasonDetailsError) -> TVSeasonDetails
 
 }

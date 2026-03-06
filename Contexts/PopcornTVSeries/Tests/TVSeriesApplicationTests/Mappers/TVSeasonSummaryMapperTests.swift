@@ -35,12 +35,12 @@ struct TVSeasonSummaryMapperTests {
 
         let result = mapper.map(season, imagesConfiguration: imagesConfiguration)
 
-        let expectedPosterURL = imagesConfiguration.posterURLSet(for: posterPath)?.detail
+        let expectedPosterURLSet = imagesConfiguration.posterURLSet(for: posterPath)
         #expect(result.id == 77680)
         #expect(result.name == "Season 1")
         #expect(result.seasonNumber == 1)
-        #expect(result.posterURL == expectedPosterURL)
-        #expect(result.posterURL != nil)
+        #expect(result.posterURLSet == expectedPosterURLSet)
+        #expect(result.posterURLSet != nil)
     }
 
     @Test("Maps TVSeason with nil posterPath to nil posterURL")
@@ -54,7 +54,7 @@ struct TVSeasonSummaryMapperTests {
 
         let result = mapper.map(season, imagesConfiguration: imagesConfiguration)
 
-        #expect(result.posterURL == nil)
+        #expect(result.posterURLSet == nil)
     }
 
     @Test("Preserves id, name, and seasonNumber")

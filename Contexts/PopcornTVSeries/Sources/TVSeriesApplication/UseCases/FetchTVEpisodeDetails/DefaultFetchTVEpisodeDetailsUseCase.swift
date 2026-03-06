@@ -13,13 +13,19 @@ import TVSeriesDomain
 final class DefaultFetchTVEpisodeDetailsUseCase: FetchTVEpisodeDetailsUseCase {
 
     private let repository: any TVEpisodeRepository
+    private let tvSeasonRepository: any TVSeasonRepository
+    private let tvSeriesRepository: any TVSeriesRepository
     private let appConfigurationProvider: any AppConfigurationProviding
 
     init(
         repository: some TVEpisodeRepository,
+        tvSeasonRepository: some TVSeasonRepository,
+        tvSeriesRepository: some TVSeriesRepository,
         appConfigurationProvider: some AppConfigurationProviding
     ) {
         self.repository = repository
+        self.tvSeasonRepository = tvSeasonRepository
+        self.tvSeriesRepository = tvSeriesRepository
         self.appConfigurationProvider = appConfigurationProvider
     }
 
@@ -27,7 +33,7 @@ final class DefaultFetchTVEpisodeDetailsUseCase: FetchTVEpisodeDetailsUseCase {
         tvSeriesID: Int,
         seasonNumber: Int,
         episodeNumber: Int
-    ) async throws(FetchTVEpisodeDetailsError) -> TVEpisodeSummary {
+    ) async throws(FetchTVEpisodeDetailsError) -> TVEpisodeDetails {
         let span = SpanContext.startChild(
             operation: .useCaseExecute,
             description: "FetchTVEpisodeDetailsUseCase.execute"
@@ -39,15 +45,23 @@ final class DefaultFetchTVEpisodeDetailsUseCase: FetchTVEpisodeDetailsUseCase {
         ])
 
         let episode: TVEpisode
+        let season: TVSeason
+        let series: TVSeries
         let appConfiguration: AppConfiguration
         do {
-            async let episodeResult = repository.episode(
+            async let episodeTask = repository.episode(
                 episodeNumber,
                 inSeason: seasonNumber,
                 inTVSeries: tvSeriesID
             )
-            async let configResult = appConfigurationProvider.appConfiguration()
-            (episode, appConfiguration) = try await (episodeResult, configResult)
+            async let seasonTask = tvSeasonRepository.season(
+                seasonNumber,
+                inTVSeries: tvSeriesID
+            )
+            async let seriesTask = tvSeriesRepository.tvSeries(withID: tvSeriesID)
+
+            async let configTask = appConfigurationProvider.appConfiguration()
+            (episode, season, series, appConfiguration) = try await (episodeTask, seasonTask, seriesTask, configTask)
         } catch let error {
             let detailsError = FetchTVEpisodeDetailsError(error)
             span?.setData(error: detailsError)
@@ -55,11 +69,16 @@ final class DefaultFetchTVEpisodeDetailsUseCase: FetchTVEpisodeDetailsUseCase {
             throw detailsError
         }
 
-        let mapper = TVEpisodeSummaryMapper()
-        let summary = mapper.map(episode, imagesConfiguration: appConfiguration.images)
+        let mapper = TVEpisodeDetailsMapper()
+        let details = mapper.map(
+            episode,
+            season: season,
+            series: series,
+            imagesConfiguration: appConfiguration.images
+        )
 
         span?.finish()
-        return summary
+        return details
     }
 
 }

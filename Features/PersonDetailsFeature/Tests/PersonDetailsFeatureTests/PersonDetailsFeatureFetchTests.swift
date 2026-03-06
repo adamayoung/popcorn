@@ -61,8 +61,8 @@ struct PersonDetailsFeatureFetchTests {
         }
     }
 
-    @Test("fetch when ready transitions to loading")
-    func fetchWhenReadyTransitionsToLoading() async {
+    @Test("fetch does not reload when ready")
+    func fetchDoesNotReloadWhenReady() async {
         let person = Self.testPerson
         let snapshot = PersonDetailsFeature.ViewSnapshot(person: person)
 
@@ -73,17 +73,9 @@ struct PersonDetailsFeatureFetchTests {
             )
         ) {
             PersonDetailsFeature()
-        } withDependencies: {
-            $0.personDetailsClient.fetchPerson = { _ in person }
         }
 
-        await store.send(.fetch) {
-            $0.viewState = .loading
-        }
-
-        await store.receive(\.loaded) {
-            $0.viewState = .ready(snapshot)
-        }
+        await store.send(.fetch)
     }
 
     @Test("fetch when error transitions to loading")

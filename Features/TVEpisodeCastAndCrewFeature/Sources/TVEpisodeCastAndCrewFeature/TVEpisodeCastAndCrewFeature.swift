@@ -111,7 +111,7 @@ extension TVEpisodeCastAndCrewFeature {
                     seasonNumber: state.seasonNumber,
                     episodeNumber: state.episodeNumber
                 )
-            } catch {
+            } catch let error {
                 Self.logger.error(
                     "Failed fetching episode cast and crew [tvSeriesID: \(state.tvSeriesID, privacy: .private), S\(state.seasonNumber)E\(state.episodeNumber)]: \(error.localizedDescription, privacy: .public)"
                 )

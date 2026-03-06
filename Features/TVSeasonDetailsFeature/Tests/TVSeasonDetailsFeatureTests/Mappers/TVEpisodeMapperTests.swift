@@ -32,7 +32,6 @@ struct TVEpisodeMapperTests {
             id: 62085,
             name: "Pilot",
             episodeNumber: 1,
-            seasonNumber: 1,
             overview: "A chemistry teacher begins cooking meth.",
             airDate: airDate,
             stillURLSet: stillURLSet
@@ -53,8 +52,7 @@ struct TVEpisodeMapperTests {
         let summary = TVEpisodeSummary(
             id: 62085,
             name: "Pilot",
-            episodeNumber: 1,
-            seasonNumber: 1
+            episodeNumber: 1
         )
 
         let result = mapper.map(summary)
@@ -73,7 +71,6 @@ struct TVEpisodeMapperTests {
             id: 62085,
             name: "Pilot",
             episodeNumber: 1,
-            seasonNumber: 1,
             overview: nil
         )
 

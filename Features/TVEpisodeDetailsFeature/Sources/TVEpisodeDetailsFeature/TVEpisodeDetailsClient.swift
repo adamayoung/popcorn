@@ -13,11 +13,11 @@ import Foundation
 @DependencyClient
 struct TVEpisodeDetailsClient: Sendable {
 
-    var fetchEpisodeDetails: @Sendable (
+    var fetchEpisode: @Sendable (
         _ tvSeriesID: Int,
         _ seasonNumber: Int,
         _ episodeNumber: Int
-    ) async throws -> EpisodeDetails
+    ) async throws -> TVEpisode
 
     var fetchCredits: @Sendable (
         _ tvSeriesID: Int,
@@ -37,14 +37,14 @@ extension TVEpisodeDetailsClient: DependencyKey {
         @Dependency(\.featureFlags) var featureFlags
 
         return TVEpisodeDetailsClient(
-            fetchEpisodeDetails: { tvSeriesID, seasonNumber, episodeNumber in
-                let summary = try await fetchTVEpisodeDetails.execute(
+            fetchEpisode: { tvSeriesID, seasonNumber, episodeNumber in
+                let details = try await fetchTVEpisodeDetails.execute(
                     tvSeriesID: tvSeriesID,
                     seasonNumber: seasonNumber,
                     episodeNumber: episodeNumber
                 )
                 let mapper = TVEpisodeMapper()
-                return mapper.map(summary)
+                return mapper.map(details)
             },
             fetchCredits: { tvSeriesID, seasonNumber, episodeNumber in
                 let creditsDetails = try await fetchTVEpisodeCredits.execute(
@@ -63,15 +63,8 @@ extension TVEpisodeDetailsClient: DependencyKey {
 
     static var previewValue: TVEpisodeDetailsClient {
         TVEpisodeDetailsClient(
-            fetchEpisodeDetails: { _, _, _ in
-                EpisodeDetails(
-                    name: "Pilot",
-                    overview: "A high school chemistry teacher diagnosed with lung cancer turns to manufacturing meth.",
-                    airDate: Date(timeIntervalSince1970: 1_200_528_000),
-                    stillURL: URL(
-                        string: "https://image.tmdb.org/t/p/original/ydlY3iPfeOAvu8gVqrxPoMvzfBj.jpg"
-                    )
-                )
+            fetchEpisode: { _, _, _ in
+                TVEpisode.mock
             },
             fetchCredits: { _, _, _ in
                 Credits.mock

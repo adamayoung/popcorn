@@ -111,8 +111,20 @@ struct TVSeriesMapperTests {
 
     @Test("Maps TVSeriesDetails with seasons to TVSeries with TVSeasonPreview array")
     func mapsTVSeriesDetailsWithSeasons() throws {
-        let posterURL1 = try #require(URL(string: "https://image.tmdb.org/t/p/w780/poster1.jpg"))
-        let posterURL2 = try #require(URL(string: "https://image.tmdb.org/t/p/w780/poster2.jpg"))
+        let posterURLSet1 = try ImageURLSet(
+            path: #require(URL(string: "https://example.com/poster1-path.jpg")),
+            thumbnail: #require(URL(string: "https://example.com/poster1-thumbnail.jpg")),
+            card: #require(URL(string: "https://example.com/poster1-card.jpg")),
+            detail: #require(URL(string: "https://example.com/poster1-detail.jpg")),
+            full: #require(URL(string: "https://example.com/poster1-full.jpg"))
+        )
+        let posterURLSet2 = try ImageURLSet(
+            path: #require(URL(string: "https://example.com/poster2-path.jpg")),
+            thumbnail: #require(URL(string: "https://example.com/poster2-thumbnail.jpg")),
+            card: #require(URL(string: "https://example.com/poster2-card.jpg")),
+            detail: #require(URL(string: "https://example.com/poster2-detail.jpg")),
+            full: #require(URL(string: "https://example.com/poster2-full.jpg"))
+        )
 
         let details = TVSeriesDetails(
             id: 66732,
@@ -120,8 +132,8 @@ struct TVSeriesMapperTests {
             overview: "Overview",
             numberOfSeasons: 2,
             seasons: [
-                TVSeasonSummary(id: 77680, name: "Season 1", seasonNumber: 1, posterURL: posterURL1),
-                TVSeasonSummary(id: 83248, name: "Stranger Things 2", seasonNumber: 2, posterURL: posterURL2)
+                TVSeasonSummary(id: 77680, name: "Season 1", seasonNumber: 1, posterURLSet: posterURLSet1),
+                TVSeasonSummary(id: 83248, name: "Stranger Things 2", seasonNumber: 2, posterURLSet: posterURLSet2)
             ]
         )
 
@@ -131,7 +143,7 @@ struct TVSeriesMapperTests {
         #expect(result.seasons[0].id == 77680)
         #expect(result.seasons[0].name == "Season 1")
         #expect(result.seasons[0].seasonNumber == 1)
-        #expect(result.seasons[0].posterURL == posterURL1)
+        #expect(result.seasons[0].posterURL == posterURLSet1.detail)
         #expect(result.seasons[1].id == 83248)
         #expect(result.seasons[1].name == "Stranger Things 2")
         #expect(result.seasons[1].seasonNumber == 2)
@@ -184,19 +196,25 @@ struct TVSeriesMapperTests {
 
     @Test("Maps season posterURL correctly")
     func mapsSeasonPosterURLCorrectly() throws {
-        let posterURL = try #require(URL(string: "https://image.tmdb.org/t/p/w780/poster.jpg"))
+        let posterURLSet = try ImageURLSet(
+            path: #require(URL(string: "https://example.com/poster-path.jpg")),
+            thumbnail: #require(URL(string: "https://example.com/poster-thumbnail.jpg")),
+            card: #require(URL(string: "https://example.com/poster-card.jpg")),
+            detail: #require(URL(string: "https://example.com/poster-detail.jpg")),
+            full: #require(URL(string: "https://example.com/poster-full.jpg"))
+        )
 
         let details = TVSeriesDetails(
             id: 123,
             name: "Test Series",
             overview: "Overview",
             numberOfSeasons: 1,
-            seasons: [TVSeasonSummary(id: 1, name: "Season 1", seasonNumber: 1, posterURL: posterURL)]
+            seasons: [TVSeasonSummary(id: 1, name: "Season 1", seasonNumber: 1, posterURLSet: posterURLSet)]
         )
 
         let result = mapper.map(details)
 
-        #expect(result.seasons[0].posterURL == posterURL)
+        #expect(result.seasons[0].posterURL == posterURLSet.detail)
     }
 
 }

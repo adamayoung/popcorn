@@ -15,8 +15,19 @@ import Testing
 @Suite("TVSeasonDetailsFeature Tests")
 struct TVSeasonDetailsFeatureTests {
 
-    @Test("fetch populates ViewSnapshot with episodes")
-    func fetchPopulatesViewSnapshotWithEpisodes() async {
+    private typealias Feature = TVSeasonDetailsFeature
+
+    @Test("fetch populates ViewSnapshot with season and episodes")
+    func fetchPopulatesViewSnapshotWithSeasonAndEpisodes() async {
+        let season = TVSeason(
+            id: 3572,
+            seasonNumber: 1,
+            tvSeriesID: 1396,
+            name: "Season 1",
+            tvSeriesName: "Breaking Bad",
+            posterURL: nil,
+            overview: "The first season."
+        )
         let episodes = [
             TVEpisode(
                 id: 62085,
@@ -27,22 +38,17 @@ struct TVSeasonDetailsFeatureTests {
                 stillURL: nil
             )
         ]
-        let seasonDetails = SeasonDetails(
-            overview: "The first season.",
-            episodes: episodes
-        )
 
         let store = TestStore(
-            initialState: TVSeasonDetailsFeature.State(
+            initialState: Feature.State(
                 tvSeriesID: 1396,
-                seasonNumber: 1,
-                seasonName: "Season 1"
+                seasonNumber: 1
             )
         ) {
-            TVSeasonDetailsFeature()
+            Feature()
         } withDependencies: {
-            $0.tvSeasonDetailsClient.fetchSeasonDetails = { _, _ in
-                seasonDetails
+            $0.tvSeasonDetailsClient.fetchSeasonAndEpisodes = { _, _ in
+                (season, episodes)
             }
         }
 
@@ -51,8 +57,8 @@ struct TVSeasonDetailsFeatureTests {
         }
         await store.receive(\.loaded) {
             $0.viewState = .ready(
-                TVSeasonDetailsFeature.ViewSnapshot(
-                    overview: "The first season.",
+                Feature.ViewSnapshot(
+                    season: season,
                     episodes: episodes
                 )
             )
@@ -62,15 +68,14 @@ struct TVSeasonDetailsFeatureTests {
     @Test("fetch handles error")
     func fetchHandlesError() async {
         let store = TestStore(
-            initialState: TVSeasonDetailsFeature.State(
+            initialState: Feature.State(
                 tvSeriesID: 1396,
-                seasonNumber: 1,
-                seasonName: "Season 1"
+                seasonNumber: 1
             )
         ) {
-            TVSeasonDetailsFeature()
+            Feature()
         } withDependencies: {
-            $0.tvSeasonDetailsClient.fetchSeasonDetails = { _, _ in
+            $0.tvSeasonDetailsClient.fetchSeasonAndEpisodes = { _, _ in
                 throw NSError(domain: "test", code: 1)
             }
         }
@@ -88,16 +93,26 @@ struct TVSeasonDetailsFeatureTests {
     @Test("fetch does not reload when ready")
     func fetchDoesNotReloadWhenReady() async {
         let store = TestStore(
-            initialState: TVSeasonDetailsFeature.State(
+            initialState: Feature.State(
                 tvSeriesID: 1396,
                 seasonNumber: 1,
-                seasonName: "Season 1",
                 viewState: .ready(
-                    .init(overview: nil, episodes: [])
+                    Feature.ViewSnapshot(
+                        season: TVSeason(
+                            id: 1,
+                            seasonNumber: 1,
+                            tvSeriesID: 1,
+                            name: "",
+                            tvSeriesName: "",
+                            posterURL: nil,
+                            overview: nil
+                        ),
+                        episodes: []
+                    )
                 )
             )
         ) {
-            TVSeasonDetailsFeature()
+            Feature()
         }
 
         await store.send(.fetch)
@@ -106,17 +121,16 @@ struct TVSeasonDetailsFeatureTests {
     @Test("navigate episodeDetails returns none")
     func navigateEpisodeDetailsReturnsNone() async {
         let store = TestStore(
-            initialState: TVSeasonDetailsFeature.State(
+            initialState: Feature.State(
                 tvSeriesID: 1396,
-                seasonNumber: 1,
-                seasonName: "Season 1"
+                seasonNumber: 1
             )
         ) {
-            TVSeasonDetailsFeature()
+            Feature()
         }
 
         await store.send(
-            .navigate(.episodeDetails(tvSeriesID: 1396, seasonNumber: 1, episodeNumber: 1, episodeName: "Pilot"))
+            .navigate(.episodeDetails(tvSeriesID: 1396, seasonNumber: 1, episodeNumber: 1))
         )
     }
 

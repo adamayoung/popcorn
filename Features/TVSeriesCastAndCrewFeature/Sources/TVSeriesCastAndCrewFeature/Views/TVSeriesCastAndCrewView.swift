@@ -12,6 +12,7 @@ import TCAFoundation
 
 public struct TVSeriesCastAndCrewView: View {
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Bindable private var store: StoreOf<TVSeriesCastAndCrewFeature>
     private let namespace: Namespace.ID
 
@@ -27,68 +28,70 @@ public struct TVSeriesCastAndCrewView: View {
         ZStack {
             switch store.viewState {
             case .ready(let snapshot):
-                content(snapshot: snapshot)
-
+                content(snapshot)
             case .error(let error):
-                ContentUnavailableView {
-                    Label(
-                        LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
-                        systemImage: "exclamationmark.triangle"
-                    )
-                } description: {
-                    Text(error.message)
-                } actions: {
-                    if error.isRetryable {
-                        Button(LocalizedStringResource("RETRY", bundle: .module)) {
-                            store.send(.fetch)
-                        }
-                        .buttonStyle(.bordered)
-                    }
-                }
-
+                errorBody(error)
             default:
                 EmptyView()
             }
         }
-        .navigationTitle(Text("CAST_AND_CREW", bundle: .module))
-        #if os(iOS)
-            .navigationBarTitleDisplayMode(.large)
-        #endif
-            .overlay {
-                if store.viewState.isLoading {
-                    ProgressView()
-                        .accessibilityLabel(Text("LOADING", bundle: .module))
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                }
-            }
-            .task {
-                store.send(.fetch)
-            }
-    }
-
-    private func content(snapshot: TVSeriesCastAndCrewFeature.ViewSnapshot) -> some View {
-        List {
-            if !snapshot.castMembers.isEmpty {
-                CastSection(
-                    castMembers: snapshot.castMembers,
-                    transitionNamespace: namespace
-                ) { personID, transitionID in
-                    store.send(.navigate(.personDetails(id: personID, transitionID: transitionID)))
-                }
-            }
-
-            if !snapshot.crewMembers.isEmpty {
-                CrewSection(
-                    crewByDepartment: snapshot.crewByDepartment,
-                    transitionNamespace: namespace
-                ) { personID, transitionID in
-                    store.send(.navigate(.personDetails(id: personID, transitionID: transitionID)))
-                }
+        .contentTransition(.opacity)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 1), value: store.viewState.isReady)
+        .overlay {
+            if store.viewState.isLoading {
+                loadingBody
             }
         }
-        #if os(iOS)
-        .listStyle(.insetGrouped)
-        #endif
+        .task {
+            store.send(.fetch)
+        }
+    }
+
+}
+
+extension TVSeriesCastAndCrewView {
+
+    private var loadingBody: some View {
+        ProgressView()
+            .accessibilityLabel(Text("LOADING", bundle: .module))
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+}
+
+extension TVSeriesCastAndCrewView {
+
+    private func content(_ snapshot: TVSeriesCastAndCrewFeature.ViewSnapshot) -> some View {
+        TVSeriesCastAndCrewContentView(
+            castMembers: snapshot.castMembers,
+            crewMembers: snapshot.crewMembers,
+            crewByDepartment: snapshot.crewByDepartment,
+            transitionNamespace: namespace
+        ) { personID, transitionID in
+            store.send(.navigate(.personDetails(id: personID, transitionID: transitionID)))
+        }
+    }
+
+}
+
+extension TVSeriesCastAndCrewView {
+
+    private func errorBody(_ error: ViewStateError) -> some View {
+        ContentUnavailableView {
+            Label(
+                LocalizedStringResource("UNABLE_TO_LOAD", bundle: .module),
+                systemImage: "exclamationmark.triangle"
+            )
+        } description: {
+            Text(error.message)
+        } actions: {
+            if error.isRetryable {
+                Button(LocalizedStringResource("RETRY", bundle: .module)) {
+                    store.send(.fetch)
+                }
+                .buttonStyle(.bordered)
+            }
+        }
     }
 
 }

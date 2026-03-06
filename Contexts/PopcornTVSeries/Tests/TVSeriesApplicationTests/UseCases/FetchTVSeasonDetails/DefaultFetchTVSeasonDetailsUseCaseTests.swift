@@ -16,14 +16,17 @@ import TVSeriesDomain
 struct DefaultFetchTVSeasonDetailsUseCaseTests {
 
     let mockRepository: MockTVSeasonRepository
+    let mockTVSeriesRepository: MockTVSeriesRepository
     let mockAppConfigProvider: MockAppConfigurationProvider
     let mockObservabilityProvider: MockObservabilityProvider
 
     init() {
         self.mockRepository = MockTVSeasonRepository()
+        self.mockTVSeriesRepository = MockTVSeriesRepository()
         self.mockAppConfigProvider = MockAppConfigurationProvider()
         self.mockObservabilityProvider = MockObservabilityProvider()
 
+        mockTVSeriesRepository.tvSeriesWithIDStub = .success(TVSeries.mock())
         mockAppConfigProvider.appConfigurationStub = .success(AppConfiguration.mock())
     }
 
@@ -213,6 +216,66 @@ struct DefaultFetchTVSeasonDetailsUseCaseTests {
         #expect(result.overview == nil)
     }
 
+    @Test("execute should return TV series name")
+    func execute_shouldReturnTVSeriesName() async throws {
+        mockRepository.seasonStub = .success(TVSeason.mock())
+        mockTVSeriesRepository.tvSeriesWithIDStub = .success(
+            TVSeries.mock(name: "Breaking Bad")
+        )
+
+        let useCase = makeUseCase()
+
+        let result = try await useCase.execute(tvSeriesID: 1396, seasonNumber: 1)
+
+        #expect(result.tvSeriesName == "Breaking Bad")
+        #expect(mockTVSeriesRepository.tvSeriesWithIDCallCount == 1)
+        #expect(mockTVSeriesRepository.tvSeriesWithIDCalledWith[0] == 1396)
+    }
+
+    @Test("execute should resolve poster URL set")
+    func execute_shouldResolvePosterURLSet() async throws {
+        let season = TVSeason.mock(posterPath: URL(string: "/poster.jpg"))
+        mockRepository.seasonStub = .success(season)
+
+        let useCase = makeUseCase()
+
+        let result = try await useCase.execute(tvSeriesID: 1396, seasonNumber: 1)
+
+        #expect(result.posterURLSet != nil)
+    }
+
+    @Test("execute should return nil poster URL set when path is nil")
+    func execute_shouldReturnNilPosterURLSetWhenPathIsNil() async throws {
+        let season = TVSeason.mock(posterPath: nil)
+        mockRepository.seasonStub = .success(season)
+
+        let useCase = makeUseCase()
+
+        let result = try await useCase.execute(tvSeriesID: 1396, seasonNumber: 1)
+
+        #expect(result.posterURLSet == nil)
+    }
+
+    @Test("execute should throw on TV series repository failure")
+    func execute_shouldThrowOnTVSeriesRepositoryFailure() async {
+        mockRepository.seasonStub = .success(TVSeason.mock())
+        mockTVSeriesRepository.tvSeriesWithIDStub = .failure(.notFound)
+
+        let useCase = makeUseCase()
+
+        await #expect(
+            performing: {
+                try await useCase.execute(tvSeriesID: 1396, seasonNumber: 1)
+            },
+            throws: { error in
+                if case .notFound = error as? FetchTVSeasonDetailsError {
+                    return true
+                }
+                return false
+            }
+        )
+    }
+
 }
 
 extension DefaultFetchTVSeasonDetailsUseCaseTests {
@@ -220,6 +283,7 @@ extension DefaultFetchTVSeasonDetailsUseCaseTests {
     private func makeUseCase() -> DefaultFetchTVSeasonDetailsUseCase {
         DefaultFetchTVSeasonDetailsUseCase(
             repository: mockRepository,
+            tvSeriesRepository: mockTVSeriesRepository,
             appConfigurationProvider: mockAppConfigProvider
         )
     }

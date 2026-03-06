@@ -16,11 +16,15 @@ import TVSeriesDomain
 struct DefaultFetchTVEpisodeDetailsUseCaseTests {
 
     let mockRepository: MockTVEpisodeRepository
+    let mockTVSeasonRepository: MockTVSeasonRepository
+    let mockTVSeriesRepository: MockTVSeriesRepository
     let mockAppConfigProvider: MockAppConfigurationProvider
     let mockObservabilityProvider: MockObservabilityProvider
 
     init() {
         self.mockRepository = MockTVEpisodeRepository()
+        self.mockTVSeasonRepository = MockTVSeasonRepository()
+        self.mockTVSeriesRepository = MockTVSeriesRepository()
         self.mockAppConfigProvider = MockAppConfigurationProvider()
         self.mockObservabilityProvider = MockObservabilityProvider()
 
@@ -226,6 +230,8 @@ extension DefaultFetchTVEpisodeDetailsUseCaseTests {
     private func makeUseCase() -> DefaultFetchTVEpisodeDetailsUseCase {
         DefaultFetchTVEpisodeDetailsUseCase(
             repository: mockRepository,
+            tvSeasonRepository: mockTVSeasonRepository,
+            tvSeriesRepository: mockTVSeriesRepository,
             appConfigurationProvider: mockAppConfigProvider
         )
     }

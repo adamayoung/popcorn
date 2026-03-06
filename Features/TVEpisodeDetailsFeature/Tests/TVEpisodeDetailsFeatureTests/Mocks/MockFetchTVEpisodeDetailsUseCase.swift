@@ -10,13 +10,13 @@ import TVSeriesApplication
 
 struct MockFetchTVEpisodeDetailsUseCase: FetchTVEpisodeDetailsUseCase {
 
-    let episodeDetails: TVSeriesApplication.TVEpisodeSummary?
+    let episodeDetails: TVSeriesApplication.TVEpisodeDetails?
 
     func execute(
         tvSeriesID: Int,
         seasonNumber: Int,
         episodeNumber: Int
-    ) async throws(FetchTVEpisodeDetailsError) -> TVSeriesApplication.TVEpisodeSummary {
+    ) async throws(FetchTVEpisodeDetailsError) -> TVSeriesApplication.TVEpisodeDetails {
         guard let episodeDetails else {
             throw .notFound
         }

@@ -93,7 +93,7 @@ struct SearchRootFeature {
                 .element(
                     _,
                     .tvSeriesDetails(
-                        .navigate(.seasonDetails(let tvSeriesID, let seasonNumber, let seasonName))
+                        .navigate(.seasonDetails(let tvSeriesID, let seasonNumber))
                     )
                 )
             ):
@@ -101,8 +101,7 @@ struct SearchRootFeature {
                     .tvSeasonDetails(
                         TVSeasonDetailsFeature.State(
                             tvSeriesID: tvSeriesID,
-                            seasonNumber: seasonNumber,
-                            seasonName: seasonName
+                            seasonNumber: seasonNumber
                         )
                     )
                 )
@@ -129,7 +128,7 @@ struct SearchRootFeature {
                         .navigate(
                             .episodeDetails(
                                 let tvSeriesID, let seasonNumber,
-                                let episodeNumber, let episodeName
+                                let episodeNumber
                             )
                         )
                     )
@@ -140,8 +139,7 @@ struct SearchRootFeature {
                         TVEpisodeDetailsFeature.State(
                             tvSeriesID: tvSeriesID,
                             seasonNumber: seasonNumber,
-                            episodeNumber: episodeNumber,
-                            episodeName: episodeName
+                            episodeNumber: episodeNumber
                         )
                     )
                 )

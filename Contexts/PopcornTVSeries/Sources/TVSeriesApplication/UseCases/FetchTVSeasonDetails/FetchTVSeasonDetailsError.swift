@@ -24,6 +24,11 @@ extension FetchTVSeasonDetailsError {
             return
         }
 
+        if let repositoryError = error as? TVSeriesRepositoryError {
+            self.init(repositoryError)
+            return
+        }
+
         if let appConfigurationProviderError = error as? AppConfigurationProviderError {
             self.init(appConfigurationProviderError)
             return
@@ -33,6 +38,17 @@ extension FetchTVSeasonDetailsError {
     }
 
     init(_ error: TVSeasonRepositoryError) {
+        switch error {
+        case .notFound:
+            self = .notFound
+        case .unauthorised:
+            self = .unauthorised
+        case .unknown(let error):
+            self = .unknown(error)
+        }
+    }
+
+    init(_ error: TVSeriesRepositoryError) {
         switch error {
         case .notFound:
             self = .notFound

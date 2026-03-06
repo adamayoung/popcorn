@@ -87,14 +87,11 @@ extension TVSeriesDetailsView {
             crewMembers: snapshot.crewMembers,
             isBackdropFocalPointEnabled: store.isBackdropFocalPointEnabled,
             didSelectSeason: { seasonNumber in
-                let seasonName = snapshot.tvSeries.seasons
-                    .first { $0.seasonNumber == seasonNumber }?.name ?? "Season \(seasonNumber)"
                 store.send(
                     .navigate(
                         .seasonDetails(
                             tvSeriesID: snapshot.tvSeries.id,
-                            seasonNumber: seasonNumber,
-                            seasonName: seasonName
+                            seasonNumber: seasonNumber
                         )
                     )
                 )

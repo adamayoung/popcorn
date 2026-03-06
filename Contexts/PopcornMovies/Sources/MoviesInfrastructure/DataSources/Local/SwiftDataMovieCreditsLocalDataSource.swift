@@ -76,6 +76,8 @@ actor SwiftDataMovieCreditsLocalDataSource: MovieCreditsLocalDataSource, SwiftDa
             // Delete existing cast/crew first (cascade only triggers on parent delete)
             existing.cast.forEach { modelContext.delete($0) }
             existing.crew.forEach { modelContext.delete($0) }
+            existing.cast.removeAll()
+            existing.crew.removeAll()
 
             // Commit deletes before creating new entities with the same unique creditIDs
             do {

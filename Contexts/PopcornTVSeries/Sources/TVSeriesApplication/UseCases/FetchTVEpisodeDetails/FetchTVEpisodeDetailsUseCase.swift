@@ -13,6 +13,6 @@ public protocol FetchTVEpisodeDetailsUseCase: Sendable {
         tvSeriesID: Int,
         seasonNumber: Int,
         episodeNumber: Int
-    ) async throws(FetchTVEpisodeDetailsError) -> TVEpisodeSummary
+    ) async throws(FetchTVEpisodeDetailsError) -> TVEpisodeDetails
 
 }
