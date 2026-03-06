@@ -18,17 +18,20 @@ final class DefaultStreamMovieDetailsUseCase: StreamMovieDetailsUseCase {
     private let movieImageRepository: any MovieImageRepository
     private let movieWatchlistRepository: any MovieWatchlistRepository
     private let appConfigurationProvider: any AppConfigurationProviding
+    private let themeColorProvider: (any ThemeColorProviding)?
 
     init(
         movieRepository: some MovieRepository,
         movieImageRepository: some MovieImageRepository,
         movieWatchlistRepository: any MovieWatchlistRepository,
-        appConfigurationProvider: some AppConfigurationProviding
+        appConfigurationProvider: some AppConfigurationProviding,
+        themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
         self.movieRepository = movieRepository
         self.movieImageRepository = movieImageRepository
         self.movieWatchlistRepository = movieWatchlistRepository
         self.appConfigurationProvider = appConfigurationProvider
+        self.themeColorProvider = themeColorProvider
     }
 
     func stream(id: Int) async -> AsyncThrowingStream<MovieDetails?, Error> {
@@ -45,30 +48,7 @@ final class DefaultStreamMovieDetailsUseCase: StreamMovieDetailsUseCase {
                         continue
                     }
 
-                    let imageCollection: ImageCollection
-                    let certification: String?
-                    let isOnWatchlist: Bool
-                    let appConfiguration: AppConfiguration
-                    do {
-                        async let certificationTask = movieRepository.certification(forMovie: id)
-                        (imageCollection, isOnWatchlist, appConfiguration) = try await (
-                            movieImageRepository.imageCollection(forMovie: id),
-                            movieWatchlistRepository.isOnWatchlist(movieID: id),
-                            appConfigurationProvider.appConfiguration()
-                        )
-                        certification = try? await certificationTask
-                    } catch let error {
-                        throw FetchMovieDetailsError(error)
-                    }
-
-                    let mapper = MovieDetailsMapper()
-                    let movieDetails = mapper.map(
-                        movie,
-                        imageCollection: imageCollection,
-                        certification: certification,
-                        isOnWatchlist: isOnWatchlist,
-                        imagesConfiguration: appConfiguration.images
-                    )
+                    let movieDetails = try await buildMovieDetails(for: movie, id: id)
 
                     guard lastValue != movieDetails else {
                         continue
@@ -88,6 +68,60 @@ final class DefaultStreamMovieDetailsUseCase: StreamMovieDetailsUseCase {
                 )
             }
         }
+    }
+
+    private func buildMovieDetails(
+        for movie: Movie,
+        id: Int
+    ) async throws -> MovieDetails {
+        let imageCollection: ImageCollection
+        let certification: String?
+        let isOnWatchlist: Bool
+        let appConfiguration: AppConfiguration
+        do {
+            async let certificationTask = movieRepository.certification(forMovie: id)
+            (imageCollection, isOnWatchlist, appConfiguration) = try await (
+                movieImageRepository.imageCollection(forMovie: id),
+                movieWatchlistRepository.isOnWatchlist(movieID: id),
+                appConfigurationProvider.appConfiguration()
+            )
+            certification = try? await certificationTask
+        } catch let error {
+            throw FetchMovieDetailsError(error)
+        }
+
+        let themeColor = await extractThemeColor(
+            posterPath: movie.posterPath,
+            imagesConfiguration: appConfiguration.images
+        )
+
+        let mapper = MovieDetailsMapper()
+        return mapper.map(
+            movie,
+            imageCollection: imageCollection,
+            certification: certification,
+            isOnWatchlist: isOnWatchlist,
+            imagesConfiguration: appConfiguration.images,
+            themeColor: themeColor
+        )
+    }
+
+}
+
+extension DefaultStreamMovieDetailsUseCase {
+
+    private func extractThemeColor(
+        posterPath: URL?,
+        imagesConfiguration: ImagesConfiguration
+    ) async -> ThemeColor? {
+        guard
+            let themeColorProvider,
+            let thumbnailURL = imagesConfiguration.posterURLSet(for: posterPath)?.thumbnail
+        else {
+            return nil
+        }
+
+        return await themeColorProvider.themeColor(for: thumbnailURL)
     }
 
 }

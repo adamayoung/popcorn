@@ -11,8 +11,11 @@ import TrendingDomain
 
 struct MoviePreviewDetailsMapper {
 
-    func map(_ moviePreview: MoviePreview, imagesConfiguration: ImagesConfiguration)
-    -> MoviePreviewDetails {
+    func map(
+        _ moviePreview: MoviePreview,
+        imagesConfiguration: ImagesConfiguration,
+        themeColor: ThemeColor? = nil
+    ) -> MoviePreviewDetails {
         let posterURLSet = imagesConfiguration.posterURLSet(for: moviePreview.posterPath)
         let backdropURLSet = imagesConfiguration.posterURLSet(for: moviePreview.backdropPath)
 
@@ -21,7 +24,8 @@ struct MoviePreviewDetailsMapper {
             title: moviePreview.title,
             overview: moviePreview.overview,
             posterURLSet: posterURLSet,
-            backdropURLSet: backdropURLSet
+            backdropURLSet: backdropURLSet,
+            themeColor: themeColor
         )
     }
 

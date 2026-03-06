@@ -20,13 +20,16 @@ enum PopcornDiscoverFactoryKey: DependencyKey {
         @Dependency(\.fetchMovieImageCollection) var fetchMovieImageCollection
         @Dependency(\.fetchTVSeriesImageCollection) var fetchTVSeriesImageCollection
 
+        @Dependency(\.themeColorProvider) var themeColorProvider
+
         return PopcornDiscoverAdaptersFactory(
             discoverService: discoverService,
             fetchAppConfigurationUseCase: fetchAppConfiguration,
             fetchMovieGenresUseCase: fetchMovieGenres,
             fetchTVSeriesGenresUseCase: fetchTVSeriesGenres,
             fetchMovieImageCollectionUseCase: fetchMovieImageCollection,
-            fetchTVSeriesImageCollectionUseCase: fetchTVSeriesImageCollection
+            fetchTVSeriesImageCollectionUseCase: fetchTVSeriesImageCollection,
+            themeColorProvider: themeColorProvider
         ).makeDiscoverFactory()
     }
 

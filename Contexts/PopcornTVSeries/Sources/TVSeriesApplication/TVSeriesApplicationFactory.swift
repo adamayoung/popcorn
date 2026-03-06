@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import Foundation
 import TVSeriesDomain
 
@@ -16,6 +17,7 @@ package final class TVSeriesApplicationFactory: Sendable {
     private let tvSeriesCreditsRepository: any TVSeriesCreditsRepository
     private let tvEpisodeCreditsRepository: any TVEpisodeCreditsRepository
     private let appConfigurationProvider: any AppConfigurationProviding
+    private let themeColorProvider: (any ThemeColorProviding)?
 
     package init(
         tvSeriesRepository: some TVSeriesRepository,
@@ -23,7 +25,8 @@ package final class TVSeriesApplicationFactory: Sendable {
         tvEpisodeRepository: some TVEpisodeRepository,
         tvSeriesCreditsRepository: some TVSeriesCreditsRepository,
         tvEpisodeCreditsRepository: some TVEpisodeCreditsRepository,
-        appConfigurationProvider: some AppConfigurationProviding
+        appConfigurationProvider: some AppConfigurationProviding,
+        themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
         self.tvSeriesRepository = tvSeriesRepository
         self.tvSeasonRepository = tvSeasonRepository
@@ -31,12 +34,14 @@ package final class TVSeriesApplicationFactory: Sendable {
         self.tvSeriesCreditsRepository = tvSeriesCreditsRepository
         self.tvEpisodeCreditsRepository = tvEpisodeCreditsRepository
         self.appConfigurationProvider = appConfigurationProvider
+        self.themeColorProvider = themeColorProvider
     }
 
     package func makeFetchTVSeriesDetailsUseCase() -> some FetchTVSeriesDetailsUseCase {
         DefaultFetchTVSeriesDetailsUseCase(
             repository: tvSeriesRepository,
-            appConfigurationProvider: appConfigurationProvider
+            appConfigurationProvider: appConfigurationProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 

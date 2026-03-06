@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import Foundation
 
 public struct TVSeries: Identifiable, Equatable, Sendable {
@@ -18,6 +19,7 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
     public let backdropURL: URL?
     public let logoURL: URL?
     public let seasons: [TVSeasonPreview]
+    public let themeColor: ThemeColor?
 
     public init(
         id: Int,
@@ -28,7 +30,8 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
         smallPosterURL: URL? = nil,
         backdropURL: URL? = nil,
         logoURL: URL? = nil,
-        seasons: [TVSeasonPreview] = []
+        seasons: [TVSeasonPreview] = [],
+        themeColor: ThemeColor? = nil
     ) {
         self.id = id
         self.name = name
@@ -39,6 +42,7 @@ public struct TVSeries: Identifiable, Equatable, Sendable {
         self.backdropURL = backdropURL
         self.logoURL = logoURL
         self.seasons = seasons
+        self.themeColor = themeColor
     }
 
 }

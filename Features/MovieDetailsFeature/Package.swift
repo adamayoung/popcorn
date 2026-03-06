@@ -38,6 +38,7 @@ let package = Package(
                 "AppDependencies",
                 "DesignSystem",
                 "TCAFoundation",
+                .product(name: "CoreDomain", package: "CoreDomain"),
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ],

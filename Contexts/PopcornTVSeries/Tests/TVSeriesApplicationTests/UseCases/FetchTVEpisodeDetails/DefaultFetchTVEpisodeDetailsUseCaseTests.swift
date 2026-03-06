@@ -29,6 +29,8 @@ struct DefaultFetchTVEpisodeDetailsUseCaseTests {
         self.mockObservabilityProvider = MockObservabilityProvider()
 
         mockAppConfigProvider.appConfigurationStub = .success(AppConfiguration.mock())
+        mockTVSeasonRepository.seasonStub = .success(TVSeason.mock())
+        mockTVSeriesRepository.tvSeriesWithIDStub = .success(TVSeries.mock())
     }
 
     @Test("execute should return episode summary")

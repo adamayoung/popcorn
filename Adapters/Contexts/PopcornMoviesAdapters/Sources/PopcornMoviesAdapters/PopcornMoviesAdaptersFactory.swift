@@ -6,6 +6,7 @@
 //
 
 import ConfigurationApplication
+import CoreDomain
 import Foundation
 import MoviesComposition
 import TMDb
@@ -14,13 +15,16 @@ public final class PopcornMoviesAdaptersFactory {
 
     private let movieService: any MovieService
     private let fetchAppConfigurationUseCase: any FetchAppConfigurationUseCase
+    private let themeColorProvider: (any ThemeColorProviding)?
 
     public init(
         movieService: some MovieService,
-        fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase
+        fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase,
+        themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
         self.movieService = movieService
         self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
+        self.themeColorProvider = themeColorProvider
     }
 
     public func makeMoviesFactory() -> some PopcornMoviesFactory {
@@ -32,7 +36,8 @@ public final class PopcornMoviesAdaptersFactory {
 
         return LivePopcornMoviesFactory(
             movieRemoteDataSource: movieRemoteDataSource,
-            appConfigurationProvider: appConfigurationProvider
+            appConfigurationProvider: appConfigurationProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 

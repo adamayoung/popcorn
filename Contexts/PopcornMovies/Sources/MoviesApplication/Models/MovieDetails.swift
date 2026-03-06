@@ -40,6 +40,7 @@ public struct MovieDetails: Identifiable, Equatable, Sendable {
     public let isAdultOnly: Bool?
     public let certification: String?
     public let isOnWatchlist: Bool
+    public let themeColor: ThemeColor?
 
     public init(
         id: Int,
@@ -70,7 +71,8 @@ public struct MovieDetails: Identifiable, Equatable, Sendable {
         hasVideo: Bool? = nil,
         isAdultOnly: Bool? = nil,
         certification: String? = nil,
-        isOnWatchlist: Bool
+        isOnWatchlist: Bool,
+        themeColor: ThemeColor? = nil
     ) {
         self.id = id
         self.title = title
@@ -101,6 +103,7 @@ public struct MovieDetails: Identifiable, Equatable, Sendable {
         self.isAdultOnly = isAdultOnly
         self.certification = certification
         self.isOnWatchlist = isOnWatchlist
+        self.themeColor = themeColor
     }
 
 }

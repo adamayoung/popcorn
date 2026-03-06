@@ -16,17 +16,20 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
     private let genreProvider: any GenreProviding
     private let appConfigurationProvider: any AppConfigurationProviding
     private let logoImageProvider: any MovieLogoImageProviding
+    private let themeColorProvider: (any ThemeColorProviding)?
 
     init(
         repository: some DiscoverMovieRepository,
         genreProvider: some GenreProviding,
         appConfigurationProvider: some AppConfigurationProviding,
-        logoImageProvider: some MovieLogoImageProviding
+        logoImageProvider: some MovieLogoImageProviding,
+        themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
         self.repository = repository
         self.genreProvider = genreProvider
         self.appConfigurationProvider = appConfigurationProvider
         self.logoImageProvider = logoImageProvider
+        self.themeColorProvider = themeColorProvider
     }
 
     func execute() async throws(FetchDiscoverMoviesError) -> [MoviePreviewDetails] {
@@ -72,6 +75,23 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
             throw moviesError
         }
 
+        let moviePreviewDetails = try await mapMoviePreviews(
+            moviePreviews,
+            genres: genres,
+            appConfiguration: appConfiguration,
+            span: span
+        )
+
+        span?.finish()
+        return moviePreviewDetails
+    }
+
+    private func mapMoviePreviews(
+        _ moviePreviews: [MoviePreview],
+        genres: [Genre],
+        appConfiguration: AppConfiguration,
+        span: (any Span)?
+    ) async throws(FetchDiscoverMoviesError) -> [MoviePreviewDetails] {
         var genresLookup: [Genre.ID: Genre] = [:]
         for genre in genres {
             genresLookup[genre.id] = genre
@@ -86,23 +106,49 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
             throw error
         }
 
+        let themeColors = await extractThemeColors(
+            for: moviePreviews,
+            imagesConfiguration: appConfiguration.images
+        )
+
         let mapper = MoviePreviewDetailsMapper()
-        let moviePreviewDetails = moviePreviews.map {
+        return moviePreviews.map {
             mapper.map(
                 $0,
                 genresLookup: genresLookup,
                 logoURLSet: logoURLSets[$0.id],
-                imagesConfiguration: appConfiguration.images
+                imagesConfiguration: appConfiguration.images,
+                themeColor: themeColors[$0.id]
             )
         }
-
-        span?.finish()
-        return moviePreviewDetails
     }
 
 }
 
 extension DefaultFetchDiscoverMoviesUseCase {
+
+    private func extractThemeColors(
+        for moviePreviews: [MoviePreview],
+        imagesConfiguration: ImagesConfiguration
+    ) async -> [Int: ThemeColor] {
+        guard let themeColorProvider else {
+            return [:]
+        }
+
+        var results: [Int: ThemeColor] = [:]
+
+        for moviePreview in moviePreviews {
+            guard let thumbnailURL = imagesConfiguration.posterURLSet(for: moviePreview.posterPath)?.thumbnail
+            else {
+                continue
+            }
+            if let themeColor = await themeColorProvider.themeColor(for: thumbnailURL) {
+                results[moviePreview.id] = themeColor
+            }
+        }
+
+        return results
+    }
 
     private func logos(
         for moviePreviews: [MoviePreview]

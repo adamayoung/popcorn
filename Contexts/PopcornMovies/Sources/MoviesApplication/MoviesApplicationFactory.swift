@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import Foundation
 import MoviesDomain
 
@@ -18,6 +19,7 @@ package final class MoviesApplicationFactory: Sendable {
     private let movieRecommendationRepository: any MovieRecommendationRepository
     private let movieCreditsRepository: any MovieCreditsRepository
     private let appConfigurationProvider: any AppConfigurationProviding
+    private let themeColorProvider: (any ThemeColorProviding)?
 
     package init(
         movieRepository: some MovieRepository,
@@ -27,7 +29,8 @@ package final class MoviesApplicationFactory: Sendable {
         similarMovieRepository: some SimilarMovieRepository,
         movieRecommendationRepository: some MovieRecommendationRepository,
         movieCreditsRepository: some MovieCreditsRepository,
-        appConfigurationProvider: some AppConfigurationProviding
+        appConfigurationProvider: some AppConfigurationProviding,
+        themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
         self.movieRepository = movieRepository
         self.movieWatchlistRepository = movieWatchlistRepository
@@ -37,6 +40,7 @@ package final class MoviesApplicationFactory: Sendable {
         self.movieRecommendationRepository = movieRecommendationRepository
         self.movieCreditsRepository = movieCreditsRepository
         self.appConfigurationProvider = appConfigurationProvider
+        self.themeColorProvider = themeColorProvider
     }
 
     package func makeFetchMovieDetailsUseCase() -> some FetchMovieDetailsUseCase {
@@ -44,7 +48,8 @@ package final class MoviesApplicationFactory: Sendable {
             movieRepository: movieRepository,
             movieImageRepository: movieImageRepository,
             movieWatchlistRepository: movieWatchlistRepository,
-            appConfigurationProvider: appConfigurationProvider
+            appConfigurationProvider: appConfigurationProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 
@@ -53,7 +58,8 @@ package final class MoviesApplicationFactory: Sendable {
             movieRepository: movieRepository,
             movieImageRepository: movieImageRepository,
             movieWatchlistRepository: movieWatchlistRepository,
-            appConfigurationProvider: appConfigurationProvider
+            appConfigurationProvider: appConfigurationProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 
@@ -75,7 +81,8 @@ package final class MoviesApplicationFactory: Sendable {
         DefaultFetchPopularMoviesUseCase(
             popularMovieRepository: popularMovieRepository,
             movieImageRepository: movieImageRepository,
-            appConfigurationProvider: appConfigurationProvider
+            appConfigurationProvider: appConfigurationProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 
@@ -83,7 +90,8 @@ package final class MoviesApplicationFactory: Sendable {
         DefaultStreamPopularMoviesUseCase(
             popularMovieRepository: popularMovieRepository,
             movieImageRepository: movieImageRepository,
-            appConfigurationProvider: appConfigurationProvider
+            appConfigurationProvider: appConfigurationProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 
@@ -91,7 +99,8 @@ package final class MoviesApplicationFactory: Sendable {
         DefaultFetchSimilarMoviesUseCase(
             similarMovieRepository: similarMovieRepository,
             movieImageRepository: movieImageRepository,
-            appConfigurationProvider: appConfigurationProvider
+            appConfigurationProvider: appConfigurationProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 
@@ -99,7 +108,8 @@ package final class MoviesApplicationFactory: Sendable {
         DefaultStreamSimilarMoviesUseCase(
             similarMovieRepository: similarMovieRepository,
             movieImageRepository: movieImageRepository,
-            appConfigurationProvider: appConfigurationProvider
+            appConfigurationProvider: appConfigurationProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 
@@ -107,7 +117,8 @@ package final class MoviesApplicationFactory: Sendable {
         DefaultFetchMovieRecommendationsUseCase(
             movieRecommendationRepository: movieRecommendationRepository,
             movieImageRepository: movieImageRepository,
-            appConfigurationProvider: appConfigurationProvider
+            appConfigurationProvider: appConfigurationProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 
@@ -115,7 +126,8 @@ package final class MoviesApplicationFactory: Sendable {
         DefaultStreamMovieRecommendationsUseCase(
             movieRecommendationRepository: movieRecommendationRepository,
             movieImageRepository: movieImageRepository,
-            appConfigurationProvider: appConfigurationProvider
+            appConfigurationProvider: appConfigurationProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 
@@ -131,7 +143,8 @@ package final class MoviesApplicationFactory: Sendable {
             movieRepository: movieRepository,
             movieWatchlistRepository: movieWatchlistRepository,
             movieImageRepository: movieImageRepository,
-            appConfigurationProvider: appConfigurationProvider
+            appConfigurationProvider: appConfigurationProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 
@@ -140,7 +153,8 @@ package final class MoviesApplicationFactory: Sendable {
             movieRepository: movieRepository,
             movieWatchlistRepository: movieWatchlistRepository,
             movieImageRepository: movieImageRepository,
-            appConfigurationProvider: appConfigurationProvider
+            appConfigurationProvider: appConfigurationProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 

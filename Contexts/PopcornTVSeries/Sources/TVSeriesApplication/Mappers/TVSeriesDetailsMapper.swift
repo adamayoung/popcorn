@@ -16,7 +16,8 @@ struct TVSeriesDetailsMapper {
     func map(
         _ tvSeries: TVSeries,
         imageCollection: ImageCollection,
-        imagesConfiguration: ImagesConfiguration
+        imagesConfiguration: ImagesConfiguration,
+        themeColor: ThemeColor? = nil
     ) -> TVSeriesDetails {
         let posterURLSet = imagesConfiguration.posterURLSet(for: tvSeries.posterPath)
         let backdropURLSet = imagesConfiguration.posterURLSet(for: tvSeries.backdropPath)
@@ -34,7 +35,8 @@ struct TVSeriesDetailsMapper {
             posterURLSet: posterURLSet,
             backdropURLSet: backdropURLSet,
             logoURLSet: logoURLSet,
-            seasons: seasons
+            seasons: seasons,
+            themeColor: themeColor
         )
     }
 

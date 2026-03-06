@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import Foundation
 import MoviesApplication
 import MoviesDomain
@@ -16,7 +17,8 @@ public final class LivePopcornMoviesFactory: PopcornMoviesFactory {
 
     public init(
         movieRemoteDataSource: some MovieRemoteDataSource,
-        appConfigurationProvider: some AppConfigurationProviding
+        appConfigurationProvider: some AppConfigurationProviding,
+        themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
         let infrastructureFactory = MoviesInfrastructureFactory(
             movieRemoteDataSource: movieRemoteDataSource
@@ -29,7 +31,8 @@ public final class LivePopcornMoviesFactory: PopcornMoviesFactory {
             similarMovieRepository: infrastructureFactory.makeSimilarMovieRepository(),
             movieRecommendationRepository: infrastructureFactory.makeMovieRecommendationRepository(),
             movieCreditsRepository: infrastructureFactory.makeMovieCreditsRepository(),
-            appConfigurationProvider: appConfigurationProvider
+            appConfigurationProvider: appConfigurationProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 

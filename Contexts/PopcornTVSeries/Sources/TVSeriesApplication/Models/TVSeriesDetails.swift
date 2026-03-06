@@ -22,6 +22,7 @@ public struct TVSeriesDetails: Identifiable, Equatable, Sendable {
     public let backdropURLSet: ImageURLSet?
     public let logoURLSet: ImageURLSet?
     public let seasons: [TVSeasonSummary]
+    public let themeColor: ThemeColor?
 
     public init(
         id: Int,
@@ -34,7 +35,8 @@ public struct TVSeriesDetails: Identifiable, Equatable, Sendable {
         posterURLSet: ImageURLSet? = nil,
         backdropURLSet: ImageURLSet? = nil,
         logoURLSet: ImageURLSet? = nil,
-        seasons: [TVSeasonSummary] = []
+        seasons: [TVSeasonSummary] = [],
+        themeColor: ThemeColor? = nil
     ) {
         self.id = id
         self.name = name
@@ -47,6 +49,7 @@ public struct TVSeriesDetails: Identifiable, Equatable, Sendable {
         self.backdropURLSet = backdropURLSet
         self.logoURLSet = logoURLSet
         self.seasons = seasons
+        self.themeColor = themeColor
     }
 
 }

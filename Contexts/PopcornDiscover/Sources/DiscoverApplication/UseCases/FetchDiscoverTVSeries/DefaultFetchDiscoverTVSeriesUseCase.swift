@@ -15,17 +15,20 @@ final class DefaultFetchDiscoverTVSeriesUseCase: FetchDiscoverTVSeriesUseCase {
     private let genreProvider: any GenreProviding
     private let appConfigurationProvider: any AppConfigurationProviding
     private let logoImageProvider: any TVSeriesLogoImageProviding
+    private let themeColorProvider: (any ThemeColorProviding)?
 
     init(
         repository: some DiscoverTVSeriesRepository,
         genreProvider: some GenreProviding,
         appConfigurationProvider: some AppConfigurationProviding,
-        logoImageProvider: some TVSeriesLogoImageProviding
+        logoImageProvider: some TVSeriesLogoImageProviding,
+        themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
         self.repository = repository
         self.genreProvider = genreProvider
         self.appConfigurationProvider = appConfigurationProvider
         self.logoImageProvider = logoImageProvider
+        self.themeColorProvider = themeColorProvider
     }
 
     func execute() async throws(FetchDiscoverTVSeriesError) -> [TVSeriesPreviewDetails] {
@@ -65,13 +68,19 @@ final class DefaultFetchDiscoverTVSeriesUseCase: FetchDiscoverTVSeriesUseCase {
 
         let logoURLSets = try await logos(for: moviePreviews)
 
+        let themeColors = await extractThemeColors(
+            for: moviePreviews,
+            imagesConfiguration: appConfiguration.images
+        )
+
         let mapper = TVSeriesPreviewDetailsMapper()
         return moviePreviews.map {
             mapper.map(
                 $0,
                 genresLookup: genresLookup,
                 logoURLSet: logoURLSets[$0.id],
-                imagesConfiguration: appConfiguration.images
+                imagesConfiguration: appConfiguration.images,
+                themeColor: themeColors[$0.id]
             )
         }
     }
@@ -79,6 +88,29 @@ final class DefaultFetchDiscoverTVSeriesUseCase: FetchDiscoverTVSeriesUseCase {
 }
 
 extension DefaultFetchDiscoverTVSeriesUseCase {
+
+    private func extractThemeColors(
+        for tvSeriesPreviews: [TVSeriesPreview],
+        imagesConfiguration: ImagesConfiguration
+    ) async -> [Int: ThemeColor] {
+        guard let themeColorProvider else {
+            return [:]
+        }
+
+        var results: [Int: ThemeColor] = [:]
+
+        for tvSeriesPreview in tvSeriesPreviews {
+            guard let thumbnailURL = imagesConfiguration.posterURLSet(for: tvSeriesPreview.posterPath)?.thumbnail
+            else {
+                continue
+            }
+            if let themeColor = await themeColorProvider.themeColor(for: thumbnailURL) {
+                results[tvSeriesPreview.id] = themeColor
+            }
+        }
+
+        return results
+    }
 
     private func logos(
         for tvSeriesPreviews: [TVSeriesPreview]

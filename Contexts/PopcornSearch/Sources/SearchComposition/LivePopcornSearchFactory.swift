@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import Foundation
 import SearchApplication
 import SearchDomain
@@ -17,7 +18,8 @@ public final class LivePopcornSearchFactory: PopcornSearchFactory {
     public init(
         mediaRemoteDataSource: some MediaRemoteDataSource,
         appConfigurationProvider: some AppConfigurationProviding,
-        mediaProvider: some MediaProviding
+        mediaProvider: some MediaProviding,
+        themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
         let infrastructureFactory = SearchInfrastructureFactory(
             mediaRemoteDataSource: mediaRemoteDataSource
@@ -25,7 +27,8 @@ public final class LivePopcornSearchFactory: PopcornSearchFactory {
         self.applicationFactory = SearchApplicationFactory(
             mediaRepository: infrastructureFactory.makeMediaRepository(),
             appConfigurationProvider: appConfigurationProvider,
-            mediaProvider: mediaProvider
+            mediaProvider: mediaProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 

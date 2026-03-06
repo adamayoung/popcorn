@@ -15,4 +15,11 @@ public struct CachesFactory {
         InMemoryCache(defaultExpiresIn: defaultExpiresIn)
     }
 
+    public static func makeDiskCache(
+        subdirectory: String,
+        defaultExpiresIn: TimeInterval = 7 * 24 * 60 * 60
+    ) -> some Caching {
+        DiskCache(subdirectory: subdirectory, defaultExpiresIn: defaultExpiresIn)
+    }
+
 }

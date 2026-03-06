@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import Foundation
 import TrendingApplication
 import TrendingDomain
@@ -18,7 +19,8 @@ public final class LivePopcornTrendingFactory: PopcornTrendingFactory {
         trendingRemoteDataSource: some TrendingRemoteDataSource,
         appConfigurationProvider: some AppConfigurationProviding,
         movieLogoImageProvider: some MovieLogoImageProviding,
-        tvSeriesLogoImageProvider: some TVSeriesLogoImageProviding
+        tvSeriesLogoImageProvider: some TVSeriesLogoImageProviding,
+        themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
         let infrastructureFactory = TrendingInfrastructureFactory(
             trendingRemoteDataSource: trendingRemoteDataSource
@@ -27,7 +29,8 @@ public final class LivePopcornTrendingFactory: PopcornTrendingFactory {
             trendingRepository: infrastructureFactory.makeTrendingRepository(),
             appConfigurationProvider: appConfigurationProvider,
             movieLogoImageProvider: movieLogoImageProvider,
-            tvSeriesLogoImageProvider: tvSeriesLogoImageProvider
+            tvSeriesLogoImageProvider: tvSeriesLogoImageProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 

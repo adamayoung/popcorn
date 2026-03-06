@@ -386,6 +386,13 @@
     },
     {
       "target" : {
+        "containerPath" : "container:Platform\/ThemeColorProvider",
+        "identifier" : "ThemeColorProviderTests",
+        "name" : "ThemeColorProviderTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Contexts\/PopcornDiscover",
         "identifier" : "DiscoverDomainTests",
         "name" : "DiscoverDomainTests"

@@ -17,11 +17,13 @@ enum PopcornTrendingFactoryKey: DependencyKey {
         @Dependency(\.fetchAppConfiguration) var fetchAppConfiguration
         @Dependency(\.fetchMovieImageCollection) var fetchMovieImageCollection
         @Dependency(\.fetchTVSeriesImageCollection) var fetchTVSeriesImageCollection
+        @Dependency(\.themeColorProvider) var themeColorProvider
         return PopcornTrendingAdaptersFactory(
             trendingService: trendingService,
             fetchAppConfigurationUseCase: fetchAppConfiguration,
             fetchMovieImageCollectionUseCase: fetchMovieImageCollection,
-            fetchTVSeriesImageCollectionUseCase: fetchTVSeriesImageCollection
+            fetchTVSeriesImageCollectionUseCase: fetchTVSeriesImageCollection,
+            themeColorProvider: themeColorProvider
         ).makeTrendingFactory()
     }
 

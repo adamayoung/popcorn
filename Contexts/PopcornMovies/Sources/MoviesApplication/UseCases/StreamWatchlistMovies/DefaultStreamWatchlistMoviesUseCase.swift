@@ -18,17 +18,20 @@ final class DefaultStreamWatchlistMoviesUseCase: StreamWatchlistMoviesUseCase {
     private let movieWatchlistRepository: any MovieWatchlistRepository
     private let movieImageRepository: any MovieImageRepository
     private let appConfigurationProvider: any AppConfigurationProviding
+    private let themeColorProvider: (any ThemeColorProviding)?
 
     init(
         movieRepository: some MovieRepository,
         movieWatchlistRepository: some MovieWatchlistRepository,
         movieImageRepository: some MovieImageRepository,
-        appConfigurationProvider: some AppConfigurationProviding
+        appConfigurationProvider: some AppConfigurationProviding,
+        themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
         self.movieRepository = movieRepository
         self.movieWatchlistRepository = movieWatchlistRepository
         self.movieImageRepository = movieImageRepository
         self.appConfigurationProvider = appConfigurationProvider
+        self.themeColorProvider = themeColorProvider
     }
 
     func stream() async -> AsyncThrowingStream<[MoviePreviewDetails], Error> {
@@ -59,13 +62,18 @@ final class DefaultStreamWatchlistMoviesUseCase: StreamWatchlistMoviesUseCase {
                     }
 
                     let movieData = await self.fetchMovieData(for: watchlistMovies)
+                    let themeColors = await self.extractThemeColors(
+                        for: movieData.map(\.0),
+                        imagesConfiguration: appConfiguration.images
+                    )
 
                     let mapper = MoviePreviewDetailsMapper()
                     let moviePreviews = movieData.map { moviePreview, imageCollection in
                         mapper.map(
                             moviePreview,
                             imageCollection: imageCollection,
-                            imagesConfiguration: appConfiguration.images
+                            imagesConfiguration: appConfiguration.images,
+                            themeColor: themeColors[moviePreview.id]
                         )
                     }
 
@@ -127,6 +135,29 @@ extension DefaultStreamWatchlistMoviesUseCase {
                 .sorted { $0.0 > $1.0 }
                 .map { ($0.1, $0.2) }
         }
+    }
+
+    private func extractThemeColors(
+        for moviePreviews: [MoviePreview],
+        imagesConfiguration: ImagesConfiguration
+    ) async -> [Int: ThemeColor] {
+        guard let themeColorProvider else {
+            return [:]
+        }
+
+        var results: [Int: ThemeColor] = [:]
+
+        for moviePreview in moviePreviews {
+            guard let thumbnailURL = imagesConfiguration.posterURLSet(for: moviePreview.posterPath)?.thumbnail
+            else {
+                continue
+            }
+            if let themeColor = await themeColorProvider.themeColor(for: thumbnailURL) {
+                results[moviePreview.id] = themeColor
+            }
+        }
+
+        return results
     }
 
 }

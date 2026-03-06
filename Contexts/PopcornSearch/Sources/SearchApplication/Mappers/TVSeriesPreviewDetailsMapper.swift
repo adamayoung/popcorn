@@ -11,8 +11,11 @@ import SearchDomain
 
 struct TVSeriesPreviewDetailsMapper {
 
-    func map(_ tvSeriesPreview: TVSeriesPreview, imagesConfiguration: ImagesConfiguration)
-    -> TVSeriesPreviewDetails {
+    func map(
+        _ tvSeriesPreview: TVSeriesPreview,
+        imagesConfiguration: ImagesConfiguration,
+        themeColor: ThemeColor? = nil
+    ) -> TVSeriesPreviewDetails {
         let posterURLSet = imagesConfiguration.posterURLSet(for: tvSeriesPreview.posterPath)
         let backdropURLSet = imagesConfiguration.posterURLSet(for: tvSeriesPreview.backdropPath)
 
@@ -21,7 +24,8 @@ struct TVSeriesPreviewDetailsMapper {
             name: tvSeriesPreview.name,
             overview: tvSeriesPreview.overview,
             posterURLSet: posterURLSet,
-            backdropURLSet: backdropURLSet
+            backdropURLSet: backdropURLSet,
+            themeColor: themeColor
         )
     }
 

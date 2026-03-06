@@ -36,6 +36,9 @@ final class DefaultFetchMovieDetailsUseCase: FetchMovieDetailsUseCase {
     /// Provider supplying application configuration including image base URLs.
     private let appConfigurationProvider: any AppConfigurationProviding
 
+    /// Provider for extracting theme colors from poster thumbnails.
+    private let themeColorProvider: (any ThemeColorProviding)?
+
     ///
     /// Creates a new fetch movie details use case.
     ///
@@ -44,17 +47,20 @@ final class DefaultFetchMovieDetailsUseCase: FetchMovieDetailsUseCase {
     ///   - movieImageRepository: Repository for fetching movie images
     ///   - movieWatchlistRepository: Repository for checking watchlist status
     ///   - appConfigurationProvider: Provider for application configuration
+    ///   - themeColorProvider: Provider for extracting theme colors from poster thumbnails
     ///
     init(
         movieRepository: some MovieRepository,
         movieImageRepository: some MovieImageRepository,
         movieWatchlistRepository: some MovieWatchlistRepository,
-        appConfigurationProvider: some AppConfigurationProviding
+        appConfigurationProvider: some AppConfigurationProviding,
+        themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
         self.movieRepository = movieRepository
         self.movieImageRepository = movieImageRepository
         self.movieWatchlistRepository = movieWatchlistRepository
         self.appConfigurationProvider = appConfigurationProvider
+        self.themeColorProvider = themeColorProvider
     }
 
     ///
@@ -95,14 +101,38 @@ final class DefaultFetchMovieDetailsUseCase: FetchMovieDetailsUseCase {
             throw FetchMovieDetailsError(error)
         }
 
+        let themeColor = await extractThemeColor(
+            posterPath: movie.posterPath,
+            imagesConfiguration: appConfiguration.images
+        )
+
         let mapper = MovieDetailsMapper()
         return mapper.map(
             movie,
             imageCollection: imageCollection,
             certification: certification,
             isOnWatchlist: isOnWatchlist,
-            imagesConfiguration: appConfiguration.images
+            imagesConfiguration: appConfiguration.images,
+            themeColor: themeColor
         )
+    }
+
+}
+
+extension DefaultFetchMovieDetailsUseCase {
+
+    private func extractThemeColor(
+        posterPath: URL?,
+        imagesConfiguration: ImagesConfiguration
+    ) async -> ThemeColor? {
+        guard
+            let themeColorProvider,
+            let thumbnailURL = imagesConfiguration.posterURLSet(for: posterPath)?.thumbnail
+        else {
+            return nil
+        }
+
+        return await themeColorProvider.themeColor(for: thumbnailURL)
     }
 
 }

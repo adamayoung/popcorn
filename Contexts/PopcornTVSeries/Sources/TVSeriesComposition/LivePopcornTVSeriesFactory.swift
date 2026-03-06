@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import Foundation
 import TVSeriesApplication
 import TVSeriesDomain
@@ -18,7 +19,8 @@ public final class LivePopcornTVSeriesFactory: PopcornTVSeriesFactory {
         tvSeriesRemoteDataSource: some TVSeriesRemoteDataSource,
         tvSeasonRemoteDataSource: some TVSeasonRemoteDataSource,
         tvEpisodeRemoteDataSource: some TVEpisodeRemoteDataSource,
-        appConfigurationProvider: some AppConfigurationProviding
+        appConfigurationProvider: some AppConfigurationProviding,
+        themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
         let infrastructureFactory = TVSeriesInfrastructureFactory(
             tvSeriesRemoteDataSource: tvSeriesRemoteDataSource,
@@ -32,7 +34,8 @@ public final class LivePopcornTVSeriesFactory: PopcornTVSeriesFactory {
             tvEpisodeRepository: infrastructureFactory.makeTVEpisodeRepository(),
             tvSeriesCreditsRepository: infrastructureFactory.makeTVSeriesCreditsRepository(),
             tvEpisodeCreditsRepository: infrastructureFactory.makeTVEpisodeCreditsRepository(),
-            appConfigurationProvider: appConfigurationProvider
+            appConfigurationProvider: appConfigurationProvider,
+            themeColorProvider: themeColorProvider
         )
     }
 
