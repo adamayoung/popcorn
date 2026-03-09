@@ -11,7 +11,9 @@ struct HideToolbarTitle: ViewModifier {
 
     func body(content: Content) -> some View {
         content
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif 
             .toolbarTitleDisplayMode(.inline)
             .toolbar {
                 // Replaces the navigation title with an invisible view to visually
