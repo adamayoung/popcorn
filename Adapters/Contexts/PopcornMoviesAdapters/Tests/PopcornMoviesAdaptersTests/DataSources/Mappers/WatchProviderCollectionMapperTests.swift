@@ -16,7 +16,7 @@ struct WatchProviderCollectionMapperTests {
     private let mapper = WatchProviderCollectionMapper()
 
     @Test
-    func `map converts all provider types correctly`() {
+    func `map converts all provider types correctly`() throws {
         let link = "https://www.themoviedb.org/movie/550/watch"
         let streamingProvider = TMDb.WatchProvider(id: 8, name: "Netflix")
         let buyProvider = TMDb.WatchProvider(id: 2, name: "Apple TV")
@@ -31,10 +31,10 @@ struct WatchProviderCollectionMapperTests {
             rent: [rentProvider]
         )
 
-        let result = mapper.map(movieID: 550, dto)
+        let result = try #require(mapper.map(movieID: 550, dto))
 
         #expect(result.id == 550)
-        #expect(result.link == link)
+        #expect(result.link == URL(string: link))
         #expect(result.streamingProviders.count == 1)
         #expect(result.streamingProviders[0].name == "Netflix")
         #expect(result.buyProviders.count == 1)
@@ -46,7 +46,7 @@ struct WatchProviderCollectionMapperTests {
     }
 
     @Test
-    func `map handles nil provider arrays`() {
+    func `map handles nil provider arrays`() throws {
         let dto = TMDb.ShowWatchProvider(
             link: "https://www.themoviedb.org/movie/1/watch",
             free: nil,
@@ -55,7 +55,7 @@ struct WatchProviderCollectionMapperTests {
             rent: nil
         )
 
-        let result = mapper.map(movieID: 1, dto)
+        let result = try #require(mapper.map(movieID: 1, dto))
 
         #expect(result.streamingProviders.isEmpty)
         #expect(result.buyProviders.isEmpty)
@@ -64,7 +64,7 @@ struct WatchProviderCollectionMapperTests {
     }
 
     @Test
-    func `map converts multiple streaming providers`() {
+    func `map converts multiple streaming providers`() throws {
         let dto = TMDb.ShowWatchProvider(
             link: "https://www.themoviedb.org/movie/1/watch",
             flatRate: [
@@ -74,7 +74,7 @@ struct WatchProviderCollectionMapperTests {
             ]
         )
 
-        let result = mapper.map(movieID: 1, dto)
+        let result = try #require(mapper.map(movieID: 1, dto))
 
         #expect(result.streamingProviders.count == 3)
         #expect(result.streamingProviders[0].id == 8)

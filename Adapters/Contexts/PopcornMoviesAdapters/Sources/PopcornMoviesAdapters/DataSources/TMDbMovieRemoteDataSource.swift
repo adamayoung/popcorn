@@ -116,10 +116,15 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
             throw MovieRemoteDataSourceError(error)
         }
 
-        let countryCode = Locale.current.region?.identifier ?? "US"
-        guard let showWatchProvider = tmdbWatchProviders.first(where: { $0.countryCode == countryCode })?
+        guard let countryCode = Locale.current.region?.identifier else {
+            return nil
+        }
+
+        let matchingProviders = tmdbWatchProviders.first(where: { $0.countryCode == countryCode })?
             .watchProviders
-        else {
+            ?? tmdbWatchProviders.first(where: { $0.countryCode == "US" })?.watchProviders
+
+        guard let showWatchProvider = matchingProviders else {
             return nil
         }
 

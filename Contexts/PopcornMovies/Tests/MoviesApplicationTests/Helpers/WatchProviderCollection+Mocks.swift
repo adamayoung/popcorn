@@ -28,7 +28,7 @@ extension WatchProviderCollection {
 
     static func mock(
         id: Int = 1,
-        link: String = "https://www.themoviedb.org/movie/1/watch",
+        link: URL = URL(string: "https://www.themoviedb.org/movie/1/watch")!,
         streamingProviders: [WatchProvider] = [.mock()],
         buyProviders: [WatchProvider] = [],
         rentProviders: [WatchProvider] = [],

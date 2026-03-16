@@ -10,7 +10,7 @@ import Foundation
 public struct WatchProviderCollectionDetails: Identifiable, Equatable, Sendable {
 
     public let id: Int
-    public let link: String
+    public let link: URL
     public let streamingProviders: [WatchProviderDetails]
     public let buyProviders: [WatchProviderDetails]
     public let rentProviders: [WatchProviderDetails]
@@ -18,7 +18,7 @@ public struct WatchProviderCollectionDetails: Identifiable, Equatable, Sendable 
 
     public init(
         id: Int,
-        link: String,
+        link: URL,
         streamingProviders: [WatchProviderDetails] = [],
         buyProviders: [WatchProviderDetails] = [],
         rentProviders: [WatchProviderDetails] = [],

@@ -26,10 +26,9 @@ final class DefaultFetchMovieWatchProvidersUseCase: FetchMovieWatchProvidersUseC
         let watchProviders: WatchProviderCollection?
         let appConfiguration: AppConfiguration
         do {
-            (watchProviders, appConfiguration) = try await (
-                movieWatchProvidersRepository.watchProviders(forMovie: movieID),
-                appConfigurationProvider.appConfiguration()
-            )
+            async let watchProvidersResult = movieWatchProvidersRepository.watchProviders(forMovie: movieID)
+            async let appConfigurationResult = appConfigurationProvider.appConfiguration()
+            (watchProviders, appConfiguration) = try await (watchProvidersResult, appConfigurationResult)
         } catch let error {
             throw FetchMovieWatchProvidersError(error)
         }
