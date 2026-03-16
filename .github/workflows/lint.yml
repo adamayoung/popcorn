@@ -28,6 +28,7 @@ jobs:
       - name: Install SwiftLint and SwiftFormat
         run: |
           brew install swiftlint
+          brew update
           brew upgrade swiftformat
 
       - name: SwiftLint
