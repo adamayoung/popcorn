@@ -28,6 +28,7 @@ extension WatchProviderCollection {
 
     static func mock(
         id: Int = 1,
+        // swiftlint:disable:next force_unwrapping
         link: URL = URL(string: "https://www.themoviedb.org/movie/1/watch")!,
         streamingProviders: [WatchProvider] = [.mock()],
         buyProviders: [WatchProvider] = [],
