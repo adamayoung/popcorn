@@ -11,13 +11,13 @@ import MoviesDomain
 
 struct WatchProviderCollectionDetailsMapper {
 
+    private let providerMapper = WatchProviderDetailsMapper()
+
     func map(
         _ collection: WatchProviderCollection,
         imagesConfiguration: ImagesConfiguration
     ) -> WatchProviderCollectionDetails {
-        let providerMapper = WatchProviderDetailsMapper()
-
-        return WatchProviderCollectionDetails(
+        WatchProviderCollectionDetails(
             id: collection.id,
             link: collection.link,
             streamingProviders: collection.streamingProviders.map {
