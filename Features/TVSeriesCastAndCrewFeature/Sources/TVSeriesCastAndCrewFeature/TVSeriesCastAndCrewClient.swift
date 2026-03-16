@@ -11,7 +11,7 @@ import Foundation
 import TVSeriesApplication
 
 @DependencyClient
-struct TVSeriesCastAndCrewClient: Sendable {
+struct TVSeriesCastAndCrewClient {
 
     var fetchCredits: @Sendable (_ tvSeriesID: Int) async throws -> Credits
 

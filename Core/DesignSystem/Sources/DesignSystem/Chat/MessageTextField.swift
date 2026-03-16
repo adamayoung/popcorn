@@ -35,12 +35,14 @@ public struct MessageTextField: View {
                     .padding(.vertical, 11)
                     .padding(.leading, 13)
                     .padding(.trailing, .spacing50)
+                #if !os(visionOS)
                     .glassEffect(
                         in: RoundedRectangle(
                             cornerRadius: 22,
                             style: .continuous
                         )
                     )
+                #endif
 
                 Button(action: sendMessage) {
                     Image(systemName: "paperplane.fill")

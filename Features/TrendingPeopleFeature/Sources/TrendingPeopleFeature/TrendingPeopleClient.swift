@@ -12,7 +12,7 @@ import PopcornTrendingAdapters
 import TrendingApplication
 
 @DependencyClient
-struct TrendingPeopleClient: Sendable {
+struct TrendingPeopleClient {
 
     var fetchTrendingPeople: @Sendable () async throws -> [PersonPreview]
 

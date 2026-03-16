@@ -16,5 +16,7 @@
 --disable wrapMultilineStatementBraces
 --disable redundantLetError
 --disable unusedArguments
+--disable swiftTestingTestCaseNames
+--disable redundantSwiftTestingSuite
 
 --header \n {file}\n Popcorn\n\n Copyright © 2026 Adam Young.\n

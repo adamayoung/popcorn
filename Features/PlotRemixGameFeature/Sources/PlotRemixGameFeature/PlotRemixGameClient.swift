@@ -11,7 +11,7 @@ import GamesCatalogApplication
 import PlotRemixGameDomain
 
 @DependencyClient
-struct PlotRemixGameClient: Sendable {
+struct PlotRemixGameClient {
 
     var gameMetadata: @Sendable (Int) async throws -> GameMetadata
     var generateGame: @Sendable (@Sendable @escaping (Float) -> Void) async throws -> Game

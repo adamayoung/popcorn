@@ -11,7 +11,7 @@ import Foundation
 import TVSeriesApplication
 
 @DependencyClient
-struct TVEpisodeCastAndCrewClient: Sendable {
+struct TVEpisodeCastAndCrewClient {
 
     var fetchCredits: @Sendable (
         _ tvSeriesID: Int,

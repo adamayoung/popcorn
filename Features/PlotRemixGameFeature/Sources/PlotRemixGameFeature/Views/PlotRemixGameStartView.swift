@@ -44,8 +44,10 @@ struct PlotRemixGameStartView: View {
                         )
                         .bold()
                         .labelStyle(.iconOnly)
-                        .buttonStyle(.glass)
-                        .padding()
+                        #if !os(visionOS)
+                            .buttonStyle(.glass)
+                        #endif
+                            .padding()
                     }
                 }
             }

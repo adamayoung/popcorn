@@ -13,7 +13,7 @@ import Observability
 import OSLog
 
 @DependencyClient
-struct AppRootClient: Sendable {
+struct AppRootClient {
 
     var setupObservability: @Sendable () async throws -> Void
     var setupFeatureFlags: @Sendable () async throws -> Void

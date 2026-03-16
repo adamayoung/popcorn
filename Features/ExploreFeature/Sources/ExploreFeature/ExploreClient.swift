@@ -15,7 +15,7 @@ import OSLog
 import TrendingApplication
 
 @DependencyClient
-struct ExploreClient: Sendable {
+struct ExploreClient {
 
     var fetchDiscoverMovies: @Sendable () async throws -> [MoviePreview]
     var fetchTrendingMovies: @Sendable () async throws -> [MoviePreview]

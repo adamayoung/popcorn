@@ -15,7 +15,7 @@ import PopcornGamesCatalogAdapters
 import PopcornPlotRemixGameAdapters
 
 @DependencyClient
-struct PlotRemixGamePlayClient: Sendable {
+struct PlotRemixGamePlayClient {
 
     var generateGame: @Sendable (@Sendable @escaping (Float) -> Void) async throws -> Game
 

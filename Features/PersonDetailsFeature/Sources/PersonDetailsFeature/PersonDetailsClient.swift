@@ -11,7 +11,7 @@ import Foundation
 import PeopleApplication
 
 @DependencyClient
-struct PersonDetailsClient: Sendable {
+struct PersonDetailsClient {
 
     var fetchPerson: @Sendable (Int) async throws -> Person
     var isFocalPointEnabled: @Sendable () throws -> Bool

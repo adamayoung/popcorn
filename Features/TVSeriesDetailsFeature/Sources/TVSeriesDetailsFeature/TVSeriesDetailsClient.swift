@@ -12,7 +12,7 @@ import Observability
 import TVSeriesApplication
 
 @DependencyClient
-struct TVSeriesDetailsClient: Sendable {
+struct TVSeriesDetailsClient {
 
     var fetchTVSeries: @Sendable (Int) async throws -> TVSeries
     var fetchCredits: @Sendable (_ tvSeriesID: Int) async throws -> Credits

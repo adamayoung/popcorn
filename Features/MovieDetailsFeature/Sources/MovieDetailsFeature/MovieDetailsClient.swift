@@ -11,7 +11,7 @@ import Foundation
 import MoviesApplication
 
 @DependencyClient
-struct MovieDetailsClient: Sendable {
+struct MovieDetailsClient {
 
     var fetchMovie: @Sendable (_ id: Int) async throws -> Movie
     var streamMovie: @Sendable (_ id: Int) async throws -> AsyncThrowingStream<Movie?, Error>

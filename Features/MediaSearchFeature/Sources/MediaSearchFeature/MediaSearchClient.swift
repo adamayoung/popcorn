@@ -12,7 +12,7 @@ import GenresApplication
 import SearchApplication
 
 @DependencyClient
-struct MediaSearchClient: Sendable {
+struct MediaSearchClient {
 
     var fetchGenres: @Sendable () async throws -> [Genre]
     var search: @Sendable (String) async throws -> [MediaPreview]

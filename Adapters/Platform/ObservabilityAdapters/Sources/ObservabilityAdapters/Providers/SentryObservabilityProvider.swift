@@ -25,7 +25,9 @@ struct SentryObservabilityProvider: ObservabilityProviding {
 
             options.enableAppHangTracking = true
 
-            options.enableMetricKit = true
+            #if os(iOS)
+                options.enableMetricKit = true
+            #endif
 
             options.debug = false
         }

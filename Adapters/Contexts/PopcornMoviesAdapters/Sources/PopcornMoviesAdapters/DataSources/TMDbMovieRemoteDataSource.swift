@@ -106,6 +106,32 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
         return mapper.map(tmdbCredits)
     }
 
+    func watchProviders(
+        forMovie movieID: Int
+    ) async throws(MovieRemoteDataSourceError) -> WatchProviderCollection? {
+        let tmdbWatchProviders: [TMDb.ShowWatchProvidersByCountry]
+        do {
+            tmdbWatchProviders = try await movieService.watchProviders(forMovie: movieID)
+        } catch let error {
+            throw MovieRemoteDataSourceError(error)
+        }
+
+        guard let countryCode = Locale.current.region?.identifier else {
+            return nil
+        }
+
+        let matchingProviders = tmdbWatchProviders.first(where: { $0.countryCode == countryCode })?
+            .watchProviders
+            ?? tmdbWatchProviders.first(where: { $0.countryCode == "US" })?.watchProviders
+
+        guard let showWatchProvider = matchingProviders else {
+            return nil
+        }
+
+        let mapper = WatchProviderCollectionMapper()
+        return mapper.map(movieID: movieID, showWatchProvider)
+    }
+
     func certification(forMovie movieID: Int) async throws(MovieRemoteDataSourceError) -> String {
         let tmdbReleaseDatesByCountry: [MovieReleaseDatesByCountry]
         do {

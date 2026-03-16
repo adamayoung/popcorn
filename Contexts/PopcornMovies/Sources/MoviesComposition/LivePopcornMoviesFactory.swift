@@ -31,6 +31,7 @@ public final class LivePopcornMoviesFactory: PopcornMoviesFactory {
             similarMovieRepository: infrastructureFactory.makeSimilarMovieRepository(),
             movieRecommendationRepository: infrastructureFactory.makeMovieRecommendationRepository(),
             movieCreditsRepository: infrastructureFactory.makeMovieCreditsRepository(),
+            movieWatchProvidersRepository: infrastructureFactory.makeMovieWatchProvidersRepository(),
             appConfigurationProvider: appConfigurationProvider,
             themeColorProvider: themeColorProvider
         )
@@ -78,6 +79,10 @@ public final class LivePopcornMoviesFactory: PopcornMoviesFactory {
 
     public func makeFetchMovieCreditsUseCase() -> FetchMovieCreditsUseCase {
         applicationFactory.makeFetchMovieCreditsUseCase()
+    }
+
+    public func makeFetchMovieWatchProvidersUseCase() -> FetchMovieWatchProvidersUseCase {
+        applicationFactory.makeFetchMovieWatchProvidersUseCase()
     }
 
     public func makeStreamWatchlistMoviesUseCase() -> StreamWatchlistMoviesUseCase {

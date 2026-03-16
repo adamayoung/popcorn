@@ -93,18 +93,26 @@ extension PlotRemixGamePlayFeatureView {
 
                 Spacer()
 
-                GlassEffectContainer(spacing: .spacing16) {
-                    VStack(spacing: .spacing16) {
-                        ForEach(question.options) { option in
-                            AnswerButton(
-                                title: "\(option.title) \(option.isCorrect ? "✅" : "")",
-                                action: {}
-                            )
-                        }
+                #if os(visionOS)
+                    answersView(options: question.options)
+                #else
+                    GlassEffectContainer(spacing: .spacing16) {
+                        answersView(options: question.options)
                     }
-                }
+                #endif
             }
             .padding()
+        }
+    }
+
+    private func answersView(options: [AnswerOption]) -> some View {
+        VStack(spacing: .spacing16) {
+            ForEach(options) { option in
+                AnswerButton(
+                    title: "\(option.title) \(option.isCorrect ? "✅" : "")",
+                    action: {}
+                )
+            }
         }
     }
 
@@ -122,7 +130,9 @@ struct AnswerButton: View {
                 .padding(.vertical, .spacing5)
                 .padding(.horizontal, .spacing20)
         }
+        #if !os(visionOS)
         .buttonStyle(.glassProminent)
+        #endif
     }
 }
 

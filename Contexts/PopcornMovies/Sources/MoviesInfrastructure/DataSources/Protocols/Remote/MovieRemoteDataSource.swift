@@ -32,6 +32,10 @@ public protocol MovieRemoteDataSource: Sendable {
 
     func certification(forMovie movieID: Int) async throws(MovieRemoteDataSourceError) -> String
 
+    func watchProviders(
+        forMovie movieID: Int
+    ) async throws(MovieRemoteDataSourceError) -> WatchProviderCollection?
+
 }
 
 public enum MovieRemoteDataSourceError: Error {
