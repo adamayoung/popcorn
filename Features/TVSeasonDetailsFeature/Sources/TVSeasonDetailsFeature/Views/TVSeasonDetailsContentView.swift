@@ -46,8 +46,10 @@ struct TVSeasonDetailsContentView: View {
         #endif
         .navigationBarTitleDisplayMode(.large)
         .navigationTitle(Text(verbatim: season.name))
-        .navigationSubtitle(Text(verbatim: season.tvSeriesName))
-        .accessibilityIdentifier("tv-season-details.view")
+        #if !os(visionOS)
+            .navigationSubtitle(Text(verbatim: season.tvSeriesName))
+        #endif
+            .accessibilityIdentifier("tv-season-details.view")
     }
 
 }

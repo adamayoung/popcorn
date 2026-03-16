@@ -11,7 +11,7 @@ import Foundation
 import TrendingApplication
 
 @DependencyClient
-struct TrendingTVSeriesClient: Sendable {
+struct TrendingTVSeriesClient {
 
     var fetchTrendingTVSeries: @Sendable () async throws -> [TVSeriesPreview]
 

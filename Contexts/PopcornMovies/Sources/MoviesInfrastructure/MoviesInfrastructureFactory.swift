@@ -114,6 +114,10 @@ package final class MoviesInfrastructureFactory {
         )
     }
 
+    package func makeMovieWatchProvidersRepository() -> some MovieWatchProvidersRepository {
+        DefaultMovieWatchProvidersRepository(remoteDataSource: movieRemoteDataSource)
+    }
+
 }
 
 extension MoviesInfrastructureFactory {

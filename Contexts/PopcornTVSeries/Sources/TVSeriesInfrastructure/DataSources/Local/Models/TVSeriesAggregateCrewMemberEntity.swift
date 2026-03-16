@@ -45,7 +45,7 @@ final class TVSeriesAggregateCrewMemberEntity: Equatable {
 
 }
 
-struct CrewJobValue: Codable, Equatable, Sendable {
+struct CrewJobValue: Codable, Equatable {
 
     let creditID: String
     let job: String

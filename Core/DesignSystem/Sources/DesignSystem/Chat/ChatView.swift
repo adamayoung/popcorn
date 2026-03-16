@@ -54,7 +54,9 @@ public struct ChatView<Message: ChatMessage>: View {
                     }
                 }
             }
+            #if !os(visionOS)
             .scrollDismissesKeyboard(.interactively)
+            #endif
             .animation(
                 reduceMotion ? nil : (messages.isEmpty ? nil : .spring(response: 0.4, dampingFraction: 0.7)),
                 value: messages.count

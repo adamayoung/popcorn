@@ -12,7 +12,7 @@ import IntelligenceDomain
 import TVSeriesApplication
 
 @DependencyClient
-struct TVSeriesIntelligenceClient: Sendable {
+struct TVSeriesIntelligenceClient {
 
     var fetchTVSeries: @Sendable (_ id: Int) async throws -> TVSeries
     var createSession: @Sendable (_ tvSeriesID: Int) async throws -> LLMSession

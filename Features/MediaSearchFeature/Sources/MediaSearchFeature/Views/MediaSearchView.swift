@@ -55,7 +55,9 @@ public struct MediaSearchView: View {
                 )
             }
         }
+        #if !os(visionOS)
         .scrollDismissesKeyboard(.interactively)
+        #endif
         .searchable(
             text: $store.query.sending(\.queryChanged),
             //            placement: .navigationBarDrawer(displayMode: .always),

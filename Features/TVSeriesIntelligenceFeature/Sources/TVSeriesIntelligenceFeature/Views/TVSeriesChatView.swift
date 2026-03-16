@@ -28,20 +28,22 @@ public struct TVSeriesChatView: View {
                 isThinking: store.isThinking
             )
             .navigationTitle(store.tvSeries?.name ?? "")
-            .navigationSubtitle(store.tvSeries?.tagline ?? "")
-            #if os(iOS)
-                .navigationBarTitleDisplayMode(.inline)
+            #if !os(visionOS)
+                .navigationSubtitle(store.tvSeries?.tagline ?? "")
             #endif
-                .toolbar {
-                    ToolbarItem {
-                        Button(role: .close) {
-                            dismiss()
-                        }
+            #if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
+            #endif
+            .toolbar {
+                ToolbarItem {
+                    Button(role: .close) {
+                        dismiss()
                     }
                 }
-                .task {
-                    store.send(.startSession)
-                }
+            }
+            .task {
+                store.send(.startSession)
+            }
         }
     }
 

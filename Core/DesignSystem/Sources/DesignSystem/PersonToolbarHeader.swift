@@ -30,7 +30,9 @@ public struct PersonToolbarHeader: View {
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
                 .padding(.spacing8)
+            #if !os(visionOS)
                 .glassEffect(.regular, in: .capsule)
+            #endif
                 .offset(y: -.spacing5)
         }
         .font(.headline)

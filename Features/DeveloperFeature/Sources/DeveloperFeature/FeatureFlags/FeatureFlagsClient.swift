@@ -11,7 +11,7 @@ import FeatureAccess
 import Foundation
 
 @DependencyClient
-struct FeatureFlagsClient: Sendable {
+struct FeatureFlagsClient {
 
     var fetchFeatureFlags: @Sendable () async throws -> [FeatureFlag]
     var updateFeatureFlagValue: @Sendable (FeatureFlag, Bool?) -> Void

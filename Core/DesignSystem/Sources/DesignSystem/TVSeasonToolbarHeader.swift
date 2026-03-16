@@ -38,8 +38,10 @@ public struct TVSeasonToolbarHeader: View {
                     .foregroundStyle(.secondary)
             }
             .padding(.spacing8)
-            .glassEffect(.regular, in: .capsule)
-            .offset(y: -.spacing5)
+            #if !os(visionOS)
+                .glassEffect(.regular, in: .capsule)
+            #endif
+                .offset(y: -.spacing5)
         }
         .padding(.top, .spacing50)
     }

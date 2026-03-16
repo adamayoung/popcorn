@@ -11,7 +11,7 @@ import Foundation
 import TrendingApplication
 
 @DependencyClient
-struct TrendingMoviesClient: Sendable {
+struct TrendingMoviesClient {
 
     var fetchTrendingMovies: @Sendable () async throws -> [MoviePreview]
 

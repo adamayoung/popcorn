@@ -20,19 +20,28 @@ struct PlotRemixGameQuestionView: View {
 
             Spacer()
 
-            GlassEffectContainer(spacing: .spacing16) {
-                VStack(spacing: .spacing16) {
-                    ForEach(question.options) { option in
-                        AnswerButton(
-                            title: "\(option.title) \(option.isCorrect ? "✅" : "")",
-                            action: {}
-                        )
-                    }
+            #if os(visionOS)
+                questionView
+            #else
+                GlassEffectContainer(spacing: .spacing16) {
+                    questionView
                 }
-            }
+            #endif
         }
         .padding()
     }
+
+    private var questionView: some View {
+        VStack(spacing: .spacing16) {
+            ForEach(question.options) { option in
+                AnswerButton(
+                    title: "\(option.title) \(option.isCorrect ? "✅" : "")",
+                    action: {}
+                )
+            }
+        }
+    }
+
 }
 
 // #Preview {

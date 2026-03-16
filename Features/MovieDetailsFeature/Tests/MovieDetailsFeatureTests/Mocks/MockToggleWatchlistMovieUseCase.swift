@@ -8,7 +8,7 @@
 import Foundation
 import MoviesApplication
 
-struct MockToggleWatchlistMovieUseCase: ToggleWatchlistMovieUseCase, Sendable {
+struct MockToggleWatchlistMovieUseCase: ToggleWatchlistMovieUseCase {
 
     var onToggle: (@Sendable (Int) async -> Void)?
 

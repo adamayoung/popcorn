@@ -42,7 +42,7 @@ final class TVSeriesAggregateCastMemberEntity: Equatable {
 
 }
 
-struct CastRoleValue: Codable, Equatable, Sendable {
+struct CastRoleValue: Codable, Equatable {
 
     let creditID: String
     let character: String

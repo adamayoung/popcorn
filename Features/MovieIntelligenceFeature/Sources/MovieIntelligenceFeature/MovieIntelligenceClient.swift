@@ -11,7 +11,7 @@ import Foundation
 import IntelligenceDomain
 
 @DependencyClient
-struct MovieIntelligenceClient: Sendable {
+struct MovieIntelligenceClient {
 
     var fetchMovie: @Sendable (_ id: Int) async throws -> IntelligenceDomain.Movie
     var createSession: @Sendable (_ movieID: Int) async throws -> LLMSession

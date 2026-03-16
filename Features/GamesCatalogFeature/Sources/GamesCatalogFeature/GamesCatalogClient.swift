@@ -12,7 +12,7 @@ import GamesCatalogApplication
 import GamesCatalogDomain
 
 @DependencyClient
-struct GamesCatalogClient: Sendable {
+struct GamesCatalogClient {
 
     var fetchGames: @Sendable () async throws -> [GameMetadata]
 

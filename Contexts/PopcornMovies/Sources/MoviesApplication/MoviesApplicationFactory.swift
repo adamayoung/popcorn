@@ -18,6 +18,7 @@ package final class MoviesApplicationFactory: Sendable {
     private let similarMovieRepository: any SimilarMovieRepository
     private let movieRecommendationRepository: any MovieRecommendationRepository
     private let movieCreditsRepository: any MovieCreditsRepository
+    private let movieWatchProvidersRepository: any MovieWatchProvidersRepository
     private let appConfigurationProvider: any AppConfigurationProviding
     private let themeColorProvider: (any ThemeColorProviding)?
 
@@ -29,6 +30,7 @@ package final class MoviesApplicationFactory: Sendable {
         similarMovieRepository: some SimilarMovieRepository,
         movieRecommendationRepository: some MovieRecommendationRepository,
         movieCreditsRepository: some MovieCreditsRepository,
+        movieWatchProvidersRepository: some MovieWatchProvidersRepository,
         appConfigurationProvider: some AppConfigurationProviding,
         themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
@@ -39,6 +41,7 @@ package final class MoviesApplicationFactory: Sendable {
         self.similarMovieRepository = similarMovieRepository
         self.movieRecommendationRepository = movieRecommendationRepository
         self.movieCreditsRepository = movieCreditsRepository
+        self.movieWatchProvidersRepository = movieWatchProvidersRepository
         self.appConfigurationProvider = appConfigurationProvider
         self.themeColorProvider = themeColorProvider
     }
@@ -134,6 +137,13 @@ package final class MoviesApplicationFactory: Sendable {
     package func makeFetchMovieCreditsUseCase() -> some FetchMovieCreditsUseCase {
         DefaultFetchMovieCreditsUseCase(
             movieCreditsRepository: movieCreditsRepository,
+            appConfigurationProvider: appConfigurationProvider
+        )
+    }
+
+    package func makeFetchMovieWatchProvidersUseCase() -> some FetchMovieWatchProvidersUseCase {
+        DefaultFetchMovieWatchProvidersUseCase(
+            movieWatchProvidersRepository: movieWatchProvidersRepository,
             appConfigurationProvider: appConfigurationProvider
         )
     }

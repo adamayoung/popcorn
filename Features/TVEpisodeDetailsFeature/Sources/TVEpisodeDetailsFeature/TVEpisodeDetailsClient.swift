@@ -12,7 +12,7 @@ import Foundation
 import TVSeriesApplication
 
 @DependencyClient
-struct TVEpisodeDetailsClient: Sendable {
+struct TVEpisodeDetailsClient {
 
     var fetchEpisode: @Sendable (
         _ tvSeriesID: Int,
