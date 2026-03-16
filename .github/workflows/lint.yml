@@ -28,7 +28,7 @@ jobs:
       - name: Install SwiftLint and SwiftFormat
         run: |
           brew install swiftlint
-          brew install swiftformat || brew upgrade swiftformat
+          brew upgrade swiftformat
 
       - name: SwiftLint
         run: swiftlint --strict --reporter github-actions-logging .
