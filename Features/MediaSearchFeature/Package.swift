@@ -22,6 +22,7 @@ let package = Package(
         .package(path: "../../AppDependencies"),
         .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Core/DesignSystem"),
+        .package(path: "../../Core/TCAFoundation"),
         .package(path: "../../Contexts/PopcornGenres"),
         .package(path: "../../Contexts/PopcornSearch"),
         .package(
@@ -36,6 +37,7 @@ let package = Package(
             dependencies: [
                 "AppDependencies",
                 "DesignSystem",
+                "TCAFoundation",
                 .product(name: "GenresApplication", package: "PopcornGenres"),
                 .product(name: "SearchApplication", package: "PopcornSearch"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")

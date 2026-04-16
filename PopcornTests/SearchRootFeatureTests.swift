@@ -21,8 +21,8 @@ struct SearchRootFeatureTests {
     private typealias Feature = SearchRootFeature
 
     @Test("tvSeriesDetails navigate seasonDetails appends tvSeasonDetails to path")
-    func tvSeriesDetailsNavigateSeasonDetailsAppendsToPath() {
-        let store = Store(
+    func tvSeriesDetailsNavigateSeasonDetailsAppendsToPath() async {
+        let store = TestStore(
             initialState: {
                 var state = Feature.State()
                 state.path.append(
@@ -33,26 +33,27 @@ struct SearchRootFeatureTests {
         ) {
             Feature()
         }
+        store.exhaustivity = .off
 
-        store.send(.path(.element(
+        await store.send(.path(.element(
             id: 0,
             action: .tvSeriesDetails(
                 .navigate(.seasonDetails(tvSeriesID: 66732, seasonNumber: 1))
             )
         )))
 
-        guard case .tvSeasonDetails(let seasonState) = store.path.last else {
+        guard case .tvSeasonDetails(let seasonState) = store.state.path.last else {
             Issue.record("Expected tvSeasonDetails as last path element")
             return
         }
-        #expect(store.path.count == 2)
+        #expect(store.state.path.count == 2)
         #expect(seasonState.tvSeriesID == 66732)
         #expect(seasonState.seasonNumber == 1)
     }
 
     @Test("tvSeriesDetails navigate personDetails appends personDetails to path")
-    func tvSeriesDetailsNavigatePersonDetailsAppendsToPath() {
-        let store = Store(
+    func tvSeriesDetailsNavigatePersonDetailsAppendsToPath() async {
+        let store = TestStore(
             initialState: {
                 var state = Feature.State()
                 state.path.append(
@@ -63,24 +64,25 @@ struct SearchRootFeatureTests {
         ) {
             Feature()
         }
+        store.exhaustivity = .off
 
-        store.send(.path(.element(
+        await store.send(.path(.element(
             id: 0,
             action: .tvSeriesDetails(
                 .navigate(.personDetails(id: 17419))
             )
         )))
 
-        guard case .personDetails = store.path.last else {
+        guard case .personDetails = store.state.path.last else {
             Issue.record("Expected personDetails as last path element")
             return
         }
-        #expect(store.path.count == 2)
+        #expect(store.state.path.count == 2)
     }
 
     @Test("tvSeasonDetails navigate episodeDetails appends tvEpisodeDetails to path")
-    func tvSeasonDetailsNavigateEpisodeDetailsAppendsToPath() {
-        let store = Store(
+    func tvSeasonDetailsNavigateEpisodeDetailsAppendsToPath() async {
+        let store = TestStore(
             initialState: {
                 var state = Feature.State()
                 state.path.append(
@@ -93,8 +95,9 @@ struct SearchRootFeatureTests {
         ) {
             Feature()
         }
+        store.exhaustivity = .off
 
-        store.send(.path(.element(
+        await store.send(.path(.element(
             id: 0,
             action: .tvSeasonDetails(
                 .navigate(
@@ -103,19 +106,19 @@ struct SearchRootFeatureTests {
             )
         )))
 
-        guard case .tvEpisodeDetails(let episodeState) = store.path.last else {
+        guard case .tvEpisodeDetails(let episodeState) = store.state.path.last else {
             Issue.record("Expected tvEpisodeDetails as last path element")
             return
         }
-        #expect(store.path.count == 2)
+        #expect(store.state.path.count == 2)
         #expect(episodeState.tvSeriesID == 1396)
         #expect(episodeState.seasonNumber == 1)
         #expect(episodeState.episodeNumber == 1)
     }
 
     @Test("tvSeriesDetails navigate castAndCrew appends tvSeriesCastAndCrew to path")
-    func tvSeriesDetailsNavigateCastAndCrewAppendsToPath() {
-        let store = Store(
+    func tvSeriesDetailsNavigateCastAndCrewAppendsToPath() async {
+        let store = TestStore(
             initialState: {
                 var state = Feature.State()
                 state.path.append(
@@ -126,25 +129,26 @@ struct SearchRootFeatureTests {
         ) {
             Feature()
         }
+        store.exhaustivity = .off
 
-        store.send(.path(.element(
+        await store.send(.path(.element(
             id: 0,
             action: .tvSeriesDetails(
                 .navigate(.castAndCrew(tvSeriesID: 66732))
             )
         )))
 
-        guard case .tvSeriesCastAndCrew(let castAndCrewState) = store.path.last else {
+        guard case .tvSeriesCastAndCrew(let castAndCrewState) = store.state.path.last else {
             Issue.record("Expected tvSeriesCastAndCrew as last path element")
             return
         }
-        #expect(store.path.count == 2)
+        #expect(store.state.path.count == 2)
         #expect(castAndCrewState.tvSeriesID == 66732)
     }
 
     @Test("tvSeriesCastAndCrew navigate personDetails appends personDetails to path")
-    func tvSeriesCastAndCrewNavigatePersonDetailsAppendsToPath() {
-        let store = Store(
+    func tvSeriesCastAndCrewNavigatePersonDetailsAppendsToPath() async {
+        let store = TestStore(
             initialState: {
                 var state = Feature.State()
                 state.path.append(
@@ -155,19 +159,20 @@ struct SearchRootFeatureTests {
         ) {
             Feature()
         }
+        store.exhaustivity = .off
 
-        store.send(.path(.element(
+        await store.send(.path(.element(
             id: 0,
             action: .tvSeriesCastAndCrew(
                 .navigate(.personDetails(id: 17419, transitionID: nil))
             )
         )))
 
-        guard case .personDetails = store.path.last else {
+        guard case .personDetails = store.state.path.last else {
             Issue.record("Expected personDetails as last path element")
             return
         }
-        #expect(store.path.count == 2)
+        #expect(store.state.path.count == 2)
     }
 
 }

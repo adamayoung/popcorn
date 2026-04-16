@@ -9,6 +9,7 @@ import AppDependencies
 import ComposableArchitecture
 import Foundation
 import OSLog
+import TCAFoundation
 
 @Reducer
 public struct MediaSearchFeature: Sendable {
@@ -19,7 +20,7 @@ public struct MediaSearchFeature: Sendable {
     @Dependency(\.mainQueue) private var mainQueue
 
     @ObservableState
-    public struct State: Sendable {
+    public struct State: Equatable, Sendable {
 
         var viewState: ViewState
         var query: String
@@ -43,17 +44,17 @@ public struct MediaSearchFeature: Sendable {
         case search
     }
 
-    public enum ViewState: Sendable {
+    public enum ViewState: Equatable, Sendable {
         case initial
         case loading
         case genres(GenresViewSnapshot)
         case searchHistory(SearchHistoryViewSnapshot)
         case searchResults(SearchResultsViewSnapshot)
         case noSearchResults(NoSearchResultsViewSnapshot)
-        case error(Error)
+        case error(ViewStateError)
     }
 
-    public struct GenresViewSnapshot: Sendable {
+    public struct GenresViewSnapshot: Equatable, Sendable {
         public let genres: [Genre]
 
         public init(genres: [Genre] = []) {
@@ -61,7 +62,7 @@ public struct MediaSearchFeature: Sendable {
         }
     }
 
-    public struct SearchHistoryViewSnapshot: Sendable {
+    public struct SearchHistoryViewSnapshot: Equatable, Sendable {
         public let media: [MediaPreview]
 
         public init(media: [MediaPreview] = []) {
@@ -69,7 +70,7 @@ public struct MediaSearchFeature: Sendable {
         }
     }
 
-    public struct SearchResultsViewSnapshot: Sendable {
+    public struct SearchResultsViewSnapshot: Equatable, Sendable {
         public let query: String
         public let results: [MediaPreview]
 
@@ -79,7 +80,7 @@ public struct MediaSearchFeature: Sendable {
         }
     }
 
-    public struct NoSearchResultsViewSnapshot: Sendable {
+    public struct NoSearchResultsViewSnapshot: Equatable, Sendable {
         public let query: String
 
         public init(query: String = "") {

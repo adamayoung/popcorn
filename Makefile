@@ -16,6 +16,10 @@ ENV_FILE ?= .env
 -include $(ENV_FILE)
 
 XCODEBUILD = set -o pipefail && NSUnbufferedIO=YES xcodebuild
+# -skipMacroValidation: Xcode 26.4 prompts interactively to trust unvalidated macros
+# from swift-syntax 603 (TCA, swift-dependencies, etc.). This flag bypasses the prompt
+# so builds run non-interactively in CI and local `make` runs. Remove once upstream
+# packages ship with validated macro fingerprints.
 XCODEBUILD_FLAGS = -scheme $(SCHEME) -destination $(DESTINATION) -parallelizeTargets -skipMacroValidation
 XCODEBUILD_FLAGS_MACOS = -scheme $(SCHEME) -destination $(DESTINATION_MACOS) -parallelizeTargets -skipMacroValidation
 

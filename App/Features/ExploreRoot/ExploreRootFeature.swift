@@ -23,7 +23,7 @@ import TVSeriesIntelligenceFeature
 struct ExploreRootFeature {
 
     @ObservableState
-    struct State {
+    struct State: Equatable {
         var path = StackState<Path.State>()
         var explore = ExploreFeature.State()
 
@@ -199,3 +199,5 @@ struct ExploreRootFeature {
     }
 
 }
+
+extension ExploreRootFeature.Path.State: Equatable {}

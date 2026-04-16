@@ -21,7 +21,7 @@ public struct MovieCastAndCrewFeature: Sendable {
     @Dependency(\.observability) private var observability
 
     @ObservableState
-    public struct State: Sendable {
+    public struct State: Equatable, Sendable {
         let movieID: Int
         public var viewState: ViewState<ViewSnapshot>
 
