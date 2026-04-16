@@ -27,8 +27,8 @@ struct GamesRootView: View {
         }
         #if !os(macOS)
         .fullScreenCover(
-            store: store.scope(
-                state: \.$plotRemixGame,
+            item: $store.scope(
+                state: \.plotRemixGame,
                 action: \.plotRemixGame
             )
         ) { store in
@@ -36,8 +36,8 @@ struct GamesRootView: View {
         }
         #else
         .sheet(
-                    store: store.scope(
-                        state: \.$plotRemixGame,
+                    item: $store.scope(
+                        state: \.plotRemixGame,
                         action: \.plotRemixGame
                     )
                 ) { store in

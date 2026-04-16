@@ -53,6 +53,7 @@ public struct StretchyHeaderScrollView<Header: View, HeaderOverlay: View, Conten
             }
         }
         .flexibleHeaderScrollView(onChange: onScrollGeometryChange)
+        .scrollEdgeEffectStyle(.none, for: .top)
         .ignoresSafeArea(edges: .top)
     }
 

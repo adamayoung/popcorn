@@ -23,7 +23,7 @@ import TVSeriesIntelligenceFeature
 struct SearchRootFeature {
 
     @ObservableState
-    struct State {
+    struct State: Equatable {
         var path = StackState<Path.State>()
         var mediaSearch = MediaSearchFeature.State()
 
@@ -188,3 +188,7 @@ struct SearchRootFeature {
     }
 
 }
+
+/// Required so `SearchRootFeature.State` can synthesise `Equatable` for `TestStore`.
+/// Every `Path` case's associated `State` must also conform to `Equatable`.
+extension SearchRootFeature.Path.State: Equatable {}

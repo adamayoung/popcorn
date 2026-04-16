@@ -23,7 +23,7 @@ import TVSeriesIntelligenceFeature
 struct ExploreRootFeature {
 
     @ObservableState
-    struct State {
+    struct State: Equatable {
         var path = StackState<Path.State>()
         var explore = ExploreFeature.State()
 
@@ -199,3 +199,7 @@ struct ExploreRootFeature {
     }
 
 }
+
+/// Required so `ExploreRootFeature.State` can synthesise `Equatable` for `TestStore`.
+/// Every `Path` case's associated `State` must also conform to `Equatable`.
+extension ExploreRootFeature.Path.State: Equatable {}

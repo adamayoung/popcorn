@@ -26,7 +26,7 @@ public struct ExploreFeature: Sendable {
     ///
     /// Tracks the current view state and provides computed properties for loading and ready states.
     @ObservableState
-    public struct State {
+    public struct State: Equatable, Sendable {
         /// The current view state of the explore feature.
         public var viewState: ViewState<ViewSnapshot>
 
