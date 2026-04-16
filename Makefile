@@ -3,7 +3,7 @@ TEST_TARGET ?= PopcornTests
 TEST_PLAN ?= PopcornUnitTests
 SCHEME ?= $(TARGET)
 PLATFORM ?= ios
-DESTINATION ?= 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.2'
+DESTINATION ?= 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.4'
 DESTINATION_MACOS ?= 'platform=macOS'
 SNAPSHOT_TEST_PLAN ?= PopcornSnapshotTests
 UI_TEST_PLAN ?= PopcornUITests
@@ -16,8 +16,8 @@ ENV_FILE ?= .env
 -include $(ENV_FILE)
 
 XCODEBUILD = set -o pipefail && NSUnbufferedIO=YES xcodebuild
-XCODEBUILD_FLAGS = -scheme $(SCHEME) -destination $(DESTINATION) -parallelizeTargets
-XCODEBUILD_FLAGS_MACOS = -scheme $(SCHEME) -destination $(DESTINATION_MACOS) -parallelizeTargets
+XCODEBUILD_FLAGS = -scheme $(SCHEME) -destination $(DESTINATION) -parallelizeTargets -skipMacroValidation
+XCODEBUILD_FLAGS_MACOS = -scheme $(SCHEME) -destination $(DESTINATION_MACOS) -parallelizeTargets -skipMacroValidation
 
 .PHONY: clean
 clean:

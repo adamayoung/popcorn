@@ -45,6 +45,7 @@ public struct Carousel<Content: View>: View {
             .scrollTargetLayout()
         }
         .scrollTargetBehavior(.viewAligned)
+        .scrollClipDisabled()
     }
 
 }
