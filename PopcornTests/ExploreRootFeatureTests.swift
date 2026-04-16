@@ -33,7 +33,7 @@ struct ExploreRootFeatureTests {
         ) {
             Feature()
         }
-        store.exhaustivity = .off
+        store.exhaustivity = .off(showSkippedAssertions: true)
 
         await store.send(.path(.element(
             id: 0,
@@ -64,7 +64,7 @@ struct ExploreRootFeatureTests {
         ) {
             Feature()
         }
-        store.exhaustivity = .off
+        store.exhaustivity = .off(showSkippedAssertions: true)
 
         await store.send(.path(.element(
             id: 0,
@@ -95,7 +95,7 @@ struct ExploreRootFeatureTests {
         ) {
             Feature()
         }
-        store.exhaustivity = .off
+        store.exhaustivity = .off(showSkippedAssertions: true)
 
         await store.send(.path(.element(
             id: 0,
@@ -129,7 +129,7 @@ struct ExploreRootFeatureTests {
         ) {
             Feature()
         }
-        store.exhaustivity = .off
+        store.exhaustivity = .off(showSkippedAssertions: true)
 
         await store.send(.path(.element(
             id: 0,
@@ -159,7 +159,7 @@ struct ExploreRootFeatureTests {
         ) {
             Feature()
         }
-        store.exhaustivity = .off
+        store.exhaustivity = .off(showSkippedAssertions: true)
 
         await store.send(.path(.element(
             id: 0,

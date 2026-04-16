@@ -189,4 +189,6 @@ struct SearchRootFeature {
 
 }
 
+/// Required so `SearchRootFeature.State` can synthesise `Equatable` for `TestStore`.
+/// Every `Path` case's associated `State` must also conform to `Equatable`.
 extension SearchRootFeature.Path.State: Equatable {}

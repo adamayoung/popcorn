@@ -200,4 +200,6 @@ struct ExploreRootFeature {
 
 }
 
+/// Required so `ExploreRootFeature.State` can synthesise `Equatable` for `TestStore`.
+/// Every `Path` case's associated `State` must also conform to `Equatable`.
 extension ExploreRootFeature.Path.State: Equatable {}
