@@ -17,7 +17,7 @@ public struct MediaSearchFeature: Sendable {
     private static let logger = Logger.mediaSearch
 
     @Dependency(\.mediaSearchClient) private var client
-    @Dependency(\.mainQueue) private var mainQueue
+    @Dependency(\.continuousClock) private var clock
 
     @ObservableState
     public struct State: Equatable, Sendable {
@@ -147,14 +147,11 @@ public struct MediaSearchFeature: Sendable {
                 if query.isEmpty {
                     effect = .cancel(id: CancelID.search)
                 } else {
-                    effect = .run { send in
+                    effect = .run { [clock] send in
+                        try await clock.sleep(for: .milliseconds(300))
                         await send(.search)
                     }
-                    .debounce(
-                        id: CancelID.search,
-                        for: .milliseconds(300),
-                        scheduler: mainQueue
-                    )
+                    .cancellable(id: CancelID.search, cancelInFlight: true)
                 }
 
             case .focusChanged(let field):
