@@ -148,7 +148,11 @@ public struct MediaSearchFeature: Sendable {
                     effect = .cancel(id: CancelID.search)
                 } else {
                     effect = .run { [clock] send in
-                        try await clock.sleep(for: .milliseconds(300))
+                        do {
+                            try await clock.sleep(for: .milliseconds(300))
+                        } catch is CancellationError {
+                            return
+                        }
                         await send(.search)
                     }
                     .cancellable(id: CancelID.search, cancelInFlight: true)

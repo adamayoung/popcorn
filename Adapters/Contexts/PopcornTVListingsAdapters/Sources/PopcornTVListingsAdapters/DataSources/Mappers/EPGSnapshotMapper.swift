@@ -28,6 +28,9 @@ struct EPGSnapshotMapper {
         channels.reserveCapacity(response.channels.count)
 
         var programmes: [TVProgramme] = []
+        // Guards against duplicate programme IDs in the feed which would otherwise
+        // violate `@Attribute(.unique)` on `TVProgrammeEntity.programmeID` and abort sync.
+        var seenProgrammeIDs = Set<String>()
 
         for channelDTO in response.channels {
             let channel = channelMapper.map(channelDTO)
@@ -37,6 +40,9 @@ struct EPGSnapshotMapper {
                 for programmeDTO in schedule.programmes {
                     let programme = programmeMapper.map(programmeDTO, channelID: channel.id)
                     guard programme.endTime > referenceDate else {
+                        continue
+                    }
+                    guard seenProgrammeIDs.insert(programme.id).inserted else {
                         continue
                     }
                     programmes.append(programme)

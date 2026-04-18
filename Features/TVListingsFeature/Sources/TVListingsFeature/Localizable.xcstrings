@@ -90,6 +90,17 @@
         }
       }
     },
+    "TV_LISTINGS_SYNC_ERROR_DISMISS_HINT" : {
+      "comment" : "Accessibility hint instructing the user to tap to dismiss the sync error banner.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double tap to dismiss"
+          }
+        }
+      }
+    },
     "TV_LISTINGS_SYNC_ERROR_NETWORK" : {
       "comment" : "Error message shown when the TV listings feed can’t be reached.",
       "localizations" : {

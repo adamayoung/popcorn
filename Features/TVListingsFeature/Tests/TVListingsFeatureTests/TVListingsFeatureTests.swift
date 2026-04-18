@@ -190,6 +190,19 @@ struct TVListingsFeatureTests {
         }
     }
 
+    @Test("dismissSyncError clears the error kind")
+    func dismissSyncErrorClearsTheErrorKind() async {
+        let store = TestStore(
+            initialState: TVListingsFeature.State(lastSyncErrorKind: .network)
+        ) {
+            TVListingsFeature()
+        }
+
+        await store.send(.dismissSyncError) {
+            $0.lastSyncErrorKind = nil
+        }
+    }
+
     @Test("syncTapped is a no-op while already syncing")
     func syncTappedIsNoOpWhileAlreadySyncing() async {
         let store = TestStore(

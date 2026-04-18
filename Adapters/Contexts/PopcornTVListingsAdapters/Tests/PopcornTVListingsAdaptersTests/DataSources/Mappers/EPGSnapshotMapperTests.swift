@@ -91,6 +91,35 @@ struct EPGSnapshotMapperTests {
         #expect(snapshot.programmes.allSatisfy { $0.endTime > midFixture })
     }
 
+    // MARK: - Duplicate programme handling
+
+    @Test("deduplicates programmes that share the same composite ID")
+    func deduplicatesProgrammesThatShareTheSameCompositeID() throws {
+        let json = """
+        {
+          "channels": [{
+            "sid": "3858",
+            "name": "Sky",
+            "isHD": false,
+            "channelNumbers": [],
+            "schedules": [{
+              "date": "20260418",
+              "programmes": [
+                {"title": "Show", "startTime": 1776461400, "duration": 1800},
+                {"title": "Show (dup)", "startTime": 1776461400, "duration": 1800}
+              ]
+            }]
+          }]
+        }
+        """
+        let response = try JSONDecoder().decode(EPGResponseDTO.self, from: Data(json.utf8))
+
+        let snapshot = mapper.map(response, referenceDate: beforeFixture)
+
+        #expect(snapshot.programmes.count == 1)
+        #expect(snapshot.programmes.first?.title == "Show")
+    }
+
     @Test("keeps channels whose only programmes have already finished")
     func keepsChannelsWhoseOnlyProgrammesHaveFinished() throws {
         let data = try FixtureLoader.data(named: "epg-sample")

@@ -214,6 +214,30 @@ struct SwiftDataTVListingsLocalDataSourceTests {
         #expect(Set(result.map(\.title)) == Set(["inside-start", "inside-midday"]))
     }
 
+    @Test("programmes includes a late-night show that runs across midnight into the requested day")
+    func programmesIncludesShowRunningAcrossMidnight() async throws {
+        let dataSource = SwiftDataTVListingsLocalDataSource(modelContainer: modelContainer)
+
+        // Programme starts 2026-04-17 23:30 BST, runs 90 minutes — i.e. ends 2026-04-18 01:00 BST.
+        let lateNightStart = ukDate(year: 2026, month: 4, day: 17, hour: 23, minute: 30)
+        try await dataSource.replaceAll(
+            channels: [],
+            programmes: [
+                TVProgramme.mock(
+                    channelID: "BBC",
+                    start: lateNightStart,
+                    duration: 5400,
+                    title: "across-midnight"
+                )
+            ]
+        )
+
+        let nextDayMidday = ukDate(year: 2026, month: 4, day: 18, hour: 12)
+        let result = try await dataSource.programmes(forChannelID: "BBC", onDate: nextDayMidday)
+
+        #expect(result.map(\.title) == ["across-midnight"])
+    }
+
     @Test("programmes are returned in ascending start-time order")
     func programmesAreReturnedInAscendingStartTimeOrder() async throws {
         let dataSource = SwiftDataTVListingsLocalDataSource(modelContainer: modelContainer)

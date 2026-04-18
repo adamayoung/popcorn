@@ -56,8 +56,8 @@ actor SwiftDataTVListingsLocalDataSource: TVListingsLocalDataSource, ModelActor 
 
         let predicate = #Predicate<TVProgrammeEntity> { entity in
             entity.channelID == channelID
-                && entity.startTime >= dayStart
                 && entity.startTime < dayEnd
+                && entity.endTime > dayStart
         }
 
         var descriptor = FetchDescriptor<TVProgrammeEntity>(
@@ -84,10 +84,7 @@ actor SwiftDataTVListingsLocalDataSource: TVListingsLocalDataSource, ModelActor 
             entity.startTime <= date && entity.endTime > date
         }
 
-        var descriptor = FetchDescriptor<TVProgrammeEntity>(
-            predicate: predicate,
-            sortBy: [SortDescriptor(\.channelID)]
-        )
+        var descriptor = FetchDescriptor<TVProgrammeEntity>(predicate: predicate)
         descriptor.relationshipKeyPathsForPrefetching = []
 
         let entities: [TVProgrammeEntity]
@@ -134,7 +131,8 @@ actor SwiftDataTVListingsLocalDataSource: TVListingsLocalDataSource, ModelActor 
 
             try modelContext.save()
         } catch let error {
-            modelContext.rollback()
+            // Batch-deletes above already wrote directly to the persistent store,
+            // so rollback() can't undo them. Staged inserts are abandoned with this throw.
             throw .persistence(error)
         }
     }

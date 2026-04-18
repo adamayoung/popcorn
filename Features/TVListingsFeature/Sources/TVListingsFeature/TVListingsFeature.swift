@@ -79,6 +79,7 @@ public struct TVListingsFeature: Sendable {
         case syncTapped
         case syncFinished
         case syncFailed(ErrorKind)
+        case dismissSyncError
     }
 
     public init() {}
@@ -142,6 +143,10 @@ public struct TVListingsFeature: Sendable {
             case .syncFailed(let kind):
                 state.isSyncing = false
                 state.lastSyncErrorKind = kind
+                return .none
+
+            case .dismissSyncError:
+                state.lastSyncErrorKind = nil
                 return .none
             }
         }

@@ -120,16 +120,22 @@ public struct TVListingsView: View {
     }
 
     private func errorBanner(kind: TVListingsFeature.ErrorKind) -> some View {
-        Text(kind.localizedMessage)
-            .font(.footnote)
-            .foregroundStyle(.white)
-            .padding(.spacing12)
-            .frame(maxWidth: .infinity)
-            .background(.red)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .padding(.spacing16)
-            .accessibilityAddTraits(.isStaticText)
-            .accessibilityIdentifier("tvListings.syncError")
+        Button {
+            store.send(.dismissSyncError)
+        } label: {
+            Text(kind.localizedMessage)
+                .font(.footnote)
+                .foregroundStyle(.white)
+                .padding(.spacing12)
+                .frame(maxWidth: .infinity)
+                .background(.red)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .padding(.spacing16)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(Text(kind.localizedMessage))
+        .accessibilityHint(Text("TV_LISTINGS_SYNC_ERROR_DISMISS_HINT", bundle: .module))
+        .accessibilityIdentifier("tvListings.syncError")
     }
 
 }
@@ -155,7 +161,8 @@ private struct NowPlayingRow: View {
                     .fontWeight(.semibold)
 
                 Text(
-                    "\(item.programme.startTime.formatted(Self.timeFormatStyle)) – \(item.programme.endTime.formatted(Self.timeFormatStyle))"
+                    "\(item.programme.startTime.formatted(Self.timeFormatStyle)) – \(item.programme.endTime.formatted(Self.timeFormatStyle))",
+                    bundle: .module
                 )
                 .font(.caption)
                 .foregroundStyle(.secondary)
