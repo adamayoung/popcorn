@@ -14,9 +14,11 @@ struct TVListingsRootView: View {
     @Bindable var store: StoreOf<TVListingsRootFeature>
 
     var body: some View {
-        TVListingsView(
-            store: store.scope(state: \.tvListings, action: \.tvListings)
-        )
+        NavigationStack {
+            TVListingsView(
+                store: store.scope(state: \.tvListings, action: \.tvListings)
+            )
+        }
     }
 
 }

@@ -121,6 +121,7 @@
 				Contexts/PopcornPlotRemixGameAdapters,
 				Contexts/PopcornSearchAdapters,
 				Contexts/PopcornTrendingAdapters,
+				Contexts/PopcornTVListingsAdapters,
 				Contexts/PopcornTVSeriesAdapters,
 				Platform/FeatureAccessAdapters,
 				Platform/ObservabilityAdapters,
@@ -150,6 +151,7 @@
 				PopcornPlotRemixGame,
 				PopcornSearch,
 				PopcornTrending,
+				PopcornTVListings,
 				PopcornTVSeries,
 			);
 			target = 664551852ECB7C2100250D87 /* Popcorn */;

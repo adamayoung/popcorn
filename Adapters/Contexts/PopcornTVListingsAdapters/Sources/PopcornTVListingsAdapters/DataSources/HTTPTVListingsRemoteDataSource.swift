@@ -14,6 +14,18 @@ public final class HTTPTVListingsRemoteDataSource: TVListingsRemoteDataSource {
 
     public static let defaultEPGURL = makeDefaultEPGURL()
 
+    ///
+    /// Default session used when callers don't provide one. Bounded timeouts keep a stalled
+    /// download from hanging for the 7-day resource default on `URLSession.shared`.
+    ///
+    public static let defaultURLSession: URLSession = {
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 30
+        configuration.timeoutIntervalForResource = 120
+        configuration.waitsForConnectivity = true
+        return URLSession(configuration: configuration)
+    }()
+
     private static let logger = Logger(
         subsystem: "uk.co.adam-young.Popcorn.TVListings",
         category: "RemoteDataSource"
@@ -25,7 +37,7 @@ public final class HTTPTVListingsRemoteDataSource: TVListingsRemoteDataSource {
     private let mapper = EPGSnapshotMapper()
 
     public init(
-        session: URLSession = .shared,
+        session: URLSession = HTTPTVListingsRemoteDataSource.defaultURLSession,
         epgURL: URL = HTTPTVListingsRemoteDataSource.defaultEPGURL,
         now: @escaping @Sendable () -> Date = { .now }
     ) {

@@ -18,7 +18,7 @@ public final class PopcornTVListingsAdaptersFactory: Sendable {
     private let modelContainer: ModelContainer?
 
     public init(
-        session: URLSession = .shared,
+        session: URLSession = HTTPTVListingsRemoteDataSource.defaultURLSession,
         epgURL: URL = HTTPTVListingsRemoteDataSource.defaultEPGURL,
         now: @escaping @Sendable () -> Date = { .now },
         modelContainer: ModelContainer? = nil
