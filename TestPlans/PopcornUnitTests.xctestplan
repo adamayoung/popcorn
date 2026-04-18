@@ -537,6 +537,41 @@
         "identifier" : "CrewOrderingTests",
         "name" : "CrewOrderingTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornTVListings",
+        "identifier" : "TVListingsDomainTests",
+        "name" : "TVListingsDomainTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornTVListings",
+        "identifier" : "TVListingsApplicationTests",
+        "name" : "TVListingsApplicationTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornTVListings",
+        "identifier" : "TVListingsInfrastructureTests",
+        "name" : "TVListingsInfrastructureTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Contexts\/PopcornTVListings",
+        "identifier" : "TVListingsCompositionTests",
+        "name" : "TVListingsCompositionTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Adapters\/Contexts\/PopcornTVListingsAdapters",
+        "identifier" : "PopcornTVListingsAdaptersTests",
+        "name" : "PopcornTVListingsAdaptersTests"
+      }
     }
   ],
   "version" : 1
