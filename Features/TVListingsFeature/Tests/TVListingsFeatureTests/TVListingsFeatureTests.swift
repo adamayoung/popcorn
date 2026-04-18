@@ -7,20 +7,109 @@
 
 import ComposableArchitecture
 import Foundation
+import TCAFoundation
 import Testing
 @testable import TVListingsApplication
+import TVListingsDomain
 @testable import TVListingsFeature
 
 @MainActor
 @Suite("TVListingsFeature")
 struct TVListingsFeatureTests {
 
-    @Test("syncTapped starts syncing and resolves on success")
-    func syncTappedStartsSyncingAndResolvesOnSuccess() async {
+    // MARK: - fetch
+
+    @Test("didAppear triggers fetch and produces a ready snapshot joining programmes to channels")
+    func didAppearTriggersFetchAndProducesReadySnapshot() async {
+        let bbc = TVChannel(
+            id: "BBC",
+            name: "BBC",
+            isHD: false,
+            logoURL: nil,
+            channelNumbers: []
+        )
+        let itv = TVChannel(
+            id: "ITV",
+            name: "ITV",
+            isHD: false,
+            logoURL: nil,
+            channelNumbers: []
+        )
+        let programme = TVProgramme(
+            id: "BBC:1000",
+            channelID: "BBC",
+            title: "News",
+            description: "",
+            startTime: Date(timeIntervalSince1970: 1000),
+            endTime: Date(timeIntervalSince1970: 1900),
+            duration: 900,
+            episodeNumber: nil,
+            seasonNumber: nil,
+            imageURL: nil,
+            tmdbTVSeriesID: nil,
+            tmdbMovieID: nil
+        )
+        let store = TestStore(initialState: TVListingsFeature.State()) {
+            TVListingsFeature()
+        } withDependencies: {
+            $0.tvListingsClient.fetchChannels = { [bbc, itv] }
+            $0.tvListingsClient.fetchNowPlayingProgrammes = { [programme] }
+        }
+
+        await store.send(.didAppear)
+        await store.receive(\.fetch) {
+            $0.viewState = .loading
+        }
+        await store.receive(\.nowPlayingLoaded) {
+            $0.viewState = .ready(
+                TVListingsFeature.ViewSnapshot(
+                    items: [
+                        TVListingsFeature.NowPlayingItem(channel: bbc, programme: programme)
+                    ]
+                )
+            )
+        }
+    }
+
+    @Test("fetch surfaces load failures as an error view state when no snapshot is present yet")
+    func fetchSurfacesLoadFailureAsErrorState() async {
+        struct LoadFailure: Error {}
+
+        let store = TestStore(initialState: TVListingsFeature.State()) {
+            TVListingsFeature()
+        } withDependencies: {
+            $0.tvListingsClient.fetchChannels = { throw LoadFailure() }
+            $0.tvListingsClient.fetchNowPlayingProgrammes = { [] }
+        }
+
+        await store.send(.fetch) {
+            $0.viewState = .loading
+        }
+        await store.receive(\.nowPlayingLoadFailed) {
+            $0.viewState = .error(ViewStateError(LoadFailure()))
+        }
+    }
+
+    @Test("didAppear is a no-op once a snapshot has already been loaded")
+    func didAppearIsNoOpWhenSnapshotAlreadyLoaded() async {
+        let state = TVListingsFeature.State(
+            viewState: .ready(TVListingsFeature.ViewSnapshot())
+        )
+        let store = TestStore(initialState: state) { TVListingsFeature() }
+
+        await store.send(.didAppear)
+    }
+
+    // MARK: - sync
+
+    @Test("syncTapped starts syncing, and syncFinished refreshes the listings")
+    func syncTappedResolvesOnSuccessAndReloads() async {
         let store = TestStore(initialState: TVListingsFeature.State()) {
             TVListingsFeature()
         } withDependencies: {
             $0.tvListingsClient.sync = {}
+            $0.tvListingsClient.fetchChannels = { [] }
+            $0.tvListingsClient.fetchNowPlayingProgrammes = { [] }
         }
 
         await store.send(.syncTapped) {
@@ -31,6 +120,14 @@ struct TVListingsFeatureTests {
         await store.receive(\.syncFinished) {
             $0.isSyncing = false
             $0.lastSyncErrorKind = nil
+        }
+
+        await store.receive(\.fetch) {
+            $0.viewState = .loading
+        }
+
+        await store.receive(\.nowPlayingLoaded) {
+            $0.viewState = .ready(TVListingsFeature.ViewSnapshot(items: []))
         }
     }
 
@@ -112,6 +209,8 @@ struct TVListingsFeatureTests {
             TVListingsFeature()
         } withDependencies: {
             $0.tvListingsClient.sync = {}
+            $0.tvListingsClient.fetchChannels = { [] }
+            $0.tvListingsClient.fetchNowPlayingProgrammes = { [] }
         }
 
         await store.send(.syncTapped) {
@@ -121,6 +220,14 @@ struct TVListingsFeatureTests {
 
         await store.receive(\.syncFinished) {
             $0.isSyncing = false
+        }
+
+        await store.receive(\.fetch) {
+            $0.viewState = .loading
+        }
+
+        await store.receive(\.nowPlayingLoaded) {
+            $0.viewState = .ready(TVListingsFeature.ViewSnapshot(items: []))
         }
     }
 

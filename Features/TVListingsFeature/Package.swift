@@ -35,6 +35,7 @@ let package = Package(
                 "DesignSystem",
                 "TCAFoundation",
                 .product(name: "TVListingsApplication", package: "PopcornTVListings"),
+                .product(name: "TVListingsDomain", package: "PopcornTVListings"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ],
             resources: [.process("Localizable.xcstrings")]
@@ -43,6 +44,7 @@ let package = Package(
             name: "TVListingsFeatureTests",
             dependencies: [
                 "TVListingsFeature",
+                .product(name: "TVListingsDomain", package: "PopcornTVListings"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         )
