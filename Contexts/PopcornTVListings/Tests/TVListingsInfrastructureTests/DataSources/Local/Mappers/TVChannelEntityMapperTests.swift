@@ -18,16 +18,15 @@ struct TVChannelEntityMapperTests {
 
     @Test("maps entity to domain")
     func mapsEntityToDomain() {
-        let numberEntity = TVChannelNumberEntity(channelNumber: "101", subbouquetIDs: [1, 4])
         let entity = TVChannelEntity(
             channelID: "BBC",
             name: "BBC One HD",
             isHD: true,
-            logoURL: URL(string: "https://example.com/logo.png"),
-            channelNumbers: [numberEntity]
+            logoURL: URL(string: "https://example.com/logo.png")
         )
+        let numbers = [TVChannelNumberEntity(channelID: "BBC", channelNumber: "101", subbouquetIDs: [1, 4])]
 
-        let channel = mapper.map(entity)
+        let channel = mapper.map(entity, numbers: numbers)
 
         #expect(channel.id == "BBC")
         #expect(channel.name == "BBC One HD")
@@ -38,8 +37,8 @@ struct TVChannelEntityMapperTests {
         #expect(channel.channelNumbers.first?.subbouquetIDs == [1, 4])
     }
 
-    @Test("maps domain to entity")
-    func mapsDomainToEntity() {
+    @Test("maps domain to entity without channel numbers")
+    func mapsDomainToEntityWithoutChannelNumbers() {
         let channel = TVChannel(
             id: "ITV",
             name: "ITV1 HD",
@@ -54,22 +53,41 @@ struct TVChannelEntityMapperTests {
         #expect(entity.name == "ITV1 HD")
         #expect(entity.isHD == true)
         #expect(entity.logoURL == URL(string: "https://example.com/itv.png"))
-        #expect(entity.channelNumbers.count == 1)
-        #expect(entity.channelNumbers.first?.channelNumber == "103")
-        #expect(entity.channelNumbers.first?.subbouquetIDs == [1])
     }
 
-    @Test("roundtrip preserves values")
-    func roundtripPreservesValues() {
+    @Test("mapNumbers produces entities carrying the channel id foreign key")
+    func mapNumbersProducesEntitiesWithChannelIDForeignKey() {
+        let channel = TVChannel(
+            id: "ITV",
+            name: "ITV",
+            isHD: false,
+            logoURL: nil,
+            channelNumbers: [
+                TVChannelNumber(channelNumber: "103", subbouquetIDs: [1]),
+                TVChannelNumber(channelNumber: "3", subbouquetIDs: [2, 3])
+            ]
+        )
+
+        let numbers = mapper.mapNumbers(for: channel)
+
+        #expect(numbers.count == 2)
+        #expect(numbers.allSatisfy { $0.channelID == "ITV" })
+        #expect(numbers.map(\.channelNumber) == ["103", "3"])
+    }
+
+    @Test("roundtrip preserves values when numbers are supplied separately")
+    func roundtripPreservesValuesWhenNumbersSuppliedSeparately() {
         let original = TVChannel(
             id: "C4",
             name: "Channel 4 HD",
             isHD: true,
             logoURL: nil,
-            channelNumbers: []
+            channelNumbers: [TVChannelNumber(channelNumber: "104", subbouquetIDs: [1, 2])]
         )
 
-        let roundtripped = mapper.map(mapper.map(original))
+        let entity = mapper.map(original)
+        let numbers = mapper.mapNumbers(for: original)
+        let roundtripped = mapper.map(entity, numbers: numbers)
 
         #expect(roundtripped == original)
     }

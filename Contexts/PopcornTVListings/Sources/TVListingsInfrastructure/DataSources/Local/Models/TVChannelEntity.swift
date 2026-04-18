@@ -15,20 +15,17 @@ final class TVChannelEntity: Equatable {
     var name: String
     var isHD: Bool
     var logoURL: URL?
-    @Relationship(deleteRule: .cascade) var channelNumbers: [TVChannelNumberEntity] = []
 
     init(
         channelID: String,
         name: String,
         isHD: Bool,
-        logoURL: URL?,
-        channelNumbers: [TVChannelNumberEntity] = []
+        logoURL: URL?
     ) {
         self.channelID = channelID
         self.name = name
         self.isHD = isHD
         self.logoURL = logoURL
-        self.channelNumbers = channelNumbers
     }
 
 }

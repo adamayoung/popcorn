@@ -86,6 +86,45 @@ struct SwiftDataTVListingsLocalDataSourceTests {
         #expect(result.first?.id == "NEW")
     }
 
+    @Test("replaceAll wipes previously inserted channel numbers when re-seeded with different channels")
+    func replaceAllWipesPreviouslyInsertedChannelNumbers() async throws {
+        let dataSource = SwiftDataTVListingsLocalDataSource(modelContainer: modelContainer)
+
+        // Seed a channel carrying numbers — exercising the batch-delete path that
+        // previously tripped a "mandatory nullify inverse" constraint when the child
+        // entity declared an inverse to the parent.
+        try await dataSource.replaceAll(
+            channels: [
+                TVChannel.mock(
+                    id: "OLD",
+                    name: "Old",
+                    channelNumbers: [
+                        TVChannelNumber(channelNumber: "101", subbouquetIDs: [1, 2])
+                    ]
+                )
+            ],
+            programmes: []
+        )
+
+        try await dataSource.replaceAll(
+            channels: [
+                TVChannel.mock(
+                    id: "NEW",
+                    name: "New",
+                    channelNumbers: [
+                        TVChannelNumber(channelNumber: "202", subbouquetIDs: [3])
+                    ]
+                )
+            ],
+            programmes: []
+        )
+
+        let channels = try await dataSource.channels()
+        #expect(channels.count == 1)
+        #expect(channels.first?.id == "NEW")
+        #expect(channels.first?.channelNumbers.map(\.channelNumber) == ["202"])
+    }
+
     @Test("replaceAll wipes previously inserted programmes")
     func replaceAllWipesPreviouslyInsertedProgrammes() async throws {
         let dataSource = SwiftDataTVListingsLocalDataSource(modelContainer: modelContainer)

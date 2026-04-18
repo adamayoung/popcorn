@@ -10,27 +10,40 @@ import OSLog
 import SwiftData
 import TVListingsDomain
 
-@ModelActor
-actor SwiftDataTVListingsLocalDataSource: TVListingsLocalDataSource {
+actor SwiftDataTVListingsLocalDataSource: TVListingsLocalDataSource, ModelActor {
 
     private static let logger = Logger.tvListingsInfrastructure
 
-    private static let ukTimeZone = TimeZone(identifier: "Europe/London")
+    nonisolated let modelContainer: ModelContainer
+    let modelExecutor: any ModelExecutor
+    private let calendar: Calendar
+
+    init(modelContainer: ModelContainer, calendar: Calendar = .ukGregorian) {
+        let modelContext = ModelContext(modelContainer)
+        self.modelExecutor = DefaultSerialModelExecutor(modelContext: modelContext)
+        self.modelContainer = modelContainer
+        self.calendar = calendar
+    }
 
     func channels() async throws(TVListingsLocalDataSourceError) -> [TVChannel] {
-        let descriptor = FetchDescriptor<TVChannelEntity>(
+        let channelDescriptor = FetchDescriptor<TVChannelEntity>(
             sortBy: [SortDescriptor(\.name)]
         )
 
-        let entities: [TVChannelEntity]
+        let channelEntities: [TVChannelEntity]
+        let numberEntities: [TVChannelNumberEntity]
         do {
-            entities = try modelContext.fetch(descriptor)
+            channelEntities = try modelContext.fetch(channelDescriptor)
+            numberEntities = try modelContext.fetch(FetchDescriptor<TVChannelNumberEntity>())
         } catch let error {
             throw .persistence(error)
         }
 
+        let numbersByChannel = Dictionary(grouping: numberEntities, by: \.channelID)
         let mapper = TVChannelEntityMapper()
-        return entities.map(mapper.map)
+        return channelEntities.map { channel in
+            mapper.map(channel, numbers: numbersByChannel[channel.channelID] ?? [])
+        }
     }
 
     func programmes(
@@ -109,6 +122,9 @@ actor SwiftDataTVListingsLocalDataSource: TVListingsLocalDataSource {
             let channelMapper = TVChannelEntityMapper()
             for channel in channels {
                 modelContext.insert(channelMapper.map(channel))
+                for number in channelMapper.mapNumbers(for: channel) {
+                    modelContext.insert(number)
+                }
             }
 
             let programmeMapper = TVProgrammeEntityMapper()
@@ -124,10 +140,6 @@ actor SwiftDataTVListingsLocalDataSource: TVListingsLocalDataSource {
     }
 
     private func dayRange(for date: Date) -> (start: Date, end: Date) {
-        var calendar = Calendar(identifier: .gregorian)
-        if let timeZone = Self.ukTimeZone {
-            calendar.timeZone = timeZone
-        }
         let start = calendar.startOfDay(for: date)
         let end = calendar.date(byAdding: .day, value: 1, to: start) ?? start.addingTimeInterval(86400)
         return (start, end)

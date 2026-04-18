@@ -10,13 +10,13 @@ import TVListingsDomain
 
 struct TVChannelEntityMapper {
 
-    func map(_ entity: TVChannelEntity) -> TVChannel {
+    func map(_ entity: TVChannelEntity, numbers: [TVChannelNumberEntity]) -> TVChannel {
         TVChannel(
             id: entity.channelID,
             name: entity.name,
             isHD: entity.isHD,
             logoURL: entity.logoURL,
-            channelNumbers: entity.channelNumbers.map(mapNumber)
+            channelNumbers: numbers.map(mapNumber)
         )
     }
 
@@ -25,17 +25,22 @@ struct TVChannelEntityMapper {
             channelID: channel.id,
             name: channel.name,
             isHD: channel.isHD,
-            logoURL: channel.logoURL,
-            channelNumbers: channel.channelNumbers.map(mapNumber)
+            logoURL: channel.logoURL
         )
+    }
+
+    func mapNumbers(for channel: TVChannel) -> [TVChannelNumberEntity] {
+        channel.channelNumbers.map { number in
+            TVChannelNumberEntity(
+                channelID: channel.id,
+                channelNumber: number.channelNumber,
+                subbouquetIDs: number.subbouquetIDs
+            )
+        }
     }
 
     private func mapNumber(_ entity: TVChannelNumberEntity) -> TVChannelNumber {
         TVChannelNumber(channelNumber: entity.channelNumber, subbouquetIDs: entity.subbouquetIDs)
-    }
-
-    private func mapNumber(_ number: TVChannelNumber) -> TVChannelNumberEntity {
-        TVChannelNumberEntity(channelNumber: number.channelNumber, subbouquetIDs: number.subbouquetIDs)
     }
 
 }

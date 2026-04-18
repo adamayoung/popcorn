@@ -49,10 +49,14 @@ package final class TVListingsInfrastructureFactory {
 
     package init(
         remoteDataSource: some TVListingsRemoteDataSource,
-        modelContainer: ModelContainer
+        modelContainer: ModelContainer,
+        calendar: Calendar = .ukGregorian
     ) {
         self.remoteDataSource = remoteDataSource
-        self.localDataSource = SwiftDataTVListingsLocalDataSource(modelContainer: modelContainer)
+        self.localDataSource = SwiftDataTVListingsLocalDataSource(
+            modelContainer: modelContainer,
+            calendar: calendar
+        )
     }
 
     package func makeTVChannelRepository() -> some TVChannelRepository {

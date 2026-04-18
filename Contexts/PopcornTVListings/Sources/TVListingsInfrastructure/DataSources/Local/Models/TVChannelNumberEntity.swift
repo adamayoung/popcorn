@@ -11,11 +11,12 @@ import SwiftData
 @Model
 final class TVChannelNumberEntity: Equatable {
 
+    var channelID: String
     var channelNumber: String
     var subbouquetIDs: [Int]
-    @Relationship(inverse: \TVChannelEntity.channelNumbers) var channel: TVChannelEntity?
 
-    init(channelNumber: String, subbouquetIDs: [Int]) {
+    init(channelID: String, channelNumber: String, subbouquetIDs: [Int]) {
+        self.channelID = channelID
         self.channelNumber = channelNumber
         self.subbouquetIDs = subbouquetIDs
     }
