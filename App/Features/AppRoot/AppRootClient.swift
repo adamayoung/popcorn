@@ -22,6 +22,7 @@ struct AppRootClient {
     var isWatchlistEnabled: @Sendable () throws -> Bool
     var isGamesEnabled: @Sendable () throws -> Bool
     var isSearchEnabled: @Sendable () throws -> Bool
+    var isTVListingsEnabled: @Sendable () throws -> Bool
 
 }
 
@@ -103,6 +104,9 @@ extension AppRootClient: DependencyKey {
             },
             isSearchEnabled: {
                 featureFlags.isEnabled(.mediaSearch)
+            },
+            isTVListingsEnabled: {
+                featureFlags.isEnabled(.tvListings)
             }
         )
     }

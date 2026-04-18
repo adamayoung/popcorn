@@ -572,6 +572,13 @@
         "identifier" : "PopcornTVListingsAdaptersTests",
         "name" : "PopcornTVListingsAdaptersTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:Features\/TVListingsFeature",
+        "identifier" : "TVListingsFeatureTests",
+        "name" : "TVListingsFeatureTests"
+      }
     }
   ],
   "version" : 1

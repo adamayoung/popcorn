@@ -39,6 +39,7 @@ public extension FeatureFlag {
         .timelineTangleGame,
         .movieIntelligence,
         .tvSeriesIntelligence,
+        .tvListings,
         .watchlist,
         .movieDetailsCastAndCrew,
         .movieDetailsRecommendedMovies,
@@ -163,6 +164,15 @@ public extension FeatureFlag {
         id: "tv_series_intelligence",
         name: "TV Series Intelligence",
         description: "Access to AI-powered TV series chat"
+    )
+
+    // MARK: - TV Listings
+
+    /// Controls access to the TV Listings tab.
+    static let tvListings = FeatureFlag(
+        id: "tv_listings",
+        name: "TV Listings",
+        description: "Access to the TV Listings tab"
     )
 
     // MARK: - App Wide

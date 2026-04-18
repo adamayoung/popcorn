@@ -11,6 +11,7 @@ import DesignSystem
     import DeveloperFeature
 #endif
 import SwiftUI
+import TVListingsFeature
 import WatchlistFeature
 
 struct AppRootView: View {
@@ -100,6 +101,23 @@ struct AppRootView: View {
                 }
                 .customizationID(AppRootFeature.Tab.games.id)
                 .accessibilityIdentifier("app.tabview.games")
+            }
+
+            if store.isTVListingsEnabled {
+                Tab(
+                    "TV_LISTINGS",
+                    systemImage: "tv",
+                    value: AppRootFeature.Tab.tvListings
+                ) {
+                    TVListingsRootView(
+                        store: store.scope(
+                            state: \.tvListings,
+                            action: \.tvListings
+                        )
+                    )
+                }
+                .customizationID(AppRootFeature.Tab.tvListings.id)
+                .accessibilityIdentifier("app.tabview.tvlistings")
             }
 
             if store.isSearchEnabled {

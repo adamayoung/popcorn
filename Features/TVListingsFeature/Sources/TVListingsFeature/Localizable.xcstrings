@@ -1,0 +1,39 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "TV_LISTINGS_SYNC_BUTTON" : {
+      "comment" : "Title of the button that triggers a TV listings sync.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sync Listings"
+          }
+        }
+      }
+    },
+    "TV_LISTINGS_SYNCING" : {
+      "comment" : "Label shown while a TV listings sync is in progress.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Syncing…"
+          }
+        }
+      }
+    },
+    "TV_LISTINGS_TITLE" : {
+      "comment" : "Navigation title of the TV Listings screen.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "TV Listings"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}
