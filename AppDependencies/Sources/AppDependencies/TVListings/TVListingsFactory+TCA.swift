@@ -13,7 +13,8 @@ import TVListingsComposition
 enum PopcornTVListingsFactoryKey: DependencyKey {
 
     static var liveValue: any PopcornTVListingsFactory {
-        PopcornTVListingsAdaptersFactory().makeTVListingsFactory()
+        @Dependency(\.tvListingsEPGURL) var epgURL
+        return PopcornTVListingsAdaptersFactory(epgURL: epgURL).makeTVListingsFactory()
     }
 
 }
