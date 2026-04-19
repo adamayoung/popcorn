@@ -11,7 +11,7 @@ import OSLog
 extension Logger {
 
     static let tvListings = Logger(
-        subsystem: Bundle.main.bundleIdentifier ?? "com.unknown.Popcorn",
+        subsystem: "uk.co.adam-young.Popcorn.TVListings",
         category: "TVListingsFeature"
     )
 

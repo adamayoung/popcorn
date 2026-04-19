@@ -124,8 +124,7 @@
       }
     },
     "TV_LISTINGS_SYNCING" : {
-      "comment" : "Label shown while a TV listings sync is in progress.",
-      "extractionState" : "stale",
+      "comment" : "Accessibility label shown while a TV listings sync is in progress.",
       "localizations" : {
         "en" : {
           "stringUnit" : {

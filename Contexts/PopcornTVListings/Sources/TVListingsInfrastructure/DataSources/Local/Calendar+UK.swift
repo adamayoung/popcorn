@@ -14,10 +14,13 @@ extension Calendar {
     /// programmes into UK calendar days regardless of the user's device time zone.
     ///
     static let ukGregorian: Calendar = {
-        var calendar = Calendar(identifier: .gregorian)
-        if let timeZone = TimeZone(identifier: "Europe/London") {
-            calendar.timeZone = timeZone
+        guard let timeZone = TimeZone(identifier: "Europe/London") else {
+            preconditionFailure(
+                "Europe/London time zone unavailable; UK day-bucketing would silently use the device time zone."
+            )
         }
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
         return calendar
     }()
 

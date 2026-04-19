@@ -83,7 +83,9 @@ public final class HTTPTVListingsRemoteDataSource: TVListingsRemoteDataSource {
 }
 
 private func makeDefaultEPGURL() -> URL {
-    let urlString = "https://raw.githubusercontent.com/adamayoung/popcorn-epg/refs/heads/main/epg.json"
+    // Pinned to a specific commit so the fallback is content-stable. Live data is opt-in
+    // by setting `TV_LISTINGS_EPG_URL` in `Configs/Secrets.xcconfig` (e.g. to `refs/heads/main`).
+    let urlString = "https://raw.githubusercontent.com/adamayoung/popcorn-epg/0f743f00777dfe5ac9b4689951434c034c7f2cfc/epg.json"
     if let url = URL(string: urlString) {
         return url
     }

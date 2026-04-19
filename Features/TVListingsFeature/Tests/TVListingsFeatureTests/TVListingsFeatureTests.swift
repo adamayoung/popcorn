@@ -100,6 +100,27 @@ struct TVListingsFeatureTests {
         await store.send(.didAppear)
     }
 
+    @Test("didAppear retries the fetch when the previous load errored")
+    func didAppearRetriesFetchAfterError() async {
+        let state = TVListingsFeature.State(
+            viewState: .error(ViewStateError(message: "boom"))
+        )
+        let store = TestStore(initialState: state) {
+            TVListingsFeature()
+        } withDependencies: {
+            $0.tvListingsClient.fetchChannels = { [] }
+            $0.tvListingsClient.fetchNowPlayingProgrammes = { [] }
+        }
+
+        await store.send(.didAppear)
+        await store.receive(\.fetch) {
+            $0.viewState = .loading
+        }
+        await store.receive(\.nowPlayingLoaded) {
+            $0.viewState = .ready(TVListingsFeature.ViewSnapshot(items: []))
+        }
+    }
+
     // MARK: - sync
 
     @Test("syncTapped starts syncing, and syncFinished refreshes the listings")

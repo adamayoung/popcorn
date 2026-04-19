@@ -90,7 +90,9 @@ public struct TVListingsFeature: Sendable {
         Reduce { state, action in
             switch action {
             case .didAppear:
-                guard state.viewState.isInitial else {
+                // Auto-retry on re-appearance when there's nothing to show — covers both
+                // first launch (.initial) and recovering from a previous load failure (.error).
+                guard state.viewState.isInitial || state.viewState.isError else {
                     return .none
                 }
                 return .send(.fetch)

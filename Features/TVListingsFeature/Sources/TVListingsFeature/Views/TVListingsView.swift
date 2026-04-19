@@ -68,6 +68,7 @@ public struct TVListingsView: View {
         } label: {
             if store.isSyncing {
                 ProgressView()
+                    .accessibilityLabel(Text("TV_LISTINGS_SYNCING", bundle: .module))
             } else {
                 Label {
                     Text("TV_LISTINGS_SYNC_BUTTON", bundle: .module)
@@ -143,13 +144,15 @@ public struct TVListingsView: View {
 private struct NowPlayingRow: View {
 
     private static let timeFormatStyle = Date.FormatStyle.dateTime.hour().minute()
+    /// Square logo size that satisfies the iOS 44pt minimum tap target.
+    private static let logoSize: CGFloat = 44
 
     let item: TVListingsFeature.NowPlayingItem
 
     var body: some View {
         HStack(spacing: .spacing12) {
             LogoImage(url: item.channel.logoURL)
-                .frame(width: 44, height: 44)
+                .frame(width: Self.logoSize, height: Self.logoSize)
 
             VStack(alignment: .leading, spacing: .spacing4) {
                 Text(item.channel.name)
@@ -161,8 +164,10 @@ private struct NowPlayingRow: View {
                     .fontWeight(.semibold)
 
                 Text(
-                    "\(item.programme.startTime.formatted(Self.timeFormatStyle)) – \(item.programme.endTime.formatted(Self.timeFormatStyle))",
-                    bundle: .module
+                    String(
+                        localized: "\(item.programme.startTime.formatted(Self.timeFormatStyle)) – \(item.programme.endTime.formatted(Self.timeFormatStyle))",
+                        bundle: .module
+                    )
                 )
                 .font(.caption)
                 .foregroundStyle(.secondary)
