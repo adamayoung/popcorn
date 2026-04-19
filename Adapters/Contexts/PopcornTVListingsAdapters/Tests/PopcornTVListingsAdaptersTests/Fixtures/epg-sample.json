@@ -1,0 +1,82 @@
+{
+  "channels": [
+    {
+      "sid": "3858",
+      "name": "SkySp+ HD",
+      "isHD": false,
+      "logoURL": "https://epgstatic.sky.com/epgdata/1.0/newchanlogos/600/600/skychb3858.png",
+      "channelNumbers": [
+        {
+          "channelNumber": "1081",
+          "subbouquetIDs": [
+            1,
+            4
+          ]
+        }
+      ],
+      "schedules": [
+        {
+          "date": "20260418",
+          "programmes": [
+            {
+              "description": "A look at the big stories dominating the news headlines, with discussion and analysis of sport's major topics.",
+              "duration": 1800,
+              "episodeNumber": 186,
+              "imageURL": "https://images.metadata.sky.com/pd-image/c9c81649-0f3e-4c25-b0e9-dac4d48507a5/cover",
+              "startTime": 1776461400,
+              "title": "Back Pages Tonight"
+            },
+            {
+              "description": "Round-up of the sports news with live analysis and comments, plus extended interviews with the headline makers.",
+              "duration": 3600,
+              "episodeNumber": 80,
+              "imageURL": "https://images.metadata.sky.com/pd-image/a7030fdb-75f0-4f98-beba-9a7e24add3cc/cover",
+              "startTime": 1776463200,
+              "title": "Sky Sports News",
+              "tmdbTVSeriesID": 38086
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "sid": "4011",
+      "name": "SkySp PL HD",
+      "isHD": false,
+      "logoURL": "https://epgstatic.sky.com/epgdata/1.0/newchanlogos/600/600/skychb4011.png",
+      "channelNumbers": [
+        {
+          "channelNumber": "1095",
+          "subbouquetIDs": [
+            1,
+            2
+          ]
+        }
+      ],
+      "schedules": [
+        {
+          "date": "20260418",
+          "programmes": [
+            {
+              "description": "Step inside the world of City midfielder Tijjani Reijnders and join him at home with his family in Manchester as the Dutchman reflects on his remarkable rise to the top of the game.",
+              "duration": 1800,
+              "episodeNumber": 46,
+              "imageURL": "https://images.metadata.sky.com/pd-image/96d89412-49d3-43fc-904c-045d7bb7b891/cover",
+              "seasonNumber": 5,
+              "startTime": 1776461400,
+              "title": "PL Stories: Tijjani Reijnders"
+            },
+            {
+              "description": "In a year that saw number 20 take on a new, profound meaning for Liverpool Football Club, revisit the annals of Premier League history with a look at the 2024-2025 season.",
+              "duration": 7200,
+              "episodeNumber": 0,
+              "imageURL": "https://images.metadata.sky.com/pd-image/5dffead3-ef7a-4f4e-8542-b32075885a9c/cover",
+              "startTime": 1776463200,
+              "title": "Premier League Years 2024-2025"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -59,6 +59,21 @@ enum AppConfig {
         }()
     }
 
+    enum TVListings {
+        static let epgURL: URL? = {
+            guard
+                let raw = AppConfig.resolveValue(
+                    infoPlistKey: "TVListingsEPGURL",
+                    environmentKey: "TV_LISTINGS_EPG_URL"
+                )
+            else {
+                return nil
+            }
+
+            return URL(string: raw)
+        }()
+    }
+
 }
 
 extension AppConfig {

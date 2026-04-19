@@ -36,6 +36,7 @@ let package = Package(
         .package(path: "../Contexts/PopcornPlotRemixGame"),
         .package(path: "../Contexts/PopcornSearch"),
         .package(path: "../Contexts/PopcornTrending"),
+        .package(path: "../Contexts/PopcornTVListings"),
         .package(path: "../Contexts/PopcornTVSeries"),
 
         // Platform Packages
@@ -55,6 +56,7 @@ let package = Package(
         .package(path: "../Adapters/Contexts/PopcornPlotRemixGameAdapters"),
         .package(path: "../Adapters/Contexts/PopcornSearchAdapters"),
         .package(path: "../Adapters/Contexts/PopcornTrendingAdapters"),
+        .package(path: "../Adapters/Contexts/PopcornTVListingsAdapters"),
         .package(path: "../Adapters/Contexts/PopcornTVSeriesAdapters"),
 
         // Platform Adapters
@@ -90,6 +92,8 @@ let package = Package(
                 .product(name: "SearchApplication", package: "PopcornSearch"),
                 .product(name: "TrendingComposition", package: "PopcornTrending"),
                 .product(name: "TrendingApplication", package: "PopcornTrending"),
+                .product(name: "TVListingsComposition", package: "PopcornTVListings"),
+                .product(name: "TVListingsApplication", package: "PopcornTVListings"),
                 .product(name: "TVSeriesComposition", package: "PopcornTVSeries"),
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
 
@@ -113,6 +117,7 @@ let package = Package(
                 "PopcornPlotRemixGameAdapters",
                 "PopcornSearchAdapters",
                 "PopcornTrendingAdapters",
+                "PopcornTVListingsAdapters",
                 "PopcornTVSeriesAdapters",
 
                 // Platform Adapters

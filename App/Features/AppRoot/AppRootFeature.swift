@@ -25,6 +25,7 @@ struct AppRootFeature {
         var watchlist = WatchlistRootFeature.State()
         var games = GamesRootFeature.State()
         var search = SearchRootFeature.State()
+        var tvListings = TVListingsRootFeature.State()
         #if DEBUG
             @Presents var developer: DeveloperFeature.State?
         #endif
@@ -33,6 +34,7 @@ struct AppRootFeature {
         var isWatchlistEnabled: Bool = false
         var isGamesEnabled: Bool = false
         var isSearchEnabled: Bool = false
+        var isTVListingsEnabled: Bool = false
 
         var hasStarted: Bool = false
         var isReady: Bool = false
@@ -44,6 +46,7 @@ struct AppRootFeature {
         case watchlist
         case games
         case search
+        case tvListings
 
         var id: String {
             switch self {
@@ -51,6 +54,7 @@ struct AppRootFeature {
             case .watchlist: "popcorn.tab.watchlist"
             case .games: "popcorn.tab.games"
             case .search: "popcorn.tab.search"
+            case .tvListings: "popcorn.tab.tvlistings"
             }
         }
     }
@@ -65,6 +69,7 @@ struct AppRootFeature {
         case watchlist(WatchlistRootFeature.Action)
         case games(GamesRootFeature.Action)
         case search(SearchRootFeature.Action)
+        case tvListings(TVListingsRootFeature.Action)
         #if DEBUG
             case developer(PresentationAction<DeveloperFeature.Action>)
             case navigate(Navigation)
@@ -105,6 +110,7 @@ struct AppRootFeature {
                 state.isWatchlistEnabled = (try? appRootClient.isWatchlistEnabled()) ?? false
                 state.isGamesEnabled = (try? appRootClient.isGamesEnabled()) ?? false
                 state.isSearchEnabled = (try? appRootClient.isSearchEnabled()) ?? false
+                state.isTVListingsEnabled = (try? appRootClient.isTVListingsEnabled()) ?? false
                 state.isReady = true
                 return .none
 
@@ -128,6 +134,7 @@ struct AppRootFeature {
         Scope(state: \.watchlist, action: \.watchlist) { WatchlistRootFeature() }
         Scope(state: \.games, action: \.games) { GamesRootFeature() }
         Scope(state: \.search, action: \.search) { SearchRootFeature() }
+        Scope(state: \.tvListings, action: \.tvListings) { TVListingsRootFeature() }
     }
 
 }
