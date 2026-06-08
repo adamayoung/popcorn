@@ -7,9 +7,7 @@
 
 import ComposableArchitecture
 import Foundation
-import TCAFoundation
 import Testing
-@testable import TVListingsApplication
 import TVListingsDomain
 @testable import TVListingsFeature
 

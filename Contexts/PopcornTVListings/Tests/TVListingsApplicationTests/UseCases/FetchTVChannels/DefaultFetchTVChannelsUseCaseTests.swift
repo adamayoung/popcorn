@@ -108,6 +108,25 @@ struct DefaultFetchTVChannelsUseCaseTests {
         #expect(result.map(\.id) == ["NUMBERED", "UNNUMBERED"])
     }
 
+    @Test("execute sorts channels whose numbers are all non-parseable last")
+    func executeSortsChannelsWithNonParseableNumbersLast() async throws {
+        let nonParseable = TVChannel.mock(
+            id: "NON_PARSEABLE",
+            channelNumbers: [TVChannelNumber(channelNumber: "HD", subbouquetIDs: [])]
+        )
+        let numbered = TVChannel.mock(
+            id: "NUMBERED",
+            channelNumbers: [TVChannelNumber(channelNumber: "50", subbouquetIDs: [])]
+        )
+        mockRepository.channelsStub = .success([nonParseable, numbered])
+
+        let useCase = makeUseCase()
+
+        let result = try await useCase.execute()
+
+        #expect(result.map(\.id) == ["NUMBERED", "NON_PARSEABLE"])
+    }
+
     @Test("execute throws local when repository throws local")
     func executeThrowsLocalWhenRepositoryThrowsLocal() async {
         mockRepository.channelsStub = .failure(.local(nil))
