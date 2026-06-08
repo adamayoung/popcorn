@@ -71,6 +71,72 @@ struct TVListingsFeatureTests {
         }
     }
 
+    @Test("fetch preserves the channel order provided by the client when building items")
+    func fetchPreservesChannelOrderFromClient() async {
+        let bbcOne = TVChannel(
+            id: "BBC_ONE",
+            name: "BBC One",
+            isHD: false,
+            logoURL: nil,
+            channelNumbers: []
+        )
+        let itv = TVChannel(
+            id: "ITV",
+            name: "ITV",
+            isHD: false,
+            logoURL: nil,
+            channelNumbers: []
+        )
+        let bbcOneProgramme = TVProgramme(
+            id: "BBC_ONE:1",
+            channelID: "BBC_ONE",
+            title: "News",
+            description: "",
+            startTime: Date(timeIntervalSince1970: 1000),
+            endTime: Date(timeIntervalSince1970: 1900),
+            duration: 900,
+            episodeNumber: nil,
+            seasonNumber: nil,
+            imageURL: nil,
+            tmdbTVSeriesID: nil,
+            tmdbMovieID: nil
+        )
+        let itvProgramme = TVProgramme(
+            id: "ITV:1",
+            channelID: "ITV",
+            title: "Weather",
+            description: "",
+            startTime: Date(timeIntervalSince1970: 1000),
+            endTime: Date(timeIntervalSince1970: 1900),
+            duration: 900,
+            episodeNumber: nil,
+            seasonNumber: nil,
+            imageURL: nil,
+            tmdbTVSeriesID: nil,
+            tmdbMovieID: nil
+        )
+        let store = TestStore(initialState: TVListingsFeature.State()) {
+            TVListingsFeature()
+        } withDependencies: {
+            $0.tvListingsClient.fetchChannels = { [bbcOne, itv] }
+            $0.tvListingsClient.fetchNowPlayingProgrammes = { [itvProgramme, bbcOneProgramme] }
+        }
+
+        await store.send(.fetch) {
+            $0.viewState = .loading
+        }
+        await store.receive(\.nowPlayingLoaded) {
+            $0.viewState = .ready(
+                TVListingsFeature.ViewSnapshot(
+                    items: [
+                        TVListingsFeature.NowPlayingItem(channel: bbcOne, programme: bbcOneProgramme),
+                        TVListingsFeature.NowPlayingItem(channel: itv, programme: itvProgramme),
+                    ]
+                )
+            )
+        }
+    }
+
     @Test("fetch surfaces load failures as an error view state when no snapshot is present yet")
     func fetchSurfacesLoadFailureAsErrorState() async {
         struct LoadFailure: Error {}

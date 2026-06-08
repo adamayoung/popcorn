@@ -17,11 +17,20 @@ final class DefaultFetchTVChannelsUseCase: FetchTVChannelsUseCase {
     }
 
     func execute() async throws(FetchTVChannelsError) -> [TVChannel] {
+        let channels: [TVChannel]
         do {
-            return try await tvChannelRepository.channels()
+            channels = try await tvChannelRepository.channels()
         } catch let error {
             throw FetchTVChannelsError(error)
         }
+
+        return channels.sorted { Self.sortKey(for: $0) < Self.sortKey(for: $1) }
+    }
+
+    private static func sortKey(for channel: TVChannel) -> Int {
+        channel.channelNumbers
+            .compactMap { Int($0.channelNumber) }
+            .min() ?? .max
     }
 
 }
