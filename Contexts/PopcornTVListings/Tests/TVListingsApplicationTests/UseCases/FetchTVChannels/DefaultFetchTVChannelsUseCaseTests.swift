@@ -135,6 +135,28 @@ struct DefaultFetchTVChannelsUseCaseTests {
         #expect(result.map(\.id) == ["NUMBERED", "NON_PARSEABLE"])
     }
 
+    @Test("execute uses the parseable minimum from mixed channel numbers")
+    func executeUsesParseableMinimumFromMixedChannelNumbers() async throws {
+        let mixed = TVChannel.mock(
+            id: "MIXED",
+            channelNumbers: [
+                TVChannelNumber(channelNumber: "HD", subbouquetIDs: []),
+                TVChannelNumber(channelNumber: "5", subbouquetIDs: [])
+            ]
+        )
+        let numbered = TVChannel.mock(
+            id: "NUMBERED",
+            channelNumbers: [TVChannelNumber(channelNumber: "10", subbouquetIDs: [])]
+        )
+        mockRepository.channelsStub = .success([numbered, mixed])
+
+        let useCase = makeUseCase()
+
+        let result = try await useCase.execute()
+
+        #expect(result.map(\.id) == ["MIXED", "NUMBERED"])
+    }
+
     @Test("execute breaks ties on equal channel numbers by name then id")
     func executeBreaksTiesByNameThenID() async throws {
         let zeta = TVChannel.mock(

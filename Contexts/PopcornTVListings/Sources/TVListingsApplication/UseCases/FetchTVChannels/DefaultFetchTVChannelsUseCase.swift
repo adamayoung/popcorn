@@ -24,12 +24,19 @@ final class DefaultFetchTVChannelsUseCase: FetchTVChannelsUseCase {
             throw FetchTVChannelsError(error)
         }
 
-        // Explicit tie-break by name then id makes ordering deterministic for channels that share a channel number.
+        // Order by channel number (nil sorts last), then tie-break by name then id for a deterministic order.
         return channels
             .map { (channel: $0, sortKey: Self.sortKey(for: $0)) }
             .sorted { lhs, rhs in
-                if lhs.sortKey != rhs.sortKey {
-                    return lhs.sortKey < rhs.sortKey
+                switch (lhs.sortKey, rhs.sortKey) {
+                case (let lhsKey?, let rhsKey?) where lhsKey != rhsKey:
+                    return lhsKey < rhsKey
+                case (_?, nil):
+                    return true
+                case (nil, _?):
+                    return false
+                default:
+                    break
                 }
                 let nameOrder = lhs.channel.name.localizedCaseInsensitiveCompare(rhs.channel.name)
                 if nameOrder != .orderedSame {
@@ -40,14 +47,11 @@ final class DefaultFetchTVChannelsUseCase: FetchTVChannelsUseCase {
             .map(\.channel)
     }
 
-    /// Sentinel that sorts channels with no usable number after every numbered channel.
-    private static let unnumberedSortKey = Int.max
-
-    private static func sortKey(for channel: TVChannel) -> Int {
-        // Non-parseable channel numbers (e.g. "HD") are excluded; such channels sort last alongside unnumbered ones.
+    private static func sortKey(for channel: TVChannel) -> Int? {
+        // Non-parseable numbers (e.g. "HD") are excluded; nil = no usable number, sorts last.
         channel.channelNumbers
             .compactMap { Int($0.channelNumber) }
-            .min() ?? unnumberedSortKey
+            .min()
     }
 
 }
