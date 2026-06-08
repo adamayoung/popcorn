@@ -177,6 +177,19 @@ struct DefaultFetchTVChannelsUseCaseTests {
         #expect(result.map(\.id) == ["A", "B"])
     }
 
+    @Test("execute breaks ties between two unnumbered channels by name then id")
+    func executeBreaksTiesBetweenUnnumberedChannelsByNameThenID() async throws {
+        let zeta = TVChannel.mock(id: "ZETA", name: "Zeta", channelNumbers: [])
+        let alpha = TVChannel.mock(id: "ALPHA", name: "Alpha", channelNumbers: [])
+        mockRepository.channelsStub = .success([zeta, alpha])
+
+        let useCase = makeUseCase()
+
+        let result = try await useCase.execute()
+
+        #expect(result.map(\.id) == ["ALPHA", "ZETA"])
+    }
+
     @Test("execute throws local when repository throws local")
     func executeThrowsLocalWhenRepositoryThrowsLocal() async {
         mockRepository.channelsStub = .failure(.local(nil))

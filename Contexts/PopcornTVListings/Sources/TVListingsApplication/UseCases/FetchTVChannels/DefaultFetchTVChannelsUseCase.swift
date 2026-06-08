@@ -40,11 +40,14 @@ final class DefaultFetchTVChannelsUseCase: FetchTVChannelsUseCase {
             .map(\.channel)
     }
 
+    /// Sentinel that sorts channels with no usable number after every numbered channel.
+    private static let unnumberedSortKey = Int.max
+
     private static func sortKey(for channel: TVChannel) -> Int {
-        // Non-parseable channel numbers (e.g. "HD") are excluded; the channel sorts last alongside unnumbered ones.
+        // Non-parseable channel numbers (e.g. "HD") are excluded; such channels sort last alongside unnumbered ones.
         channel.channelNumbers
             .compactMap { Int($0.channelNumber) }
-            .min() ?? .max
+            .min() ?? unnumberedSortKey
     }
 
 }
