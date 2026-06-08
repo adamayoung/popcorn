@@ -58,7 +58,7 @@ struct DefaultFetchTVChannelsUseCaseTests {
             id: "A",
             channelNumbers: [
                 TVChannelNumber(channelNumber: "105", subbouquetIDs: []),
-                TVChannelNumber(channelNumber: "5", subbouquetIDs: []),
+                TVChannelNumber(channelNumber: "5", subbouquetIDs: [])
             ]
         )
         let channelB = TVChannel.mock(
