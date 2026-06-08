@@ -24,11 +24,7 @@ final class DefaultFetchTVChannelsUseCase: FetchTVChannelsUseCase {
             throw FetchTVChannelsError(error)
         }
 
-        // Precompute each channel's sort key once, then order by it with a
-        // deterministic tie-break (name, then id) so channels sharing a key —
-        // notably all the unnumbered ones at `.max` — keep a stable on-screen
-        // order regardless of the repository's return order. (Swift's `sorted`
-        // is not guaranteed stable, so the tie-break cannot be left implicit.)
+        // Precompute the sort key once and tie-break by name then id — Swift's sorted(by:) is not stable.
         return channels
             .map { (channel: $0, sortKey: Self.sortKey(for: $0)) }
             .sorted { lhs, rhs in
@@ -45,10 +41,7 @@ final class DefaultFetchTVChannelsUseCase: FetchTVChannelsUseCase {
     }
 
     private static func sortKey(for channel: TVChannel) -> Int {
-        // Channel numbers in the UK EPG data are always whole-number strings, so
-        // non-integer values are not expected. Any that fail Int parsing are
-        // excluded from the minimum; the channel then sorts last alongside
-        // genuinely unnumbered channels.
+        // Non-parseable channel numbers (e.g. "HD") are excluded; the channel sorts last alongside unnumbered ones.
         channel.channelNumbers
             .compactMap { Int($0.channelNumber) }
             .min() ?? .max
