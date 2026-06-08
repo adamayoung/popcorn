@@ -17,7 +17,15 @@ struct DefaultFetchTVChannelsUseCaseTests {
 
     @Test("execute returns channels on success")
     func executeReturnsChannelsOnSuccess() async throws {
-        let channels = [TVChannel.mock(id: "BBC"), TVChannel.mock(id: "ITV")]
+        let bbc = TVChannel.mock(
+            id: "BBC",
+            channelNumbers: [TVChannelNumber(channelNumber: "1", subbouquetIDs: [])]
+        )
+        let itv = TVChannel.mock(
+            id: "ITV",
+            channelNumbers: [TVChannelNumber(channelNumber: "2", subbouquetIDs: [])]
+        )
+        let channels = [bbc, itv]
         mockRepository.channelsStub = .success(channels)
 
         let useCase = makeUseCase()
@@ -125,6 +133,27 @@ struct DefaultFetchTVChannelsUseCaseTests {
         let result = try await useCase.execute()
 
         #expect(result.map(\.id) == ["NUMBERED", "NON_PARSEABLE"])
+    }
+
+    @Test("execute breaks ties on equal channel numbers by name then id")
+    func executeBreaksTiesByNameThenID() async throws {
+        let zeta = TVChannel.mock(
+            id: "ZETA",
+            name: "Zeta",
+            channelNumbers: [TVChannelNumber(channelNumber: "5", subbouquetIDs: [])]
+        )
+        let alpha = TVChannel.mock(
+            id: "ALPHA",
+            name: "Alpha",
+            channelNumbers: [TVChannelNumber(channelNumber: "5", subbouquetIDs: [])]
+        )
+        mockRepository.channelsStub = .success([zeta, alpha])
+
+        let useCase = makeUseCase()
+
+        let result = try await useCase.execute()
+
+        #expect(result.map(\.id) == ["ALPHA", "ZETA"])
     }
 
     @Test("execute throws local when repository throws local")
