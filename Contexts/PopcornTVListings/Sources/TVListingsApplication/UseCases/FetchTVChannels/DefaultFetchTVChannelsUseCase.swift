@@ -24,7 +24,7 @@ final class DefaultFetchTVChannelsUseCase: FetchTVChannelsUseCase {
             throw FetchTVChannelsError(error)
         }
 
-        // Precompute the sort key once and tie-break by name then id — Swift's sorted(by:) is not stable.
+        // Explicit tie-break by name then id makes ordering deterministic for channels that share a channel number.
         return channels
             .map { (channel: $0, sortKey: Self.sortKey(for: $0)) }
             .sorted { lhs, rhs in

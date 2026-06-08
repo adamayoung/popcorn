@@ -10,13 +10,17 @@ import TVListingsDomain
 
 enum TVListingsFixtures {
 
-    static func makeChannel(id: String, name: String) -> TVChannel {
+    static func makeChannel(
+        id: String,
+        name: String,
+        channelNumbers: [TVChannelNumber] = []
+    ) -> TVChannel {
         TVChannel(
             id: id,
             name: name,
             isHD: false,
             logoURL: nil,
-            channelNumbers: []
+            channelNumbers: channelNumbers
         )
     }
 
