@@ -28,6 +28,9 @@ final class DefaultFetchTVChannelsUseCase: FetchTVChannelsUseCase {
     }
 
     private static func sortKey(for channel: TVChannel) -> Int {
+        // Channel numbers in the UK EPG data are always whole-number strings, so
+        // non-integer values are not expected. Any that fail to parse are dropped
+        // here and the channel sorts last (alongside genuinely unnumbered channels).
         channel.channelNumbers
             .compactMap { Int($0.channelNumber) }
             .min() ?? .max

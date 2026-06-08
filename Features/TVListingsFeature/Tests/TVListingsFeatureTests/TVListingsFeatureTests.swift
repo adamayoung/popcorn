@@ -21,9 +21,9 @@ struct TVListingsFeatureTests {
 
     @Test("didAppear triggers fetch and produces a ready snapshot joining programmes to channels")
     func didAppearTriggersFetchAndProducesReadySnapshot() async {
-        let bbc = Self.makeChannel(id: "BBC", name: "BBC")
-        let itv = Self.makeChannel(id: "ITV", name: "ITV")
-        let programme = Self.makeProgramme(id: "BBC:1000", channelID: "BBC", title: "News")
+        let bbc = TVListingsFixtures.makeChannel(id: "BBC", name: "BBC")
+        let itv = TVListingsFixtures.makeChannel(id: "ITV", name: "ITV")
+        let programme = TVListingsFixtures.makeProgramme(id: "BBC:1000", channelID: "BBC", title: "News")
         let store = TestStore(initialState: TVListingsFeature.State()) {
             TVListingsFeature()
         } withDependencies: {
@@ -48,10 +48,10 @@ struct TVListingsFeatureTests {
 
     @Test("fetch preserves the channel order provided by the client when building items")
     func fetchPreservesChannelOrderFromClient() async {
-        let bbcOne = Self.makeChannel(id: "BBC_ONE", name: "BBC One")
-        let itv = Self.makeChannel(id: "ITV", name: "ITV")
-        let bbcOneProgramme = Self.makeProgramme(id: "BBC_ONE:1", channelID: "BBC_ONE", title: "News")
-        let itvProgramme = Self.makeProgramme(id: "ITV:1", channelID: "ITV", title: "Weather")
+        let bbcOne = TVListingsFixtures.makeChannel(id: "BBC_ONE", name: "BBC One")
+        let itv = TVListingsFixtures.makeChannel(id: "ITV", name: "ITV")
+        let bbcOneProgramme = TVListingsFixtures.makeProgramme(id: "BBC_ONE:1", channelID: "BBC_ONE", title: "News")
+        let itvProgramme = TVListingsFixtures.makeProgramme(id: "ITV:1", channelID: "ITV", title: "Weather")
         let store = TestStore(initialState: TVListingsFeature.State()) {
             TVListingsFeature()
         } withDependencies: {
@@ -266,37 +266,6 @@ struct TVListingsFeatureTests {
         await store.receive(\.nowPlayingLoaded) {
             $0.viewState = .ready(TVListingsFeature.ViewSnapshot(items: []))
         }
-    }
-
-}
-
-extension TVListingsFeatureTests {
-
-    static func makeChannel(id: String, name: String) -> TVChannel {
-        TVChannel(
-            id: id,
-            name: name,
-            isHD: false,
-            logoURL: nil,
-            channelNumbers: []
-        )
-    }
-
-    static func makeProgramme(id: String, channelID: String, title: String) -> TVProgramme {
-        TVProgramme(
-            id: id,
-            channelID: channelID,
-            title: title,
-            description: "",
-            startTime: Date(timeIntervalSince1970: 1000),
-            endTime: Date(timeIntervalSince1970: 1900),
-            duration: 900,
-            episodeNumber: nil,
-            seasonNumber: nil,
-            imageURL: nil,
-            tmdbTVSeriesID: nil,
-            tmdbMovieID: nil
-        )
     }
 
 }

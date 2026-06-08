@@ -24,8 +24,7 @@ struct DefaultFetchTVChannelsUseCaseTests {
 
         let result = try await useCase.execute()
 
-        #expect(result.count == channels.count)
-        #expect(result.allSatisfy { channels.contains($0) })
+        #expect(result == channels)
         #expect(mockRepository.channelsCallCount == 1)
     }
 

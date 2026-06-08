@@ -26,9 +26,16 @@ extension WatchProvider {
 
 extension WatchProviderCollection {
 
+    private static let defaultLink: URL = {
+        guard let url = URL(string: "https://www.themoviedb.org/movie/1/watch") else {
+            preconditionFailure("Invalid default mock link URL")
+        }
+        return url
+    }()
+
     static func mock(
         id: Int = 1,
-        link: URL = URL(string: "https://www.themoviedb.org/movie/1/watch") ?? URL(filePath: "/"),
+        link: URL = WatchProviderCollection.defaultLink,
         streamingProviders: [WatchProvider] = [.mock()],
         buyProviders: [WatchProvider] = [],
         rentProviders: [WatchProvider] = [],

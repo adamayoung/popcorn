@@ -183,6 +183,9 @@ extension TVListingsFeature {
     ) -> [NowPlayingItem] {
         let programmesByChannelID = Dictionary(grouping: programmes, by: \.channelID)
 
+        // Iterating channels preserves the order supplied by the client. Programmes
+        // whose channelID matches no channel are implicitly excluded, and a channel
+        // with multiple programmes contributes one item per programme.
         return channels.flatMap { channel in
             (programmesByChannelID[channel.id] ?? []).map { programme in
                 NowPlayingItem(channel: channel, programme: programme)
