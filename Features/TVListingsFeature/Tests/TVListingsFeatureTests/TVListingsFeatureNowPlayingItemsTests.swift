@@ -1,5 +1,5 @@
 //
-//  TVListingsFeatureBuildItemsTests.swift
+//  TVListingsFeatureNowPlayingItemsTests.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -12,8 +12,8 @@ import TVListingsDomain
 @testable import TVListingsFeature
 
 @MainActor
-@Suite("TVListingsFeature buildItems")
-struct TVListingsFeatureBuildItemsTests {
+@Suite("TVListingsFeature now-playing items")
+struct TVListingsFeatureNowPlayingItemsTests {
 
     @Test("fetch produces one item per programme when a channel has multiple programmes")
     func fetchProducesItemPerProgrammeForChannelWithMultipleProgrammes() async {
