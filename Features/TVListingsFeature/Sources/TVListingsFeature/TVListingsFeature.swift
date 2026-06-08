@@ -181,18 +181,14 @@ extension TVListingsFeature {
         channels: [TVChannel],
         programmes: [TVProgramme]
     ) -> [NowPlayingItem] {
-        let channelsByID = Dictionary(uniqueKeysWithValues: channels.map { ($0.id, $0) })
+        let programmesByChannelID = Dictionary(grouping: programmes, by: \.channelID)
 
-        return programmes
-            .compactMap { programme in
-                guard let channel = channelsByID[programme.channelID] else {
-                    return nil
-                }
-                return NowPlayingItem(channel: channel, programme: programme)
+        // Client channel order is preserved; programmes with no matching channel are dropped.
+        return channels.flatMap { channel in
+            (programmesByChannelID[channel.id] ?? []).map { programme in
+                NowPlayingItem(channel: channel, programme: programme)
             }
-            .sorted { lhs, rhs in
-                lhs.channel.name.localizedCaseInsensitiveCompare(rhs.channel.name) == .orderedAscending
-            }
+        }
     }
 
 }

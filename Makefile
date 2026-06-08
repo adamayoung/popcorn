@@ -3,7 +3,7 @@ TEST_TARGET ?= PopcornTests
 TEST_PLAN ?= PopcornUnitTests
 SCHEME ?= $(TARGET)
 PLATFORM ?= ios
-DESTINATION ?= 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.4'
+DESTINATION ?= 'platform=iOS Simulator,name=iPhone 17 Pro,OS=26.5'
 DESTINATION_MACOS ?= 'platform=macOS'
 SNAPSHOT_TEST_PLAN ?= PopcornSnapshotTests
 UI_TEST_PLAN ?= PopcornUITests
