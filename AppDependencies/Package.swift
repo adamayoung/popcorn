@@ -124,6 +124,21 @@ let package = Package(
                 "FeatureAccessAdapters",
                 "ObservabilityAdapters"
             ]
+        ),
+
+        .testTarget(
+            name: "AppDependenciesTests",
+            dependencies: [
+                "AppDependencies",
+
+                // Context Composition & Application Layers exercised by the tests
+                .product(name: "MoviesComposition", package: "PopcornMovies"),
+                .product(name: "MoviesApplication", package: "PopcornMovies"),
+                .product(name: "PeopleComposition", package: "PopcornPeople"),
+                .product(name: "PeopleApplication", package: "PopcornPeople"),
+                .product(name: "TVSeriesComposition", package: "PopcornTVSeries"),
+                .product(name: "TVSeriesApplication", package: "PopcornTVSeries")
+            ]
         )
     ]
 )
