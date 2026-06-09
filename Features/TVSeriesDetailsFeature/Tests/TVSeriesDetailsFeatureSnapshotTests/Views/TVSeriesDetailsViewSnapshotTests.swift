@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import Foundation
 import SnapshotTestHelpers
 import SwiftUI
@@ -20,18 +19,14 @@ struct TVSeriesDetailsViewSnapshotTests {
     func tvSeriesDetailsView() {
         let view = NavigationStack {
             TVSeriesDetailsView(
-                store: Store(
-                    initialState: TVSeriesDetailsFeature.State(
-                        tvSeriesID: TVSeries.mock.id,
-                        viewState: .ready(
-                            .init(
-                                tvSeries: .mock,
-                                castMembers: CastMember.mocks,
-                                crewMembers: CrewMember.mocks
-                            )
+                viewModel: .preview(
+                    viewState: .ready(
+                        .init(
+                            tvSeries: .mock,
+                            castMembers: CastMember.mocks,
+                            crewMembers: CrewMember.mocks
                         )
-                    ),
-                    reducer: { EmptyReducer() }
+                    )
                 )
             )
         }
