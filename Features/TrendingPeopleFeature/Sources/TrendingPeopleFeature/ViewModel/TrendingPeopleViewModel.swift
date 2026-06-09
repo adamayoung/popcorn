@@ -52,7 +52,7 @@ public final class TrendingPeopleViewModel {
 
         let people: [PersonPreview]
         do {
-            people = try await self.dependencies.fetchTrendingPeople()
+            people = try await dependencies.fetchTrendingPeople()
         } catch {
             Self.logger.error(
                 "Failed fetching trending people: \(error.localizedDescription, privacy: .public)"

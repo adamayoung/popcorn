@@ -55,7 +55,7 @@ public final class TrendingTVSeriesViewModel {
 
         let tvSeries: [TVSeriesPreview]
         do {
-            tvSeries = try await self.dependencies.fetchTrendingTVSeries()
+            tvSeries = try await dependencies.fetchTrendingTVSeries()
         } catch {
             Self.logger.error(
                 "Failed fetching trending TV series: \(error.localizedDescription, privacy: .public)"

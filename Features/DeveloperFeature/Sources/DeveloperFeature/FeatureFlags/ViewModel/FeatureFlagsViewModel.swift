@@ -53,14 +53,14 @@ public final class FeatureFlagsViewModel {
     /// Loads the feature flags. Sets `.loading`, then fetches and transitions to
     /// `.ready` or `.error`. Drive this from the view's `.task`.
     public func load() async {
-        self.viewState = .loading
+        viewState = .loading
         await fetchAll()
     }
 
     /// Retries loading after an error by changing ``reloadID``, which reruns the
     /// view's `.task(id:)`.
     public func reload() {
-        self.reloadID += 1
+        reloadID += 1
     }
 
     // MARK: - Overrides
@@ -71,14 +71,14 @@ public final class FeatureFlagsViewModel {
         _ featureFlag: FeatureFlag,
         _ override: FeatureFlagOverrideState
     ) async {
-        self.dependencies.updateFeatureFlagValue(featureFlag, override.value)
+        dependencies.updateFeatureFlagValue(featureFlag, override.value)
         await fetchAll()
     }
 
     /// Removes all overrides, then refetches the flags. Mirrors the reducer's
     /// `.concatenate(handleResetAllOverrides, handleFetchAll)`.
     public func resetAllOverrides() async {
-        self.dependencies.removeAllOverrides()
+        dependencies.removeAllOverrides()
         await fetchAll()
     }
 
@@ -94,11 +94,11 @@ public final class FeatureFlagsViewModel {
             Self.logger.error(
                 "Failed fetching feature flags content: \(error.localizedDescription, privacy: .public)"
             )
-            self.viewState = .error(ViewStateError(error))
+            viewState = .error(ViewStateError(error))
             return
         }
 
-        self.viewState = .ready(ViewSnapshot(featureFlags: featureFlags))
+        viewState = .ready(ViewSnapshot(featureFlags: featureFlags))
     }
 
 }

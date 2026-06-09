@@ -62,14 +62,14 @@ public final class TrendingMoviesViewModel {
 
         let movies: [MoviePreview]
         do {
-            movies = try await self.dependencies.fetchTrendingMovies()
+            movies = try await dependencies.fetchTrendingMovies()
         } catch {
             Self.logger.error("Failed fetching trending movies: \(error, privacy: .public)")
             return
         }
 
         self.movies = movies
-        self.isLoading = false
+        isLoading = false
     }
 
     /// Retries loading by changing ``reloadID``, which reruns the view's `.task(id:)`.
