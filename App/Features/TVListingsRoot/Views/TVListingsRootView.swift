@@ -17,10 +17,6 @@ struct TVListingsRootView: View {
 
     let viewModel: TVListingsViewModel
 
-    init(viewModel: TVListingsViewModel) {
-        self.viewModel = viewModel
-    }
-
     var body: some View {
         NavigationStack {
             TVListingsScreen(viewModel: viewModel)

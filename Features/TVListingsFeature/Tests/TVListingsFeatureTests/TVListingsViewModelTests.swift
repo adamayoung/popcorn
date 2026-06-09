@@ -1,6 +1,6 @@
 //
 //  TVListingsViewModelTests.swift
-//  TVListingsFeature
+//  Popcorn
 //
 //  Copyright © 2026 Adam Young.
 //
