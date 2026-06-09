@@ -10,7 +10,7 @@ import Observation
 import OSLog
 import Presentation
 
-/// Drives ``MediaSearchScreen``. The MVVM replacement for `MediaSearchFeature`.
+/// Drives ``MediaSearchView``. The MVVM replacement for `MediaSearchFeature`.
 ///
 /// Keeps the feature's bespoke ``ViewState`` enum (genres / search history /
 /// results / no results) rather than the generic `Presentation.ViewState<T>`,

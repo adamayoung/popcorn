@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import Foundation
 @testable import MediaSearchFeature
 import SnapshotTestHelpers
@@ -20,17 +19,14 @@ struct MediaSearchViewSnapshotTests {
     func mediaSearchView() {
         let view = NavigationStack {
             MediaSearchView(
-                store: Store(
-                    initialState: MediaSearchFeature.State(
-                        viewState: .searchResults(
-                            .init(
-                                query: "stranger",
-                                results: MediaPreview.mocks
-                            )
-                        ),
-                        query: "stranger"
+                viewModel: .preview(
+                    viewState: .searchResults(
+                        .init(
+                            query: "stranger",
+                            results: MediaPreview.mocks
+                        )
                     ),
-                    reducer: { EmptyReducer() }
+                    query: "stranger"
                 )
             )
         }
