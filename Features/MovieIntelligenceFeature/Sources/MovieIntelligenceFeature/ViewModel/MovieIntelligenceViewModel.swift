@@ -10,7 +10,7 @@ import IntelligenceDomain
 import Observation
 import OSLog
 
-/// Drives ``MovieIntelligenceScreen``. The MVVM replacement for
+/// Drives ``MovieIntelligenceView``. The MVVM replacement for
 /// `MovieIntelligenceFeature`.
 ///
 /// Unlike the fetch-based feature view models, this chat leaf exposes discrete
