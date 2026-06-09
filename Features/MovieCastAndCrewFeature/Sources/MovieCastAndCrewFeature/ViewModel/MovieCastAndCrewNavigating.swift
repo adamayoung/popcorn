@@ -8,9 +8,7 @@
 /// Navigation actions a ``MovieCastAndCrewViewModel`` can request.
 ///
 /// The root coordinator supplies a concrete implementation (a `RouterNavigator`)
-/// that translates these into pushes / presentations. The MVVM replacement for
-/// the former `MovieCastAndCrewFeature.Navigation` cases, which the parent reducer
-/// intercepted.
+/// that translates these into pushes / presentations.
 @MainActor
 public protocol MovieCastAndCrewNavigating {
 

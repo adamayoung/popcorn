@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import Foundation
 @testable import MovieCastAndCrewFeature
 import SnapshotTestHelpers
@@ -18,36 +17,20 @@ struct MovieCastAndCrewViewSnapshotTests {
 
     @Test
     func movieCastAndCrewView() {
-        let view = NamespaceContainer(
-            store: Store(
-                initialState: MovieCastAndCrewFeature.State(
-                    movieID: 798_645,
+        let view = NavigationStack {
+            MovieCastAndCrewView(
+                viewModel: .preview(
                     viewState: .ready(
                         .init(
                             castMembers: CastMember.mocks,
                             crewByDepartment: CrewDepartment.mocks
                         )
                     )
-                ),
-                reducer: { EmptyReducer() }
+                )
             )
-        )
+        }
 
         verifyViewSnapshot(of: view)
-    }
-
-}
-
-private struct NamespaceContainer: View {
-
-    @Namespace var namespace
-
-    let store: StoreOf<MovieCastAndCrewFeature>
-
-    var body: some View {
-        NavigationStack {
-            MovieCastAndCrewView(store: store, transitionNamespace: namespace)
-        }
     }
 
 }
