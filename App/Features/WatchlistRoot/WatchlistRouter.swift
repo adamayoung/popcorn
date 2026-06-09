@@ -64,7 +64,7 @@ final class WatchlistRouter {
 /// - `openMovieIntelligence(id:)` presents a modal instead of pushing
 @MainActor
 struct WatchlistRouterNavigator: WatchlistNavigating, MovieDetailsNavigating,
-    PersonDetailsNavigating, MovieCastAndCrewNavigating {
+PersonDetailsNavigating, MovieCastAndCrewNavigating {
 
     let router: WatchlistRouter
 
