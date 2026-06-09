@@ -15,13 +15,6 @@
   "testTargets" : [
     {
       "target" : {
-        "containerPath" : "container:AppDependencies",
-        "identifier" : "AppDependenciesTests",
-        "name" : "AppDependenciesTests"
-      }
-    },
-    {
-      "target" : {
         "containerPath" : "container:Features\/TrendingTVSeriesFeature",
         "identifier" : "TrendingTVSeriesFeatureTests",
         "name" : "TrendingTVSeriesFeatureTests"
