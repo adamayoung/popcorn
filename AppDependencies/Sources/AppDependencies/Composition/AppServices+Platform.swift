@@ -32,8 +32,9 @@ extension AppServices {
         )
     }
 
-    /// Builds the feature-flag service (one instance, reused for reads + initialiser).
-    static func makeFeatureFlagService() -> any FeatureFlagging & FeatureFlagInitialising {
+    /// Builds the feature-flag service (one instance, reused for reads + overrides + initialiser).
+    static func makeFeatureFlagService()
+        -> any FeatureFlagging & FeatureFlagOverriding & FeatureFlagInitialising {
         FeatureAccessAdaptersFactory().makeFeatureFlagsFactory().featureFlagService
     }
 

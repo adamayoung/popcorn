@@ -7,7 +7,6 @@
 
 import AppDependencies
 #if DEBUG
-    import ComposableArchitecture
     import DeveloperFeature
 #endif
 import DesignSystem
@@ -31,12 +30,6 @@ struct AppRootView: View {
     @Namespace private var searchNamespace
     @State private var tvListingsViewModel: TVListingsViewModel
 
-    #if DEBUG
-        @State private var developerStore = Store(initialState: DeveloperFeature.State()) {
-            DeveloperFeature()
-        }
-    #endif
-
     init(viewModel: AppRootViewModel, factory: ViewModelFactory) {
         _viewModel = State(initialValue: viewModel)
         self.factory = factory
@@ -56,7 +49,7 @@ struct AppRootView: View {
         }
         #if DEBUG
         .sheet(isPresented: $viewModel.isPresentingDeveloper) {
-                DeveloperView(store: developerStore)
+                DeveloperScreen(makeFeatureFlags: { factory.makeFeatureFlags() })
             }
         #endif
         #if DEBUG && os(iOS)

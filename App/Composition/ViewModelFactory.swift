@@ -6,6 +6,9 @@
 //
 
 import AppDependencies
+#if DEBUG
+    import DeveloperFeature
+#endif
 import ExploreFeature
 import GamesCatalogFeature
 import MediaSearchFeature
@@ -236,5 +239,13 @@ final class ViewModelFactory {
             dependencies: .live(services: services)
         )
     }
+
+    #if DEBUG
+        // MARK: - Feature Flags (Developer)
+
+        func makeFeatureFlags() -> FeatureFlagsViewModel {
+            FeatureFlagsViewModel(dependencies: .live(services: services))
+        }
+    #endif
 
 }
