@@ -44,7 +44,7 @@ public struct ExploreViewSnapshot: Equatable, Sendable {
 
 }
 
-/// Drives ``ExploreScreen``. The MVVM replacement for `ExploreFeature`.
+/// Drives ``ExploreView``. The MVVM replacement for `ExploreFeature`.
 ///
 /// Loads every enabled content source once in parallel (`async let`), exactly as
 /// the former reducer's `handleFetchAll` did. There is no live stream: the content

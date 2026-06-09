@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 @testable import ExploreFeature
 import Foundation
 import SnapshotTestHelpers
@@ -18,26 +17,35 @@ struct ExploreViewSnapshotTests {
 
     @Test
     func exploreView() {
-        let view = NavigationStack {
-            ExploreView(
-                store: Store(
-                    initialState: .init(
-                        viewState: .ready(
-                            .init(
-                                discoverMovies: MoviePreview.discoverSnapshots,
-                                trendingMovies: MoviePreview.trendingSnapshots,
-                                popularMovies: MoviePreview.popularSnapshots,
-                                trendingTVSeries: TVSeriesPreview.snapshots,
-                                trendingPeople: PersonPreview.snapshots
-                            )
-                        )
-                    ),
-                    reducer: { EmptyReducer() }
+        let view = NamespaceContainer(
+            viewModel: .preview(
+                viewState: .ready(
+                    .init(
+                        discoverMovies: MoviePreview.discoverSnapshots,
+                        trendingMovies: MoviePreview.trendingSnapshots,
+                        popularMovies: MoviePreview.popularSnapshots,
+                        trendingTVSeries: TVSeriesPreview.snapshots,
+                        trendingPeople: PersonPreview.snapshots
+                    )
                 )
             )
-        }
+        )
 
         verifyViewSnapshot(of: view)
+    }
+
+}
+
+private struct NamespaceContainer: View {
+
+    @Namespace var namespace
+
+    let viewModel: ExploreViewModel
+
+    var body: some View {
+        NavigationStack {
+            ExploreView(viewModel: viewModel, transitionNamespace: namespace)
+        }
     }
 
 }
