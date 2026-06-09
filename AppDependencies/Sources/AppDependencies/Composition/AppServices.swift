@@ -71,8 +71,14 @@ public final class AppServices: Sendable {
 
     // MARK: - Platform services
 
-    /// Feature-flag service used for reads. The same instance backs `featureFlagsInitialiser`.
+    /// Feature-flag service used for reads. The same instance backs `featureFlagsInitialiser`
+    /// and `featureFlagsOverride`.
     public let featureFlags: any FeatureFlagging
+
+    /// Feature-flag override service used by the developer feature-flags screen. Same instance
+    /// as `featureFlags` (single service, single lifetime). Mirrors the former
+    /// `@Dependency(\.featureFlagsOverride)`, which resolved the same `featureFlagService`.
+    public let featureFlagsOverride: any FeatureFlagOverriding
 
     /// Feature-flag initialiser. Same instance as `featureFlags` (single service, single lifetime).
     public let featureFlagsInitialiser: any FeatureFlagInitialising
@@ -115,6 +121,7 @@ public final class AppServices: Sendable {
         // Feature-flag and observability services are single instances backing both
         // the read and the initialiser surface (single service, single lifetime).
         self.featureFlags = graph.featureFlagService
+        self.featureFlagsOverride = graph.featureFlagService
         self.featureFlagsInitialiser = graph.featureFlagService
         self.observability = graph.observabilityService
         self.observabilityInitialiser = graph.observabilityService
@@ -138,7 +145,7 @@ public final class AppServices: Sendable {
         let intelligenceFactory: PopcornIntelligenceFactory
         let plotRemixGameFactory: PopcornPlotRemixGameFactory
         let tvListingsFactory: any PopcornTVListingsFactory
-        let featureFlagService: any FeatureFlagging & FeatureFlagInitialising
+        let featureFlagService: any FeatureFlagging & FeatureFlagOverriding & FeatureFlagInitialising
         let observabilityService: any Observing & ObservabilityInitialising
     }
 
