@@ -23,10 +23,12 @@ struct AppRootView: View {
     @State private var customization = TabViewCustomization()
     @State private var gamesRouter = GamesRouter()
     @Namespace private var gamesNamespace
+    @State private var tvListingsViewModel: TVListingsViewModel
 
     init(store: StoreOf<AppRootFeature>, factory: ViewModelFactory) {
         _store = Bindable(wrappedValue: store)
         self.factory = factory
+        _tvListingsViewModel = State(initialValue: factory.makeTVListings())
     }
 
     var body: some View {
@@ -118,12 +120,7 @@ struct AppRootView: View {
                     systemImage: "tv",
                     value: AppRootFeature.Tab.tvListings
                 ) {
-                    TVListingsRootView(
-                        store: store.scope(
-                            state: \.tvListings,
-                            action: \.tvListings
-                        )
-                    )
+                    TVListingsRootView(viewModel: tvListingsViewModel)
                 }
                 .customizationID(AppRootFeature.Tab.tvListings.id)
                 .accessibilityIdentifier("app.tabview.tvlistings")

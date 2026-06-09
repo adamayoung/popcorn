@@ -8,6 +8,7 @@
 import AppDependencies
 import GamesCatalogFeature
 import PlotRemixGameFeature
+import TVListingsFeature
 
 /// Builds feature view models from the app's shared ``AppServices`` graph.
 ///
@@ -44,6 +45,12 @@ final class ViewModelFactory {
             dependencies: .live(services: services),
             navigator: navigator
         )
+    }
+
+    // MARK: - TV Listings
+
+    func makeTVListings() -> TVListingsViewModel {
+        TVListingsViewModel(dependencies: .live(services: services))
     }
 
 }
