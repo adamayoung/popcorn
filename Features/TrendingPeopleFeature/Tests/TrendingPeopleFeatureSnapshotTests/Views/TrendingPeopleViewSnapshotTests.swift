@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import Foundation
 import SnapshotTestHelpers
 import SwiftUI
@@ -20,12 +19,7 @@ struct TrendingPeopleViewSnapshotTests {
     func trendingPeopleView() {
         let view = NavigationStack {
             TrendingPeopleView(
-                store: Store(
-                    initialState: TrendingPeopleFeature.State(
-                        people: PersonPreview.mocks
-                    ),
-                    reducer: { EmptyReducer() }
-                )
+                viewModel: .preview(people: PersonPreview.mocks)
             )
         }
 

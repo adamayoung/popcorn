@@ -9,7 +9,7 @@ import Foundation
 import Observation
 import OSLog
 
-/// Drives ``TrendingMoviesScreen``. The MVVM replacement for `TrendingMoviesFeature`.
+/// Drives ``TrendingMoviesView``. The MVVM replacement for `TrendingMoviesFeature`.
 ///
 /// Loading is driven by the view through ``load()`` from a `.task(id:)`, so SwiftUI
 /// owns the lifetime: the work is cancelled on disappear and restarted on reappear

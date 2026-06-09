@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import Foundation
 import SnapshotTestHelpers
 import SwiftUI
@@ -19,14 +18,7 @@ struct TrendingTVSeriesViewSnapshotTests {
     @Test
     func trendingTVSeriesView() {
         let view = NavigationStack {
-            TrendingTVSeriesView(
-                store: Store(
-                    initialState: TrendingTVSeriesFeature.State(
-                        tvSeries: TVSeriesPreview.mocks
-                    ),
-                    reducer: { EmptyReducer() }
-                )
-            )
+            TrendingTVSeriesView(viewModel: .preview(tvSeries: TVSeriesPreview.mocks))
         }
 
         verifyViewSnapshot(of: view)

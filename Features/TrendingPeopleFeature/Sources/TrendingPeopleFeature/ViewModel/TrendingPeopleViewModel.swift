@@ -9,7 +9,7 @@ import Foundation
 import Observation
 import OSLog
 
-/// Drives ``TrendingPeopleScreen``. The MVVM replacement for `TrendingPeopleFeature`.
+/// Drives ``TrendingPeopleView``. The MVVM replacement for `TrendingPeopleFeature`.
 ///
 /// Loading is driven by the view through ``load()`` from a `.task`, so SwiftUI owns
 /// the lifetime: the work is cancelled on disappear and restarted on reappear (or

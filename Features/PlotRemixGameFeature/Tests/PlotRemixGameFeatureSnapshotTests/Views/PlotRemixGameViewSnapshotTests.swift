@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import DesignSystem
 import Foundation
 @testable import PlotRemixGameFeature
@@ -20,12 +19,9 @@ struct PlotRemixGameViewSnapshotTests {
     @Test
     func plotRemixGameView() {
         let view = NamespaceContainer(
-            store: Store(
-                initialState: PlotRemixGameFeature.State(
-                    gameID: 1,
-                    metadata: .mock
-                ),
-                reducer: { EmptyReducer() }
+            viewModel: .preview(
+                gameID: 1,
+                metadata: .mock
             )
         )
 
@@ -38,10 +34,10 @@ private struct NamespaceContainer: View {
 
     @Namespace var namespace
 
-    let store: StoreOf<PlotRemixGameFeature>
+    let viewModel: PlotRemixGameViewModel
 
     var body: some View {
-        PlotRemixGameView(store: store, transitionNamespace: namespace)
+        PlotRemixGameView(viewModel: viewModel, transitionNamespace: namespace)
     }
 
 }

@@ -29,7 +29,7 @@ public struct TVListingsNowPlayingItem: Identifiable, Equatable, Sendable {
 
 }
 
-/// The data shown by ``TVListingsScreen`` once loaded.
+/// The data shown by ``TVListingsView`` once loaded.
 public struct TVListingsViewSnapshot: Equatable, Sendable {
 
     public let items: [TVListingsNowPlayingItem]
@@ -40,7 +40,7 @@ public struct TVListingsViewSnapshot: Equatable, Sendable {
 
 }
 
-/// Drives ``TVListingsScreen``. The MVVM replacement for `TVListingsFeature`.
+/// Drives ``TVListingsView``.
 ///
 /// Loading is driven by the view through ``load()`` from a `.task`, so SwiftUI
 /// owns the lifetime: the work is cancelled on disappear and restarted on
