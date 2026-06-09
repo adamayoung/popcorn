@@ -10,7 +10,7 @@ import IntelligenceDomain
 import Observation
 import OSLog
 
-/// Drives ``TVSeriesIntelligenceScreen``. The MVVM replacement for
+/// Drives ``TVSeriesIntelligenceView``. The MVVM replacement for
 /// `TVSeriesIntelligenceFeature`.
 ///
 /// A chat view model: it owns the conversation ``messages``, the ``isThinking``

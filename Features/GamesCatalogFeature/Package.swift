@@ -24,9 +24,6 @@ let package = Package(
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Core/Presentation"),
         .package(path: "../../Platform/Observability"),
-        .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
-        ),
         .package(path: "../../Core/SnapshotTestHelpers")
     ],
 
@@ -39,8 +36,7 @@ let package = Package(
                 .product(name: "GamesCatalogDomain", package: "PopcornGamesCatalog"),
                 "Observability",
                 "DesignSystem",
-                "Presentation",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                "Presentation"
             ],
             resources: [.process("Localizable.xcstrings")]
         ),
@@ -56,7 +52,6 @@ let package = Package(
             name: "GamesCatalogFeatureSnapshotTests",
             dependencies: [
                 "GamesCatalogFeature",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 "SnapshotTestHelpers"
             ]
         )

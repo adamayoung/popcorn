@@ -10,7 +10,7 @@ import Observation
 import OSLog
 import Presentation
 
-/// The data shown by ``GamesCatalogScreen`` once loaded.
+/// The data shown by ``GamesCatalogView`` once loaded.
 public struct GamesCatalogViewSnapshot: Equatable, Sendable {
 
     public let games: [GameMetadata]
@@ -21,7 +21,7 @@ public struct GamesCatalogViewSnapshot: Equatable, Sendable {
 
 }
 
-/// Drives ``GamesCatalogScreen``. The MVVM replacement for `GamesCatalogFeature`.
+/// Drives ``GamesCatalogView``. The MVVM replacement for `GamesCatalogFeature`.
 ///
 /// Loading is driven by the view through ``load()`` from a `.task(id:)`, so SwiftUI
 /// owns the lifetime: the work is cancelled on disappear and restarted on reappear
