@@ -49,6 +49,7 @@ let package = Package(
             dependencies: [
                 "TVSeriesIntelligenceFeature",
                 .product(name: "CoreDomain", package: "CoreDomain"),
+                .product(name: "IntelligenceDomain", package: "PopcornIntelligence"),
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries")
             ]
         ),
