@@ -43,6 +43,10 @@ public final class PlotRemixGameViewModel {
     /// synchronously before dismissing.
     private var generateTask: Task<Void, Never>?
 
+    /// The token associated with the current ``generateTask``, so we know when
+    /// the task is stale and can be cleaned up.
+    private var generateTaskToken: Int = 0
+
     private let dependencies: PlotRemixGameDependencies
     private let navigator: any PlotRemixGameNavigating
 
@@ -116,58 +120,66 @@ public final class PlotRemixGameViewModel {
 
         Self.logger.info("User generating game [gameID: \(self.gameID, privacy: .private)]")
 
-        // Run the generation as a child task captured into `generateTask`, so `close()`
-        // can cancel it synchronously. The `withTaskCancellationHandler` propagates
-        // cancellation from the driving `.task(id:)` (e.g. cover teardown) to that
-        // child, so generation never outlives the view either.
+        let tokenForThisGeneration = generateToken
+        await performGameGeneration(with: tokenForThisGeneration)
+    }
+
+    /// Performs the actual game generation task with structured cancellation handling.
+    private func performGameGeneration(with token: Int) async {
         await withTaskCancellationHandler {
-            let task = Task { [weak self] in
-                guard let self else {
-                    return
-                }
-
-                let game: Game
-                do {
-                    game = try await self.dependencies.generateGame { progress in
-                        Task { @MainActor [weak self] in
-                            guard let self, !Task.isCancelled else {
-                                return
-                            }
-                            self.generatingProgress = progress
-                        }
-                    }
-                } catch is CancellationError {
-                    return
-                } catch {
-                    guard !Task.isCancelled else {
-                        return
-                    }
-                    Self.logger.error(
-                        "Failed generating game [gameID: \(self.gameID, privacy: .private)]: \(error.localizedDescription, privacy: .public)"
-                    )
-                    self.generatingProgress = nil
-                    self.isGeneratingGame = false
-                    self.error = error
-                    return
-                }
-
-                guard !Task.isCancelled else {
-                    return
-                }
-
-                self.game = game
-                self.startGame()
-            }
-
+            let task = createGameGenerationTask()
             generateTask = task
+            generateTaskToken = token
             await task.value
-            if generateTask === task {
+            if generateTaskToken == token {
                 generateTask = nil
+                generateTaskToken = 0
             }
         } onCancel: {
             Task { @MainActor [weak self] in
                 self?.generateTask?.cancel()
             }
+        }
+    }
+
+    /// Creates a task that generates the game, handling progress callbacks and errors.
+    private func createGameGenerationTask() -> Task<Void, Never> {
+        Task { [weak self] in
+            guard let self else {
+                return
+            }
+
+            let game: Game
+            do {
+                game = try await dependencies.generateGame { progress in
+                    Task { @MainActor [weak self] in
+                        guard let self, !Task.isCancelled else {
+                            return
+                        }
+                        generatingProgress = progress
+                    }
+                }
+            } catch is CancellationError {
+                return
+            } catch {
+                guard !Task.isCancelled else {
+                    return
+                }
+                Self.logger.error(
+                    "Failed generating game [gameID: \(self.gameID, privacy: .private)]: \(error.localizedDescription, privacy: .public)"
+                )
+                generatingProgress = nil
+                isGeneratingGame = false
+                self.error = error
+                return
+            }
+
+            guard !Task.isCancelled else {
+                return
+            }
+
+            self.game = game
+            startGame()
         }
     }
 
@@ -207,7 +219,7 @@ public final class PlotRemixGameViewModel {
         /// A view model pinned to fixed state with no-op dependencies and navigation,
         /// for previews and snapshot tests.
         static func preview(
-            gameID: Int = GameMetadata.mock.id,
+            gameID: Int = 1,
             metadata: GameMetadata? = nil,
             generatingProgress: Float? = nil,
             game: Game? = nil

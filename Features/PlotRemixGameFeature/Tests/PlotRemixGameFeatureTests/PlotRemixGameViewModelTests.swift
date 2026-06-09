@@ -233,7 +233,7 @@ extension PlotRemixGameViewModelTests {
     )
 
     static let testGame = Game(
-        id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!,
+        id: UUID(uuidString: "00000000-0000-0000-0000-000000000001") ?? UUID(),
         questions: []
     )
 

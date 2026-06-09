@@ -30,7 +30,7 @@ struct PopcornApp: App {
             AppRootFeature()
         })
 
-        let services: AppServices = if let epgURL = AppConfig.TVListings.epgURL {
+        let services = if let epgURL = AppConfig.TVListings.epgURL {
             AppServices(tvListingsEPGURL: epgURL)
         } else {
             AppServices()

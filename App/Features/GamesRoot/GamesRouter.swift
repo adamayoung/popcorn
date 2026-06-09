@@ -29,7 +29,9 @@ final class GamesRouter {
     /// Identifies a presented game by its id, for `item`-based modal presentation.
     struct PresentedGame: Identifiable, Hashable {
         let gameID: Int
-        var id: Int { gameID }
+        var id: Int {
+            gameID
+        }
     }
 
 }

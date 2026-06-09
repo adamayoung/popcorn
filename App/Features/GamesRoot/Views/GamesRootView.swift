@@ -49,14 +49,14 @@ struct GamesRootView: View {
         }
         #else
         .sheet(item: $router.presentedGame) { presented in
-                PlotRemixGameScreen(
-                    viewModel: factory.makePlotRemixGame(
-                        gameID: presented.gameID,
-                        navigator: GamesRouterNavigator(router: router)
-                    ),
-                    transitionNamespace: namespace
-                )
-            }
+                    PlotRemixGameScreen(
+                        viewModel: factory.makePlotRemixGame(
+                            gameID: presented.gameID,
+                            navigator: GamesRouterNavigator(router: router)
+                        ),
+                        transitionNamespace: namespace
+                    )
+                }
         #endif
     }
 
