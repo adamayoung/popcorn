@@ -10,7 +10,7 @@ import Observation
 import OSLog
 import Presentation
 
-/// The data shown by ``TVEpisodeDetailsScreen`` once loaded.
+/// The data shown by ``TVEpisodeDetailsView`` once loaded.
 public struct TVEpisodeDetailsViewSnapshot: Equatable, Sendable {
 
     public let episode: TVEpisode
@@ -29,7 +29,7 @@ public struct TVEpisodeDetailsViewSnapshot: Equatable, Sendable {
 
 }
 
-/// Drives ``TVEpisodeDetailsScreen``. The MVVM replacement for `TVEpisodeDetailsFeature`.
+/// Drives ``TVEpisodeDetailsView``.
 ///
 /// Loading is driven by the view through ``load()`` from a `.task(id:)`, so SwiftUI
 /// owns the lifetime: the work is cancelled on disappear and restarted on reappear
