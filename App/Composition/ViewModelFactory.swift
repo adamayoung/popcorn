@@ -7,12 +7,19 @@
 
 import AppDependencies
 import GamesCatalogFeature
+import MediaSearchFeature
 import MovieCastAndCrewFeature
 import MovieDetailsFeature
 import MovieIntelligenceFeature
 import PersonDetailsFeature
 import PlotRemixGameFeature
+import TVEpisodeCastAndCrewFeature
+import TVEpisodeDetailsFeature
 import TVListingsFeature
+import TVSeasonDetailsFeature
+import TVSeriesCastAndCrewFeature
+import TVSeriesDetailsFeature
+import TVSeriesIntelligenceFeature
 import WatchlistFeature
 
 /// Builds feature view models from the app's shared ``AppServices`` graph.
@@ -117,6 +124,103 @@ final class ViewModelFactory {
     ) -> MovieIntelligenceViewModel {
         MovieIntelligenceViewModel(
             movieID: movieID,
+            dependencies: .live(services: services)
+        )
+    }
+
+    // MARK: - Media Search
+
+    func makeMediaSearch(
+        navigator: some MediaSearchNavigating
+    ) -> MediaSearchViewModel {
+        MediaSearchViewModel(
+            dependencies: .live(services: services),
+            navigator: navigator
+        )
+    }
+
+    // MARK: - TV Series Details
+
+    func makeTVSeriesDetails(
+        id: Int,
+        navigator: some TVSeriesDetailsNavigating
+    ) -> TVSeriesDetailsViewModel {
+        TVSeriesDetailsViewModel(
+            tvSeriesID: id,
+            dependencies: .live(services: services),
+            navigator: navigator
+        )
+    }
+
+    // MARK: - TV Season Details
+
+    func makeTVSeasonDetails(
+        tvSeriesID: Int,
+        seasonNumber: Int,
+        navigator: some TVSeasonDetailsNavigating
+    ) -> TVSeasonDetailsViewModel {
+        TVSeasonDetailsViewModel(
+            tvSeriesID: tvSeriesID,
+            seasonNumber: seasonNumber,
+            dependencies: .live(services: services),
+            navigator: navigator
+        )
+    }
+
+    // MARK: - TV Episode Details
+
+    func makeTVEpisodeDetails(
+        tvSeriesID: Int,
+        seasonNumber: Int,
+        episodeNumber: Int,
+        navigator: some TVEpisodeDetailsNavigating
+    ) -> TVEpisodeDetailsViewModel {
+        TVEpisodeDetailsViewModel(
+            tvSeriesID: tvSeriesID,
+            seasonNumber: seasonNumber,
+            episodeNumber: episodeNumber,
+            dependencies: .live(services: services),
+            navigator: navigator
+        )
+    }
+
+    // MARK: - TV Series Cast & Crew
+
+    func makeTVSeriesCastAndCrew(
+        tvSeriesID: Int,
+        navigator: some TVSeriesCastAndCrewNavigating
+    ) -> TVSeriesCastAndCrewViewModel {
+        TVSeriesCastAndCrewViewModel(
+            tvSeriesID: tvSeriesID,
+            dependencies: .live(services: services),
+            navigator: navigator
+        )
+    }
+
+    // MARK: - TV Episode Cast & Crew
+
+    func makeTVEpisodeCastAndCrew(
+        tvSeriesID: Int,
+        seasonNumber: Int,
+        episodeNumber: Int,
+        navigator: some TVEpisodeCastAndCrewNavigating
+    ) -> TVEpisodeCastAndCrewViewModel {
+        TVEpisodeCastAndCrewViewModel(
+            tvSeriesID: tvSeriesID,
+            seasonNumber: seasonNumber,
+            episodeNumber: episodeNumber,
+            dependencies: .live(services: services),
+            navigator: navigator
+        )
+    }
+
+    // MARK: - TV Series Intelligence
+
+    func makeTVSeriesIntelligence(
+        tvSeriesID: Int
+    ) -> TVSeriesIntelligenceViewModel {
+        TVSeriesIntelligenceViewModel(
+            tvSeriesID: tvSeriesID,
             dependencies: .live(services: services)
         )
     }

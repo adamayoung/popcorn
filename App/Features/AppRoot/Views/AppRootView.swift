@@ -25,6 +25,8 @@ struct AppRootView: View {
     @Namespace private var gamesNamespace
     @State private var watchlistRouter = WatchlistRouter()
     @Namespace private var watchlistNamespace
+    @State private var searchRouter = SearchRouter()
+    @Namespace private var searchNamespace
     @State private var tvListingsViewModel: TVListingsViewModel
 
     init(store: StoreOf<AppRootFeature>, factory: ViewModelFactory) {
@@ -135,10 +137,9 @@ struct AppRootView: View {
                     role: .search
                 ) {
                     SearchRootView(
-                        store: store.scope(
-                            state: \.search,
-                            action: \.search
-                        )
+                        router: searchRouter,
+                        factory: factory,
+                        namespace: searchNamespace
                     )
                 }
                 .customizationID(AppRootFeature.Tab.search.id)
