@@ -6,10 +6,14 @@
 //
 
 import Foundation
-import IntelligenceDomain
+import protocol IntelligenceDomain.LLMSession
+import enum IntelligenceDomain.LLMSessionError
 import Synchronization
 import Testing
 @testable import TVSeriesIntelligenceFeature
+
+// Only LLMSession/LLMSessionError are imported from IntelligenceDomain (not its
+// TVSeries) so the feature's own `TVSeries` display model stays unambiguous.
 
 @Suite("TVSeriesIntelligenceViewModel Tests")
 struct TVSeriesIntelligenceViewModelTests {

@@ -44,7 +44,7 @@ public struct Message: ChatMessage {
 
 }
 
-extension Message {
+public extension Message {
 
     static var mocks: [Message] {
         [
