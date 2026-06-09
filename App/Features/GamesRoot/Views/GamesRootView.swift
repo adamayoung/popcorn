@@ -30,7 +30,7 @@ struct GamesRootView: View {
 
     var body: some View {
         NavigationStack {
-            GamesCatalogScreen(
+            GamesCatalogView(
                 viewModel: factory.makeGamesCatalog(
                     navigator: GamesRouterNavigator(router: router)
                 ),
@@ -39,7 +39,7 @@ struct GamesRootView: View {
         }
         #if !os(macOS)
         .fullScreenCover(item: $router.presentedGame) { presented in
-            PlotRemixGameScreen(
+            PlotRemixGameView(
                 viewModel: factory.makePlotRemixGame(
                     gameID: presented.gameID,
                     navigator: GamesRouterNavigator(router: router)
@@ -49,7 +49,7 @@ struct GamesRootView: View {
         }
         #else
         .sheet(item: $router.presentedGame) { presented in
-                    PlotRemixGameScreen(
+                    PlotRemixGameView(
                         viewModel: factory.makePlotRemixGame(
                             gameID: presented.gameID,
                             navigator: GamesRouterNavigator(router: router)

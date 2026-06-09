@@ -23,7 +23,7 @@ struct WatchlistRootView: View {
     private let namespace: Namespace.ID
 
     /// The home view model, owned here (above the screen seam) so it survives the
-    /// router-driven body re-renders that push/present cause. ``WatchlistScreen``
+    /// router-driven body re-renders that push/present cause. ``WatchlistView``
     /// therefore stores it as a plain `let`. Mirrors how `AppRootView` owns the
     /// TV Listings view model.
     @State private var watchlistViewModel: WatchlistViewModel
@@ -45,7 +45,7 @@ struct WatchlistRootView: View {
 
     var body: some View {
         NavigationStack(path: $router.path) {
-            WatchlistScreen(
+            WatchlistView(
                 viewModel: watchlistViewModel,
                 transitionNamespace: namespace
             )
@@ -55,13 +55,13 @@ struct WatchlistRootView: View {
         }
         #if !os(macOS)
         .fullScreenCover(item: $router.presentedMovieIntelligence) { intel in
-            MovieIntelligenceScreen(
+            MovieIntelligenceView(
                 viewModel: factory.makeMovieIntelligence(movieID: intel.movieID)
             )
         }
         #else
         .sheet(item: $router.presentedMovieIntelligence) { intel in
-                    MovieIntelligenceScreen(
+                    MovieIntelligenceView(
                         viewModel: factory.makeMovieIntelligence(movieID: intel.movieID)
                     )
                 }
@@ -74,14 +74,14 @@ struct WatchlistRootView: View {
         case .movieDetails(let id, let transitionID):
             movieDetails(id: id, transitionID: transitionID)
         case .personDetails(let id):
-            PersonDetailsScreen(
+            PersonDetailsView(
                 viewModel: factory.makePersonDetails(
                     id: id,
                     navigator: WatchlistRouterNavigator(router: router)
                 )
             )
         case .movieCastAndCrew(let movieID):
-            MovieCastAndCrewScreen(
+            MovieCastAndCrewView(
                 viewModel: factory.makeMovieCastAndCrew(
                     movieID: movieID,
                     navigator: WatchlistRouterNavigator(router: router)
@@ -98,12 +98,12 @@ struct WatchlistRootView: View {
             navigator: WatchlistRouterNavigator(router: router)
         )
         if let transitionID {
-            MovieDetailsScreen(viewModel: viewModel)
+            MovieDetailsView(viewModel: viewModel)
             #if os(iOS)
                 .navigationTransition(.zoom(sourceID: transitionID, in: namespace))
             #endif
         } else {
-            MovieDetailsScreen(viewModel: viewModel)
+            MovieDetailsView(viewModel: viewModel)
         }
     }
 

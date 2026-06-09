@@ -49,7 +49,7 @@ struct AppRootView: View {
         }
         #if DEBUG
         .sheet(isPresented: $viewModel.isPresentingDeveloper) {
-                DeveloperScreen(makeFeatureFlags: { factory.makeFeatureFlags() })
+                DeveloperView(makeFeatureFlags: { factory.makeFeatureFlags() })
             }
         #endif
         #if DEBUG && os(iOS)

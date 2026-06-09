@@ -30,7 +30,7 @@ struct ExploreRootView: View {
     private let namespace: Namespace.ID
 
     /// The home view model, owned here (above the screen seam) so it survives the
-    /// router-driven body re-renders that push/present cause. ``ExploreScreen``
+    /// router-driven body re-renders that push/present cause. ``ExploreView``
     /// therefore stores it as a plain `let`.
     @State private var exploreViewModel: ExploreViewModel
 
@@ -51,30 +51,30 @@ struct ExploreRootView: View {
 
     var body: some View {
         NavigationStack(path: $router.path) {
-            ExploreScreen(viewModel: exploreViewModel, transitionNamespace: namespace)
+            ExploreView(viewModel: exploreViewModel, transitionNamespace: namespace)
                 .navigationDestination(for: ExploreRoute.self) { route in
                     destination(route)
                 }
         }
         #if !os(macOS)
         .fullScreenCover(item: $router.presentedMovieIntelligence) { intel in
-            MovieIntelligenceScreen(
+            MovieIntelligenceView(
                 viewModel: factory.makeMovieIntelligence(movieID: intel.movieID)
             )
         }
         .fullScreenCover(item: $router.presentedTVSeriesIntelligence) { intel in
-            TVSeriesIntelligenceScreen(
+            TVSeriesIntelligenceView(
                 viewModel: factory.makeTVSeriesIntelligence(tvSeriesID: intel.tvSeriesID)
             )
         }
         #else
         .sheet(item: $router.presentedMovieIntelligence) { intel in
-                    MovieIntelligenceScreen(
+                    MovieIntelligenceView(
                         viewModel: factory.makeMovieIntelligence(movieID: intel.movieID)
                     )
                 }
                 .sheet(item: $router.presentedTVSeriesIntelligence) { intel in
-                    TVSeriesIntelligenceScreen(
+                    TVSeriesIntelligenceView(
                         viewModel: factory.makeTVSeriesIntelligence(tvSeriesID: intel.tvSeriesID)
                     )
                 }
@@ -105,7 +105,7 @@ struct ExploreRootView: View {
         case .personDetails(let id, let transitionID):
             personDetails(id: id, transitionID: transitionID)
         case .movieCastAndCrew(let movieID):
-            MovieCastAndCrewScreen(
+            MovieCastAndCrewView(
                 viewModel: factory.makeMovieCastAndCrew(movieID: movieID, navigator: navigator)
             )
         case .tvSeriesCastAndCrew(let tvSeriesID):
@@ -127,12 +127,12 @@ struct ExploreRootView: View {
             navigator: navigator
         )
         if let transitionID {
-            MovieDetailsScreen(viewModel: viewModel)
+            MovieDetailsView(viewModel: viewModel)
             #if os(iOS)
                 .navigationTransition(.zoom(sourceID: transitionID, in: namespace))
             #endif
         } else {
-            MovieDetailsScreen(viewModel: viewModel)
+            MovieDetailsView(viewModel: viewModel)
         }
     }
 
@@ -140,12 +140,12 @@ struct ExploreRootView: View {
     private func tvSeriesDetails(id: Int, transitionID: String?) -> some View {
         let viewModel = factory.makeTVSeriesDetails(id: id, navigator: navigator)
         if let transitionID {
-            TVSeriesDetailsScreen(viewModel: viewModel)
+            TVSeriesDetailsView(viewModel: viewModel)
             #if os(iOS)
                 .navigationTransition(.zoom(sourceID: transitionID, in: namespace))
             #endif
         } else {
-            TVSeriesDetailsScreen(viewModel: viewModel)
+            TVSeriesDetailsView(viewModel: viewModel)
         }
     }
 
@@ -153,17 +153,17 @@ struct ExploreRootView: View {
     private func personDetails(id: Int, transitionID: String?) -> some View {
         let viewModel = factory.makePersonDetails(id: id, navigator: navigator)
         if let transitionID {
-            PersonDetailsScreen(viewModel: viewModel)
+            PersonDetailsView(viewModel: viewModel)
             #if os(iOS)
                 .navigationTransition(.zoom(sourceID: transitionID, in: namespace))
             #endif
         } else {
-            PersonDetailsScreen(viewModel: viewModel)
+            PersonDetailsView(viewModel: viewModel)
         }
     }
 
     private func tvSeasonDetails(tvSeriesID: Int, seasonNumber: Int) -> some View {
-        TVSeasonDetailsScreen(
+        TVSeasonDetailsView(
             viewModel: factory.makeTVSeasonDetails(
                 tvSeriesID: tvSeriesID,
                 seasonNumber: seasonNumber,
@@ -177,7 +177,7 @@ struct ExploreRootView: View {
         seasonNumber: Int,
         episodeNumber: Int
     ) -> some View {
-        TVEpisodeDetailsScreen(
+        TVEpisodeDetailsView(
             viewModel: factory.makeTVEpisodeDetails(
                 tvSeriesID: tvSeriesID,
                 seasonNumber: seasonNumber,
@@ -188,7 +188,7 @@ struct ExploreRootView: View {
     }
 
     private func tvSeriesCastAndCrew(tvSeriesID: Int) -> some View {
-        TVSeriesCastAndCrewScreen(
+        TVSeriesCastAndCrewView(
             viewModel: factory.makeTVSeriesCastAndCrew(
                 tvSeriesID: tvSeriesID,
                 navigator: navigator
@@ -201,7 +201,7 @@ struct ExploreRootView: View {
         seasonNumber: Int,
         episodeNumber: Int
     ) -> some View {
-        TVEpisodeCastAndCrewScreen(
+        TVEpisodeCastAndCrewView(
             viewModel: factory.makeTVEpisodeCastAndCrew(
                 tvSeriesID: tvSeriesID,
                 seasonNumber: seasonNumber,

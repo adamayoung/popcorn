@@ -19,7 +19,7 @@ struct TVListingsRootView: View {
 
     var body: some View {
         NavigationStack {
-            TVListingsScreen(viewModel: viewModel)
+            TVListingsView(viewModel: viewModel)
         }
     }
 

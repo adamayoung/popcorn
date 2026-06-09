@@ -30,7 +30,7 @@ struct SearchRootView: View {
     private let namespace: Namespace.ID
 
     /// The home view model, owned here (above the screen seam) so it survives the
-    /// router-driven body re-renders that push/present cause. ``MediaSearchScreen``
+    /// router-driven body re-renders that push/present cause. ``MediaSearchView``
     /// therefore stores it as a plain `let`.
     @State private var mediaSearchViewModel: MediaSearchViewModel
 
@@ -51,30 +51,30 @@ struct SearchRootView: View {
 
     var body: some View {
         NavigationStack(path: $router.path) {
-            MediaSearchScreen(viewModel: mediaSearchViewModel)
+            MediaSearchView(viewModel: mediaSearchViewModel)
                 .navigationDestination(for: SearchRoute.self) { route in
                     destination(route)
                 }
         }
         #if !os(macOS)
         .fullScreenCover(item: $router.presentedMovieIntelligence) { intel in
-            MovieIntelligenceScreen(
+            MovieIntelligenceView(
                 viewModel: factory.makeMovieIntelligence(movieID: intel.movieID)
             )
         }
         .fullScreenCover(item: $router.presentedTVSeriesIntelligence) { intel in
-            TVSeriesIntelligenceScreen(
+            TVSeriesIntelligenceView(
                 viewModel: factory.makeTVSeriesIntelligence(tvSeriesID: intel.tvSeriesID)
             )
         }
         #else
         .sheet(item: $router.presentedMovieIntelligence) { intel in
-                    MovieIntelligenceScreen(
+                    MovieIntelligenceView(
                         viewModel: factory.makeMovieIntelligence(movieID: intel.movieID)
                     )
                 }
                 .sheet(item: $router.presentedTVSeriesIntelligence) { intel in
-                    TVSeriesIntelligenceScreen(
+                    TVSeriesIntelligenceView(
                         viewModel: factory.makeTVSeriesIntelligence(tvSeriesID: intel.tvSeriesID)
                     )
                 }
@@ -103,11 +103,11 @@ struct SearchRootView: View {
                 episodeNumber: episodeNumber
             )
         case .personDetails(let id):
-            PersonDetailsScreen(
+            PersonDetailsView(
                 viewModel: factory.makePersonDetails(id: id, navigator: navigator)
             )
         case .movieCastAndCrew(let movieID):
-            MovieCastAndCrewScreen(
+            MovieCastAndCrewView(
                 viewModel: factory.makeMovieCastAndCrew(movieID: movieID, navigator: navigator)
             )
         case .tvSeriesCastAndCrew(let tvSeriesID):
@@ -129,23 +129,23 @@ struct SearchRootView: View {
             navigator: navigator
         )
         if let transitionID {
-            MovieDetailsScreen(viewModel: viewModel)
+            MovieDetailsView(viewModel: viewModel)
             #if os(iOS)
                 .navigationTransition(.zoom(sourceID: transitionID, in: namespace))
             #endif
         } else {
-            MovieDetailsScreen(viewModel: viewModel)
+            MovieDetailsView(viewModel: viewModel)
         }
     }
 
     private func tvSeriesDetails(id: Int) -> some View {
-        TVSeriesDetailsScreen(
+        TVSeriesDetailsView(
             viewModel: factory.makeTVSeriesDetails(id: id, navigator: navigator)
         )
     }
 
     private func tvSeasonDetails(tvSeriesID: Int, seasonNumber: Int) -> some View {
-        TVSeasonDetailsScreen(
+        TVSeasonDetailsView(
             viewModel: factory.makeTVSeasonDetails(
                 tvSeriesID: tvSeriesID,
                 seasonNumber: seasonNumber,
@@ -159,7 +159,7 @@ struct SearchRootView: View {
         seasonNumber: Int,
         episodeNumber: Int
     ) -> some View {
-        TVEpisodeDetailsScreen(
+        TVEpisodeDetailsView(
             viewModel: factory.makeTVEpisodeDetails(
                 tvSeriesID: tvSeriesID,
                 seasonNumber: seasonNumber,
@@ -170,7 +170,7 @@ struct SearchRootView: View {
     }
 
     private func tvSeriesCastAndCrew(tvSeriesID: Int) -> some View {
-        TVSeriesCastAndCrewScreen(
+        TVSeriesCastAndCrewView(
             viewModel: factory.makeTVSeriesCastAndCrew(
                 tvSeriesID: tvSeriesID,
                 navigator: navigator
@@ -183,7 +183,7 @@ struct SearchRootView: View {
         seasonNumber: Int,
         episodeNumber: Int
     ) -> some View {
-        TVEpisodeCastAndCrewScreen(
+        TVEpisodeCastAndCrewView(
             viewModel: factory.makeTVEpisodeCastAndCrew(
                 tvSeriesID: tvSeriesID,
                 seasonNumber: seasonNumber,
