@@ -5,42 +5,42 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import DesignSystem
 import SwiftUI
 
+/// The MVVM Plot Remix game screen, driven by ``PlotRemixGameViewModel``.
+///
+/// Reuses the same ``PlotRemixGameStartView`` / ``PlotRemixGameQuestionsView`` and
+/// reproduces the exact chrome of the former store-backed view, so recorded
+/// snapshots stay byte-identical.
 public struct PlotRemixGameView: View {
 
-    @Bindable private var store: StoreOf<PlotRemixGameFeature>
+    @State private var viewModel: PlotRemixGameViewModel
     private let namespace: Namespace.ID
 
-    private var metadata: GameMetadata? {
-        store.metadata
-    }
-
     private var backgroundColor: Color {
-        store.metadata?.color ?? .black
+        viewModel.metadata?.color ?? .black
     }
 
     public init(
-        store: StoreOf<PlotRemixGameFeature>,
+        viewModel: PlotRemixGameViewModel,
         transitionNamespace: Namespace.ID
     ) {
-        self._store = .init(store)
+        _viewModel = State(initialValue: viewModel)
         self.namespace = transitionNamespace
     }
 
     public var body: some View {
         NavigationStack {
             ZStack {
-                if let game = store.game {
+                if let game = viewModel.game {
                     PlotRemixGameQuestionsView(questions: game.questions)
-                } else if let metadata = store.metadata {
+                } else if let metadata = viewModel.metadata {
                     PlotRemixGameStartView(
                         metadata: metadata,
-                        progress: store.generatingProgress
+                        progress: viewModel.generatingProgress
                     ) {
-                        store.send(.generateGame)
+                        viewModel.startGenerating()
                     }
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
@@ -50,17 +50,20 @@ public struct PlotRemixGameView: View {
                     .ignoresSafeArea()
             }
             .overlay {
-                if store.isLoading {
+                if viewModel.isLoading {
                     loadingBody
                 }
             }
             .task {
-                store.send(.fetchMetadata)
+                await viewModel.fetchMetadata()
+            }
+            .task(id: viewModel.generateToken) {
+                await viewModel.generateGame()
             }
             .toolbar {
                 ToolbarItem {
                     Button(role: .close) {
-                        store.send(.close)
+                        Task { await viewModel.close() }
                     }
                 }
             }
@@ -79,20 +82,13 @@ extension PlotRemixGameView {
 
 }
 
-#Preview("Ready") {
-    @Previewable @Namespace var namespace
+#if DEBUG
+    #Preview("Start") {
+        @Previewable @Namespace var namespace
 
-    NavigationStack {
         PlotRemixGameView(
-            store: Store(
-                initialState: PlotRemixGameFeature.State(
-                    gameID: GameMetadata.mock.id
-                ),
-                reducer: {
-                    EmptyReducer()
-                }
-            ),
+            viewModel: .preview(metadata: GameMetadata.mock),
             transitionNamespace: namespace
         )
     }
-}
+#endif

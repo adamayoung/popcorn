@@ -44,6 +44,24 @@ struct PlotRemixGameQuestionView: View {
 
 }
 
+struct AnswerButton: View {
+    let title: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.headline)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, .spacing5)
+                .padding(.horizontal, .spacing20)
+        }
+        #if !os(visionOS)
+        .buttonStyle(.glassProminent)
+        #endif
+    }
+}
+
 // #Preview {
 //    PlotRemixGameQuestionView()
 // }

@@ -9,7 +9,7 @@ import Foundation
 import Observation
 import OSLog
 
-/// Drives ``PlotRemixGameScreen``. The MVVM replacement for `PlotRemixGameFeature`.
+/// Drives ``PlotRemixGameView``. The MVVM replacement for the former store-backed feature.
 ///
 /// Mirrors the former reducer's discrete state (no `ViewState` wrapper, because the
 /// game's start / generating / playing phases are not a simple loading lifecycle).
