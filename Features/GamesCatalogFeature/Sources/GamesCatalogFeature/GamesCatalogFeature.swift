@@ -10,7 +10,7 @@ import ComposableArchitecture
 import Foundation
 import Observability
 import OSLog
-import TCAFoundation
+import Presentation
 
 @Reducer
 public struct GamesCatalogFeature: Sendable {

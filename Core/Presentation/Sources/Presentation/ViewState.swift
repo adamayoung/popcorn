@@ -5,9 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import CasePaths
-
-/// A generic view state enum for TCA features.
+/// A generic view state enum for MVVM view models.
 ///
 /// Use this to represent the loading lifecycle of a view:
 /// - `initial`: Before any data has been requested
@@ -22,7 +20,6 @@ import CasePaths
 ///     var viewState: ViewState<MovieDetails> = .initial
 /// }
 /// ```
-@CasePathable
 public enum ViewState<Content: Equatable & Sendable>: Equatable, Sendable {
     case initial
     case loading

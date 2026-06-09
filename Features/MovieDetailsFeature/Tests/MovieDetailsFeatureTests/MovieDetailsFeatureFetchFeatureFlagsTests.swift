@@ -8,7 +8,7 @@
 import ComposableArchitecture
 import Foundation
 @testable import MovieDetailsFeature
-import TCAFoundation
+import Presentation
 import Testing
 
 @MainActor

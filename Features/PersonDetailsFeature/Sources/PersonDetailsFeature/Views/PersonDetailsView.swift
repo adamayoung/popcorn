@@ -8,7 +8,7 @@
 import ComposableArchitecture
 import DesignSystem
 import SwiftUI
-import TCAFoundation
+import Presentation
 
 public struct PersonDetailsView: View {
 

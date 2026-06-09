@@ -5,7 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
-@testable import TCAFoundation
+@testable import Presentation
 import Testing
 
 @Suite("ViewState")

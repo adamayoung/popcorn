@@ -8,7 +8,7 @@
 import ComposableArchitecture
 import Foundation
 @testable import PersonDetailsFeature
-import TCAFoundation
+import Presentation
 import Testing
 
 @MainActor

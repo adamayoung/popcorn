@@ -21,7 +21,7 @@ let package = Package(
         .package(path: "../../AppDependencies"),
         .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Core/DesignSystem"),
-        .package(path: "../../Core/TCAFoundation"),
+        .package(path: "../../Core/Presentation"),
         .package(path: "../../Contexts/PopcornMovies"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
@@ -35,7 +35,7 @@ let package = Package(
             dependencies: [
                 "AppDependencies",
                 "DesignSystem",
-                "TCAFoundation",
+                "Presentation",
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ],
@@ -45,7 +45,7 @@ let package = Package(
             name: "WatchlistFeatureTests",
             dependencies: [
                 "WatchlistFeature",
-                "TCAFoundation",
+                "Presentation",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "CoreDomain", package: "CoreDomain"),
                 .product(name: "MoviesApplication", package: "PopcornMovies")

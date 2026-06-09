@@ -7,7 +7,7 @@
 
 import ComposableArchitecture
 import Foundation
-import TCAFoundation
+import Presentation
 import Testing
 @testable import TVSeriesDetailsFeature
 

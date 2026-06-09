@@ -20,7 +20,7 @@ let package = Package(
     dependencies: [
         .package(path: "../../AppDependencies"),
         .package(path: "../../Core/DesignSystem"),
-        .package(path: "../../Core/TCAFoundation"),
+        .package(path: "../../Core/Presentation"),
         .package(path: "../../Contexts/PopcornTVSeries"),
         .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Platform/FeatureAccess"),
@@ -35,7 +35,7 @@ let package = Package(
             dependencies: [
                 "AppDependencies",
                 "DesignSystem",
-                "TCAFoundation",
+                "Presentation",
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
                 "FeatureAccess",
                 "Observability",
@@ -50,7 +50,7 @@ let package = Package(
             dependencies: [
                 "AppDependencies",
                 "TVEpisodeDetailsFeature",
-                "TCAFoundation",
+                "Presentation",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "CoreDomain", package: "CoreDomain"),
                 .product(name: "FeatureAccessTestHelpers", package: "FeatureAccess"),

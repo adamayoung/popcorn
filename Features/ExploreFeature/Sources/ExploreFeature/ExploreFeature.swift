@@ -9,7 +9,7 @@ import AppDependencies
 import ComposableArchitecture
 import Foundation
 import OSLog
-import TCAFoundation
+import Presentation
 
 /// A feature that manages the exploration of various media content including movies, TV series, and people.
 ///

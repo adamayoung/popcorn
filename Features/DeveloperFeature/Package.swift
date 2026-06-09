@@ -21,7 +21,7 @@ let package = Package(
     dependencies: [
         .package(path: "../../AppDependencies"),
         .package(path: "../../Core/DesignSystem"),
-        .package(path: "../../Core/TCAFoundation"),
+        .package(path: "../../Core/Presentation"),
         .package(path: "../../Platform/FeatureAccess"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
@@ -36,7 +36,7 @@ let package = Package(
                 "AppDependencies",
                 "FeatureAccess",
                 "DesignSystem",
-                "TCAFoundation",
+                "Presentation",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ],
             resources: [.process("Localizable.xcstrings")]
@@ -46,7 +46,7 @@ let package = Package(
             dependencies: [
                 "DeveloperFeature",
                 "FeatureAccess",
-                "TCAFoundation",
+                "Presentation",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
             ]
         ),

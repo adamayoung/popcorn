@@ -22,7 +22,7 @@ let package = Package(
         .package(path: "../../AppDependencies"),
         .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Core/DesignSystem"),
-        .package(path: "../../Core/TCAFoundation"),
+        .package(path: "../../Core/Presentation"),
         .package(path: "../../Contexts/PopcornTVSeries"),
         .package(path: "../../Platform/Observability"),
         .package(
@@ -37,7 +37,7 @@ let package = Package(
             dependencies: [
                 "AppDependencies",
                 "DesignSystem",
-                "TCAFoundation",
+                "Presentation",
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
                 "Observability",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
@@ -48,7 +48,7 @@ let package = Package(
             name: "TVSeasonDetailsFeatureTests",
             dependencies: [
                 "TVSeasonDetailsFeature",
-                "TCAFoundation",
+                "Presentation",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "CoreDomain", package: "CoreDomain"),
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries")

@@ -9,7 +9,7 @@ import AppDependencies
 import ComposableArchitecture
 import Foundation
 import OSLog
-import TCAFoundation
+import Presentation
 
 /// A feature that manages the display and override of feature flags in the developer menu.
 @Reducer

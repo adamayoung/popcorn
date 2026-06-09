@@ -442,9 +442,9 @@
     },
     {
       "target" : {
-        "containerPath" : "container:Core\/TCAFoundation",
-        "identifier" : "TCAFoundationTests",
-        "name" : "TCAFoundationTests"
+        "containerPath" : "container:Core\/Presentation",
+        "identifier" : "PresentationTests",
+        "name" : "PresentationTests"
       }
     },
     {

@@ -8,7 +8,7 @@
 import ComposableArchitecture
 import Foundation
 import OSLog
-import TCAFoundation
+import Presentation
 
 @Reducer
 public struct TVEpisodeDetailsFeature: Sendable {

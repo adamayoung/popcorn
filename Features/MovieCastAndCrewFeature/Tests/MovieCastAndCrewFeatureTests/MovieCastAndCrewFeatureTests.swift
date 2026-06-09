@@ -6,7 +6,7 @@
 //
 
 @testable import MovieCastAndCrewFeature
-import TCAFoundation
+import Presentation
 import Testing
 
 @Suite("MovieCastAndCrewFeature")

@@ -23,7 +23,7 @@ let package = Package(
         .package(path: "../../Contexts/PopcornGamesCatalog"),
         .package(path: "../../Contexts/PopcornPlotRemixGame"),
         .package(path: "../../Core/DesignSystem"),
-        .package(path: "../../Core/TCAFoundation"),
+        .package(path: "../../Core/Presentation"),
         .package(
             url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
         ),
@@ -40,7 +40,7 @@ let package = Package(
                 .product(name: "PlotRemixGameApplication", package: "PopcornPlotRemixGame"),
                 "DesignSystem",
                 .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-                "TCAFoundation"
+                "Presentation"
             ],
             resources: [.process("Localizable.xcstrings")]
         ),
