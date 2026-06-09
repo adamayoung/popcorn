@@ -6,13 +6,12 @@
 //
 
 #if os(visionOS)
-    import ComposableArchitecture
     import SwiftUI
     import UIKit
 
     struct VisionScene: Scene {
 
-        @Bindable var store: StoreOf<AppRootFeature>
+        let viewModel: AppRootViewModel
         let factory: ViewModelFactory
 
         private let minWidth: CGFloat = 1280
@@ -20,7 +19,7 @@
 
         var body: some Scene {
             WindowGroup("MOVIES", id: "app") {
-                AppRootView(store: store, factory: factory)
+                AppRootView(viewModel: viewModel, factory: factory)
                     .preferredColorScheme(.dark)
                     .onAppear {
                         if let windowScene = UIApplication.shared.connectedScenes.first
