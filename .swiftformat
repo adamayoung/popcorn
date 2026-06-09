@@ -2,6 +2,7 @@
 --indent 4
 --commas inline
 --self init-only
+--selfrequired log,trace,debug,info,notice,warning,error,critical,fault
 --wraparguments before-first
 --wrapparameters before-first
 --xcodeindentation enabled

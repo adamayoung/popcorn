@@ -103,7 +103,7 @@ public final class PersonDetailsViewModel {
 
         viewState = .loading
         Self.logger.info(
-            "User fetching person [personID: \"\(personID, privacy: .private)\"]"
+            "User fetching person [personID: \"\(self.personID, privacy: .private)\"]"
         )
 
         let snapshot: ViewSnapshot
@@ -112,7 +112,7 @@ public final class PersonDetailsViewModel {
             snapshot = ViewSnapshot(person: person)
         } catch {
             Self.logger.error(
-                "Failed fetching person details: [personID: \"\(personID, privacy: .private)\"] \(error.localizedDescription, privacy: .public)"
+                "Failed fetching person details: [personID: \"\(self.personID, privacy: .private)\"] \(error.localizedDescription, privacy: .public)"
             )
             viewState = .error(ViewStateError(error))
             return
