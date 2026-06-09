@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import AppDependencies
 import ComposableArchitecture
 import DesignSystem
 #if DEBUG
@@ -17,7 +18,16 @@ import WatchlistFeature
 struct AppRootView: View {
 
     @Bindable var store: StoreOf<AppRootFeature>
+    let factory: ViewModelFactory
+
     @State private var customization = TabViewCustomization()
+    @State private var gamesRouter = GamesRouter()
+    @Namespace private var gamesNamespace
+
+    init(store: StoreOf<AppRootFeature>, factory: ViewModelFactory) {
+        _store = Bindable(wrappedValue: store)
+        self.factory = factory
+    }
 
     var body: some View {
         Group {
@@ -93,10 +103,9 @@ struct AppRootView: View {
                     value: AppRootFeature.Tab.games
                 ) {
                     GamesRootView(
-                        store: store.scope(
-                            state: \.games,
-                            action: \.games
-                        )
+                        router: gamesRouter,
+                        factory: factory,
+                        namespace: gamesNamespace
                     )
                 }
                 .customizationID(AppRootFeature.Tab.games.id)
@@ -183,6 +192,7 @@ private extension View {
             reducer: {
                 AppRootFeature()
             }
-        )
+        ),
+        factory: ViewModelFactory(services: AppServices())
     )
 }

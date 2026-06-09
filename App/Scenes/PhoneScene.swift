@@ -12,10 +12,11 @@
     struct PhoneScene: Scene {
 
         @Bindable var store: StoreOf<AppRootFeature>
+        let factory: ViewModelFactory
 
         var body: some Scene {
             WindowGroup {
-                AppRootView(store: store)
+                AppRootView(store: store, factory: factory)
             }
         }
 

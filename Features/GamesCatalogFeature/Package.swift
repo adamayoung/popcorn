@@ -46,7 +46,10 @@ let package = Package(
         ),
         .testTarget(
             name: "GamesCatalogFeatureTests",
-            dependencies: ["GamesCatalogFeature"],
+            dependencies: [
+                "GamesCatalogFeature",
+                "Presentation"
+            ],
             path: "Tests/GamesCatalogueFeatureTests"
         ),
         .testTarget(

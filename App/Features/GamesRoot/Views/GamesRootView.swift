@@ -5,56 +5,59 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import GamesCatalogFeature
 import PlotRemixGameFeature
 import SwiftUI
 
+/// The MVVM Games tab root. Hosts the catalog in a `NavigationStack` and presents
+/// the Plot Remix game modally, driven by ``GamesRouter``. The MVVM replacement
+/// for the store-based `GamesRootView` + `GamesRootFeature`.
 struct GamesRootView: View {
 
-    @Bindable var store: StoreOf<GamesRootFeature>
-    @Namespace private var namespace
+    @Bindable private var router: GamesRouter
+    private let factory: ViewModelFactory
+    private let namespace: Namespace.ID
+
+    init(
+        router: GamesRouter,
+        factory: ViewModelFactory,
+        namespace: Namespace.ID
+    ) {
+        _router = Bindable(wrappedValue: router)
+        self.factory = factory
+        self.namespace = namespace
+    }
 
     var body: some View {
         NavigationStack {
-            GamesCatalogView(
-                store: store.scope(
-                    state: \.gamesCatalog,
-                    action: \.gamesCatalog
+            GamesCatalogScreen(
+                viewModel: factory.makeGamesCatalog(
+                    navigator: GamesRouterNavigator(router: router)
                 ),
                 transitionNamespace: namespace
             )
         }
         #if !os(macOS)
-        .fullScreenCover(
-            item: $store.scope(
-                state: \.plotRemixGame,
-                action: \.plotRemixGame
+        .fullScreenCover(item: $router.presentedGame) { presented in
+            PlotRemixGameScreen(
+                viewModel: factory.makePlotRemixGame(
+                    gameID: presented.gameID,
+                    navigator: GamesRouterNavigator(router: router)
+                ),
+                transitionNamespace: namespace
             )
-        ) { store in
-            PlotRemixGameView(store: store, transitionNamespace: namespace)
         }
         #else
-        .sheet(
-                    item: $store.scope(
-                        state: \.plotRemixGame,
-                        action: \.plotRemixGame
-                    )
-                ) { store in
-                    PlotRemixGameView(store: store, transitionNamespace: namespace)
-                }
+        .sheet(item: $router.presentedGame) { presented in
+                PlotRemixGameScreen(
+                    viewModel: factory.makePlotRemixGame(
+                        gameID: presented.gameID,
+                        navigator: GamesRouterNavigator(router: router)
+                    ),
+                    transitionNamespace: namespace
+                )
+            }
         #endif
     }
 
-}
-
-#Preview {
-    GamesRootView(
-        store: Store(
-            initialState: GamesRootFeature.State(),
-            reducer: {
-                GamesRootFeature()
-            }
-        )
-    )
 }
