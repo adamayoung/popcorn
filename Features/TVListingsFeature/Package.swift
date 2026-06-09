@@ -21,10 +21,7 @@ let package = Package(
         .package(path: "../../AppDependencies"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Core/Presentation"),
-        .package(path: "../../Contexts/PopcornTVListings"),
-        .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
-        )
+        .package(path: "../../Contexts/PopcornTVListings")
     ],
 
     targets: [
@@ -35,8 +32,7 @@ let package = Package(
                 "DesignSystem",
                 "Presentation",
                 .product(name: "TVListingsApplication", package: "PopcornTVListings"),
-                .product(name: "TVListingsDomain", package: "PopcornTVListings"),
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                .product(name: "TVListingsDomain", package: "PopcornTVListings")
             ],
             resources: [.process("Localizable.xcstrings")]
         ),
@@ -44,8 +40,7 @@ let package = Package(
             name: "TVListingsFeatureTests",
             dependencies: [
                 "TVListingsFeature",
-                .product(name: "TVListingsDomain", package: "PopcornTVListings"),
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                .product(name: "TVListingsDomain", package: "PopcornTVListings")
             ]
         )
     ]
