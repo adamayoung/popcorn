@@ -29,26 +29,6 @@ enum SearchRoute: Hashable {
     case tvEpisodeCastAndCrew(tvSeriesID: Int, seasonNumber: Int, episodeNumber: Int)
 }
 
-/// Identifies the presented movie intelligence chat by its movie id, for
-/// `item`-based modal presentation. The MVVM replacement for `SearchRootFeature`'s
-/// `@Presents var movieIntelligence`.
-struct PresentedMovieIntelligence: Identifiable, Hashable {
-    let movieID: Int
-    var id: Int {
-        movieID
-    }
-}
-
-/// Identifies the presented TV series intelligence chat by its TV series id, for
-/// `item`-based modal presentation. The MVVM replacement for `SearchRootFeature`'s
-/// `@Presents var tvSeriesIntelligence`.
-struct PresentedTVSeriesIntelligence: Identifiable, Hashable {
-    let tvSeriesID: Int
-    var id: Int {
-        tvSeriesID
-    }
-}
-
 /// Owns the Search tab's push stack and modal presentations. The MVVM replacement
 /// for `SearchRootFeature`'s `StackState<Path.State>` + the two `@Presents`
 /// intelligence presentations.

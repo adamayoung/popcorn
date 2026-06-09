@@ -19,16 +19,6 @@ enum WatchlistRoute: Hashable {
     case movieCastAndCrew(movieID: Int)
 }
 
-/// Identifies the presented movie intelligence chat by its movie id, for
-/// `item`-based modal presentation. The MVVM replacement for
-/// `WatchlistRootFeature`'s `@Presents var movieIntelligence`.
-struct PresentedMovieIntelligence: Identifiable, Hashable {
-    let movieID: Int
-    var id: Int {
-        movieID
-    }
-}
-
 /// Owns the Watchlist tab's push stack and modal presentation. The MVVM
 /// replacement for `WatchlistRootFeature`'s `StackState<Path.State>` +
 /// `@Presents var movieIntelligence`.
