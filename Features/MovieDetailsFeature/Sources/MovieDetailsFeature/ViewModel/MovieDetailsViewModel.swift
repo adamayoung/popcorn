@@ -10,7 +10,7 @@ import Observation
 import OSLog
 import Presentation
 
-/// The data shown by ``MovieDetailsScreen`` once loaded.
+/// The data shown by ``MovieDetailsView`` once loaded.
 public struct MovieDetailsViewSnapshot: Equatable, Sendable {
 
     public let movie: Movie
@@ -32,7 +32,7 @@ public struct MovieDetailsViewSnapshot: Equatable, Sendable {
 
 }
 
-/// Drives ``MovieDetailsScreen``. The MVVM replacement for `MovieDetailsFeature`.
+/// Drives ``MovieDetailsView``. The MVVM replacement for `MovieDetailsFeature`.
 ///
 /// Loading and live updates are driven by the view through ``load()`` from a
 /// `.task(id:)`, so SwiftUI owns the lifetime: the work is cancelled on disappear

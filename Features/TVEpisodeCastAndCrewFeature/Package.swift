@@ -22,10 +22,7 @@ let package = Package(
         .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Core/Presentation"),
-        .package(path: "../../Contexts/PopcornTVSeries"),
-        .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
-        )
+        .package(path: "../../Contexts/PopcornTVSeries")
     ],
 
     targets: [
@@ -35,8 +32,7 @@ let package = Package(
                 "AppDependencies",
                 "DesignSystem",
                 "Presentation",
-                .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                .product(name: "TVSeriesApplication", package: "PopcornTVSeries")
             ],
             resources: [.process("Localizable.xcstrings")]
         ),
@@ -46,8 +42,7 @@ let package = Package(
                 "TVEpisodeCastAndCrewFeature",
                 "Presentation",
                 .product(name: "CoreDomain", package: "CoreDomain"),
-                .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                .product(name: "TVSeriesApplication", package: "PopcornTVSeries")
             ]
         )
     ]

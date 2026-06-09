@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import Foundation
 @testable import PersonDetailsFeature
 import SnapshotTestHelpers
@@ -18,33 +17,17 @@ struct PersonDetailsViewSnapshotTests {
 
     @Test
     func personDetailsView() {
-        let view = NamespaceContainer(
-            store: Store(
-                initialState: PersonDetailsFeature.State(
-                    personID: Person.mock.id,
+        let view = NavigationStack {
+            PersonDetailsView(
+                viewModel: .preview(
                     viewState: .ready(
                         .init(person: .mock)
                     )
-                ),
-                reducer: { EmptyReducer() }
+                )
             )
-        )
+        }
 
         verifyViewSnapshot(of: view)
-    }
-
-}
-
-private struct NamespaceContainer: View {
-
-    @Namespace var namespace
-
-    let store: StoreOf<PersonDetailsFeature>
-
-    var body: some View {
-        NavigationStack {
-            PersonDetailsView(store: store, transitionNamespace: namespace)
-        }
     }
 
 }

@@ -5,28 +5,28 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import DesignSystem
 import Presentation
 import SwiftUI
 
+/// The MVVM TV series cast and crew view, driven by ``TVSeriesCastAndCrewViewModel``.
+///
+/// Renders the same store-free ``TVSeriesCastAndCrewContentView`` and reproduces the
+/// exact loading / error chrome of the former TCA view, so recorded
+/// snapshots stay byte-identical.
 public struct TVSeriesCastAndCrewView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Bindable private var store: StoreOf<TVSeriesCastAndCrewFeature>
-    private let namespace: Namespace.ID
+    @Namespace private var namespace
+    @State private var viewModel: TVSeriesCastAndCrewViewModel
 
-    public init(
-        store: StoreOf<TVSeriesCastAndCrewFeature>,
-        transitionNamespace: Namespace.ID
-    ) {
-        self._store = .init(store)
-        self.namespace = transitionNamespace
+    public init(viewModel: TVSeriesCastAndCrewViewModel) {
+        _viewModel = State(initialValue: viewModel)
     }
 
     public var body: some View {
         ZStack {
-            switch store.viewState {
+            switch viewModel.viewState {
             case .ready(let snapshot):
                 content(snapshot)
             case .error(let error):
@@ -36,14 +36,14 @@ public struct TVSeriesCastAndCrewView: View {
             }
         }
         .contentTransition(.opacity)
-        .animation(reduceMotion ? nil : .easeInOut(duration: 1), value: store.viewState.isReady)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 1), value: viewModel.viewState.isReady)
         .overlay {
-            if store.viewState.isLoading {
+            if viewModel.viewState.isLoading {
                 loadingBody
             }
         }
-        .task {
-            store.send(.fetch)
+        .task(id: viewModel.reloadID) {
+            await viewModel.load()
         }
     }
 
@@ -61,13 +61,13 @@ extension TVSeriesCastAndCrewView {
 
 extension TVSeriesCastAndCrewView {
 
-    private func content(_ snapshot: TVSeriesCastAndCrewFeature.ViewSnapshot) -> some View {
+    private func content(_ snapshot: TVSeriesCastAndCrewViewSnapshot) -> some View {
         TVSeriesCastAndCrewContentView(
             castMembers: snapshot.castMembers,
             crewByDepartment: snapshot.crewByDepartment,
             transitionNamespace: namespace
         ) { personID, transitionID in
-            store.send(.navigate(.personDetails(id: personID, transitionID: transitionID)))
+            viewModel.selectPerson(id: personID, transitionID: transitionID)
         }
     }
 
@@ -81,66 +81,39 @@ extension TVSeriesCastAndCrewView {
             systemImage: "person.2",
             reason: error.reason,
             isRetryable: error.isRetryable,
-            retryAction: { store.send(.fetch) }
+            retryAction: { viewModel.reload() }
         )
     }
 
 }
 
-#Preview("Ready") {
-    @Previewable @Namespace var namespace
-
-    NavigationStack {
-        TVSeriesCastAndCrewView(
-            store: Store(
-                initialState: TVSeriesCastAndCrewFeature.State(
-                    tvSeriesID: 1,
+#if DEBUG
+    #Preview("Ready") {
+        NavigationStack {
+            TVSeriesCastAndCrewView(
+                viewModel: .preview(
                     viewState: .ready(
                         .init(
                             castMembers: CastMember.mocks,
                             crewByDepartment: CrewDepartment.mocks
                         )
                     )
-                ),
-                reducer: {
-                    EmptyReducer()
-                }
-            ),
-            transitionNamespace: namespace
-        )
+                )
+            )
+        }
     }
-}
 
-#Preview("Loading") {
-    @Previewable @Namespace var namespace
-
-    NavigationStack {
-        TVSeriesCastAndCrewView(
-            store: Store(
-                initialState: TVSeriesCastAndCrewFeature.State(
-                    tvSeriesID: 66732,
-                    viewState: .loading
-                ),
-                reducer: { EmptyReducer() }
-            ),
-            transitionNamespace: namespace
-        )
+    #Preview("Loading") {
+        NavigationStack {
+            TVSeriesCastAndCrewView(viewModel: .preview(viewState: .loading))
+        }
     }
-}
 
-#Preview("Error") {
-    @Previewable @Namespace var namespace
-
-    NavigationStack {
-        TVSeriesCastAndCrewView(
-            store: Store(
-                initialState: TVSeriesCastAndCrewFeature.State(
-                    tvSeriesID: 66732,
-                    viewState: .error(ViewStateError(FetchCreditsError.notFound()))
-                ),
-                reducer: { EmptyReducer() }
-            ),
-            transitionNamespace: namespace
-        )
+    #Preview("Error") {
+        NavigationStack {
+            TVSeriesCastAndCrewView(
+                viewModel: .preview(viewState: .error(ViewStateError(FetchCreditsError.notFound())))
+            )
+        }
     }
-}
+#endif

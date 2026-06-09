@@ -1,5 +1,5 @@
 //
-//  MovieIntelligenceScreen.swift
+//  MovieIntelligenceView.swift
 //  MovieIntelligenceFeature
 //
 //  Copyright © 2026 Adam Young.
@@ -12,7 +12,7 @@ import SwiftUI
 ///
 /// Reuses the same store-free ``ChatView`` chrome as the former `MovieChatView`,
 /// keeping `@Environment(\.dismiss)` for the close button exactly as before.
-public struct MovieIntelligenceScreen: View {
+public struct MovieIntelligenceView: View {
 
     @State private var viewModel: MovieIntelligenceViewModel
     @Environment(\.dismiss) private var dismiss
@@ -51,7 +51,7 @@ public struct MovieIntelligenceScreen: View {
 
 #if DEBUG
     #Preview("Messages") {
-        MovieIntelligenceScreen(
+        MovieIntelligenceView(
             viewModel: .preview(messages: Message.mocks)
         )
     }

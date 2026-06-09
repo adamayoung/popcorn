@@ -10,7 +10,7 @@ import Observation
 import OSLog
 import Presentation
 
-/// The data shown by ``MovieCastAndCrewScreen`` once loaded.
+/// The data shown by ``MovieCastAndCrewView`` once loaded.
 public struct MovieCastAndCrewViewSnapshot: Equatable, Sendable {
 
     public let castMembers: [CastMember]
@@ -26,7 +26,7 @@ public struct MovieCastAndCrewViewSnapshot: Equatable, Sendable {
 
 }
 
-/// Drives ``MovieCastAndCrewScreen``. The MVVM replacement for `MovieCastAndCrewFeature`.
+/// Drives ``MovieCastAndCrewView``.
 ///
 /// Loading is driven by the view through ``load()`` from a `.task(id:)`, so SwiftUI
 /// owns the lifetime: the work is cancelled on disappear and restarted on reappear

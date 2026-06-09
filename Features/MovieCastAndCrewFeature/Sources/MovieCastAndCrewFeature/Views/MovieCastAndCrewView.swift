@@ -5,28 +5,27 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import DesignSystem
 import Presentation
 import SwiftUI
 
+/// The movie cast and crew view, driven by ``MovieCastAndCrewViewModel``.
+///
+/// Renders the store-free ``MovieCastAndCrewContentView`` along with its loading /
+/// error chrome.
 public struct MovieCastAndCrewView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Bindable private var store: StoreOf<MovieCastAndCrewFeature>
-    private let namespace: Namespace.ID
+    @Namespace private var namespace
+    @State private var viewModel: MovieCastAndCrewViewModel
 
-    public init(
-        store: StoreOf<MovieCastAndCrewFeature>,
-        transitionNamespace: Namespace.ID
-    ) {
-        self._store = .init(store)
-        self.namespace = transitionNamespace
+    public init(viewModel: MovieCastAndCrewViewModel) {
+        _viewModel = State(initialValue: viewModel)
     }
 
     public var body: some View {
         ZStack {
-            switch store.viewState {
+            switch viewModel.viewState {
             case .ready(let snapshot):
                 content(snapshot)
             case .error(let error):
@@ -36,14 +35,14 @@ public struct MovieCastAndCrewView: View {
             }
         }
         .contentTransition(.opacity)
-        .animation(reduceMotion ? nil : .easeInOut(duration: 1), value: store.viewState.isReady)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 1), value: viewModel.viewState.isReady)
         .overlay {
-            if store.viewState.isLoading {
+            if viewModel.viewState.isLoading {
                 loadingBody
             }
         }
-        .task {
-            store.send(.fetch)
+        .task(id: viewModel.reloadID) {
+            await viewModel.load()
         }
     }
 
@@ -61,13 +60,13 @@ extension MovieCastAndCrewView {
 
 extension MovieCastAndCrewView {
 
-    private func content(_ snapshot: MovieCastAndCrewFeature.ViewSnapshot) -> some View {
+    private func content(_ snapshot: MovieCastAndCrewViewSnapshot) -> some View {
         MovieCastAndCrewContentView(
             castMembers: snapshot.castMembers,
             crewByDepartment: snapshot.crewByDepartment,
             transitionNamespace: namespace
         ) { personID, transitionID in
-            store.send(.navigate(.personDetails(id: personID, transitionID: transitionID)))
+            viewModel.selectPerson(id: personID, transitionID: transitionID)
         }
     }
 
@@ -81,66 +80,39 @@ extension MovieCastAndCrewView {
             systemImage: "person.2",
             reason: error.reason,
             isRetryable: error.isRetryable,
-            retryAction: { store.send(.fetch) }
+            retryAction: { viewModel.reload() }
         )
     }
 
 }
 
-#Preview("Ready") {
-    @Previewable @Namespace var namespace
-
-    NavigationStack {
-        MovieCastAndCrewView(
-            store: Store(
-                initialState: MovieCastAndCrewFeature.State(
-                    movieID: 1,
+#if DEBUG
+    #Preview("Ready") {
+        NavigationStack {
+            MovieCastAndCrewView(
+                viewModel: .preview(
                     viewState: .ready(
                         .init(
                             castMembers: CastMember.mocks,
                             crewByDepartment: CrewDepartment.mocks
                         )
                     )
-                ),
-                reducer: {
-                    EmptyReducer()
-                }
-            ),
-            transitionNamespace: namespace
-        )
+                )
+            )
+        }
     }
-}
 
-#Preview("Loading") {
-    @Previewable @Namespace var namespace
-
-    NavigationStack {
-        MovieCastAndCrewView(
-            store: Store(
-                initialState: MovieCastAndCrewFeature.State(
-                    movieID: 798_645,
-                    viewState: .loading
-                ),
-                reducer: { EmptyReducer() }
-            ),
-            transitionNamespace: namespace
-        )
+    #Preview("Loading") {
+        NavigationStack {
+            MovieCastAndCrewView(viewModel: .preview(viewState: .loading))
+        }
     }
-}
 
-#Preview("Error") {
-    @Previewable @Namespace var namespace
-
-    NavigationStack {
-        MovieCastAndCrewView(
-            store: Store(
-                initialState: MovieCastAndCrewFeature.State(
-                    movieID: 798_645,
-                    viewState: .error(ViewStateError(FetchCreditsError.notFound()))
-                ),
-                reducer: { EmptyReducer() }
-            ),
-            transitionNamespace: namespace
-        )
+    #Preview("Error") {
+        NavigationStack {
+            MovieCastAndCrewView(
+                viewModel: .preview(viewState: .error(ViewStateError(FetchCreditsError.notFound())))
+            )
+        }
     }
-}
+#endif

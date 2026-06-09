@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import Foundation
 @testable import MovieIntelligenceFeature
 import SnapshotTestHelpers
@@ -18,14 +17,8 @@ struct MovieChatViewSnapshotTests {
 
     @Test
     func movieChatView() {
-        let view = MovieChatView(
-            store: Store(
-                initialState: MovieIntelligenceFeature.State(
-                    movieID: 550,
-                    messages: Message.mocks
-                ),
-                reducer: { EmptyReducer() }
-            )
+        let view = MovieIntelligenceView(
+            viewModel: .preview(messages: Message.mocks)
         )
 
         verifyViewSnapshot(of: view)
