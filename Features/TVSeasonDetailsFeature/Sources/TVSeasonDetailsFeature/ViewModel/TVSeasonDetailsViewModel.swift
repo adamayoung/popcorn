@@ -1,6 +1,6 @@
 //
 //  TVSeasonDetailsViewModel.swift
-//  TVSeasonDetailsFeature
+//  Popcorn
 //
 //  Copyright © 2026 Adam Young.
 //
