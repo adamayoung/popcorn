@@ -6,6 +6,7 @@
 //
 
 import AppDependencies
+import ExploreFeature
 import GamesCatalogFeature
 import MediaSearchFeature
 import MovieCastAndCrewFeature
@@ -54,6 +55,17 @@ final class ViewModelFactory {
     ) -> PlotRemixGameViewModel {
         PlotRemixGameViewModel(
             gameID: gameID,
+            dependencies: .live(services: services),
+            navigator: navigator
+        )
+    }
+
+    // MARK: - Explore
+
+    func makeExplore(
+        navigator: some ExploreNavigating
+    ) -> ExploreViewModel {
+        ExploreViewModel(
             dependencies: .live(services: services),
             navigator: navigator
         )

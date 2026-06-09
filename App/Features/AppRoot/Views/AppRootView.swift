@@ -21,6 +21,8 @@ struct AppRootView: View {
     let factory: ViewModelFactory
 
     @State private var customization = TabViewCustomization()
+    @State private var exploreRouter = ExploreRouter()
+    @Namespace private var exploreNamespace
     @State private var gamesRouter = GamesRouter()
     @Namespace private var gamesNamespace
     @State private var watchlistRouter = WatchlistRouter()
@@ -75,10 +77,9 @@ struct AppRootView: View {
                     value: AppRootFeature.Tab.explore
                 ) {
                     ExploreRootView(
-                        store: store.scope(
-                            state: \.explore,
-                            action: \.explore
-                        )
+                        router: exploreRouter,
+                        factory: factory,
+                        namespace: exploreNamespace
                     )
                 }
                 .customizationID(AppRootFeature.Tab.explore.id)
