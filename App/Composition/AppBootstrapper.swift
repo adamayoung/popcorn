@@ -24,7 +24,7 @@ import OSLog
 ///   missing/failed Sentry setup never blocks app start.
 /// - Feature flags rethrow on failure, so ``start()`` throws if feature-flag
 ///   initialisation fails — the caller (``AppRootViewModel``) surfaces the error.
-struct AppBootstrapper: Sendable {
+struct AppBootstrapper {
 
     let services: AppServices
 

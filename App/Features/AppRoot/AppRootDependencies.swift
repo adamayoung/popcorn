@@ -15,7 +15,7 @@ import Foundation
 /// `AppRootClient` (`@DependencyClient`). Building the production instance with
 /// ``live(services:)`` wires the one-time startup sequence (``bootstrap``) and the
 /// per-tab feature-flag reads to the app's shared ``AppServices`` graph.
-struct AppRootDependencies: Sendable {
+struct AppRootDependencies {
 
     /// Runs the app's one-time startup sequence (observability + feature-flag
     /// initialisation). Throws if feature-flag initialisation fails.
@@ -26,22 +26,6 @@ struct AppRootDependencies: Sendable {
     var isGamesEnabled: @Sendable () -> Bool
     var isSearchEnabled: @Sendable () -> Bool
     var isTVListingsEnabled: @Sendable () -> Bool
-
-    init(
-        bootstrap: @escaping @Sendable () async throws -> Void,
-        isExploreEnabled: @escaping @Sendable () -> Bool,
-        isWatchlistEnabled: @escaping @Sendable () -> Bool,
-        isGamesEnabled: @escaping @Sendable () -> Bool,
-        isSearchEnabled: @escaping @Sendable () -> Bool,
-        isTVListingsEnabled: @escaping @Sendable () -> Bool
-    ) {
-        self.bootstrap = bootstrap
-        self.isExploreEnabled = isExploreEnabled
-        self.isWatchlistEnabled = isWatchlistEnabled
-        self.isGamesEnabled = isGamesEnabled
-        self.isSearchEnabled = isSearchEnabled
-        self.isTVListingsEnabled = isTVListingsEnabled
-    }
 
 }
 

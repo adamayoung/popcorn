@@ -156,10 +156,7 @@ struct ExploreRouterTests {
 
     // MARK: - Cast & Crew (Movie / TV Series / TV Episode)
 
-    @Test(
-        "cast and crew openPersonDetails(id:transitionID:) forwards transitionID " +
-            "(no zoom — cast rows own a different namespace)"
-    )
+    @Test("cast & crew openPersonDetails forwards transitionID into the route (no zoom)")
     func castAndCrewOpenPersonDetailsForwardsTransitionID() {
         let router = ExploreRouter()
         let navigator = ExploreRouterNavigator(router: router)
