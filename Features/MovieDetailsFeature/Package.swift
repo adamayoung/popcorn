@@ -25,9 +25,6 @@ let package = Package(
         .package(path: "../../Core/Presentation"),
         .package(path: "../../Contexts/PopcornMovies"),
         .package(path: "../../Platform/FeatureAccess"),
-        .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
-        ),
         .package(path: "../../Core/SnapshotTestHelpers")
     ],
 
@@ -39,8 +36,7 @@ let package = Package(
                 "DesignSystem",
                 "Presentation",
                 .product(name: "CoreDomain", package: "CoreDomain"),
-                .product(name: "MoviesApplication", package: "PopcornMovies"),
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                .product(name: "MoviesApplication", package: "PopcornMovies")
             ],
             resources: [.process("Localizable.xcstrings")]
         ),
@@ -50,7 +46,6 @@ let package = Package(
                 "AppDependencies",
                 "MovieDetailsFeature",
                 "Presentation",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "CoreDomain", package: "CoreDomain"),
                 .product(name: "FeatureAccessTestHelpers", package: "FeatureAccess"),
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
@@ -61,7 +56,6 @@ let package = Package(
             name: "MovieDetailsFeatureSnapshotTests",
             dependencies: [
                 "MovieDetailsFeature",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 "SnapshotTestHelpers"
             ]
         )

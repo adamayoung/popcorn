@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import Foundation
 @testable import MovieDetailsFeature
 import SnapshotTestHelpers
@@ -20,19 +19,15 @@ struct MovieDetailsViewSnapshotTests {
     func movieDetailsView() {
         let view = NavigationStack {
             MovieDetailsView(
-                store: Store(
-                    initialState: MovieDetailsFeature.State(
-                        movieID: Movie.mock.id,
-                        viewState: .ready(
-                            .init(
-                                movie: .mock,
-                                recommendedMovies: MoviePreview.mocks,
-                                castMembers: CastMember.mocks,
-                                crewMembers: CrewMember.mocks
-                            )
+                viewModel: .preview(
+                    viewState: .ready(
+                        .init(
+                            movie: .mock,
+                            recommendedMovies: MoviePreview.mocks,
+                            castMembers: CastMember.mocks,
+                            crewMembers: CrewMember.mocks
                         )
-                    ),
-                    reducer: { EmptyReducer() }
+                    )
                 )
             )
         }
