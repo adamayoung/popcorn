@@ -1,5 +1,5 @@
 //
-//  TVSeriesIntelligenceScreen.swift
+//  TVSeriesIntelligenceView.swift
 //  TVSeriesIntelligenceFeature
 //
 //  Copyright © 2026 Adam Young.
@@ -14,7 +14,7 @@ import SwiftUI
 /// Renders the same store-free ``ChatView`` and reproduces the exact navigation
 /// chrome of the former `TVSeriesChatView`, so recorded snapshots stay identical.
 /// Dismissal stays view-level via `@Environment(\.dismiss)`.
-public struct TVSeriesIntelligenceScreen: View {
+public struct TVSeriesIntelligenceView: View {
 
     @State private var viewModel: TVSeriesIntelligenceViewModel
     @Environment(\.dismiss) private var dismiss
@@ -56,7 +56,7 @@ public struct TVSeriesIntelligenceScreen: View {
 
 #if DEBUG
     #Preview("Messages") {
-        TVSeriesIntelligenceScreen(
+        TVSeriesIntelligenceView(
             viewModel: .preview(messages: Message.mocks)
         )
     }
