@@ -5,11 +5,17 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import DesignSystem
 import Presentation
 import SwiftUI
 
+/// The MVVM watchlist screen, driven by ``WatchlistViewModel``.
+///
+/// Renders the same grid / loading / empty / error chrome of the former
+/// `WatchlistFeature` store-driven view, so recorded snapshots stay
+/// byte-identical. The view model is
+/// owned above the seam (by the root coordinator), so this takes a plain
+/// `let viewModel` rather than `@State`.
 public struct WatchlistView: View {
 
     private static let columns = [
@@ -17,20 +23,20 @@ public struct WatchlistView: View {
     ]
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Bindable var store: StoreOf<WatchlistFeature>
+    private let viewModel: WatchlistViewModel
     private let namespace: Namespace.ID
 
     public init(
-        store: StoreOf<WatchlistFeature>,
+        viewModel: WatchlistViewModel,
         transitionNamespace: Namespace.ID
     ) {
-        self._store = .init(store)
+        self.viewModel = viewModel
         self.namespace = transitionNamespace
     }
 
     public var body: some View {
         ScrollView {
-            switch store.viewState {
+            switch viewModel.viewState {
             case .ready(let snapshot):
                 if snapshot.movies.isEmpty {
                     emptyBody
@@ -46,7 +52,7 @@ public struct WatchlistView: View {
             }
         }
         .overlay {
-            if store.viewState.isLoading {
+            if viewModel.viewState.isLoading {
                 ProgressView()
                     .accessibilityLabel(Text("LOADING", bundle: .module))
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -54,7 +60,9 @@ public struct WatchlistView: View {
         }
         .accessibilityIdentifier("watchlist.view")
         .navigationTitle(Text("WATCHLIST", bundle: .module))
-        .task { store.send(.fetch) }
+        .task(id: viewModel.reloadID) {
+            await viewModel.load()
+        }
     }
 
 }
@@ -67,7 +75,7 @@ extension WatchlistView {
             systemImage: "eye",
             reason: error.reason,
             isRetryable: error.isRetryable,
-            retryAction: { store.send(.fetch) }
+            retryAction: { viewModel.reload() }
         )
     }
 
@@ -87,9 +95,7 @@ extension WatchlistView {
             ForEach(Array(movies.enumerated()), id: \.element.id) { offset, movie in
                 let transitionID = "\(movie.id)"
                 Button {
-                    store.send(
-                        .navigate(.movieDetails(id: movie.id, transitionID: transitionID))
-                    )
+                    viewModel.selectMovie(id: movie.id, transitionID: transitionID)
                 } label: {
                     PosterImage(url: movie.posterURL)
                         .aspectRatio(500.0 / 750.0, contentMode: .fit)
@@ -111,68 +117,48 @@ extension WatchlistView {
 
 }
 
-#Preview("Ready") {
-    @Previewable @Namespace var namespace
+#if DEBUG
+    #Preview("Ready") {
+        @Previewable @Namespace var namespace
 
-    NavigationStack {
-        WatchlistView(
-            store: Store(
-                initialState: WatchlistFeature.State(
-                    viewState: .ready(
-                        .init(movies: MoviePreview.mocks)
-                    )
-                ),
-                reducer: { EmptyReducer() }
-            ),
-            transitionNamespace: namespace
-        )
+        NavigationStack {
+            WatchlistView(
+                viewModel: .preview(viewState: .ready(.init(movies: MoviePreview.mocks))),
+                transitionNamespace: namespace
+            )
+        }
     }
-}
 
-#Preview("Loading") {
-    @Previewable @Namespace var namespace
+    #Preview("Loading") {
+        @Previewable @Namespace var namespace
 
-    NavigationStack {
-        WatchlistView(
-            store: Store(
-                initialState: WatchlistFeature.State(
-                    viewState: .loading
-                ),
-                reducer: { EmptyReducer() }
-            ),
-            transitionNamespace: namespace
-        )
+        NavigationStack {
+            WatchlistView(
+                viewModel: .preview(viewState: .loading),
+                transitionNamespace: namespace
+            )
+        }
     }
-}
 
-#Preview("Empty") {
-    @Previewable @Namespace var namespace
+    #Preview("Empty") {
+        @Previewable @Namespace var namespace
 
-    NavigationStack {
-        WatchlistView(
-            store: Store(
-                initialState: WatchlistFeature.State(
-                    viewState: .ready(.init(movies: []))
-                ),
-                reducer: { EmptyReducer() }
-            ),
-            transitionNamespace: namespace
-        )
+        NavigationStack {
+            WatchlistView(
+                viewModel: .preview(viewState: .ready(.init(movies: []))),
+                transitionNamespace: namespace
+            )
+        }
     }
-}
 
-#Preview("Error") {
-    @Previewable @Namespace var namespace
+    #Preview("Error") {
+        @Previewable @Namespace var namespace
 
-    NavigationStack {
-        WatchlistView(
-            store: Store(
-                initialState: WatchlistFeature.State(
-                    viewState: .error(ViewStateError(FetchWatchlistError.unknown()))
-                ),
-                reducer: { EmptyReducer() }
-            ),
-            transitionNamespace: namespace
-        )
+        NavigationStack {
+            WatchlistView(
+                viewModel: .preview(viewState: .error(ViewStateError(FetchWatchlistError.unknown()))),
+                transitionNamespace: namespace
+            )
+        }
     }
-}
+#endif

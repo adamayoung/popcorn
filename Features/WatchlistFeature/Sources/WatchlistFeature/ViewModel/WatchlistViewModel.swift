@@ -10,7 +10,7 @@ import Observation
 import OSLog
 import Presentation
 
-/// The data shown by ``WatchlistScreen`` once loaded.
+/// The data shown by ``WatchlistView`` once loaded.
 public struct WatchlistViewSnapshot: Equatable, Sendable {
 
     public let movies: [MoviePreview]
@@ -21,7 +21,7 @@ public struct WatchlistViewSnapshot: Equatable, Sendable {
 
 }
 
-/// Drives ``WatchlistScreen``. The MVVM replacement for `WatchlistFeature`.
+/// Drives ``WatchlistView``. The MVVM replacement for `WatchlistFeature`.
 ///
 /// Loading and live updates are driven by the view through ``load()`` from a
 /// `.task(id:)`, so SwiftUI owns the lifetime: the work is cancelled on disappear

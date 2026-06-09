@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import Foundation
 import SnapshotTestHelpers
 import SwiftUI
@@ -19,13 +18,10 @@ struct WatchlistViewSnapshotTests {
     @Test
     func watchlistView() {
         let view = NamespaceContainer(
-            store: Store(
-                initialState: WatchlistFeature.State(
-                    viewState: .ready(
-                        .init(movies: MoviePreview.mocks)
-                    )
-                ),
-                reducer: { EmptyReducer() }
+            viewModel: .preview(
+                viewState: .ready(
+                    .init(movies: MoviePreview.mocks)
+                )
             )
         )
 
@@ -38,11 +34,11 @@ private struct NamespaceContainer: View {
 
     @Namespace var namespace
 
-    let store: StoreOf<WatchlistFeature>
+    let viewModel: WatchlistViewModel
 
     var body: some View {
         NavigationStack {
-            WatchlistView(store: store, transitionNamespace: namespace)
+            WatchlistView(viewModel: viewModel, transitionNamespace: namespace)
         }
     }
 
