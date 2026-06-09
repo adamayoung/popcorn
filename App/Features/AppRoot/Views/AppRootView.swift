@@ -23,6 +23,8 @@ struct AppRootView: View {
     @State private var customization = TabViewCustomization()
     @State private var gamesRouter = GamesRouter()
     @Namespace private var gamesNamespace
+    @State private var watchlistRouter = WatchlistRouter()
+    @Namespace private var watchlistNamespace
     @State private var tvListingsViewModel: TVListingsViewModel
 
     init(store: StoreOf<AppRootFeature>, factory: ViewModelFactory) {
@@ -88,10 +90,9 @@ struct AppRootView: View {
                     value: AppRootFeature.Tab.watchlist
                 ) {
                     WatchlistRootView(
-                        store: store.scope(
-                            state: \.watchlist,
-                            action: \.watchlist
-                        )
+                        router: watchlistRouter,
+                        factory: factory,
+                        namespace: watchlistNamespace
                     )
                 }
                 .customizationID(AppRootFeature.Tab.watchlist.id)
