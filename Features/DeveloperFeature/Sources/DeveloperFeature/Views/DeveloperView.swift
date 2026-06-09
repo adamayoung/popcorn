@@ -5,31 +5,54 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import DesignSystem
 import Presentation
 import SwiftUI
 
+/// A pushed destination on the developer menu's navigation stack. The MVVM
+/// replacement for `DeveloperFeature`'s `StackState<Path.State>` case.
+enum DeveloperRoute: Hashable {
+    case featureFlags
+}
+
+/// The MVVM developer menu, presented as a sheet from the app root (DEBUG only).
+///
+/// Hosts a static home list in a `NavigationStack` and pushes the feature-flags
+/// screen. The MVVM replacement for the store-based `DeveloperView` +
+/// `DeveloperFeature`. The App layer injects ``makeFeatureFlags`` so the screen
+/// can build its child view model from the shared services without depending on
+/// the composition layer.
 public struct DeveloperView: View {
 
-    @Bindable var store: StoreOf<DeveloperFeature>
+    @State private var viewModel: DeveloperViewModel
+    @State private var path: [DeveloperRoute] = []
     @Environment(\.dismiss) private var dismiss
 
-    public init(store: StoreOf<DeveloperFeature>) {
-        self._store = .init(store)
+    private let makeFeatureFlags: () -> FeatureFlagsViewModel
+
+    public init(
+        viewModel: DeveloperViewModel = DeveloperViewModel(),
+        makeFeatureFlags: @escaping () -> FeatureFlagsViewModel
+    ) {
+        _viewModel = State(initialValue: viewModel)
+        self.makeFeatureFlags = makeFeatureFlags
     }
 
     public var body: some View {
-        NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
+        NavigationStack(path: $path) {
             List {
-                NavigationLink(
-                    state: DeveloperFeature.Path.State.featureFlags(FeatureFlagsFeature.State())
-                ) {
+                NavigationLink(value: DeveloperRoute.featureFlags) {
                     Text("FEATURE_FLAGS", bundle: .module)
                 }
             }
             .navigationTitle(Text("DEVELOPER", bundle: .module))
             .accessibilityIdentifier("developer.view")
+            .navigationDestination(for: DeveloperRoute.self) { route in
+                switch route {
+                case .featureFlags:
+                    FeatureFlagsView(viewModel: makeFeatureFlags())
+                }
+            }
             .toolbar {
                 ToolbarItem {
                     Button(role: .close) {
@@ -37,21 +60,17 @@ public struct DeveloperView: View {
                     }
                 }
             }
-        } destination: { store in
-            switch store.case {
-            case .featureFlags(let store):
-                FeatureFlagsView(store: store)
-            }
         }
     }
 
 }
 
-#Preview {
-    DeveloperView(
-        store: Store(
-            initialState: DeveloperFeature.State(),
-            reducer: { EmptyReducer() }
+#if DEBUG
+    #Preview {
+        DeveloperView(
+            makeFeatureFlags: {
+                .preview(viewState: .ready(.init(featureFlags: FeatureFlag.mocks)))
+            }
         )
-    )
-}
+    }
+#endif

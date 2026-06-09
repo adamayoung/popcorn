@@ -5,22 +5,25 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import DesignSystem
 import Presentation
 import SwiftUI
 
+/// The MVVM feature-flags screen, driven by ``FeatureFlagsViewModel``.
+///
+/// Renders the same store-free ``FeatureFlagsContentView`` and reproduces the
+/// exact toolbar / loading / error chrome of the former `FeatureFlagsFeature`.
 public struct FeatureFlagsView: View {
 
-    @Bindable var store: StoreOf<FeatureFlagsFeature>
+    @State private var viewModel: FeatureFlagsViewModel
 
-    public init(store: StoreOf<FeatureFlagsFeature>) {
-        self._store = .init(store)
+    public init(viewModel: FeatureFlagsViewModel) {
+        _viewModel = State(initialValue: viewModel)
     }
 
     public var body: some View {
         ZStack {
-            switch store.viewState {
+            switch viewModel.viewState {
             case .ready(let snapshot):
                 content(snapshot)
             case .error(let error):
@@ -36,19 +39,19 @@ public struct FeatureFlagsView: View {
                     LocalizedStringResource("RESET", bundle: .module),
                     role: .destructive
                 ) {
-                    store.send(.resetAllOverrides)
+                    Task { await viewModel.resetAllOverrides() }
                 }
             }
         }
         .navigationTitle(Text("FEATURE_FLAGS", bundle: .module))
         .contentTransition(.opacity)
         .overlay {
-            if store.viewState.isLoading {
+            if viewModel.viewState.isLoading {
                 loadingBody
             }
         }
-        .task {
-            store.send(.load)
+        .task(id: viewModel.reloadID) {
+            await viewModel.load()
         }
     }
 
@@ -62,11 +65,11 @@ extension FeatureFlagsView {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private func content(_ snapshot: FeatureFlagsFeature.ViewSnapshot) -> some View {
+    private func content(_ snapshot: FeatureFlagsViewModel.ViewSnapshot) -> some View {
         FeatureFlagsContentView(
             featureFlags: snapshot.featureFlags,
             updateFeatureValueOverride: { flag, override in
-                store.send(.setFeatureFlagOverride(flag, override))
+                Task { await viewModel.setFeatureFlagOverride(flag, override) }
             }
         )
     }
@@ -77,51 +80,36 @@ extension FeatureFlagsView {
             systemImage: "flag",
             reason: error.reason,
             isRetryable: error.isRetryable,
-            retryAction: { store.send(.load) }
+            retryAction: { viewModel.reload() }
         )
     }
 
 }
 
-#Preview("Ready") {
-    NavigationStack {
-        FeatureFlagsView(
-            store: Store(
-                initialState: FeatureFlagsFeature.State(
-                    viewState: .ready(
-                        .init(
-                            featureFlags: FeatureFlag.mocks
-                        )
-                    )
-                ),
-                reducer: { EmptyReducer() }
+#if DEBUG
+    #Preview("Ready") {
+        NavigationStack {
+            FeatureFlagsView(
+                viewModel: .preview(
+                    viewState: .ready(.init(featureFlags: FeatureFlag.mocks))
+                )
             )
-        )
+        }
     }
-}
 
-#Preview("Loading") {
-    NavigationStack {
-        FeatureFlagsView(
-            store: Store(
-                initialState: FeatureFlagsFeature.State(
-                    viewState: .loading
-                ),
-                reducer: { EmptyReducer() }
-            )
-        )
+    #Preview("Loading") {
+        NavigationStack {
+            FeatureFlagsView(viewModel: .preview(viewState: .loading))
+        }
     }
-}
 
-#Preview("Error") {
-    NavigationStack {
-        FeatureFlagsView(
-            store: Store(
-                initialState: FeatureFlagsFeature.State(
+    #Preview("Error") {
+        NavigationStack {
+            FeatureFlagsView(
+                viewModel: .preview(
                     viewState: .error(ViewStateError(FetchFeatureFlagsError.unknown()))
-                ),
-                reducer: { EmptyReducer() }
+                )
             )
-        )
+        }
     }
-}
+#endif

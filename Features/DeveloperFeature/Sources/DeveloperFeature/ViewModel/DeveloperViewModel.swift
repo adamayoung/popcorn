@@ -8,7 +8,7 @@
 import Foundation
 import Observation
 
-/// Drives ``DeveloperScreen``. The MVVM replacement for `DeveloperFeature`.
+/// Drives ``DeveloperView``. The MVVM replacement for `DeveloperFeature`.
 ///
 /// The developer home is a static list with no business logic, so this view model
 /// is intentionally empty — it exists to keep the screen's ownership and lifecycle

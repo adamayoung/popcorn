@@ -10,7 +10,7 @@ import Observation
 import OSLog
 import Presentation
 
-/// Drives ``FeatureFlagsScreen``. The MVVM replacement for `FeatureFlagsFeature`.
+/// Drives ``FeatureFlagsView``. The MVVM replacement for `FeatureFlagsFeature`.
 ///
 /// Loading is driven by the view through ``load()`` from a `.task`, so SwiftUI
 /// owns the lifetime. ``setFeatureFlagOverride(_:_:)`` and ``resetAllOverrides()``
@@ -20,7 +20,7 @@ import Presentation
 @MainActor
 public final class FeatureFlagsViewModel {
 
-    /// A snapshot of the feature flags shown by ``FeatureFlagsScreen`` once loaded.
+    /// A snapshot of the feature flags shown by ``FeatureFlagsView`` once loaded.
     public struct ViewSnapshot: Equatable, Sendable {
 
         public let featureFlags: [FeatureFlag]
