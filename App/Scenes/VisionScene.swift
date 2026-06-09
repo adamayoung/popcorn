@@ -13,13 +13,14 @@
     struct VisionScene: Scene {
 
         @Bindable var store: StoreOf<AppRootFeature>
+        let factory: ViewModelFactory
 
         private let minWidth: CGFloat = 1280
         private let minHeight: CGFloat = 720
 
         var body: some Scene {
             WindowGroup("MOVIES", id: "app") {
-                AppRootView(store: store)
+                AppRootView(store: store, factory: factory)
                     .preferredColorScheme(.dark)
                     .onAppear {
                         if let windowScene = UIApplication.shared.connectedScenes.first
