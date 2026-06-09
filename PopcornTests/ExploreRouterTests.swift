@@ -36,14 +36,14 @@ struct ExploreRouterTests {
         #expect(router.path == [.tvSeriesDetails(id: 7, transitionID: "tv-7")])
     }
 
-    @Test("home openPersonDetails(id:transitionID:) pushes personDetails dropping the transitionID")
-    func homeOpenPersonDetailsDropsTransitionID() {
+    @Test("home openPersonDetails(id:transitionID:) pushes personDetails forwarding the transitionID")
+    func homeOpenPersonDetailsForwardsTransitionID() {
         let router = ExploreRouter()
         let navigator = ExploreRouterNavigator(router: router)
 
         navigator.openPersonDetails(id: 99, transitionID: "person-99")
 
-        #expect(router.path == [.personDetails(id: 99)])
+        #expect(router.path == [.personDetails(id: 99, transitionID: "person-99")])
     }
 
     // MARK: - MovieDetailsNavigating
@@ -156,14 +156,17 @@ struct ExploreRouterTests {
 
     // MARK: - Cast & Crew (Movie / TV Series / TV Episode)
 
-    @Test("cast and crew openPersonDetails(id:transitionID:) pushes personDetails dropping the transitionID")
-    func castAndCrewOpenPersonDetailsDropsTransitionID() {
+    @Test(
+        "cast and crew openPersonDetails(id:transitionID:) forwards transitionID " +
+            "(no zoom — cast rows own a different namespace)"
+    )
+    func castAndCrewOpenPersonDetailsForwardsTransitionID() {
         let router = ExploreRouter()
         let navigator = ExploreRouterNavigator(router: router)
 
         navigator.openPersonDetails(id: 314, transitionID: "314")
 
-        #expect(router.path == [.personDetails(id: 314)])
+        #expect(router.path == [.personDetails(id: 314, transitionID: "314")])
     }
 
 }

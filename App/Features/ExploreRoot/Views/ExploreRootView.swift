@@ -102,10 +102,8 @@ struct ExploreRootView: View {
                 seasonNumber: seasonNumber,
                 episodeNumber: episodeNumber
             )
-        case .personDetails(let id):
-            PersonDetailsScreen(
-                viewModel: factory.makePersonDetails(id: id, navigator: navigator)
-            )
+        case .personDetails(let id, let transitionID):
+            personDetails(id: id, transitionID: transitionID)
         case .movieCastAndCrew(let movieID):
             MovieCastAndCrewScreen(
                 viewModel: factory.makeMovieCastAndCrew(movieID: movieID, navigator: navigator)
@@ -148,6 +146,19 @@ struct ExploreRootView: View {
             #endif
         } else {
             TVSeriesDetailsScreen(viewModel: viewModel)
+        }
+    }
+
+    @ViewBuilder
+    private func personDetails(id: Int, transitionID: String?) -> some View {
+        let viewModel = factory.makePersonDetails(id: id, navigator: navigator)
+        if let transitionID {
+            PersonDetailsScreen(viewModel: viewModel)
+            #if os(iOS)
+                .navigationTransition(.zoom(sourceID: transitionID, in: namespace))
+            #endif
+        } else {
+            PersonDetailsScreen(viewModel: viewModel)
         }
     }
 

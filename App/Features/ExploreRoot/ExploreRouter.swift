@@ -23,7 +23,7 @@ enum ExploreRoute: Hashable {
     case tvSeriesDetails(id: Int, transitionID: String?)
     case tvSeasonDetails(tvSeriesID: Int, seasonNumber: Int)
     case tvEpisodeDetails(tvSeriesID: Int, seasonNumber: Int, episodeNumber: Int)
-    case personDetails(id: Int)
+    case personDetails(id: Int, transitionID: String?)
     case movieCastAndCrew(movieID: Int)
     case tvSeriesCastAndCrew(tvSeriesID: Int)
     case tvEpisodeCastAndCrew(tvSeriesID: Int, seasonNumber: Int, episodeNumber: Int)
@@ -90,11 +90,17 @@ struct ExploreRouterNavigator: ExploreNavigating, MovieDetailsNavigating,
     }
 
     func openPersonDetails(id: Int, transitionID: String?) {
-        // `transitionID` is dropped: person details has no transitionID-driven zoom.
-        router.path.append(.personDetails(id: id))
+        // Forward `transitionID`; only the home people carousel shares the per-tab
+        // namespace, so cast & crew rows (which own their namespace) won't actually
+        // zoom — reproducing the old behaviour (home person zoom; cast & crew none).
+        router.path.append(.personDetails(id: id, transitionID: transitionID))
     }
 
     // MARK: - MovieDetailsNavigating
+
+    func openPersonDetails(id: Int) {
+        router.path.append(.personDetails(id: id, transitionID: nil))
+    }
 
     func openMovieDetails(id: Int) {
         router.path.append(.movieDetails(id: id, transitionID: nil))
@@ -150,13 +156,6 @@ struct ExploreRouterNavigator: ExploreNavigating, MovieDetailsNavigating,
                 episodeNumber: episodeNumber
             )
         )
-    }
-
-    // MARK: - Cast & Crew (Movie / TV Series / TV Episode)
-
-    func openPersonDetails(id: Int, transitionID: String?) {
-        // `transitionID` is dropped: person details has no transitionID-driven zoom.
-        router.path.append(.personDetails(id: id))
     }
 
 }
