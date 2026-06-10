@@ -55,6 +55,7 @@ jobs:
             -clonedSourcePackagesDirPath .spm \
             -derivedDataPath DerivedData \
             -resultBundlePath UnitTestResults.xcresult \
+            -parallel-testing-enabled NO \
             CODE_SIGNING_ALLOWED=NO \
             test-without-building
 
