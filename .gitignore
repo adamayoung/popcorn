@@ -28,6 +28,8 @@ Popcorn.xcodeproj/**/swiftpm/Package.resolved
 
 # Config secrets
 Configs/Secrets.xcconfig
+.env
+.env.*
 
 # Claude
 .claude/settings.local.json
