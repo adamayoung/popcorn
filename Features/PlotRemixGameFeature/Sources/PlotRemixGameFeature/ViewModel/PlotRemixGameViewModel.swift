@@ -149,12 +149,12 @@ public final class PlotRemixGameViewModel {
 
             let game: Game
             do {
-                game = try await dependencies.generateGame { progress in
-                    Task { @MainActor [weak self] in
-                        guard let self, !Task.isCancelled else {
+                game = try await dependencies.generateGame { [weak self] progress in
+                    Task { @MainActor in
+                        guard let self else {
                             return
                         }
-                        generatingProgress = progress
+                        self.generatingProgress = progress
                     }
                 }
             } catch is CancellationError {

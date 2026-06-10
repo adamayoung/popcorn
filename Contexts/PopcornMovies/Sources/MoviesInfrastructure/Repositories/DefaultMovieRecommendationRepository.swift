@@ -7,8 +7,11 @@
 
 import Foundation
 import MoviesDomain
+import OSLog
 
 final class DefaultMovieRecommendationRepository: MovieRecommendationRepository {
+
+    private static let logger = Logger.moviesInfrastructure
 
     private let remoteDataSource: any MovieRemoteDataSource
     private let localDataSource: any MovieRecommendationLocalDataSource
@@ -58,9 +61,15 @@ final class DefaultMovieRecommendationRepository: MovieRecommendationRepository 
         let stream = await localDataSource.recommendationsStream(forMovie: movieID, limit: limit)
 
         Task {
-            let page = 1
-            let movies = try await remoteDataSource.recommendations(forMovie: movieID, page: page)
-            try await localDataSource.setRecommendations(movies, forMovie: movieID, page: page)
+            do {
+                let page = 1
+                let movies = try await remoteDataSource.recommendations(forMovie: movieID, page: page)
+                try await localDataSource.setRecommendations(movies, forMovie: movieID, page: page)
+            } catch {
+                Self.logger.error(
+                    "Failed to fetch/cache recommendations in stream [movieID: \(movieID)]: \(error)"
+                )
+            }
         }
 
         return stream
