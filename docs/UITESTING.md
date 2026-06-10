@@ -33,10 +33,11 @@ PopcornUITests/                           # XCUITest target
 ## Running UI Tests
 
 ```bash
-# Via slash command
+# Via slash command (delegates to a subagent; uses the xcode MCP when
+# inside Xcode, else `make test-ui`)
 /test-ui
 
-# Via Xcode MCP
+# Via Xcode MCP directly (inside Xcode)
 mcp__xcode__RunAllTests
 ```
 

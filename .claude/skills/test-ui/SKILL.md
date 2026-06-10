@@ -5,28 +5,23 @@ description: Run UI tests
 
 # Run UI tests
 
-**Run via a subagent** (Task tool, `subagent_type: "general-purpose"`) to keep large logs out of the main context. The subagent should run `make test-ui` from the project root and report back pass/fail with any test failures.
+Runs the `PopcornUITests` test plan on the iOS Simulator. Optional argument: a
+`<TestTarget>/<TestClass>` or `<TestTarget>/<TestClass>/<testMethod>` for a subset.
 
-This builds and runs the `PopcornUITests` test plan on the iOS Simulator.
+**Preferred — Xcode MCP (`xcode`), when running inside Xcode.** Get the
+`tabIdentifier` from `mcp__xcode__XcodeListWindows`, then run
+`mcp__xcode__RunAllTests` (or `mcp__xcode__RunSomeTests` with `<specifier>` for a
+subset) with that `tabIdentifier`, targeting the PopcornUITests plan.
 
-## Running a subset of tests
+**Fallback — `make`, when the MCP isn't available.** Delegate to a **Haiku subagent**
+(`subagent_type: general-purpose`, `model: haiku`). Do not run it yourself. Prompt it to:
 
-To run all tests in a specific test class:
-
-```bash
-make test-ui TEST_CLASS=PopcornUITests/ExploreTests
+```text
+Run `mkdir -p .build && make test-ui [TEST_CLASS=<specifier>] > .build/last-ui.log 2>&1`,
+check the exit status, and report ONLY:
+- Status: passed or failed
+- Counts: total / passed / failed
+- Each failing test as `SuiteName/testName` with its `file:line` and message (omit if none)
+- On failure, the log path `.build/last-ui.log`
+Do not paste passing-test output or raw logs.
 ```
-
-To run a single test method:
-
-```bash
-make test-ui TEST_CLASS=PopcornUITests/ExploreTests/testLaunch
-```
-
-## Arguments
-
-The skill accepts an optional argument for the test class or test method:
-
-- No argument: runs all UI tests
-- `<TestTarget>/<TestClass>`: runs all tests in that class
-- `<TestTarget>/<TestClass>/<testMethod>`: runs a single test
