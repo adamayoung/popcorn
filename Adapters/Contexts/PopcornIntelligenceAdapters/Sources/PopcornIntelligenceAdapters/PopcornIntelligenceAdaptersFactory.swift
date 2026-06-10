@@ -5,8 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import Foundation
-import IntelligenceComposition
+import IntelligenceDomain
 import MoviesApplication
 import TVSeriesApplication
 
@@ -26,24 +25,16 @@ public final class PopcornIntelligenceAdaptersFactory {
         self.fetchMovieCreditsUseCase = fetchMovieCreditsUseCase
     }
 
-    public func makeIntelligenceFactory() -> some PopcornIntelligenceFactory {
-        let movieProvider = MovieProviderAdapter(
-            fetchMovieDetailsUseCase: fetchMovieDetailsUseCase
-        )
+    public func makeMovieProvider() -> some MovieProviding {
+        MovieProviderAdapter(fetchMovieDetailsUseCase: fetchMovieDetailsUseCase)
+    }
 
-        let tvSeriesProvider = TVSeriesProviderAdapter(
-            fetchTVSeriesDetailsUseCase: fetchTVSeriesDetailsUseCase
-        )
+    public func makeTVSeriesProvider() -> some TVSeriesProviding {
+        TVSeriesProviderAdapter(fetchTVSeriesDetailsUseCase: fetchTVSeriesDetailsUseCase)
+    }
 
-        let creditsProvider = CreditsProviderAdapter(
-            fetchMovieCreditsUseCase: fetchMovieCreditsUseCase
-        )
-
-        return LivePopcornIntelligenceFactory(
-            movieProvider: movieProvider,
-            tvSeriesProvider: tvSeriesProvider,
-            creditsProvider: creditsProvider
-        )
+    public func makeCreditsProvider() -> some CreditsProviding {
+        CreditsProviderAdapter(fetchMovieCreditsUseCase: fetchMovieCreditsUseCase)
     }
 
 }

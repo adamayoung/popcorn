@@ -55,9 +55,12 @@ extension AppServices {
 
         // Platform services + the factories that depend on them.
         let featureFlagService = makeFeatureFlagService()
-        let gamesCatalogFactory = PopcornGamesCatalogAdaptersFactory(
+        let gamesCatalogAdapters = PopcornGamesCatalogAdaptersFactory(
             featureFlags: featureFlagService
-        ).makeGamesCatalogFactory()
+        )
+        let gamesCatalogFactory = PopcornGamesCatalogFactory(
+            featureFlagProvider: gamesCatalogAdapters.makeFeatureFlagProvider()
+        )
         let observabilityService = makeObservabilityService()
         let intelligenceFactory = makeIntelligenceFactory(
             movies: domain.movies,
@@ -70,9 +73,12 @@ extension AppServices {
             genres: domain.genres,
             observabilityService: observabilityService
         )
-        let tvListingsFactory = PopcornTVListingsAdaptersFactory(
+        let tvListingsAdapters = PopcornTVListingsAdaptersFactory(
             epgURL: tvListingsEPGURL
-        ).makeTVListingsFactory()
+        )
+        let tvListingsFactory = PopcornTVListingsFactory(
+            remoteDataSource: tvListingsAdapters.makeRemoteDataSource()
+        )
 
         return Graph(
             tmdbClient: domain.tmdb,
@@ -171,56 +177,15 @@ extension AppServices {
         return (trending, search)
     }
 
-    // MARK: - Context bundles
-
-    /// Shared inputs threaded into every domain context factory.
-    private struct Foundations {
-        let tmdb: TMDbClient
-        let fetchAppConfiguration: any FetchAppConfigurationUseCase
-        let themeColorProvider: (any ThemeColorProviding)?
-    }
-
-    private struct ConfigurationBundle {
-        let factory: PopcornConfigurationFactory
-        let fetchAppConfiguration: any FetchAppConfigurationUseCase
-    }
-
-    private struct GenresBundle {
-        let factory: PopcornGenresFactory
-        let fetchMovieGenres: any FetchMovieGenresUseCase
-        let fetchTVSeriesGenres: any FetchTVSeriesGenresUseCase
-    }
-
-    private struct MoviesBundle {
-        let factory: PopcornMoviesFactory
-        let fetchDetails: any FetchMovieDetailsUseCase
-        let fetchCredits: any FetchMovieCreditsUseCase
-        let fetchRecommendations: any FetchMovieRecommendationsUseCase
-        let fetchImageCollection: any FetchMovieImageCollectionUseCase
-    }
-
-    private struct TVSeriesBundle {
-        let factory: PopcornTVSeriesFactory
-        let fetchDetails: any FetchTVSeriesDetailsUseCase
-        let fetchImageCollection: any FetchTVSeriesImageCollectionUseCase
-    }
-
-    private struct PeopleBundle {
-        let factory: PopcornPeopleFactory
-        let fetchDetails: any FetchPersonDetailsUseCase
-    }
-
-    private struct DiscoverBundle {
-        let factory: PopcornDiscoverFactory
-        let fetchDiscoverMovies: any FetchDiscoverMoviesUseCase
-    }
-
     // MARK: - Context builders
 
     private static func makeConfiguration(tmdb: TMDbClient) -> ConfigurationBundle {
-        let factory = PopcornConfigurationAdaptersFactory(
+        let adapters = PopcornConfigurationAdaptersFactory(
             configurationService: tmdb.configurations
-        ).makeConfigurationFactory()
+        )
+        let factory = PopcornConfigurationFactory(
+            configurationRemoteDataSource: adapters.makeConfigurationRemoteDataSource()
+        )
         return ConfigurationBundle(
             factory: factory,
             fetchAppConfiguration: factory.makeFetchAppConfigurationUseCase()
@@ -228,11 +193,16 @@ extension AppServices {
     }
 
     private static func makeGenres(foundations: Foundations) -> GenresBundle {
-        let factory = PopcornGenresAdaptersFactory(
+        let adapters = PopcornGenresAdaptersFactory(
             genreService: foundations.tmdb.genres,
             discoverService: foundations.tmdb.discover,
             fetchAppConfigurationUseCase: foundations.fetchAppConfiguration
-        ).makeGenresFactory()
+        )
+        let factory = PopcornGenresFactory(
+            genreRemoteDataSource: adapters.makeGenreRemoteDataSource(),
+            appConfigurationProvider: adapters.makeAppConfigurationProvider(),
+            genreBackdropProvider: adapters.makeGenreBackdropProvider()
+        )
         return GenresBundle(
             factory: factory,
             fetchMovieGenres: factory.makeFetchMovieGenresUseCase(),
@@ -241,11 +211,15 @@ extension AppServices {
     }
 
     private static func makeMovies(foundations: Foundations) -> MoviesBundle {
-        let factory = PopcornMoviesAdaptersFactory(
+        let adapters = PopcornMoviesAdaptersFactory(
             movieService: foundations.tmdb.movies,
-            fetchAppConfigurationUseCase: foundations.fetchAppConfiguration,
+            fetchAppConfigurationUseCase: foundations.fetchAppConfiguration
+        )
+        let factory = PopcornMoviesFactory(
+            movieRemoteDataSource: adapters.makeMovieRemoteDataSource(),
+            appConfigurationProvider: adapters.makeAppConfigurationProvider(),
             themeColorProvider: foundations.themeColorProvider
-        ).makeMoviesFactory()
+        )
         return MoviesBundle(
             factory: factory,
             fetchDetails: factory.makeFetchMovieDetailsUseCase(),
@@ -256,13 +230,19 @@ extension AppServices {
     }
 
     private static func makeTVSeries(foundations: Foundations) -> TVSeriesBundle {
-        let factory = PopcornTVSeriesAdaptersFactory(
+        let adapters = PopcornTVSeriesAdaptersFactory(
             tvSeriesService: foundations.tmdb.tvSeries,
             tvSeasonService: foundations.tmdb.tvSeasons,
             tvEpisodeService: foundations.tmdb.tvEpisodes,
-            fetchAppConfigurationUseCase: foundations.fetchAppConfiguration,
+            fetchAppConfigurationUseCase: foundations.fetchAppConfiguration
+        )
+        let factory = PopcornTVSeriesFactory(
+            tvSeriesRemoteDataSource: adapters.makeTVSeriesRemoteDataSource(),
+            tvSeasonRemoteDataSource: adapters.makeTVSeasonRemoteDataSource(),
+            tvEpisodeRemoteDataSource: adapters.makeTVEpisodeRemoteDataSource(),
+            appConfigurationProvider: adapters.makeAppConfigurationProvider(),
             themeColorProvider: foundations.themeColorProvider
-        ).makeTVSeriesFactory()
+        )
         return TVSeriesBundle(
             factory: factory,
             fetchDetails: factory.makeFetchTVSeriesDetailsUseCase(),
@@ -271,10 +251,14 @@ extension AppServices {
     }
 
     private static func makePeople(foundations: Foundations) -> PeopleBundle {
-        let factory = PopcornPeopleAdaptersFactory(
+        let adapters = PopcornPeopleAdaptersFactory(
             personService: foundations.tmdb.people,
             fetchAppConfigurationUseCase: foundations.fetchAppConfiguration
-        ).makePeopleFactory()
+        )
+        let factory = PopcornPeopleFactory(
+            personRemoteDataSource: adapters.makePersonRemoteDataSource(),
+            appConfigurationProvider: adapters.makeAppConfigurationProvider()
+        )
         return PeopleBundle(factory: factory, fetchDetails: factory.makeFetchPersonDetailsUseCase())
     }
 
@@ -284,15 +268,22 @@ extension AppServices {
         movies: MoviesBundle,
         tvSeries: TVSeriesBundle
     ) -> DiscoverBundle {
-        let factory = PopcornDiscoverAdaptersFactory(
+        let adapters = PopcornDiscoverAdaptersFactory(
             discoverService: foundations.tmdb.discover,
             fetchAppConfigurationUseCase: foundations.fetchAppConfiguration,
             fetchMovieGenresUseCase: genres.fetchMovieGenres,
             fetchTVSeriesGenresUseCase: genres.fetchTVSeriesGenres,
             fetchMovieImageCollectionUseCase: movies.fetchImageCollection,
-            fetchTVSeriesImageCollectionUseCase: tvSeries.fetchImageCollection,
+            fetchTVSeriesImageCollectionUseCase: tvSeries.fetchImageCollection
+        )
+        let factory = PopcornDiscoverFactory(
+            discoverRemoteDataSource: adapters.makeDiscoverRemoteDataSource(),
+            appConfigurationProvider: adapters.makeAppConfigurationProvider(),
+            genreProvider: adapters.makeGenreProvider(),
+            movieLogoImageProvider: adapters.makeMovieLogoImageProvider(),
+            tvSeriesLogoImageProvider: adapters.makeTVSeriesLogoImageProvider(),
             themeColorProvider: foundations.themeColorProvider
-        ).makeDiscoverFactory()
+        )
         return DiscoverBundle(factory: factory, fetchDiscoverMovies: factory.makeFetchDiscoverMoviesUseCase())
     }
 
@@ -301,13 +292,19 @@ extension AppServices {
         movies: MoviesBundle,
         tvSeries: TVSeriesBundle
     ) -> PopcornTrendingFactory {
-        PopcornTrendingAdaptersFactory(
+        let adapters = PopcornTrendingAdaptersFactory(
             trendingService: foundations.tmdb.trending,
             fetchAppConfigurationUseCase: foundations.fetchAppConfiguration,
             fetchMovieImageCollectionUseCase: movies.fetchImageCollection,
-            fetchTVSeriesImageCollectionUseCase: tvSeries.fetchImageCollection,
+            fetchTVSeriesImageCollectionUseCase: tvSeries.fetchImageCollection
+        )
+        return PopcornTrendingFactory(
+            trendingRemoteDataSource: adapters.makeTrendingRemoteDataSource(),
+            appConfigurationProvider: adapters.makeAppConfigurationProvider(),
+            movieLogoImageProvider: adapters.makeMovieLogoImageProvider(),
+            tvSeriesLogoImageProvider: adapters.makeTVSeriesLogoImageProvider(),
             themeColorProvider: foundations.themeColorProvider
-        ).makeTrendingFactory()
+        )
     }
 
     private static func makeSearchFactory(
@@ -316,25 +313,35 @@ extension AppServices {
         tvSeries: TVSeriesBundle,
         people: PeopleBundle
     ) -> PopcornSearchFactory {
-        PopcornSearchAdaptersFactory(
+        let adapters = PopcornSearchAdaptersFactory(
             searchService: foundations.tmdb.search,
             fetchAppConfigurationUseCase: foundations.fetchAppConfiguration,
             fetchMovieDetailsUseCase: movies.fetchDetails,
             fetchTVSeriesDetailsUseCase: tvSeries.fetchDetails,
-            fetchPersonDetailsUseCase: people.fetchDetails,
+            fetchPersonDetailsUseCase: people.fetchDetails
+        )
+        return PopcornSearchFactory(
+            mediaRemoteDataSource: adapters.makeMediaRemoteDataSource(),
+            appConfigurationProvider: adapters.makeAppConfigurationProvider(),
+            mediaProvider: adapters.makeMediaProvider(),
             themeColorProvider: foundations.themeColorProvider
-        ).makeSearchFactory()
+        )
     }
 
     private static func makeIntelligenceFactory(
         movies: MoviesBundle,
         tvSeries: TVSeriesBundle
     ) -> PopcornIntelligenceFactory {
-        PopcornIntelligenceAdaptersFactory(
+        let adapters = PopcornIntelligenceAdaptersFactory(
             fetchMovieDetailsUseCase: movies.fetchDetails,
             fetchTVSeriesDetailsUseCase: tvSeries.fetchDetails,
             fetchMovieCreditsUseCase: movies.fetchCredits
-        ).makeIntelligenceFactory()
+        )
+        return PopcornIntelligenceFactory(
+            movieProvider: adapters.makeMovieProvider(),
+            tvSeriesProvider: adapters.makeTVSeriesProvider(),
+            creditsProvider: adapters.makeCreditsProvider()
+        )
     }
 
     private static func makePlotRemixGameFactory(
@@ -344,13 +351,18 @@ extension AppServices {
         genres: GenresBundle,
         observabilityService: any Observing & ObservabilityInitialising
     ) -> PopcornPlotRemixGameFactory {
-        PopcornPlotRemixGameAdaptersFactory(
+        let adapters = PopcornPlotRemixGameAdaptersFactory(
             fetchAppConfigurationUseCase: fetchAppConfiguration,
             fetchDiscoverMoviesUseCase: discover.fetchDiscoverMovies,
             fetchMovieRecommendationsUseCase: movies.fetchRecommendations,
-            fetchMovieGenresUseCase: genres.fetchMovieGenres,
+            fetchMovieGenresUseCase: genres.fetchMovieGenres
+        )
+        return PopcornPlotRemixGameFactory(
+            appConfigurationProvider: adapters.makeAppConfigurationProvider(),
+            movieProvider: adapters.makeMovieProvider(),
+            genreProvider: adapters.makeGenreProvider(),
             observability: observabilityService
-        ).makePlotRemixGameFactory()
+        )
     }
 
 }

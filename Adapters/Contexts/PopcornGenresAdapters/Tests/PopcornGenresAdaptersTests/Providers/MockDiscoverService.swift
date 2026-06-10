@@ -21,7 +21,7 @@ final class MockDiscoverService: DiscoverService, @unchecked Sendable {
         sortedBy: MovieSort?,
         page: Int?,
         language: String?
-    ) async throws -> MoviePageableList {
+    ) async throws(TMDbError) -> MoviePageableList {
         moviesCallCount += 1
 
         guard let stub = moviesStub else {
@@ -41,7 +41,7 @@ final class MockDiscoverService: DiscoverService, @unchecked Sendable {
         sortedBy: TVSeriesSort?,
         page: Int?,
         language: String?
-    ) async throws -> TVSeriesPageableList {
+    ) async throws(TMDbError) -> TVSeriesPageableList {
         tvSeriesCallCount += 1
 
         guard let stub = tvSeriesStub else {

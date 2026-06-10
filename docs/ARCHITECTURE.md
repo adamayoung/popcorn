@@ -182,10 +182,11 @@ Remote data sources are implemented in the Adapters layer, not Infrastructure:
 
 ```swift
 // Adapters/Contexts/PopcornMoviesAdapters/DataSources/TMDbMovieRemoteDataSource.swift
-public final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
-    private let movieService: any MovieService
+// Concrete adapters stay `internal`; the factory exposes them only as `some Port`.
+final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
+    private let movieService: any TMDb.MovieService
 
-    public func movie(withID id: Int) async throws(MovieRemoteDataSourceError) -> Movie {
+    func movie(withID id: Int) async throws(MovieRemoteDataSourceError) -> Movie {
         do {
             let dto = try await movieService.details(forMovie: id)
             return MovieMapper().map(dto)
@@ -270,13 +271,22 @@ SwiftData entities are internal to Infrastructure and mapped to domain entities 
 
 ### Composition Layer
 
-Public API that wires everything together:
+The public API: a concrete `Popcorn{Context}Factory` (a `Sendable` final class) that
+wires the Infrastructure and Application factories together and vends the context's
+use cases. There is **no** factory protocol — the concrete factory *is* the public
+API (consistent with the adapter factories). Its initialiser takes the context's
+**ports** (remote data sources, providers); the adapters that satisfy those ports are
+built by the Adapters layer and supplied by the composition root (`AppServices`), so
+this layer never references the TMDb SDK.
 
 ```swift
-public struct PopcornMoviesFactory {
+public final class PopcornMoviesFactory: Sendable {
+    private let applicationFactory: MoviesApplicationFactory
+
     public init(
         movieRemoteDataSource: some MovieRemoteDataSource,
-        appConfigurationProvider: some AppConfigurationProviding
+        appConfigurationProvider: some AppConfigurationProviding,
+        themeColorProvider: (any ThemeColorProviding)? = nil
     ) {
         let infrastructure = MoviesInfrastructureFactory(movieRemoteDataSource: movieRemoteDataSource)
         self.applicationFactory = MoviesApplicationFactory(
@@ -284,7 +294,7 @@ public struct PopcornMoviesFactory {
         )
     }
 
-    public func makeFetchMovieDetailsUseCase() -> some FetchMovieDetailsUseCase {
+    public func makeFetchMovieDetailsUseCase() -> FetchMovieDetailsUseCase {
         applicationFactory.makeFetchMovieDetailsUseCase()
     }
 }
@@ -298,18 +308,31 @@ The canonical reference feature is `Features/MovieDetailsFeature` — model new 
 
 ### Structure
 
+The primary view, view model, dependencies, and navigation protocol live at the
+**root** of the source folder — not in `View/` or `ViewModel/` subfolders. `Views/`
+holds the subviews the main view composes (content views, rows, sections, cards,
+carousels) and is omitted entirely when the feature has none.
+
 ```
 Features/MovieDetailsFeature/
 ├── Sources/MovieDetailsFeature/
-│   ├── ViewModel/
-│   │   ├── MovieDetailsViewModel.swift    # @Observable @MainActor view model
-│   │   ├── MovieDetailsDependencies.swift # Sendable struct of @Sendable closures
-│   │   └── MovieDetailsNavigating.swift   # @MainActor navigation protocol
-│   ├── Views/                             # SwiftUI views (MovieDetailsView owns the VM)
+│   ├── MovieDetailsView.swift             # Main view — owns the VM via @State
+│   ├── MovieDetailsViewModel.swift        # @Observable @MainActor view model
+│   ├── MovieDetailsDependencies.swift     # Sendable struct of @Sendable closures
+│   ├── MovieDetailsNavigating.swift       # @MainActor navigation protocol
+│   ├── Logger.swift                       # OSLog category
 │   ├── Models/                            # Feature-specific models
-│   └── Mappers/                           # Transform application → feature models
+│   ├── Mappers/                           # Transform application → feature models
+│   └── Views/                             # Subviews the main view composes
 └── Tests/
 ```
+
+A feature that presents several distinct screens groups each screen's views into
+its own folder (the screen's main view at the folder root, a nested `Views/` for
+its components), all driven by the single feature view model. For example,
+`PlotRemixGameFeature` keeps one `PlotRemixGameViewModel` and groups screens into
+`PlotRemixGameStart/` and `PlotRemixGameQuestions/`. These screen views are stateless
+— they take plain data and action closures from the parent.
 
 ### View Model
 
@@ -498,18 +521,30 @@ graph (e.g. `services.moviesFactory.makeFetchMovieDetailsUseCase()`,
 
 ## Adapters: External Service Bridges
 
-Adapt external APIs to domain interfaces.
+Adapters implement a context's **ports** (its `*RemoteDataSource` / provider
+protocols) using external services (the TMDb SDK). A `Popcorn{Context}AdaptersFactory`
+exposes those adapters through `make…() -> some Port` methods — it returns the
+adapters, **not** the context factory, and does **not** depend on the context's
+`Composition` module. That keeps the adapters package a leaf; the composition root
+(`AppServices`) assembles the `Popcorn{Context}Factory` from these adapters.
 
 ```swift
 public final class PopcornMoviesAdaptersFactory {
-    private let movieService: any MovieService  // TMDb SDK
+    private let movieService: any TMDb.MovieService  // TMDb SDK
 
-    public func makeMoviesFactory() -> PopcornMoviesFactory {
-        let remoteDataSource = TMDbMovieRemoteDataSource(movieService: movieService)
-        return PopcornMoviesFactory(movieRemoteDataSource: remoteDataSource)
+    public func makeMovieRemoteDataSource() -> some MovieRemoteDataSource {
+        TMDbMovieRemoteDataSource(movieService: movieService)
+    }
+
+    public func makeAppConfigurationProvider() -> some AppConfigurationProviding {
+        AppConfigurationProviderAdapter(fetchUseCase: fetchAppConfigurationUseCase)
     }
 }
 ```
+
+Non-adapter concerns (`themeColorProvider`, `observability`, a `modelContainer`)
+are **not** passed through this factory — the composition root supplies them
+directly to the context factory.
 
 ## Dependency Flow
 
@@ -520,14 +555,16 @@ MovieDetailsViewModel                 # Feature view model
     ↓
 MovieDetailsDependencies              # Per-feature Sendable struct of closures
     ↓  (.live(services:))
-AppServices                           # AppDependencies composition root
-    ↓
-PopcornMoviesAdaptersFactory          # Adapters
-    ↓
-PopcornMoviesFactory                  # Context Composition
-    ↓
-{Domain, Application, Infrastructure}
+AppServices                           # Composition root — assembles each context factory:
+    ├─ PopcornMoviesAdaptersFactory   #   builds the TMDb-backed adapters (ports)
+    └─ PopcornMoviesFactory(…)        #   wired from those adapters (Composition layer)
+           ↓
+       {Application, Infrastructure, Domain}
 ```
+
+`AppServices` is the single place that wires adapters into context factories: it
+builds the `Popcorn{Context}AdaptersFactory`, calls its `make…()` methods to get the
+port implementations, and passes them into `Popcorn{Context}Factory`.
 
 ## Navigation Patterns
 

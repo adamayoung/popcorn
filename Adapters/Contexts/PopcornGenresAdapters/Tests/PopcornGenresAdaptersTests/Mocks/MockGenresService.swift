@@ -26,7 +26,7 @@ final class MockGenresService: GenreService, @unchecked Sendable {
     var tvSeriesGenresCalledWith: [TVSeriesGenresCall] = []
     var tvSeriesGenresStub: Result<[Genre], TMDbError>?
 
-    func movieGenres(language: String?) async throws -> [Genre] {
+    func movieGenres(language: String?) async throws(TMDbError) -> [Genre] {
         movieGenresCallCount += 1
         movieGenresCalledWith.append(MovieGenresCall(language: language))
 
@@ -42,7 +42,7 @@ final class MockGenresService: GenreService, @unchecked Sendable {
         }
     }
 
-    func tvSeriesGenres(language: String?) async throws -> [Genre] {
+    func tvSeriesGenres(language: String?) async throws(TMDbError) -> [Genre] {
         tvSeriesGenresCallCount += 1
         tvSeriesGenresCalledWith.append(TVSeriesGenresCall(language: language))
 

@@ -27,7 +27,6 @@ let package = Package(
         .target(
             name: "PopcornTVListingsAdapters",
             dependencies: [
-                .product(name: "TVListingsComposition", package: "PopcornTVListings"),
                 .product(name: "TVListingsDomain", package: "PopcornTVListings"),
                 .product(name: "TVListingsInfrastructure", package: "PopcornTVListings"),
                 "Observability"
@@ -37,6 +36,8 @@ let package = Package(
             name: "PopcornTVListingsAdaptersTests",
             dependencies: [
                 "PopcornTVListingsAdapters",
+                .product(name: "TVListingsComposition", package: "PopcornTVListings"),
+                .product(name: "TVListingsApplication", package: "PopcornTVListings"),
                 .product(name: "TVListingsDomain", package: "PopcornTVListings"),
                 .product(name: "TVListingsInfrastructure", package: "PopcornTVListings"),
                 .product(name: "ObservabilityTestHelpers", package: "Observability")

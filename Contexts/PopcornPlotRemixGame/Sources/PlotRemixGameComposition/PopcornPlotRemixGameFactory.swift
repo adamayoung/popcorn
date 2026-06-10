@@ -6,10 +6,35 @@
 //
 
 import Foundation
+import Observability
 import PlotRemixGameApplication
+import PlotRemixGameDomain
+import PlotRemixGameInfrastructure
 
-public protocol PopcornPlotRemixGameFactory: Sendable {
+public final class PopcornPlotRemixGameFactory: Sendable {
 
-    func makeGeneratePlotRemixGameUseCase() -> GeneratePlotRemixGameUseCase
+    private let applicationFactory: PlotRemixGameApplicationFactory
+
+    public init(
+        appConfigurationProvider: some AppConfigurationProviding,
+        movieProvider: some MovieProviding,
+        genreProvider: some GenreProviding,
+        observability: some Observing
+    ) {
+        let infrastructureFactory = PlotRemixGameInfrastructureFactory(
+            observability: observability
+        )
+        let synopsisRiddleGenerator = infrastructureFactory.makeSynopsisRiddleGenerator()
+        self.applicationFactory = PlotRemixGameApplicationFactory(
+            appConfigurationProvider: appConfigurationProvider,
+            movieProvider: movieProvider,
+            genreProvider: genreProvider,
+            synopsisRiddleGenerator: synopsisRiddleGenerator
+        )
+    }
+
+    public func makeGeneratePlotRemixGameUseCase() -> GeneratePlotRemixGameUseCase {
+        applicationFactory.makeGeneratePlotRemixGameUseCase()
+    }
 
 }

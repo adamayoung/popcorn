@@ -6,14 +6,14 @@
 //
 
 import ConfigurationApplication
-import CoreDomain
-import DiscoverComposition
-import Foundation
+import DiscoverDomain
+import DiscoverInfrastructure
 import GenresApplication
 import MoviesApplication
 import TMDb
 import TVSeriesApplication
 
+/// Builds the Discover context's TMDb-backed adapters (port implementations).
 public final class PopcornDiscoverAdaptersFactory {
 
     private let discoverService: any DiscoverService
@@ -22,7 +22,6 @@ public final class PopcornDiscoverAdaptersFactory {
     private let fetchTVSeriesGenresUseCase: any FetchTVSeriesGenresUseCase
     private let fetchMovieImageCollectionUseCase: any FetchMovieImageCollectionUseCase
     private let fetchTVSeriesImageCollectionUseCase: any FetchTVSeriesImageCollectionUseCase
-    private let themeColorProvider: (any ThemeColorProviding)?
 
     public init(
         discoverService: some DiscoverService,
@@ -30,8 +29,7 @@ public final class PopcornDiscoverAdaptersFactory {
         fetchMovieGenresUseCase: some FetchMovieGenresUseCase,
         fetchTVSeriesGenresUseCase: some FetchTVSeriesGenresUseCase,
         fetchMovieImageCollectionUseCase: some FetchMovieImageCollectionUseCase,
-        fetchTVSeriesImageCollectionUseCase: some FetchTVSeriesImageCollectionUseCase,
-        themeColorProvider: (any ThemeColorProviding)? = nil
+        fetchTVSeriesImageCollectionUseCase: some FetchTVSeriesImageCollectionUseCase
     ) {
         self.discoverService = discoverService
         self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
@@ -39,37 +37,30 @@ public final class PopcornDiscoverAdaptersFactory {
         self.fetchTVSeriesGenresUseCase = fetchTVSeriesGenresUseCase
         self.fetchMovieImageCollectionUseCase = fetchMovieImageCollectionUseCase
         self.fetchTVSeriesImageCollectionUseCase = fetchTVSeriesImageCollectionUseCase
-        self.themeColorProvider = themeColorProvider
     }
 
-    public func makeDiscoverFactory() -> some PopcornDiscoverFactory {
-        let discoverRemoteDataSource = TMDbDiscoverRemoteDataSource(
-            discoverService: discoverService
-        )
+    public func makeDiscoverRemoteDataSource() -> some DiscoverRemoteDataSource {
+        TMDbDiscoverRemoteDataSource(discoverService: discoverService)
+    }
 
-        let appConfigurationProvider = AppConfigurationProviderAdapter(
-            fetchUseCase: fetchAppConfigurationUseCase
-        )
+    public func makeAppConfigurationProvider() -> some AppConfigurationProviding {
+        AppConfigurationProviderAdapter(fetchUseCase: fetchAppConfigurationUseCase)
+    }
 
-        let genreProvider = GenreProviderAdapter(
+    public func makeGenreProvider() -> some GenreProviding {
+        GenreProviderAdapter(
             fetchMovieGenresUseCase: fetchMovieGenresUseCase,
             fetchTVSeriesGenresUseCase: fetchTVSeriesGenresUseCase
         )
+    }
 
-        let movieLogoProvider = MovieLogoImageProviderAdapter(
-            fetchImageCollectionUseCase: fetchMovieImageCollectionUseCase
-        )
-        let tvSeriesLogoProvider = TVSeriesLogoImageProviderAdapter(
+    public func makeMovieLogoImageProvider() -> some MovieLogoImageProviding {
+        MovieLogoImageProviderAdapter(fetchImageCollectionUseCase: fetchMovieImageCollectionUseCase)
+    }
+
+    public func makeTVSeriesLogoImageProvider() -> some TVSeriesLogoImageProviding {
+        TVSeriesLogoImageProviderAdapter(
             fetchTVSeriesImageCollectionUseCase: fetchTVSeriesImageCollectionUseCase
-        )
-
-        return LivePopcornDiscoverFactory(
-            discoverRemoteDataSource: discoverRemoteDataSource,
-            appConfigurationProvider: appConfigurationProvider,
-            genreProvider: genreProvider,
-            movieLogoImageProvider: movieLogoProvider,
-            tvSeriesLogoImageProvider: tvSeriesLogoProvider,
-            themeColorProvider: themeColorProvider
         )
     }
 

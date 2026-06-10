@@ -5,30 +5,26 @@ description: Run snapshot tests
 
 # Run snapshot tests
 
-**Run via a subagent** (Task tool, `subagent_type: "general-purpose"`) to keep large logs out of the main context. The subagent should run `make test-snapshots` from the project root and report back pass/fail with any test failures.
+Runs the `PopcornSnapshotTests` test plan on the iOS Simulator. Optional argument: a
+`<TestTarget>/<TestClass>` or `<TestTarget>/<TestClass>/<testMethod>` for a subset.
 
-This builds and runs the `PopcornSnapshotTests` test plan on the iOS Simulator.
+**Preferred — Xcode MCP (`xcode`), when running inside Xcode.** Get the
+`tabIdentifier` from `mcp__xcode__XcodeListWindows`, then run
+`mcp__xcode__RunAllTests` (or `mcp__xcode__RunSomeTests` with `<specifier>` for a
+subset) with that `tabIdentifier`, targeting the PopcornSnapshotTests plan.
 
-## Running a subset of tests
+**Fallback — `make`, when the MCP isn't available.** Delegate to a **Haiku subagent**
+(`subagent_type: general-purpose`, `model: haiku`). Do not run it yourself. Prompt it to:
 
-To run all tests in a specific test class:
-
-```bash
-make test-snapshots TEST_CLASS=ExploreFeatureSnapshotTests/ExploreViewTests
+```text
+Run `mkdir -p .build && make test-snapshots [TEST_CLASS=<specifier>] > .build/last-snapshots.log 2>&1`,
+check the exit status, and report ONLY:
+- Status: passed or failed
+- Counts: total / passed / failed
+- Each failing test as `SuiteName/testName` with its `file:line` (omit if none)
+- On failure, the log path `.build/last-snapshots.log`
+Do not paste passing-test output or raw logs.
 ```
 
-To run a single test method:
-
-```bash
-make test-snapshots TEST_CLASS=ExploreFeatureSnapshotTests/ExploreViewTests/testSnapshot
-```
-
-## Arguments
-
-The skill accepts an optional argument for the test class or test method:
-
-- No argument: runs all snapshot tests
-- `<TestTarget>/<TestClass>`: runs all tests in that class
-- `<TestTarget>/<TestClass>/<testMethod>`: runs a single test
-
-If tests fail, review the output for failure details. Snapshot failures typically mean the rendered UI has changed — inspect the failure images to determine if the change is intentional.
+Snapshot failures usually mean the rendered UI changed — inspect the failure images to
+decide whether the change is intentional (and re-record if so).

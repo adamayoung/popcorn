@@ -19,7 +19,7 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(url: "https://github.com/SDWebImage/SDWebImageSwiftUI.git", from: "3.0.0")
+        .package(url: "https://github.com/SDWebImage/SDWebImageSwiftUI.git", from: "3.1.4")
     ],
 
     targets: [

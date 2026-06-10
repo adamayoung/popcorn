@@ -5,37 +5,92 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import Foundation
 import MoviesApplication
+import MoviesDomain
+import MoviesInfrastructure
 
-public protocol PopcornMoviesFactory: Sendable {
+public final class PopcornMoviesFactory: Sendable {
 
-    func makeFetchMovieDetailsUseCase() -> FetchMovieDetailsUseCase
+    private let applicationFactory: MoviesApplicationFactory
 
-    func makeStreamMovieDetailsUseCase() -> StreamMovieDetailsUseCase
+    public init(
+        movieRemoteDataSource: some MovieRemoteDataSource,
+        appConfigurationProvider: some AppConfigurationProviding,
+        themeColorProvider: (any ThemeColorProviding)? = nil
+    ) {
+        let infrastructureFactory = MoviesInfrastructureFactory(
+            movieRemoteDataSource: movieRemoteDataSource
+        )
+        self.applicationFactory = MoviesApplicationFactory(
+            movieRepository: infrastructureFactory.makeMovieRepository(),
+            movieWatchlistRepository: infrastructureFactory.makeMovieWatchlistRepository(),
+            movieImageRepository: infrastructureFactory.makeMovieImageRepository(),
+            popularMovieRepository: infrastructureFactory.makePopularMovieRepository(),
+            similarMovieRepository: infrastructureFactory.makeSimilarMovieRepository(),
+            movieRecommendationRepository: infrastructureFactory.makeMovieRecommendationRepository(),
+            movieCreditsRepository: infrastructureFactory.makeMovieCreditsRepository(),
+            movieWatchProvidersRepository: infrastructureFactory.makeMovieWatchProvidersRepository(),
+            appConfigurationProvider: appConfigurationProvider,
+            themeColorProvider: themeColorProvider
+        )
+    }
 
-    func makeToggleWatchlistMovieUseCase() -> ToggleWatchlistMovieUseCase
+    public func makeFetchMovieDetailsUseCase() -> FetchMovieDetailsUseCase {
+        applicationFactory.makeFetchMovieDetailsUseCase()
+    }
 
-    func makeFetchMovieImageCollectionUseCase() -> FetchMovieImageCollectionUseCase
+    public func makeStreamMovieDetailsUseCase() -> StreamMovieDetailsUseCase {
+        applicationFactory.makeStreamMovieDetailsUseCase()
+    }
 
-    func makeFetchPopularMoviesUseCase() -> FetchPopularMoviesUseCase
+    public func makeToggleWatchlistMovieUseCase() -> ToggleWatchlistMovieUseCase {
+        applicationFactory.makeToggleWatchlistMovieUseCase()
+    }
 
-    func makeStreamPopularMoviesUseCase() -> StreamPopularMoviesUseCase
+    public func makeFetchMovieImageCollectionUseCase() -> FetchMovieImageCollectionUseCase {
+        applicationFactory.makeFetchMovieImageCollectionUseCase()
+    }
 
-    func makeFetchSimilarMoviesUseCase() -> FetchSimilarMoviesUseCase
+    public func makeFetchPopularMoviesUseCase() -> FetchPopularMoviesUseCase {
+        applicationFactory.makeFetchPopularMoviesUseCase()
+    }
 
-    func makeStreamSimilarMoviesUseCase() -> StreamSimilarMoviesUseCase
+    public func makeStreamPopularMoviesUseCase() -> StreamPopularMoviesUseCase {
+        applicationFactory.makeStreamPopularMoviesUseCase()
+    }
 
-    func makeFetchMovieRecommendationsUseCase() -> FetchMovieRecommendationsUseCase
+    public func makeFetchSimilarMoviesUseCase() -> FetchSimilarMoviesUseCase {
+        applicationFactory.makeFetchSimilarMoviesUseCase()
+    }
 
-    func makeStreamMovieRecommendationsUseCase() -> StreamMovieRecommendationsUseCase
+    public func makeStreamSimilarMoviesUseCase() -> StreamSimilarMoviesUseCase {
+        applicationFactory.makeStreamSimilarMoviesUseCase()
+    }
 
-    func makeFetchMovieCreditsUseCase() -> FetchMovieCreditsUseCase
+    public func makeFetchMovieRecommendationsUseCase() -> FetchMovieRecommendationsUseCase {
+        applicationFactory.makeFetchMovieRecommendationsUseCase()
+    }
 
-    func makeFetchMovieWatchProvidersUseCase() -> FetchMovieWatchProvidersUseCase
+    public func makeStreamMovieRecommendationsUseCase() -> StreamMovieRecommendationsUseCase {
+        applicationFactory.makeStreamMovieRecommendationsUseCase()
+    }
 
-    func makeStreamWatchlistMoviesUseCase() -> StreamWatchlistMoviesUseCase
+    public func makeFetchMovieCreditsUseCase() -> FetchMovieCreditsUseCase {
+        applicationFactory.makeFetchMovieCreditsUseCase()
+    }
 
-    func makeFetchWatchlistMoviesUseCase() -> FetchWatchlistMoviesUseCase
+    public func makeFetchMovieWatchProvidersUseCase() -> FetchMovieWatchProvidersUseCase {
+        applicationFactory.makeFetchMovieWatchProvidersUseCase()
+    }
+
+    public func makeStreamWatchlistMoviesUseCase() -> StreamWatchlistMoviesUseCase {
+        applicationFactory.makeStreamWatchlistMoviesUseCase()
+    }
+
+    public func makeFetchWatchlistMoviesUseCase() -> FetchWatchlistMoviesUseCase {
+        applicationFactory.makeFetchWatchlistMoviesUseCase()
+    }
 
 }

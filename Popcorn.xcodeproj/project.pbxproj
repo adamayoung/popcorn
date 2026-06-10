@@ -903,9 +903,6 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-/* End XCRemoteSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
 		661ADD4E2EFAB62D00A4055D /* MovieIntelligenceFeature */ = {
 			isa = XCSwiftPackageProductDependency;

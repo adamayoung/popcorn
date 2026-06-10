@@ -24,15 +24,15 @@ let package = Package(
         .package(path: "../../../Contexts/PopcornTVSeries"),
         .package(path: "../../../Contexts/PopcornConfiguration"),
         .package(path: "../../../Core/CoreDomain"),
-        .package(url: "https://github.com/adamayoung/TMDb.git", from: "16.0.0")
+        .package(url: "https://github.com/adamayoung/TMDb.git", from: "18.0.0")
     ],
 
     targets: [
         .target(
             name: "PopcornTrendingAdapters",
             dependencies: [
-                .product(name: "TrendingComposition", package: "PopcornTrending"),
                 .product(name: "TrendingDomain", package: "PopcornTrending"),
+                .product(name: "TrendingInfrastructure", package: "PopcornTrending"),
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
                 .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),

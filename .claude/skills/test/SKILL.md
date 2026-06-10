@@ -5,14 +5,27 @@ description: Run all unit tests
 
 # Run tests
 
-Use the Xcode MCP if available, otherwise fall back to Make.
+**Preferred — Xcode MCP (`xcode`), when running inside Xcode.** Call it directly
+(small structured result, no subagent needed):
 
-## Xcode MCP (preferred)
+1. Get the workspace `tabIdentifier` from `mcp__xcode__XcodeListWindows`.
+2. Run `mcp__xcode__RunAllTests` with that `tabIdentifier`.
+3. If a build error caused the failure, call `mcp__xcode__GetBuildLog` with the same
+   `tabIdentifier` and `severity: "error"`.
 
-1. Run `mcp__xcode__XcodeListWindows` to get the `tabIdentifier` for the Popcorn workspace.
-2. Run `mcp__xcode__RunAllTests` with the `tabIdentifier`.
-3. If tests fail, review the output for failure details. Use `mcp__xcode__GetBuildLog` with `severity: "error"` if build errors caused the failure.
+**Fallback — `make`, when the MCP isn't available.** Delegate to a **Haiku subagent**
+(Agent tool, `subagent_type: general-purpose`, `model: haiku`) so the output stays out
+of your context. Do not run it yourself. Prompt the subagent to:
 
-## Fallback
+```text
+Run `mkdir -p .build && make test > .build/last-test.log 2>&1`, check the exit
+status, and report ONLY:
+- Status: passed or failed
+- Counts: total / passed / failed
+- Each failing test as `SuiteName/testName` with its `file:line` and the assertion
+  message (omit if none)
+- On failure, the log path `.build/last-test.log`
+Do not paste passing-test output or raw logs.
+```
 
-**Run via a subagent** (Task tool, `subagent_type: "general-purpose"`) to keep large logs out of the main context. The subagent should run `make test` from the project root and report back pass/fail with any test failures.
+After fixing any issues, re-invoke this skill to re-check.

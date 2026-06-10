@@ -177,9 +177,10 @@ final class Default{Entity}Repository: {Entity}Repository {
 
 ### 6. Create Composition Layer
 
-**Popcorn{Context}Factory.swift**:
+**Popcorn{Context}Factory.swift** — a concrete `Sendable` final class (there is **no**
+factory protocol; the concrete factory is the public API, like the adapter factories):
 ```swift
-public struct Popcorn{Context}Factory: Sendable {
+public final class Popcorn{Context}Factory: Sendable {
     private let applicationFactory: {Context}ApplicationFactory
 
     public init({entity}RemoteDataSource: some {Entity}RemoteDataSource, modelContainer: ModelContainer) {
@@ -200,15 +201,68 @@ public struct Popcorn{Context}Factory: Sendable {
 
 ### 7. Create Adapters
 
+The adapters package bridges external services (TMDb) to the context's **ports** —
+the `*RemoteDataSource` and provider protocols defined in the Domain/Infrastructure
+layers. Its factory exposes those adapters through `make…() -> some Port` methods.
+
+It does **not** build `Popcorn{Context}Factory`, and it must **not** depend on
+`{Context}Composition`. Assembling the context factory from these adapters is the
+composition root's job (Step 8) — this keeps the adapters package a leaf in the
+dependency graph rather than reaching across into the context's composition layer.
+
 ```
 Adapters/Contexts/Popcorn{Context}Adapters/
 ├── Package.swift
 ├── Sources/
 │   └── Popcorn{Context}Adapters/
 │       ├── DataSources/
-│       │   └── TMDb{Entity}RemoteDataSource.swift
+│       │   ├── TMDb{Entity}RemoteDataSource.swift   # conforms to {Entity}RemoteDataSource (internal)
+│       │   └── Mappers/                              # TMDb DTO → Domain mappers
 │       └── Popcorn{Context}AdaptersFactory.swift
+└── Tests/
+    └── Popcorn{Context}AdaptersTests/
 ```
+
+**Package.swift** — depend on the context's **Domain** and **Infrastructure**
+products (where the ports live) plus `TMDb`. Do **not** add `{Context}Composition`:
+
+```swift
+dependencies: [
+    .product(name: "{Context}Domain", package: "Popcorn{Context}"),
+    .product(name: "{Context}Infrastructure", package: "Popcorn{Context}"),
+    "TMDb"
+]
+```
+
+**Popcorn{Context}AdaptersFactory.swift** — return the port implementations, one
+`make…()` per port. Keep the concrete adapter types `internal`; the `some Port`
+return types hide them. Qualify the TMDb service type as `TMDb.{Entity}Service` to
+avoid ambiguity once `{Context}Infrastructure` is imported:
+
+```swift
+import {Context}Infrastructure
+import TMDb
+
+public final class Popcorn{Context}AdaptersFactory {
+
+    private let {entity}Service: any TMDb.{Entity}Service
+
+    public init({entity}Service: some TMDb.{Entity}Service) {
+        self.{entity}Service = {entity}Service
+    }
+
+    public func make{Entity}RemoteDataSource() -> some {Entity}RemoteDataSource {
+        TMDb{Entity}RemoteDataSource({entity}Service: {entity}Service)
+    }
+
+}
+```
+
+> A provider adapter backed by another context's use case (e.g. an
+> `AppConfigurationProviding`) takes that use case in the factory's `init` and is
+> exposed via its own `make…()` method. Concerns that are **not** adapters —
+> `themeColorProvider`, `observability`, a `modelContainer` — do not belong on this
+> factory; the composition root passes them straight into the context factory (Step 8).
 
 ### 8. Wire in AppServices
 
@@ -227,14 +281,19 @@ let {context}Factory: Popcorn{Context}Factory
 self.{context}Factory = graph.{context}Factory
 ```
 
-**`AppServices+Composition.swift`** — construct the factory in `buildGraph` (wiring
-its adapters factory to the shared TMDb client / model container) and pass it into
-the returned `Graph`:
+**`AppServices+Composition.swift`** — in `buildGraph`, build the adapters factory
+from the shared TMDb services, then assemble `Popcorn{Context}Factory` from the
+adapters it produces (plus any non-adapter concerns like the model container or
+theme-colour provider), and pass it into the returned `Graph`. The composition root
+is the single place that assembles context factories from adapters:
 ```swift
-let {context}Factory = Popcorn{Context}AdaptersFactory(
-    tmdbClient: domain.tmdb,
+let {context}Adapters = Popcorn{Context}AdaptersFactory(
+    {entity}Service: domain.tmdb.{entities}
+)
+let {context}Factory = Popcorn{Context}Factory(
+    {entity}RemoteDataSource: {context}Adapters.make{Entity}RemoteDataSource(),
     modelContainer: modelContainer
-).make{Context}Factory()
+)
 ```
 
 A feature then consumes these use cases in its `Dependencies.live(services:)`

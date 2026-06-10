@@ -6,8 +6,7 @@
 //
 
 import FeatureAccess
-import Foundation
-import GamesCatalogComposition
+import GamesCatalogDomain
 
 public final class PopcornGamesCatalogAdaptersFactory {
 
@@ -17,9 +16,8 @@ public final class PopcornGamesCatalogAdaptersFactory {
         self.featureFlags = featureFlags
     }
 
-    public func makeGamesCatalogFactory() -> some PopcornGamesCatalogFactory {
-        let featureFlagProvider = FeatureFlagProvider(featureFlags: featureFlags)
-        return LivePopcornGamesCatalogFactory(featureFlagProvider: featureFlagProvider)
+    public func makeFeatureFlagProvider() -> some GamesCatalogDomain.FeatureFlagProviding {
+        FeatureFlagProvider(featureFlags: featureFlags)
     }
 
 }

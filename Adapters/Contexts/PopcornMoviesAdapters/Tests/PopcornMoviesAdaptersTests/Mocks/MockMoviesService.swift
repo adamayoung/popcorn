@@ -75,7 +75,7 @@ final class MockMoviesService: MovieService, @unchecked Sendable {
     var releaseDatesCalledWith: [ReleaseDatesCall] = []
     var releaseDatesStub: Result<[MovieReleaseDatesByCountry], TMDbError>?
 
-    func details(forMovie id: Movie.ID, language: String?) async throws -> Movie {
+    func details(forMovie id: Movie.ID, language: String?) async throws(TMDbError) -> Movie {
         detailsCallCount += 1
         detailsCalledWith.append(DetailsCall(id: id, language: language))
 
@@ -95,11 +95,11 @@ final class MockMoviesService: MovieService, @unchecked Sendable {
         forMovie id: Movie.ID,
         appending: MovieAppendOption,
         language: String?
-    ) async throws -> MovieDetailsResponse {
+    ) async throws(TMDbError) -> MovieDetailsResponse {
         fatalError("Not implemented")
     }
 
-    func credits(forMovie movieID: Movie.ID, language: String?) async throws -> ShowCredits {
+    func credits(forMovie movieID: Movie.ID, language: String?) async throws(TMDbError) -> ShowCredits {
         creditsCallCount += 1
         creditsCalledWith.append(CreditsCall(movieID: movieID, language: language))
 
@@ -119,11 +119,11 @@ final class MockMoviesService: MovieService, @unchecked Sendable {
         forMovie movieID: Movie.ID,
         page: Int?,
         language: String?
-    ) async throws -> ReviewPageableList {
+    ) async throws(TMDbError) -> ReviewPageableList {
         fatalError("Not implemented")
     }
 
-    func images(forMovie movieID: Movie.ID, filter: MovieImageFilter?) async throws -> ImageCollection {
+    func images(forMovie movieID: Movie.ID, filter: MovieImageFilter?) async throws(TMDbError) -> ImageCollection {
         imagesCallCount += 1
         imagesCalledWith.append(ImagesCall(movieID: movieID, filter: filter))
 
@@ -139,7 +139,7 @@ final class MockMoviesService: MovieService, @unchecked Sendable {
         }
     }
 
-    func videos(forMovie movieID: Movie.ID, filter: MovieVideoFilter?) async throws -> VideoCollection {
+    func videos(forMovie movieID: Movie.ID, filter: MovieVideoFilter?) async throws(TMDbError) -> VideoCollection {
         fatalError("Not implemented")
     }
 
@@ -147,7 +147,7 @@ final class MockMoviesService: MovieService, @unchecked Sendable {
         forMovie movieID: Movie.ID,
         page: Int?,
         language: String?
-    ) async throws -> MoviePageableList {
+    ) async throws(TMDbError) -> MoviePageableList {
         recommendationsCallCount += 1
         recommendationsCalledWith.append(RecommendationsCall(movieID: movieID, page: page, language: language))
 
@@ -163,7 +163,11 @@ final class MockMoviesService: MovieService, @unchecked Sendable {
         }
     }
 
-    func similar(toMovie movieID: Movie.ID, page: Int?, language: String?) async throws -> MoviePageableList {
+    func similar(
+        toMovie movieID: Movie.ID,
+        page: Int?,
+        language: String?
+    ) async throws(TMDbError) -> MoviePageableList {
         similarCallCount += 1
         similarCalledWith.append(SimilarCall(movieID: movieID, page: page, language: language))
 
@@ -179,11 +183,11 @@ final class MockMoviesService: MovieService, @unchecked Sendable {
         }
     }
 
-    func nowPlaying(page: Int?, country: String?, language: String?) async throws -> MoviePageableList {
+    func nowPlaying(page: Int?, country: String?, language: String?) async throws(TMDbError) -> MoviePageableList {
         fatalError("Not implemented")
     }
 
-    func popular(page: Int?, country: String?, language: String?) async throws -> MoviePageableList {
+    func popular(page: Int?, country: String?, language: String?) async throws(TMDbError) -> MoviePageableList {
         popularCallCount += 1
         popularCalledWith.append(PopularCall(page: page, country: country, language: language))
 
@@ -199,23 +203,23 @@ final class MockMoviesService: MovieService, @unchecked Sendable {
         }
     }
 
-    func topRated(page: Int?, country: String?, language: String?) async throws -> MoviePageableList {
+    func topRated(page: Int?, country: String?, language: String?) async throws(TMDbError) -> MoviePageableList {
         fatalError("Not implemented")
     }
 
-    func upcoming(page: Int?, country: String?, language: String?) async throws -> MoviePageableList {
+    func upcoming(page: Int?, country: String?, language: String?) async throws(TMDbError) -> MoviePageableList {
         fatalError("Not implemented")
     }
 
-    func watchProviders(forMovie movieID: Movie.ID) async throws -> [ShowWatchProvidersByCountry] {
+    func watchProviders(forMovie movieID: Movie.ID) async throws(TMDbError) -> [ShowWatchProvidersByCountry] {
         fatalError("Not implemented")
     }
 
-    func externalLinks(forMovie movieID: Movie.ID) async throws -> MovieExternalLinksCollection {
+    func externalLinks(forMovie movieID: Movie.ID) async throws(TMDbError) -> MovieExternalLinksCollection {
         fatalError("Not implemented")
     }
 
-    func releaseDates(forMovie movieID: Movie.ID) async throws -> [MovieReleaseDatesByCountry] {
+    func releaseDates(forMovie movieID: Movie.ID) async throws(TMDbError) -> [MovieReleaseDatesByCountry] {
         releaseDatesCallCount += 1
         releaseDatesCalledWith.append(ReleaseDatesCall(movieID: movieID))
 
@@ -231,15 +235,15 @@ final class MockMoviesService: MovieService, @unchecked Sendable {
         }
     }
 
-    func accountStates(forMovie movieID: Movie.ID, session: Session) async throws -> AccountStates {
+    func accountStates(forMovie movieID: Movie.ID, session: Session) async throws(TMDbError) -> AccountStates {
         fatalError("Not implemented")
     }
 
-    func addRating(_ rating: Double, toMovie movieID: Movie.ID, session: Session) async throws {
+    func addRating(_ rating: Double, toMovie movieID: Movie.ID, session: Session) async throws(TMDbError) {
         fatalError("Not implemented")
     }
 
-    func deleteRating(forMovie movieID: Movie.ID, session: Session) async throws {
+    func deleteRating(forMovie movieID: Movie.ID, session: Session) async throws(TMDbError) {
         fatalError("Not implemented")
     }
 
@@ -247,11 +251,13 @@ final class MockMoviesService: MovieService, @unchecked Sendable {
         forMovie movieID: Movie.ID,
         country: String?,
         language: String?
-    ) async throws -> AlternativeTitleCollection {
+    ) async throws(TMDbError) -> AlternativeTitleCollection {
         fatalError("Not implemented")
     }
 
-    func translations(forMovie movieID: Movie.ID) async throws -> TranslationCollection<MovieTranslationData> {
+    func translations(
+        forMovie movieID: Movie.ID
+    ) async throws(TMDbError) -> TranslationCollection<MovieTranslationData> {
         fatalError("Not implemented")
     }
 
@@ -259,7 +265,7 @@ final class MockMoviesService: MovieService, @unchecked Sendable {
         forMovie movieID: Movie.ID,
         page: Int?,
         language: String?
-    ) async throws -> MediaListSummaryPageableList {
+    ) async throws(TMDbError) -> MediaListSummaryPageableList {
         fatalError("Not implemented")
     }
 
@@ -268,11 +274,11 @@ final class MockMoviesService: MovieService, @unchecked Sendable {
         startDate: Date?,
         endDate: Date?,
         page: Int?
-    ) async throws -> ChangeCollection {
+    ) async throws(TMDbError) -> ChangeCollection {
         fatalError("Not implemented")
     }
 
-    func latest() async throws -> Movie {
+    func latest() async throws(TMDbError) -> Movie {
         fatalError("Not implemented")
     }
 
@@ -280,11 +286,11 @@ final class MockMoviesService: MovieService, @unchecked Sendable {
         startDate: Date?,
         endDate: Date?,
         page: Int?
-    ) async throws -> ChangedIDCollection {
+    ) async throws(TMDbError) -> ChangedIDCollection {
         fatalError("Not implemented")
     }
 
-    func keywords(forMovie movieID: Movie.ID) async throws -> KeywordCollection {
+    func keywords(forMovie movieID: Movie.ID) async throws(TMDbError) -> KeywordCollection {
         fatalError("Not implemented")
     }
 

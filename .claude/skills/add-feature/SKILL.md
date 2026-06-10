@@ -27,29 +27,52 @@ Ask the user for:
 
 ### 1. Create Package Structure
 
+The **primary** files — the view, view model, dependencies, navigating protocol, and
+`Logger` — live at the **root** of `Sources/{FeatureName}Feature/`, not in `View/`
+or `ViewModel/` subfolders. Only `Models/`, `Mappers/`, and (when present) the
+main view's subviews under `Views/` are nested.
+
 ```
 Features/{FeatureName}Feature/
 ├── Package.swift
 ├── Sources/{FeatureName}Feature/
-│   ├── ViewModel/
-│   │   ├── {FeatureName}ViewModel.swift      # @Observable @MainActor view model + ViewSnapshot
-│   │   ├── {FeatureName}Dependencies.swift   # Sendable struct of @Sendable closures + live(services:)
-│   │   └── {FeatureName}Navigating.swift     # @MainActor navigation protocol
-│   ├── Views/
-│   │   ├── {FeatureName}View.swift           # Owns the view model, drives load via .task(id:)
-│   │   └── {FeatureName}ContentView.swift    # Pure presentation of the ready snapshot
+│   ├── {FeatureName}View.swift               # Main view — owns the VM via @State, drives load via .task(id:)
+│   ├── {FeatureName}ViewModel.swift          # @Observable @MainActor view model + ViewSnapshot
+│   ├── {FeatureName}Dependencies.swift       # Sendable struct of @Sendable closures + live(services:)
+│   ├── {FeatureName}Navigating.swift         # @MainActor navigation protocol
+│   ├── Logger.swift                          # OSLog category
+│   ├── Localizable.xcstrings
 │   ├── Models/
 │   │   └── {Model}.swift                     # View-specific models + Fetch{...}Error
 │   ├── Mappers/
 │   │   └── {FeatureName}Mapper.swift         # Domain → View mapping
-│   ├── Logger.swift                          # OSLog category
-│   └── Localizable.xcstrings
+│   └── Views/                                # Subviews the main view composes (content views, rows, sections, cards, carousels) — omit if none
+│       └── {FeatureName}ContentView.swift    # Pure presentation of the ready snapshot
 └── Tests/
-    ├── {FeatureName}FeatureTests/            # View model + mapper tests
-    │   └── {FeatureName}ViewModelTests.swift
-    └── {FeatureName}FeatureSnapshotTests/    # Snapshot tests
-        └── Views/{FeatureName}ViewSnapshotTests.swift
+    ├── {FeatureName}FeatureTests/
+    │   ├── {FeatureName}ViewModelTests.swift # View model tests (at the target root)
+    │   ├── Mappers/                          # One test per mapper
+    │   │   └── {FeatureName}MapperTests.swift
+    │   └── Mocks/                            # Mock use cases — only when the tests need them
+    └── {FeatureName}FeatureSnapshotTests/
+        └── {FeatureName}ViewSnapshotTests.swift   # Snapshot tests (at the target root, no Views/ subfolder)
 ```
+
+**Structure rules:**
+- The main `{FeatureName}View.swift` lives at the source root; `Views/` holds the
+  **subviews and components** it composes — content views, rows, sections, cards,
+  carousels, and any other presentation pieces. A feature whose main view needs no
+  such subviews (e.g. `TrendingMoviesFeature`) has **no** `Views/` folder at all.
+- **Multi-screen features** — when one feature presents several distinct screens,
+  group each screen's views in a folder named after the screen, with that screen's
+  main view at the folder root and a nested `Views/` for its components. These
+  screen views are **stateless presentation views**: they take plain data and action
+  closures from the parent and do **not** have their own view model, `Dependencies`,
+  or `Navigating`. The feature keeps a **single** view model at the source root that
+  drives them all. Example: `PlotRemixGameFeature` keeps one `PlotRemixGameViewModel`
+  at the root and groups its screens into `PlotRemixGameStart/PlotRemixGameStartView.swift`
+  and `PlotRemixGameQuestions/PlotRemixGameQuestionsView.swift`
+  (+ `PlotRemixGameQuestions/Views/PlotRemixGameQuestionView.swift`).
 
 ### 2. Create Package.swift
 

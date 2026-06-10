@@ -28,14 +28,15 @@ let package = Package(
         .package(path: "../PopcornMoviesAdapters"),
         .package(path: "../PopcornTVSeriesAdapters"),
         .package(path: "../PopcornPeopleAdapters"),
-        .package(url: "https://github.com/adamayoung/TMDb.git", from: "16.0.0")
+        .package(url: "https://github.com/adamayoung/TMDb.git", from: "18.0.0")
     ],
 
     targets: [
         .target(
             name: "PopcornSearchAdapters",
             dependencies: [
-                .product(name: "SearchComposition", package: "PopcornSearch"),
+                .product(name: "SearchDomain", package: "PopcornSearch"),
+                .product(name: "SearchInfrastructure", package: "PopcornSearch"),
                 .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),

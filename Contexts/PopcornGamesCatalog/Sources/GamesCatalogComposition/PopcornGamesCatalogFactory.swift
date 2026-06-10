@@ -7,11 +7,28 @@
 
 import Foundation
 import GamesCatalogApplication
+import GamesCatalogDomain
+import GamesCatalogInfrastructure
 
-public protocol PopcornGamesCatalogFactory: Sendable {
+public final class PopcornGamesCatalogFactory: Sendable {
 
-    func makeFetchGamesUseCase() -> FetchGamesUseCase
+    private let applicationFactory: GamesCatalogApplicationFactory
 
-    func makeFetchGameUseCase() -> FetchGameUseCase
+    public init(featureFlagProvider: some FeatureFlagProviding) {
+        let infrastructureFactory = GamesCatalogInfrastructureFactory(
+            featureFlagProvider: featureFlagProvider
+        )
+        self.applicationFactory = GamesCatalogApplicationFactory(
+            gameRepository: infrastructureFactory.makeGameRepository()
+        )
+    }
+
+    public func makeFetchGamesUseCase() -> FetchGamesUseCase {
+        applicationFactory.makeFetchGamesUseCase()
+    }
+
+    public func makeFetchGameUseCase() -> FetchGameUseCase {
+        applicationFactory.makeFetchGameUseCase()
+    }
 
 }

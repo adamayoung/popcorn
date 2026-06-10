@@ -24,7 +24,7 @@ final class MockTVSeasonService: TVSeasonService, @unchecked Sendable {
         forSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID,
         language: String?
-    ) async throws -> TVSeason {
+    ) async throws(TMDbError) -> TVSeason {
         detailsCallCount += 1
         detailsCalledWith.append(DetailsCall(
             seasonNumber: seasonNumber,
@@ -49,7 +49,7 @@ final class MockTVSeasonService: TVSeasonService, @unchecked Sendable {
         inTVSeries tvSeriesID: TVSeries.ID,
         appending: TVSeasonAppendOption,
         language: String?
-    ) async throws -> TVSeasonDetailsResponse {
+    ) async throws(TMDbError) -> TVSeasonDetailsResponse {
         fatalError("Not implemented")
     }
 
@@ -57,7 +57,7 @@ final class MockTVSeasonService: TVSeasonService, @unchecked Sendable {
         forSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID,
         filter: TVSeasonImageFilter?
-    ) async throws -> ImageCollection {
+    ) async throws(TMDbError) -> ImageCollection {
         fatalError("Not implemented")
     }
 
@@ -65,7 +65,7 @@ final class MockTVSeasonService: TVSeasonService, @unchecked Sendable {
         forSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID,
         filter: TVSeasonVideoFilter?
-    ) async throws -> VideoCollection {
+    ) async throws(TMDbError) -> VideoCollection {
         fatalError("Not implemented")
     }
 
@@ -73,7 +73,7 @@ final class MockTVSeasonService: TVSeasonService, @unchecked Sendable {
         forSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID,
         language: String?
-    ) async throws -> ShowCredits {
+    ) async throws(TMDbError) -> ShowCredits {
         fatalError("Not implemented")
     }
 
@@ -81,28 +81,28 @@ final class MockTVSeasonService: TVSeasonService, @unchecked Sendable {
         forSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID,
         language: String?
-    ) async throws -> TVSeasonAggregateCredits {
+    ) async throws(TMDbError) -> TVSeasonAggregateCredits {
         fatalError("Not implemented")
     }
 
     func watchProviders(
         forSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID
-    ) async throws -> [ShowWatchProvidersByCountry] {
+    ) async throws(TMDbError) -> [ShowWatchProvidersByCountry] {
         fatalError("Not implemented")
     }
 
     func translations(
         forSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID
-    ) async throws -> TranslationCollection<TVSeasonTranslationData> {
+    ) async throws(TMDbError) -> TranslationCollection<TVSeasonTranslationData> {
         fatalError("Not implemented")
     }
 
     func externalLinks(
         forSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID
-    ) async throws -> TVSeasonExternalLinksCollection {
+    ) async throws(TMDbError) -> TVSeasonExternalLinksCollection {
         fatalError("Not implemented")
     }
 
@@ -111,7 +111,7 @@ final class MockTVSeasonService: TVSeasonService, @unchecked Sendable {
         startDate: Date?,
         endDate: Date?,
         page: Int?
-    ) async throws -> ChangeCollection {
+    ) async throws(TMDbError) -> ChangeCollection {
         fatalError("Not implemented")
     }
 
@@ -119,7 +119,7 @@ final class MockTVSeasonService: TVSeasonService, @unchecked Sendable {
         forSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID,
         session: Session
-    ) async throws -> AccountStates {
+    ) async throws(TMDbError) -> AccountStates {
         fatalError("Not implemented")
     }
 

@@ -7,13 +7,38 @@
 
 import Foundation
 import GenresApplication
+import GenresDomain
+import GenresInfrastructure
 
-public protocol PopcornGenresFactory: Sendable {
+public final class PopcornGenresFactory: Sendable {
 
-    func makeFetchMovieGenresUseCase() -> FetchMovieGenresUseCase
+    private let applicationFactory: GenresApplicationFactory
 
-    func makeFetchTVSeriesGenresUseCase() -> FetchTVSeriesGenresUseCase
+    public init(
+        genreRemoteDataSource: some GenreRemoteDataSource,
+        appConfigurationProvider: some AppConfigurationProviding,
+        genreBackdropProvider: some GenreBackdropProviding
+    ) {
+        let infrastructureFactory = GenresInfrastructureFactory(
+            genreRemoteDataSource: genreRemoteDataSource
+        )
+        self.applicationFactory = GenresApplicationFactory(
+            genreRepository: infrastructureFactory.makeGenreRepository(),
+            appConfigurationProvider: appConfigurationProvider,
+            genreBackdropProvider: genreBackdropProvider
+        )
+    }
 
-    func makeFetchAllGenresUseCase() -> FetchAllGenresUseCase
+    public func makeFetchMovieGenresUseCase() -> FetchMovieGenresUseCase {
+        applicationFactory.makeFetchMovieGenresUseCase()
+    }
+
+    public func makeFetchTVSeriesGenresUseCase() -> FetchTVSeriesGenresUseCase {
+        applicationFactory.makeFetchTVSeriesGenresUseCase()
+    }
+
+    public func makeFetchAllGenresUseCase() -> FetchAllGenresUseCase {
+        applicationFactory.makeFetchAllGenresUseCase()
+    }
 
 }

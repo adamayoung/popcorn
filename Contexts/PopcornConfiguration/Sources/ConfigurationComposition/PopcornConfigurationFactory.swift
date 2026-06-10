@@ -6,10 +6,27 @@
 //
 
 import ConfigurationApplication
+import ConfigurationDomain
+import ConfigurationInfrastructure
 import Foundation
 
-public protocol PopcornConfigurationFactory: Sendable {
+public final class PopcornConfigurationFactory: Sendable {
 
-    func makeFetchAppConfigurationUseCase() -> FetchAppConfigurationUseCase
+    private let applicationFactory: ConfigurationApplicationFactory
+
+    public init(
+        configurationRemoteDataSource: some ConfigurationRemoteDataSource
+    ) {
+        let infrastructureFactory = ConfigurationInfrastructureFactory(
+            configurationRemoteDataSource: configurationRemoteDataSource
+        )
+        self.applicationFactory = ConfigurationApplicationFactory(
+            configurationRepository: infrastructureFactory.makeConfigurationRepository()
+        )
+    }
+
+    public func makeFetchAppConfigurationUseCase() -> FetchAppConfigurationUseCase {
+        applicationFactory.makeFetchAppConfigurationUseCase()
+    }
 
 }

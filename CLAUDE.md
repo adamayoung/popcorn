@@ -23,25 +23,28 @@ Copy `Configs/Secrets.example.xcconfig` to `Configs/Secrets.xcconfig` and fill i
 ### MCP Servers
 
 When available, prefer MCP tools over manual commands:
-- **Xcode MCP** (`xcode`) — building, testing, file operations, diagnostics. All tools require a `tabIdentifier` from `mcp__xcode__XcodeListWindows`. File paths use Xcode project navigator format, not filesystem paths.
+- **Xcode MCP** (`xcode`) — building, testing, and diagnostics when running inside Xcode. First get the workspace `tabIdentifier` from `mcp__xcode__XcodeListWindows`, then pass it to `mcp__xcode__BuildProject` (use `buildForTesting: true` to also build tests), `mcp__xcode__RunAllTests` / `mcp__xcode__RunSomeTests`, and `mcp__xcode__GetBuildLog` with `severity: "error"` on failure. These return small structured results, so call them directly. The `/build`, `/build-for-testing`, `/test`, and `/test-single` skills wrap this (MCP when inside Xcode; `make`/`swift` via a Haiku subagent otherwise).
 - **TMDb MCP** (`tmdb`) — authoritative source for movie, TV series, and person data. Prefer over web searches or training knowledge.
 - **xcode-index-mcp** — locate call sites of functions, and function definitions from call sites. Use project name `Popcorn`. If you need a filepath to make a request, use `rg` to find the file and `rg -n` to find the line number. Use the absolute path when requesting symbols from a file.
 
 ### Build & Test
 
-Use slash commands or Xcode MCP tools directly:
+Prefer the slash commands. When inside Xcode they call the `xcode` MCP directly
+(getting the `tabIdentifier` from `mcp__xcode__XcodeListWindows` first; results are
+small and structured); otherwise they delegate `make`/`swift` to a Haiku subagent
+that reports back a concise summary, keeping the large build/test output out of context.
 
-| Task | Slash Command | MCP Tool |
-|------|---------------|----------|
+| Task | Slash Command | Xcode MCP (inside Xcode) |
+|------|---------------|--------------------------|
 | Build app | `/build` | `mcp__xcode__BuildProject` |
-| Build for testing | `/build-for-testing` | — |
+| Build for testing | `/build-for-testing` | `mcp__xcode__BuildProject` (`buildForTesting: true`) |
 | Run all tests | `/test` | `mcp__xcode__RunAllTests` |
-| Run specific tests | `/test-single <name>` | `mcp__xcode__RunSomeTests` with test specifiers |
-| Build single package | `/build-package` | — |
-| Build single package for testing | `/build-package-for-testing` | — |
-| Test single package | `/test-package` | `mcp__xcode__RunSomeTests` with test specifiers |
+| Run specific tests | `/test-single <name>` | `mcp__xcode__RunSomeTests` |
+| Build single package | `/build-package` | — (SwiftPM `swift build`) |
+| Build single package for testing | `/build-package-for-testing` | — (SwiftPM) |
+| Test single package | `/test-package` | — (SwiftPM `swift test`) |
 
-Use the `-package` variants when working on a single Swift package — they run `swift build`/`swift test` directly in the package directory, which is faster than building the entire app.
+Use the `-package` variants when working on a single Swift package — they run `swift build`/`swift test` directly in the package directory (faster than the whole app, and not served by the MCP, which builds the entire Xcode project).
 
 ### Incremental vs Full Builds
 
@@ -59,12 +62,12 @@ When making an incremental change that is **localised to a single module** and t
 
 ### Build & Test Output Management
 
-**Always delegate `make` commands and `swift build`/`swift test` to a subagent** using the Task tool (`subagent_type: "general-purpose"`). These commands produce large logs that fill the main conversation context. The subagent runs the command and reports back only:
+**Always delegate `make` commands and `swift build`/`swift test` to a Haiku subagent** (Agent tool, `subagent_type: "general-purpose"`, `model: "haiku"`). These commands produce large logs that fill the main conversation context. The subagent runs the command (writing output to a log file) and reports back only:
 - Pass/fail status
-- Error count and specific error messages (if any)
-- Do NOT include the full log — only actionable information
+- Specific errors/failures as `file:line — message`
+- Do NOT include the full log — only actionable information, plus the log path on failure
 
-This applies to all build, test, lint, and format commands — both `make` targets and direct `swift` CLI invocations. Xcode MCP tool calls are exempt (they return structured results).
+This applies to all build, test, lint, and format commands — both `make` targets and direct `swift` CLI invocations. The `/build`, `/build-for-testing`, `/test`, `/test-single`, `/*-package`, `/format`, and `/lint` skills already wrap this — invoke them rather than running the commands yourself. Xcode MCP (`xcode`) tool calls are exempt (they return structured results).
 
 ### Formatting
 
@@ -102,9 +105,27 @@ This prevents CI failures and ensures code quality before review.
 
 ## Architecture
 
-The app follows domain-driven design with 4 layers: Domain, Infrastructure, Application, Composition. Business logic is organised into **Contexts** (e.g., `PopcornMovies`, `PopcornTVSeries`, `PopcornPeople`), UI into **Features** (e.g., `MovieDetailsFeature`, `TVSeriesDetailsFeature`), and external service bridges into **Adapters** (e.g., `PopcornMoviesAdapters`).
+**Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) first.** It is the authoritative
+reference for how this project is structured — layer structure, module layout, factory/DI
+wiring, navigation, and step-by-step workflows. You should not need to read the whole
+codebase to understand the architecture; that document is the map.
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for the full layer structure, module inventory, use case patterns, and step-by-step workflows.
+In brief: Clean Architecture + Domain-Driven Design + MVVM. Business logic is organised into
+**Contexts** (`PopcornMovies`, `PopcornTVSeries`, `PopcornPeople`, …), each a Swift package
+with four layers — Domain → Application → Infrastructure → Composition. UI lives in
+**Features** (`MovieDetailsFeature`, …), MVVM packages built around an `@Observable @MainActor`
+view model exposing a `ViewState`. External services are bridged in **Adapters**
+(`PopcornMoviesAdapters`, …). `AppServices` (in `AppDependencies`) is the single composition
+root that wires adapters into context factories and exposes them to features.
+
+Conventions worth knowing up front (detail in ARCHITECTURE.md):
+- A feature's primary **view, view model, `Dependencies`, and `Navigating` protocol live at the
+  root** of its source folder; `Views/` holds the subviews the main view composes (omit when none).
+- Feature views own their view model via `@State` and drive loading from `.task(id:)`.
+- A context's `Popcorn{Context}Factory` is a **concrete** `Sendable` final class (no factory
+  protocol). Adapter factories return **port implementations** (`make… -> some Port`); the
+  composition root assembles each context factory from them, and adapters never depend on a
+  context's Composition layer.
 
 ## TMDb Domain Model Mapping
 
@@ -114,11 +135,11 @@ See [docs/TMDB_MAPPING.md](docs/TMDB_MAPPING.md) for the complete TMDb type refe
 
 | Dependency | Version | Used By |
 |------------|---------|---------|
-| TMDb | 16.0+ | Context Adapters |
-| SDWebImageSwiftUI | 3.0+ | DesignSystem |
-| sentry-cocoa | 9.16+ | ObservabilityAdapters |
-| statsig-kit | 1.55+ | FeatureAccessAdapters |
-| swift-snapshot-testing | 1.18+ | Feature snapshot tests |
+| TMDb | 18.0+ | Context Adapters |
+| SDWebImageSwiftUI | 3.1+ | DesignSystem |
+| sentry-cocoa | 9.17+ | ObservabilityAdapters |
+| statsig-kit | 1.62+ | FeatureAccessAdapters |
+| swift-snapshot-testing | 1.19+ | Feature snapshot tests |
 
 ## Code Style
 

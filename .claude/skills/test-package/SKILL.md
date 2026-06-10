@@ -5,37 +5,36 @@ description: Run tests for an individual Swift package
 
 # Test a Swift package
 
-Run tests for a single Swift package. Use this when you only need to test a specific package — use `/test` instead when you need to run the entire app's test suite.
+Run tests for a single Swift package — use this when you only need to test one
+package; use `/test` for the entire app's suite.
 
-Testing is a two-step process: build with warnings-as-errors first, then run tests with `--skip-build`.
+> The xcode MCP builds/tests the whole Xcode project, not a single SwiftPM
+> package, so it does **not** apply here — this skill uses the `swift` CLI directly.
 
-## Xcode MCP (preferred)
+Delegate to a **Haiku subagent** (`subagent_type: general-purpose`, `model: haiku`)
+so the output stays out of your context. Do **not** run it yourself. Give the
+subagent the prompt below, then relay its report.
 
-1. Run `mcp__xcode__XcodeListWindows` to get the `tabIdentifier` for the Popcorn workspace.
-2. Run `mcp__xcode__GetTestList` to find test targets for the package.
-3. Run `mcp__xcode__RunSomeTests` with the relevant test specifiers for the package's test targets.
+Subagent prompt:
 
-## Fallback
+```text
+Test the Swift package at <package-dir> and report concisely. Testing is two steps —
+build with warnings-as-errors, then run tests skipping the rebuild:
 
-**Run via a subagent** (Task tool, `subagent_type: "general-purpose"`) to keep large logs out of the main context. The subagent should run the commands from the package directory and report back pass/fail with any errors or test failures.
+    cd <package-dir> && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1 \
+      && swift test --skip-build 2>&1
 
-```
-cd <package-dir> && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1 && swift test --skip-build 2>&1
-```
+(The build step uses warnings-as-errors; the test step does not — matching the
+app-level `make test`.)
 
-Note: The build step uses `-Xswiftc -warnings-as-errors`. The test execution step does not — consistent with how the app-level `make test` works.
+MANDATORY cleanup afterwards: `rm -rf <package-dir>/.build`. Leaving a package
+`.build` directory behind causes later `make test` simulator-install failures.
 
-### Examples
-
-```bash
-# Context package
-cd Contexts/PopcornMovies && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1 && swift test --skip-build 2>&1
-
-# Adapter package
-cd Adapters/Contexts/PopcornMoviesAdapters && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1 && swift test --skip-build 2>&1
-
-# Feature package
-cd Features/MovieDetailsFeature && swift build --build-tests -Xswiftc -warnings-as-errors 2>&1 && swift test --skip-build 2>&1
+Report back ONLY:
+- Build: succeeded or failed (+ each error/warning as `file:line — message`)
+- Tests: passed or failed, with total / passed / failed counts
+- Each failing test as `SuiteName/testName` with its `file:line` and the message
+Do not paste raw logs or passing-test output.
 ```
 
 ### Package locations
@@ -49,3 +48,8 @@ cd Features/MovieDetailsFeature && swift build --build-tests -Xswiftc -warnings-
 | Core | `Core/<PackageName>/` |
 | Platform | `Platform/<PackageName>/` |
 | AppDependencies | `AppDependencies/` |
+
+> Note: feature/adapter packages with snapshot-test targets that import UIKit can't
+> build their **test** targets via `swift build --build-tests` on macOS. For those,
+> build sources only (`swift build -Xswiftc -warnings-as-errors`) or use the full-app
+> `/test`.

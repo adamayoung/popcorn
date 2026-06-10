@@ -44,7 +44,7 @@ final class MockTrendingService: TrendingService, @unchecked Sendable {
         inTimeWindow timeWindow: TrendingTimeWindowFilterType,
         page: Int?,
         language: String?
-    ) async throws -> MoviePageableList {
+    ) async throws(TMDbError) -> MoviePageableList {
         moviesCallCount += 1
         moviesCalledWith.append(MoviesCall(timeWindow: timeWindow, page: page, language: language))
 
@@ -64,7 +64,7 @@ final class MockTrendingService: TrendingService, @unchecked Sendable {
         inTimeWindow timeWindow: TrendingTimeWindowFilterType,
         page: Int?,
         language: String?
-    ) async throws -> TVSeriesPageableList {
+    ) async throws(TMDbError) -> TVSeriesPageableList {
         tvSeriesCallCount += 1
         tvSeriesCalledWith.append(TVSeriesCall(timeWindow: timeWindow, page: page, language: language))
 
@@ -84,7 +84,7 @@ final class MockTrendingService: TrendingService, @unchecked Sendable {
         inTimeWindow timeWindow: TrendingTimeWindowFilterType,
         page: Int?,
         language: String?
-    ) async throws -> PersonPageableList {
+    ) async throws(TMDbError) -> PersonPageableList {
         peopleCallCount += 1
         peopleCalledWith.append(PeopleCall(timeWindow: timeWindow, page: page, language: language))
 
@@ -104,7 +104,7 @@ final class MockTrendingService: TrendingService, @unchecked Sendable {
         inTimeWindow timeWindow: TrendingTimeWindowFilterType,
         page: Int?,
         language: String?
-    ) async throws -> TrendingPageableList {
+    ) async throws(TMDbError) -> TrendingPageableList {
         fatalError("Not implemented")
     }
 

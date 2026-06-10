@@ -6,39 +6,30 @@
 //
 
 import ConfigurationApplication
-import CoreDomain
-import Foundation
-import MoviesComposition
+import MoviesDomain
+import MoviesInfrastructure
 import TMDb
 
+/// Builds the Movies context's TMDb-backed adapters (port implementations).
 public final class PopcornMoviesAdaptersFactory {
 
-    private let movieService: any MovieService
+    private let movieService: any TMDb.MovieService
     private let fetchAppConfigurationUseCase: any FetchAppConfigurationUseCase
-    private let themeColorProvider: (any ThemeColorProviding)?
 
     public init(
-        movieService: some MovieService,
-        fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase,
-        themeColorProvider: (any ThemeColorProviding)? = nil
+        movieService: some TMDb.MovieService,
+        fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase
     ) {
         self.movieService = movieService
         self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
-        self.themeColorProvider = themeColorProvider
     }
 
-    public func makeMoviesFactory() -> some PopcornMoviesFactory {
-        let movieRemoteDataSource = TMDbMovieRemoteDataSource(movieService: movieService)
+    public func makeMovieRemoteDataSource() -> some MovieRemoteDataSource {
+        TMDbMovieRemoteDataSource(movieService: movieService)
+    }
 
-        let appConfigurationProvider = AppConfigurationProviderAdapter(
-            fetchUseCase: fetchAppConfigurationUseCase
-        )
-
-        return LivePopcornMoviesFactory(
-            movieRemoteDataSource: movieRemoteDataSource,
-            appConfigurationProvider: appConfigurationProvider,
-            themeColorProvider: themeColorProvider
-        )
+    public func makeAppConfigurationProvider() -> some AppConfigurationProviding {
+        AppConfigurationProviderAdapter(fetchUseCase: fetchAppConfigurationUseCase)
     }
 
 }

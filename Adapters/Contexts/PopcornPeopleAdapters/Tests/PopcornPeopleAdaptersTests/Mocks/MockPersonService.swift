@@ -71,7 +71,7 @@ final class MockPersonService: PersonService, @unchecked Sendable {
     var externalLinksCalledWith: [ExternalLinksCall] = []
     var externalLinksStub: Result<PersonExternalLinksCollection, TMDbError>?
 
-    func details(forPerson id: TMDb.Person.ID, language: String?) async throws -> TMDb.Person {
+    func details(forPerson id: TMDb.Person.ID, language: String?) async throws(TMDbError) -> TMDb.Person {
         detailsCallCount += 1
         detailsCalledWith.append(DetailsCall(id: id, language: language))
 
@@ -90,7 +90,7 @@ final class MockPersonService: PersonService, @unchecked Sendable {
     func combinedCredits(
         forPerson personID: TMDb.Person.ID,
         language: String?
-    ) async throws -> PersonCombinedCredits {
+    ) async throws(TMDbError) -> PersonCombinedCredits {
         combinedCreditsCallCount += 1
         combinedCreditsCalledWith.append(CombinedCreditsCall(personID: personID, language: language))
 
@@ -109,7 +109,7 @@ final class MockPersonService: PersonService, @unchecked Sendable {
     func movieCredits(
         forPerson personID: TMDb.Person.ID,
         language: String?
-    ) async throws -> PersonMovieCredits {
+    ) async throws(TMDbError) -> PersonMovieCredits {
         movieCreditsCallCount += 1
         movieCreditsCalledWith.append(MovieCreditsCall(personID: personID, language: language))
 
@@ -128,7 +128,7 @@ final class MockPersonService: PersonService, @unchecked Sendable {
     func tvSeriesCredits(
         forPerson personID: TMDb.Person.ID,
         language: String?
-    ) async throws -> PersonTVSeriesCredits {
+    ) async throws(TMDbError) -> PersonTVSeriesCredits {
         tvSeriesCreditsCallCount += 1
         tvSeriesCreditsCalledWith.append(TVSeriesCreditsCall(personID: personID, language: language))
 
@@ -144,7 +144,7 @@ final class MockPersonService: PersonService, @unchecked Sendable {
         }
     }
 
-    func images(forPerson personID: TMDb.Person.ID) async throws -> PersonImageCollection {
+    func images(forPerson personID: TMDb.Person.ID) async throws(TMDbError) -> PersonImageCollection {
         imagesCallCount += 1
         imagesCalledWith.append(ImagesCall(personID: personID))
 
@@ -160,7 +160,7 @@ final class MockPersonService: PersonService, @unchecked Sendable {
         }
     }
 
-    func popular(page: Int?, language: String?) async throws -> PersonPageableList {
+    func popular(page: Int?, language: String?) async throws(TMDbError) -> PersonPageableList {
         popularCallCount += 1
         popularCalledWith.append(PopularCall(page: page, language: language))
 
@@ -176,7 +176,7 @@ final class MockPersonService: PersonService, @unchecked Sendable {
         }
     }
 
-    func externalLinks(forPerson personID: TMDb.Person.ID) async throws -> PersonExternalLinksCollection {
+    func externalLinks(forPerson personID: TMDb.Person.ID) async throws(TMDbError) -> PersonExternalLinksCollection {
         externalLinksCallCount += 1
         externalLinksCalledWith.append(ExternalLinksCall(personID: personID))
 
@@ -196,20 +196,20 @@ final class MockPersonService: PersonService, @unchecked Sendable {
         forPerson id: TMDb.Person.ID,
         appending: PersonAppendOption,
         language: String?
-    ) async throws -> PersonDetailsResponse {
+    ) async throws(TMDbError) -> PersonDetailsResponse {
         fatalError("Not implemented")
     }
 
     func taggedImages(
         forPerson personID: TMDb.Person.ID,
         page: Int?
-    ) async throws -> TaggedImagePageableList {
+    ) async throws(TMDbError) -> TaggedImagePageableList {
         fatalError("Not implemented")
     }
 
     func translations(
         forPerson personID: TMDb.Person.ID
-    ) async throws -> TranslationCollection<PersonTranslationData> {
+    ) async throws(TMDbError) -> TranslationCollection<PersonTranslationData> {
         fatalError("Not implemented")
     }
 
@@ -218,11 +218,11 @@ final class MockPersonService: PersonService, @unchecked Sendable {
         startDate: Date?,
         endDate: Date?,
         page: Int?
-    ) async throws -> ChangeCollection {
+    ) async throws(TMDbError) -> ChangeCollection {
         fatalError("Not implemented")
     }
 
-    func latestPerson() async throws -> TMDb.Person {
+    func latest() async throws(TMDbError) -> TMDb.Person {
         fatalError("Not implemented")
     }
 
@@ -230,7 +230,7 @@ final class MockPersonService: PersonService, @unchecked Sendable {
         startDate: Date?,
         endDate: Date?,
         page: Int?
-    ) async throws -> ChangedIDCollection {
+    ) async throws(TMDbError) -> ChangedIDCollection {
         fatalError("Not implemented")
     }
 

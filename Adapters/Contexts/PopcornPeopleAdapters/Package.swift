@@ -22,14 +22,13 @@ let package = Package(
         .package(path: "../../../Contexts/PopcornPeople"),
         .package(path: "../../../Contexts/PopcornConfiguration"),
         .package(path: "../../../Core/CoreDomain"),
-        .package(url: "https://github.com/adamayoung/TMDb.git", from: "16.0.0")
+        .package(url: "https://github.com/adamayoung/TMDb.git", from: "18.0.0")
     ],
 
     targets: [
         .target(
             name: "PopcornPeopleAdapters",
             dependencies: [
-                .product(name: "PeopleComposition", package: "PopcornPeople"),
                 .product(name: "PeopleDomain", package: "PopcornPeople"),
                 .product(name: "PeopleInfrastructure", package: "PopcornPeople"),
                 .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),

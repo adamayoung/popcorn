@@ -5,10 +5,10 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ConfigurationComposition
-import Foundation
+import ConfigurationInfrastructure
 import TMDb
 
+/// Builds the Configuration context's TMDb-backed adapters (port implementations).
 public final class PopcornConfigurationAdaptersFactory {
 
     private let configurationService: any ConfigurationService
@@ -17,14 +17,8 @@ public final class PopcornConfigurationAdaptersFactory {
         self.configurationService = configurationService
     }
 
-    public func makeConfigurationFactory() -> some PopcornConfigurationFactory {
-        let configurationRemoteDataSource = TMDbConfigurationRemoteDataSource(
-            configurationService: configurationService
-        )
-
-        return LivePopcornConfigurationFactory(
-            configurationRemoteDataSource: configurationRemoteDataSource
-        )
+    public func makeConfigurationRemoteDataSource() -> some ConfigurationRemoteDataSource {
+        TMDbConfigurationRemoteDataSource(configurationService: configurationService)
     }
 
 }

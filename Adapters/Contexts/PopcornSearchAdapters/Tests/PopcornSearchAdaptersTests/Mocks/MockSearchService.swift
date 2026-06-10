@@ -25,7 +25,7 @@ final class MockSearchService: SearchService, @unchecked Sendable {
         filter: AllMediaSearchFilter?,
         page: Int?,
         language: String?
-    ) async throws -> MediaPageableList {
+    ) async throws(TMDbError) -> MediaPageableList {
         searchAllCallCount += 1
         searchAllCalledWith.append(SearchAllCall(query: query, page: page, language: language))
 
@@ -46,7 +46,7 @@ final class MockSearchService: SearchService, @unchecked Sendable {
         filter: MovieSearchFilter?,
         page: Int?,
         language: String?
-    ) async throws -> MoviePageableList {
+    ) async throws(TMDbError) -> MoviePageableList {
         fatalError("Not implemented")
     }
 
@@ -55,7 +55,7 @@ final class MockSearchService: SearchService, @unchecked Sendable {
         filter: TVSeriesSearchFilter?,
         page: Int?,
         language: String?
-    ) async throws -> TVSeriesPageableList {
+    ) async throws(TMDbError) -> TVSeriesPageableList {
         fatalError("Not implemented")
     }
 
@@ -64,7 +64,7 @@ final class MockSearchService: SearchService, @unchecked Sendable {
         filter: PersonSearchFilter?,
         page: Int?,
         language: String?
-    ) async throws -> PersonPageableList {
+    ) async throws(TMDbError) -> PersonPageableList {
         fatalError("Not implemented")
     }
 
@@ -72,21 +72,21 @@ final class MockSearchService: SearchService, @unchecked Sendable {
         query: String,
         page: Int?,
         language: String?
-    ) async throws -> CollectionPageableList {
+    ) async throws(TMDbError) -> CollectionPageableList {
         fatalError("Not implemented")
     }
 
     func searchCompanies(
         query: String,
         page: Int?
-    ) async throws -> CompanyPageableList {
+    ) async throws(TMDbError) -> CompanyPageableList {
         fatalError("Not implemented")
     }
 
     func searchKeywords(
         query: String,
         page: Int?
-    ) async throws -> KeywordPageableList {
+    ) async throws(TMDbError) -> KeywordPageableList {
         fatalError("Not implemented")
     }
 
