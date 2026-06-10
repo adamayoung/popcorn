@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		661ADD4F2EFAB62D00A4055D /* MovieIntelligenceFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 661ADD4E2EFAB62D00A4055D /* MovieIntelligenceFeature */; };
 		661ADD502EFAB62D00A4055E /* TVSeriesIntelligenceFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 661ADD4F2EFAB62D00A4055E /* TVSeriesIntelligenceFeature */; };
-		664551B22ECB7C6C00250D87 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = 664551B12ECB7C6C00250D87 /* ComposableArchitecture */; };
 		6645B6452ED60A1800B3AC7C /* MediaSearchFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 6645B6442ED60A1800B3AC7C /* MediaSearchFeature */; };
 		666AEE272ECDEEEC0038814E /* TrendingPeopleFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 666AEE262ECDEEEC0038814E /* TrendingPeopleFeature */; };
 		666AEE492ECE0A1B0038814E /* PersonDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 666AEE482ECE0A1B0038814E /* PersonDetailsFeature */; };
@@ -80,7 +79,7 @@
 			membershipExceptions = (
 				CoreDomain,
 				DesignSystem,
-				TCAFoundation,
+				Presentation,
 			);
 			target = 664551852ECB7C2100250D87 /* Popcorn */;
 		};
@@ -256,7 +255,6 @@
 				66FDEF692ED714190029B88A /* FeatureAccess in Frameworks */,
 				6645B6452ED60A1800B3AC7C /* MediaSearchFeature in Frameworks */,
 				668F588C2ECDB2D500B47B07 /* TrendingTVSeriesFeature in Frameworks */,
-				664551B22ECB7C6C00250D87 /* ComposableArchitecture in Frameworks */,
 				668F58912ECDD5CA00B47B07 /* TVSeriesDetailsFeature in Frameworks */,
 				66C873EF2F5B000000000001 /* WatchlistFeature in Frameworks */,
 				66D150023000000000000002 /* TVListingsFeature in Frameworks */,
@@ -343,7 +341,6 @@
 			);
 			name = Popcorn;
 			packageProductDependencies = (
-				664551B12ECB7C6C00250D87 /* ComposableArchitecture */,
 				668F587D2ECCB82A00B47B07 /* MovieDetailsFeature */,
 				668F58882ECCFEBE00B47B07 /* TrendingMoviesFeature */,
 				668F588B2ECDB2D500B47B07 /* TrendingTVSeriesFeature */,
@@ -450,7 +447,6 @@
 			mainGroup = 6645517D2ECB7C2100250D87;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				664551B02ECB7C6C00250D87 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 664551872ECB7C2100250D87 /* Products */;
@@ -908,14 +904,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		664551B02ECB7C6C00250D87 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.23.1;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -926,11 +914,6 @@
 		661ADD4F2EFAB62D00A4055E /* TVSeriesIntelligenceFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TVSeriesIntelligenceFeature;
-		};
-		664551B12ECB7C6C00250D87 /* ComposableArchitecture */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 664551B02ECB7C6C00250D87 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
-			productName = ComposableArchitecture;
 		};
 		6645B6442ED60A1800B3AC7C /* MediaSearchFeature */ = {
 			isa = XCSwiftPackageProductDependency;

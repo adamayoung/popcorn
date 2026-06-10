@@ -25,7 +25,7 @@ public struct TVSeriesPreview: Identifiable, Equatable, Sendable {
 
 }
 
-extension TVSeriesPreview {
+public extension TVSeriesPreview {
 
     static var mocks: [TVSeriesPreview] {
         [

@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import Foundation
 import SnapshotTestHelpers
 import SwiftUI
@@ -18,14 +17,8 @@ struct TVSeriesChatViewSnapshotTests {
 
     @Test
     func tvSeriesChatView() {
-        let view = TVSeriesChatView(
-            store: Store(
-                initialState: TVSeriesIntelligenceFeature.State(
-                    tvSeriesID: 1396,
-                    messages: Message.mocks
-                ),
-                reducer: { EmptyReducer() }
-            )
+        let view = TVSeriesIntelligenceView(
+            viewModel: .preview(messages: Message.mocks)
         )
 
         verifyViewSnapshot(of: view)

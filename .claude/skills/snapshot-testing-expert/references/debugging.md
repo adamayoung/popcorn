@@ -36,7 +36,7 @@ See `references/xcode-cloud.md` — the CI environment can't access source files
 
 | Cause | Fix |
 |-------|-----|
-| No preview data provided | Populate the TCA store state with preview data |
+| No preview data provided | Pass preview data via the view model's `.preview(viewState:)` factory |
 | Async image loading not completed | Images in snapshots won't load from remote URLs — this is expected; snapshot tests capture layout, not network-loaded images |
 | View requires environment values | Inject required environment values into the view hierarchy |
 | Missing `NavigationStack` wrapper | Wrap the view in `NavigationStack` if it expects navigation context |

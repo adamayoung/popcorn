@@ -25,9 +25,6 @@ let package = Package(
         .package(path: "../../Contexts/PopcornMovies"),
         .package(path: "../../Contexts/PopcornIntelligence"),
         .package(path: "../../Platform/Observability"),
-        .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
-        ),
         .package(path: "../../Core/SnapshotTestHelpers")
     ],
 
@@ -39,8 +36,7 @@ let package = Package(
                 "DesignSystem",
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
                 .product(name: "IntelligenceApplication", package: "PopcornIntelligence"),
-                "Observability",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                "Observability"
             ],
             resources: [
                 .process("Assets.xcassets"),
@@ -51,7 +47,6 @@ let package = Package(
             name: "MovieIntelligenceFeatureTests",
             dependencies: [
                 "MovieIntelligenceFeature",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 .product(name: "CoreDomain", package: "CoreDomain"),
                 .product(name: "IntelligenceDomain", package: "PopcornIntelligence"),
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
@@ -63,7 +58,6 @@ let package = Package(
             name: "MovieIntelligenceFeatureSnapshotTests",
             dependencies: [
                 "MovieIntelligenceFeature",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 "SnapshotTestHelpers"
             ]
         )

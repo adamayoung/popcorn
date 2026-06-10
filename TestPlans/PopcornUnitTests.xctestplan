@@ -9,6 +9,16 @@
     }
   ],
   "defaultOptions" : {
+    "environmentVariableEntries" : [
+      {
+        "key" : "TMDB_API_KEY",
+        "value" : "ci-test-placeholder-key"
+      },
+      {
+        "key" : "POPCORN_DISABLE_CLOUDKIT",
+        "value" : "1"
+      }
+    ],
     "testExecutionOrdering" : "random",
     "testTimeoutsEnabled" : true
   },
@@ -442,9 +452,9 @@
     },
     {
       "target" : {
-        "containerPath" : "container:Core\/TCAFoundation",
-        "identifier" : "TCAFoundationTests",
-        "name" : "TCAFoundationTests"
+        "containerPath" : "container:Core\/Presentation",
+        "identifier" : "PresentationTests",
+        "name" : "PresentationTests"
       }
     },
     {

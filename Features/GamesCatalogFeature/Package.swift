@@ -22,11 +22,8 @@ let package = Package(
         .package(path: "../../AppDependencies"),
         .package(path: "../../Contexts/PopcornGamesCatalog"),
         .package(path: "../../Core/DesignSystem"),
-        .package(path: "../../Core/TCAFoundation"),
+        .package(path: "../../Core/Presentation"),
         .package(path: "../../Platform/Observability"),
-        .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
-        ),
         .package(path: "../../Core/SnapshotTestHelpers")
     ],
 
@@ -39,21 +36,22 @@ let package = Package(
                 .product(name: "GamesCatalogDomain", package: "PopcornGamesCatalog"),
                 "Observability",
                 "DesignSystem",
-                "TCAFoundation",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                "Presentation"
             ],
             resources: [.process("Localizable.xcstrings")]
         ),
         .testTarget(
             name: "GamesCatalogFeatureTests",
-            dependencies: ["GamesCatalogFeature"],
+            dependencies: [
+                "GamesCatalogFeature",
+                "Presentation"
+            ],
             path: "Tests/GamesCatalogueFeatureTests"
         ),
         .testTarget(
             name: "GamesCatalogFeatureSnapshotTests",
             dependencies: [
                 "GamesCatalogFeature",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 "SnapshotTestHelpers"
             ]
         )

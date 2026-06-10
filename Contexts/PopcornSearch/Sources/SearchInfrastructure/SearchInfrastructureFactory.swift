@@ -25,10 +25,15 @@ package final class SearchInfrastructureFactory {
 
         let storeURL = URL.documentsDirectory.appending(path: "popcorn-search-cloudkit.sqlite")
 
+        let cloudKitDatabase: ModelConfiguration.CloudKitDatabase =
+            ModelContainerFactory.isCloudKitAvailable()
+            ? .private("iCloud.uk.co.adam-young.Popcorn")
+            : .none
+
         return ModelContainerFactory.makeCloudKitModelContainer(
             schema: schema,
             url: storeURL,
-            cloudKitDatabase: .private("iCloud.uk.co.adam-young.Popcorn"),
+            cloudKitDatabase: cloudKitDatabase,
             migrationPlan: SearchHistoryMigrationPlan.self,
             logger: logger
         )

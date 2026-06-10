@@ -27,7 +27,6 @@ Add `.copy("Views/__Snapshots__")` to the snapshot test target's resources:
     name: "MyFeatureSnapshotTests",
     dependencies: [
         "MyFeature",
-        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
         .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
     ],
     resources: [.copy("Views/__Snapshots__")]

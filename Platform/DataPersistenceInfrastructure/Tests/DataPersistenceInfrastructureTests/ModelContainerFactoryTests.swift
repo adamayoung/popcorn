@@ -94,6 +94,53 @@ struct ModelContainerFactoryTests {
         Self.cleanUpSQLiteFiles(at: url)
     }
 
+    @Test("falls back to a local store when CloudKit is unavailable")
+    func makeCloudKitModelContainerFallsBackToLocalStore() {
+        // A unit-test process has no iCloud entitlement, so requesting a private
+        // CloudKit database forces the fallback path: the CloudKit container fails
+        // to load and the factory degrades to a local-only store rather than
+        // crashing (which is what happens at launch on unsigned / CI builds).
+        let url = Self.temporarySQLiteURL()
+        let schema = Schema([TestEntity.self])
+
+        let container = ModelContainerFactory.makeCloudKitModelContainer(
+            schema: schema,
+            url: url,
+            cloudKitDatabase: .private("iCloud.test.invalid"),
+            migrationPlan: TestMigrationPlan.self,
+            logger: logger
+        )
+
+        #expect(container.schema.entities.isEmpty == false)
+
+        Self.cleanUpSQLiteFiles(at: url)
+    }
+
+    // MARK: - isCloudKitAvailable
+
+    @Test("CloudKit is available in a clean environment")
+    func isCloudKitAvailableInCleanEnvironment() {
+        #expect(ModelContainerFactory.isCloudKitAvailable(environment: [:]))
+    }
+
+    @Test("CloudKit is unavailable when explicitly disabled")
+    func isCloudKitUnavailableWhenDisabled() {
+        #expect(
+            ModelContainerFactory.isCloudKitAvailable(
+                environment: ["POPCORN_DISABLE_CLOUDKIT": "1"]
+            ) == false
+        )
+    }
+
+    @Test("CloudKit is unavailable under XCTest")
+    func isCloudKitUnavailableUnderXCTest() {
+        #expect(
+            ModelContainerFactory.isCloudKitAvailable(
+                environment: ["XCTestConfigurationFilePath": "/tmp/Tests.xctestconfiguration"]
+            ) == false
+        )
+    }
+
     // MARK: - removeSQLiteFiles
 
     @Test("removes all SQLite files including WAL and SHM")

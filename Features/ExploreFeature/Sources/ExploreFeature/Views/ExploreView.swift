@@ -5,29 +5,33 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import DesignSystem
+import Presentation
 import SwiftUI
-import TCAFoundation
 
+/// The explore screen, driven by ``ExploreViewModel``.
+///
+/// Renders five carousels: discover movies, trending movies, popular movies,
+/// trending TV series, and trending people. The view model is owned above the seam
+/// (by the root coordinator), so this takes a plain `let viewModel` rather than `@State`.
 public struct ExploreView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Bindable var store: StoreOf<ExploreFeature>
-    private let namespace: Namespace.ID?
+    private let viewModel: ExploreViewModel
+    private let namespace: Namespace.ID
 
     public init(
-        store: StoreOf<ExploreFeature>,
-        transitionNamespace: Namespace.ID? = nil
+        viewModel: ExploreViewModel,
+        transitionNamespace: Namespace.ID
     ) {
-        self._store = .init(store)
+        self.viewModel = viewModel
         self.namespace = transitionNamespace
     }
 
     public var body: some View {
         ScrollView {
             ZStack {
-                switch store.viewState {
+                switch viewModel.viewState {
                 case .ready(let snapshot):
                     content(
                         discoverMovies: snapshot.discoverMovies,
@@ -45,17 +49,19 @@ public struct ExploreView: View {
                 }
             }
             .contentTransition(.opacity)
-            .animation(reduceMotion ? nil : .easeInOut(duration: 1), value: store.viewState.isReady)
+            .animation(reduceMotion ? nil : .easeInOut(duration: 1), value: viewModel.viewState.isReady)
         }
         .contentMargins(.bottom, 16, for: .scrollContent)
         .accessibilityIdentifier("explore.view")
         .overlay {
-            if store.viewState.isLoading {
+            if viewModel.viewState.isLoading {
                 loadingBody
             }
         }
         .navigationTitle(Text("EXPLORE", bundle: .module))
-        .task { store.send(.load) }
+        .task(id: viewModel.reloadID) {
+            await viewModel.load()
+        }
     }
 
 }
@@ -68,7 +74,7 @@ extension ExploreView {
             systemImage: "popcorn",
             reason: error.reason,
             isRetryable: error.isRetryable,
-            retryAction: { store.send(.load) }
+            retryAction: { viewModel.reload() }
         )
     }
 
@@ -124,7 +130,7 @@ extension ExploreView {
             carouselID: "discover-movies",
             transitionNamespace: namespace,
             didSelectMovie: { movie, transitionID in
-                store.send(.navigate(.movieDetails(id: movie.id, transitionID: transitionID)))
+                viewModel.selectMovie(id: movie.id, transitionID: transitionID)
             }
         )
         .accessibilityIdentifier("explore.discover-movies.carousel")
@@ -148,7 +154,7 @@ extension ExploreView {
             carouselID: "trending-movies",
             transitionNamespace: namespace,
             didSelectMovie: { movie, transitionID in
-                store.send(.navigate(.movieDetails(id: movie.id, transitionID: transitionID)))
+                viewModel.selectMovie(id: movie.id, transitionID: transitionID)
             }
         )
         .accessibilityIdentifier("explore.trending-movies.carousel")
@@ -172,7 +178,7 @@ extension ExploreView {
             carouselID: "popular-movies",
             transitionNamespace: namespace,
             didSelectMovie: { movie, transitionID in
-                store.send(.navigate(.movieDetails(id: movie.id, transitionID: transitionID)))
+                viewModel.selectMovie(id: movie.id, transitionID: transitionID)
             }
         )
         .accessibilityIdentifier("explore.popular-movies.carousel")
@@ -196,7 +202,7 @@ extension ExploreView {
             carouselID: "trending-tv-series",
             transitionNamespace: namespace,
             didSelectTVSeries: { tvSeries, transitionID in
-                store.send(.navigate(.tvSeriesDetails(id: tvSeries.id, transitionID: transitionID)))
+                viewModel.selectTVSeries(id: tvSeries.id, transitionID: transitionID)
             }
         )
         .accessibilityIdentifier("explore.trending-tv-series.carousel")
@@ -219,7 +225,7 @@ extension ExploreView {
             carouselID: "trending-people",
             transitionNamespace: namespace,
             didSelectPerson: { person, transitionID in
-                store.send(.navigate(.personDetails(id: person.id, transitionID: transitionID)))
+                viewModel.selectPerson(id: person.id, transitionID: transitionID)
             }
         )
         .accessibilityIdentifier("explore.trending-people.carousel")
@@ -227,13 +233,13 @@ extension ExploreView {
 
 }
 
-#Preview("Ready") {
-    @Previewable @Namespace var namespace
+#if DEBUG
+    #Preview("Ready") {
+        @Previewable @Namespace var namespace
 
-    NavigationStack {
-        ExploreView(
-            store: Store(
-                initialState: ExploreFeature.State(
+        NavigationStack {
+            ExploreView(
+                viewModel: .preview(
                     viewState: .ready(
                         .init(
                             discoverMovies: MoviePreview.mocks,
@@ -244,41 +250,32 @@ extension ExploreView {
                         )
                     )
                 ),
-                reducer: { EmptyReducer() }
-            ),
-            transitionNamespace: namespace
-        )
+                transitionNamespace: namespace
+            )
+        }
     }
-}
 
-#Preview("Loading") {
-    @Previewable @Namespace var namespace
+    #Preview("Loading") {
+        @Previewable @Namespace var namespace
 
-    NavigationStack {
-        ExploreView(
-            store: Store(
-                initialState: ExploreFeature.State(
-                    viewState: .loading
-                ),
-                reducer: { EmptyReducer() }
-            ),
-            transitionNamespace: namespace
-        )
+        NavigationStack {
+            ExploreView(
+                viewModel: .preview(viewState: .loading),
+                transitionNamespace: namespace
+            )
+        }
     }
-}
 
-#Preview("Error") {
-    @Previewable @Namespace var namespace
+    #Preview("Error") {
+        @Previewable @Namespace var namespace
 
-    NavigationStack {
-        ExploreView(
-            store: Store(
-                initialState: ExploreFeature.State(
+        NavigationStack {
+            ExploreView(
+                viewModel: .preview(
                     viewState: .error(ViewStateError(FetchExploreContentError.unknown()))
                 ),
-                reducer: { EmptyReducer() }
-            ),
-            transitionNamespace: namespace
-        )
+                transitionNamespace: namespace
+            )
+        }
     }
-}
+#endif

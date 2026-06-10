@@ -28,7 +28,7 @@ public struct PersonPreview: Identifiable, Sendable, Equatable {
 
 }
 
-extension PersonPreview {
+public extension PersonPreview {
 
     static var mocks: [PersonPreview] {
         [

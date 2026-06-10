@@ -61,7 +61,8 @@ struct {Name}Mapper {
 
 ### Feature Mapper (Application → Feature)
 
-Picks specific URL sizes and shapes data for the view.
+Picks specific URL sizes and shapes data for the view. These feature-local models
+populate the view model's `ViewSnapshot`.
 
 ```swift
 struct {Name}Mapper {
@@ -74,6 +75,167 @@ struct {Name}Mapper {
     }
 }
 ```
+
+## Feature (MVVM) Pattern
+
+Each feature is an `@Observable @MainActor` view model driving a SwiftUI view, with
+injected dependencies and navigation. The canonical reference is
+`Features/MovieDetailsFeature`.
+
+### View Model
+
+```swift
+import Observation
+import Presentation
+
+/// The data the view renders once loaded.
+public struct {Feature}ViewSnapshot: Equatable, Sendable {
+    public let item: Item
+    public init(item: Item) { self.item = item }
+}
+
+@Observable
+@MainActor
+public final class {Feature}ViewModel {
+    public typealias ViewSnapshot = {Feature}ViewSnapshot
+
+    public private(set) var viewState: ViewState<ViewSnapshot>
+    public private(set) var reloadID = 0   // drives `.task(id:)` reruns on retry
+
+    private let dependencies: {Feature}Dependencies
+    private let navigator: any {Feature}Navigating
+
+    public init(
+        itemID: Int,
+        dependencies: {Feature}Dependencies,
+        navigator: any {Feature}Navigating,
+        viewState: ViewState<ViewSnapshot> = .initial
+    ) { ... }
+
+    /// Drive this from the view's `.task(id: viewModel.reloadID)`.
+    public func load() async {
+        guard !viewState.isReady, !viewState.isLoading else { return }
+        viewState = .loading
+        do {
+            let item = try await dependencies.fetchItem(itemID)
+            viewState = .ready(ViewSnapshot(item: item))
+        } catch {
+            viewState.applyLoadFailure(error)   // cancellation-aware; sets `.error` on real failures
+        }
+    }
+
+    public func reload() { reloadID += 1 }              // retry after an error
+    public func selectItem(id: Int) { navigator.openItem(id: id) }
+}
+```
+
+Rules:
+- `@Observable @MainActor final class`, `viewState` is `public private(set)`
+- `viewState` is `ViewState<ViewSnapshot>` from the `Presentation` module — lifecycle is
+  `.initial → .loading → .ready / .error`; guard against re-fetch when already ready/loading
+- Use `viewState.applyLoadFailure(error)` in the `catch` so view-disappear cancellation
+  doesn't flash a spurious error screen
+- No view-model-owned long-lived `Task` — let the view's `.task(id:)` own the lifetime
+
+### Dependencies
+
+```swift
+import AppDependencies
+
+/// A `Sendable` struct of `@Sendable` closures — every closure is required, so a
+/// missing dependency is a compile error.
+public struct {Feature}Dependencies: Sendable {
+    public var fetchItem: @Sendable (_ id: Int) async throws -> Item
+    public var isSomeFlagEnabled: @Sendable () throws -> Bool
+
+    public init( ... ) { ... }
+}
+
+public extension {Feature}Dependencies {
+    /// Builds the production dependencies from the app's shared services.
+    static func live(services: AppServices) -> {Feature}Dependencies {
+        let useCase = services.{context}Factory.makeFetchItemUseCase()
+        let featureFlags = services.featureFlags
+        return {Feature}Dependencies(
+            fetchItem: { id in {Name}Mapper().map(try await useCase.execute(id: id)) },
+            isSomeFlagEnabled: { featureFlags.isEnabled(.someFlag) }
+        )
+    }
+}
+```
+
+### Navigating
+
+```swift
+/// Navigation requests the view model can make. The App-layer router supplies a
+/// concrete `RouterNavigator` implementation.
+@MainActor
+public protocol {Feature}Navigating {
+    func openItem(id: Int)
+}
+```
+
+### View
+
+```swift
+import Presentation
+import SwiftUI
+
+public struct {Feature}View: View {
+    @State private var viewModel: {Feature}ViewModel
+
+    public init(viewModel: {Feature}ViewModel) {
+        _viewModel = State(initialValue: viewModel)
+    }
+
+    public var body: some View {
+        ZStack {
+            switch viewModel.viewState {
+            case .ready(let snapshot): content(snapshot)
+            case .error(let error): errorBody(error)   // retry calls viewModel.reload()
+            default: EmptyView()
+            }
+        }
+        .overlay { if viewModel.viewState.isLoading { ProgressView() } }
+        .task(id: viewModel.reloadID) { await viewModel.load() }
+    }
+}
+```
+
+Rules:
+- The view owns the view model via `@State private var viewModel` + `init(viewModel:)`
+- Load is driven from `.task(id: viewModel.reloadID)`
+- The view never builds its own dependencies — the `ViewModelFactory` constructs the
+  view model
+
+### App Composition & Routing
+
+```swift
+// App/Composition/ViewModelFactory.swift
+func make{Feature}(id: Int, navigator: some {Feature}Navigating) -> {Feature}ViewModel {
+    {Feature}ViewModel(itemID: id, dependencies: .live(services: services), navigator: navigator)
+}
+```
+
+```swift
+// App/Features/{Tab}Root/{Tab}Router.swift
+enum {Tab}Route: Hashable { case item(id: Int) }
+
+@Observable @MainActor
+final class {Tab}Router { var path: [{Tab}Route] = [] }
+
+@MainActor
+struct {Tab}RouterNavigator: {Feature}Navigating {
+    let router: {Tab}Router
+    func openItem(id: Int) { router.path.append(.item(id: id)) }
+}
+```
+
+The root view hosts the home screen in `NavigationStack(path: $router.path)` and resolves
+each destination via `.navigationDestination(for: {Tab}Route.self)`, building view models
+through the `ViewModelFactory`. Each destination is rendered by a `private func` helper —
+never inline in the `switch`. Both `ExploreRootView` and `SearchRootView` (and their
+`RouterNavigator`s) must be updated consistently when navigation changes.
 
 ## Repository Pattern
 
@@ -138,7 +300,7 @@ struct {Entity}EntityMapper {
 
 - Swift Testing framework (`@Suite`, `@Test`, `#expect`, `#require`)
 - Mock factories: `static func mock(...defaults...) -> Entity`
-- Feature tests: `TestStore` with `withDependencies`
+- View model tests: drive the view model with a stub `*Dependencies` + a spy `*Navigating`, then assert on `viewModel.viewState`
 - SwiftLint limits: `function_body_length` 50, `file_length` 400, `type_body_length` 350
 - `@Model` classes aren't `Sendable` — use `static func makeEntity()` factory methods, NOT `static let`
 
@@ -190,40 +352,61 @@ struct DefaultFetch{Entity}UseCaseTests {
 }
 ```
 
-#### TCA Reducer Tests
+#### View Model Tests
 
-Every reducer needs `@MainActor` and `State: Equatable` (required for `TestStore`). Cover: initial state, fetch success → ready, fetch failure → error, guard states, and navigation actions.
+Every view model needs tests. The suite (or each test) is `@MainActor`. Drive the view
+model directly with a stub `*Dependencies` and a spy `*Navigating`, then assert on
+`viewModel.viewState` and the spy's recorded calls. `ViewSnapshot` must be `Equatable` so
+`viewState` comparisons work. Cover: fetch success → `.ready`, fetch failure → `.error`,
+guard states (no-op when already ready/loading), and navigation calls.
 
 ```swift
 @MainActor
-@Suite("{Feature}Feature Tests")
-struct {Feature}FeatureTests {
-    // State MUST conform to Equatable for TestStore
-    // Use explicit types when @ObservableState obscures inference:
-    //   Feature.Action.loaded(snapshot)  instead of  .loaded(snapshot)
-    //   ViewState<Feature.ViewSnapshot>.error(...)  instead of  .error(...)
+@Suite("{Feature}ViewModel Tests")
+struct {Feature}ViewModelTests {
 
     @Test("fetch success transitions to ready")
-    func fetchSuccessTransitionsToReady() async { ... }
+    func fetchSuccessTransitionsToReady() async {
+        let viewModel = makeViewModel(dependencies: stubDependencies(fetchItem: { _ in .mock }))
+        await viewModel.load()
+        #expect(viewModel.viewState == .ready({Feature}ViewSnapshot(item: .mock)))
+    }
 
     @Test("fetch failure transitions to error")
-    func fetchFailureTransitionsToError() async { ... }
+    func fetchFailureTransitionsToError() async {
+        let viewModel = makeViewModel(
+            dependencies: stubDependencies(fetchItem: { _ in throw TestError.generic })
+        )
+        await viewModel.load()
+        #expect(viewModel.viewState == .error(ViewStateError(TestError.generic)))
+    }
 
     @Test("fetch does nothing when already ready")
     func fetchDoesNothingWhenAlreadyReady() async { ... }
 
-    @Test("fetch does nothing when already loading")
-    func fetchDoesNothingWhenAlreadyLoading() async { ... }
+    @Test("navigation invokes the navigator with the correct id")
+    func navigationInvokesNavigator() {
+        let navigator = SpyNavigator()
+        let viewModel = makeViewModel(navigator: navigator)
+        viewModel.selectItem(id: 42)
+        #expect(navigator.openedItemID == 42)
+    }
 }
 ```
 
 ## View Pattern
 
-- Content views separate from store-connected views
-- Callbacks for navigation (not store references)
-- `#Preview` blocks with mock data
+- A store-free content view (`{Feature}ContentView`), separate from the view-model-owning
+  `{Feature}View` that supplies the chrome (toolbar / loading / error)
+- The view owns its view model via `@State private var viewModel` + `init(viewModel:)`
+- Navigation goes through view-model methods that call the injected navigator (not via the
+  content view, which takes plain callbacks)
+- `#Preview` blocks with mock data, built via a `static func preview(viewState:)` helper on
+  the view model
 - Accessibility identifiers and labels
-- In coordinator views (`ExploreRootView`, `SearchRootView`), each destination must be a `private func` helper — never inline in `switch` cases. Both coordinators must be updated consistently (see `docs/SWIFTUI.md`)
+- In root views (`ExploreRootView`, `SearchRootView`), each destination must be a
+  `private func` helper — never inline in `switch` cases. Both root views (and their
+  `RouterNavigator`s) must be updated consistently (see `docs/SWIFTUI.md`)
 
 ## Test Plan Registration
 
@@ -272,8 +455,11 @@ When adding a new data source or use case, the factory init chain must be update
 {Context}AdaptersFactory  (accepts new service/data source)
   → Live{Context}Factory  (accepts new remote data source)
     → {Context}InfrastructureFactory  (creates repository)
-      → {Context}ApplicationFactory  (creates use case)
-        → {Context}ApplicationFactory+TCA.swift  (wires dependencies)
+      → {Context}ApplicationFactory  (creates use case, exposes make{UseCase} method)
 ```
 
-All 5 files must compile together — update them in the same story or ensure strict dependency ordering.
+All 4 files must compile together — update them in the same story or ensure strict dependency ordering.
+
+The new use case is then consumed by the feature's `{Feature}Dependencies.live(services:)`
+via `services.{context}Factory.make{UseCase}UseCase()` — `AppServices` already exposes each
+context factory, so no extra registration step is needed.

@@ -5,29 +5,25 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import DesignSystem
+import Presentation
 import SwiftUI
-import TCAFoundation
 
+/// The person details screen, driven by ``PersonDetailsViewModel``.
+///
+/// Renders ``PersonDetailsContentView`` along with its loading / error chrome.
 public struct PersonDetailsView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var viewModel: PersonDetailsViewModel
 
-    @Bindable private var store: StoreOf<PersonDetailsFeature>
-    private let namespace: Namespace.ID
-
-    public init(
-        store: StoreOf<PersonDetailsFeature>,
-        transitionNamespace: Namespace.ID
-    ) {
-        self._store = .init(store)
-        self.namespace = transitionNamespace
+    public init(viewModel: PersonDetailsViewModel) {
+        _viewModel = State(initialValue: viewModel)
     }
 
     public var body: some View {
         ZStack {
-            switch store.viewState {
+            switch viewModel.viewState {
             case .ready(let snapshot):
                 content(person: snapshot.person)
             case .error(let error):
@@ -40,22 +36,22 @@ public struct PersonDetailsView: View {
         .contentTransition(.opacity)
         .animation(
             reduceMotion ? nil : .easeInOut(duration: 1),
-            value: store.viewState.isReady
+            value: viewModel.viewState.isReady
         )
         .animation(
             reduceMotion ? nil : .easeInOut(duration: 1),
-            value: store.viewState.isError
+            value: viewModel.viewState.isError
         )
         .overlay {
-            if store.viewState.isLoading {
+            if viewModel.viewState.isLoading {
                 loadingBody
             }
         }
         .onAppear {
-            store.send(.didAppear)
+            viewModel.didAppear()
         }
-        .task {
-            store.send(.fetch)
+        .task(id: viewModel.reloadID) {
+            await viewModel.load()
         }
     }
 
@@ -76,7 +72,7 @@ extension PersonDetailsView {
     private func content(person: Person) -> some View {
         PersonDetailsContentView(
             person: person,
-            isFocalPointEnabled: store.isFocalPointEnabled
+            isFocalPointEnabled: viewModel.isFocalPointEnabled
         )
     }
 
@@ -90,63 +86,32 @@ extension PersonDetailsView {
             systemImage: "person",
             reason: error.reason,
             isRetryable: error.isRetryable,
-            retryAction: { store.send(.fetch) }
+            retryAction: { viewModel.reload() }
         )
     }
 
 }
 
-#Preview("Ready") {
-    @Previewable @Namespace var namespace
-
-    NavigationStack {
-        PersonDetailsView(
-            store: Store(
-                initialState: PersonDetailsFeature.State(
-                    personID: Person.mock.id,
-                    viewState: .ready(.init(person: Person.mock))
-                ),
-                reducer: {
-                    EmptyReducer()
-                }
-            ),
-            transitionNamespace: namespace
-        )
+#if DEBUG
+    #Preview("Ready") {
+        NavigationStack {
+            PersonDetailsView(
+                viewModel: .preview(viewState: .ready(.init(person: Person.mock)))
+            )
+        }
     }
-}
 
-#Preview("Loading") {
-    @Previewable @Namespace var namespace
-
-    NavigationStack {
-        PersonDetailsView(
-            store: Store(
-                initialState: PersonDetailsFeature.State(
-                    personID: Person.mock.id,
-                    viewState: .loading
-                ),
-                reducer: {
-                    EmptyReducer()
-                }
-            ),
-            transitionNamespace: namespace
-        )
+    #Preview("Loading") {
+        NavigationStack {
+            PersonDetailsView(viewModel: .preview(viewState: .loading))
+        }
     }
-}
 
-#Preview("Error") {
-    @Previewable @Namespace var namespace
-
-    NavigationStack {
-        PersonDetailsView(
-            store: Store(
-                initialState: PersonDetailsFeature.State(
-                    personID: Person.mock.id,
-                    viewState: .error(ViewStateError(FetchPersonError.notFound()))
-                ),
-                reducer: { EmptyReducer() }
-            ),
-            transitionNamespace: namespace
-        )
+    #Preview("Error") {
+        NavigationStack {
+            PersonDetailsView(
+                viewModel: .preview(viewState: .error(ViewStateError(FetchPersonError.notFound())))
+            )
+        }
     }
-}
+#endif

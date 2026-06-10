@@ -38,6 +38,33 @@ public enum ModelContainerFactory {
         }
     }
 
+    /// Whether the current process can safely configure CloudKit mirroring.
+    ///
+    /// Unsigned test / CI builds lack the `com.apple.developer.icloud-services`
+    /// entitlement. Configuring an `NSPersistentCloudKitContainer` there fails
+    /// asynchronously inside the mirroring delegate and crashes the host process
+    /// during launch (it never surfaces as a catchable error from `ModelContainer`).
+    /// In those environments callers should request a local-only store instead.
+    ///
+    /// - Parameter environment: The process environment to inspect. Injectable for
+    ///   testing; defaults to the current process environment.
+    public static func isCloudKitAvailable(
+        environment: [String: String] = ProcessInfo.processInfo.environment
+    ) -> Bool {
+        // Explicit opt-out, set by the unit-test plan for the app host.
+        if environment["POPCORN_DISABLE_CLOUDKIT"] == "1" {
+            return false
+        }
+
+        // XCTest sets this for the test runner and the app host of app-hosted
+        // tests, so any test environment is treated as CloudKit-unavailable.
+        if environment["XCTestConfigurationFilePath"] != nil {
+            return false
+        }
+
+        return true
+    }
+
     public static func makeCloudKitModelContainer(
         schema: Schema,
         url: URL,
@@ -45,15 +72,39 @@ public enum ModelContainerFactory {
         migrationPlan: (some SchemaMigrationPlan).Type,
         logger: Logger
     ) -> ModelContainer {
-        let config = ModelConfiguration(schema: schema, url: url, cloudKitDatabase: cloudKitDatabase)
+        let cloudKitConfig = ModelConfiguration(schema: schema, url: url, cloudKitDatabase: cloudKitDatabase)
 
         do {
-            return try ModelContainer(for: schema, migrationPlan: migrationPlan, configurations: [config])
+            return try ModelContainer(for: schema, migrationPlan: migrationPlan, configurations: [cloudKitConfig])
         } catch let error {
-            logger.critical(
-                "Cannot create CloudKit ModelContainer: \(error.localizedDescription, privacy: .public)"
+            // CloudKit may be unavailable — e.g. no iCloud entitlement (unsigned / CI
+            // builds) or the user isn't signed into iCloud. Degrade to a local-only
+            // store so the app still launches with on-device persistence rather than
+            // crashing.
+            logger.warning(
+                "CloudKit ModelContainer unavailable, falling back to a local store: \(error.localizedDescription, privacy: .public)"
             )
-            fatalError("Cannot create CloudKit ModelContainer: \(error.localizedDescription)")
+
+            let localConfig = ModelConfiguration(schema: schema, url: url, cloudKitDatabase: .none)
+
+            do {
+                return try ModelContainer(for: schema, migrationPlan: migrationPlan, configurations: [localConfig])
+            } catch let error {
+                logger.warning(
+                    "Local ModelContainer creation failed, removing database: \(error.localizedDescription, privacy: .public)"
+                )
+
+                removeSQLiteFiles(at: url)
+
+                do {
+                    return try ModelContainer(for: schema, migrationPlan: migrationPlan, configurations: [localConfig])
+                } catch let error {
+                    logger.critical(
+                        "Cannot create ModelContainer after reset: \(error.localizedDescription, privacy: .public)"
+                    )
+                    fatalError("Cannot create ModelContainer after reset: \(error.localizedDescription)")
+                }
+            }
         }
     }
 

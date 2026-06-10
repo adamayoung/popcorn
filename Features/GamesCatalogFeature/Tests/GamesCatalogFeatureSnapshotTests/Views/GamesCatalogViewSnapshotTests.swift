@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import Foundation
 @testable import GamesCatalogFeature
 import SnapshotTestHelpers
@@ -19,13 +18,10 @@ struct GamesCatalogViewSnapshotTests {
     @Test
     func gamesCatalogView() {
         let view = NamespaceContainer(
-            store: Store(
-                initialState: GamesCatalogFeature.State(
-                    viewState: .ready(
-                        .init(games: GameMetadata.mocks)
-                    )
-                ),
-                reducer: { EmptyReducer() }
+            viewModel: .preview(
+                viewState: .ready(
+                    .init(games: GameMetadata.mocks)
+                )
             )
         )
 
@@ -38,11 +34,11 @@ private struct NamespaceContainer: View {
 
     @Namespace var namespace
 
-    let store: StoreOf<GamesCatalogFeature>
+    let viewModel: GamesCatalogViewModel
 
     var body: some View {
         NavigationStack {
-            GamesCatalogView(store: store, transitionNamespace: namespace)
+            GamesCatalogView(viewModel: viewModel, transitionNamespace: namespace)
         }
     }
 

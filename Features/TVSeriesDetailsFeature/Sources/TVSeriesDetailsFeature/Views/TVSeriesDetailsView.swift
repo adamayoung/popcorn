@@ -5,23 +5,25 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import DesignSystem
+import Presentation
 import SwiftUI
-import TCAFoundation
 
+/// The TV series details screen, driven by ``TVSeriesDetailsViewModel``.
+///
+/// Renders ``TVSeriesDetailsContentView`` with toolbar, loading, and error chrome.
 public struct TVSeriesDetailsView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Bindable private var store: StoreOf<TVSeriesDetailsFeature>
+    @State private var viewModel: TVSeriesDetailsViewModel
 
-    public init(store: StoreOf<TVSeriesDetailsFeature>) {
-        self._store = .init(store)
+    public init(viewModel: TVSeriesDetailsViewModel) {
+        _viewModel = State(initialValue: viewModel)
     }
 
     public var body: some View {
         ZStack {
-            switch store.viewState {
+            switch viewModel.viewState {
             case .ready(let snapshot):
                 content(snapshot)
             case .error(let error):
@@ -32,29 +34,29 @@ public struct TVSeriesDetailsView: View {
         }
         .accessibilityIdentifier("tv-series-details.view")
         .toolbar {
-            if case .ready(let snapshot) = store.viewState, store.isIntelligenceEnabled {
+            if case .ready(let snapshot) = viewModel.viewState, viewModel.isIntelligenceEnabled {
                 ToolbarItem(placement: toolbarTrailingPlacement) {
                     Button(
                         LocalizedStringResource("INTELLIGENCE", bundle: .module),
                         systemImage: "apple.intelligence"
                     ) {
-                        store.send(.navigate(.tvSeriesIntelligence(id: snapshot.tvSeries.id)))
+                        viewModel.openIntelligence(id: snapshot.tvSeries.id)
                     }
                 }
             }
         }
         .contentTransition(.opacity)
-        .animation(reduceMotion ? nil : .easeInOut(duration: 1), value: store.viewState.isReady)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 1), value: viewModel.viewState.isReady)
         .overlay {
-            if store.viewState.isLoading {
+            if viewModel.viewState.isLoading {
                 loadingBody
             }
         }
         .onAppear {
-            store.send(.didAppear)
+            viewModel.didAppear()
         }
-        .task {
-            store.send(.fetch)
+        .task(id: viewModel.reloadID) {
+            await viewModel.load()
         }
     }
 
@@ -80,27 +82,20 @@ extension TVSeriesDetailsView {
 
 extension TVSeriesDetailsView {
 
-    private func content(_ snapshot: TVSeriesDetailsFeature.ViewSnapshot) -> some View {
+    private func content(_ snapshot: TVSeriesDetailsViewSnapshot) -> some View {
         TVSeriesDetailsContentView(
             tvSeries: snapshot.tvSeries,
             castMembers: snapshot.castMembers,
             crewMembers: snapshot.crewMembers,
-            isBackdropFocalPointEnabled: store.isBackdropFocalPointEnabled,
+            isBackdropFocalPointEnabled: viewModel.isBackdropFocalPointEnabled,
             didSelectSeason: { seasonNumber in
-                store.send(
-                    .navigate(
-                        .seasonDetails(
-                            tvSeriesID: snapshot.tvSeries.id,
-                            seasonNumber: seasonNumber
-                        )
-                    )
-                )
+                viewModel.selectSeason(seasonNumber: seasonNumber)
             },
             didSelectPerson: { personID in
-                store.send(.navigate(.personDetails(id: personID)))
+                viewModel.selectPerson(id: personID)
             },
-            navigateToCastAndCrew: { tvSeriesID in
-                store.send(.navigate(.castAndCrew(tvSeriesID: tvSeriesID)))
+            navigateToCastAndCrew: { _ in
+                viewModel.openCastAndCrew()
             }
         )
     }
@@ -115,56 +110,42 @@ extension TVSeriesDetailsView {
             systemImage: "tv",
             reason: error.reason,
             isRetryable: error.isRetryable,
-            retryAction: { store.send(.fetch) }
+            retryAction: { viewModel.reload() }
         )
     }
 
 }
 
-#Preview("Ready") {
-    NavigationStack {
-        TVSeriesDetailsView(
-            store: Store(
-                initialState: TVSeriesDetailsFeature.State(
-                    tvSeriesID: 1,
+#if DEBUG
+    #Preview("Ready") {
+        NavigationStack {
+            TVSeriesDetailsView(
+                viewModel: .preview(
                     viewState: .ready(
                         .init(
                             tvSeries: TVSeries.mock,
                             castMembers: CastMember.mocks,
                             crewMembers: CrewMember.mocks
                         )
-                    )
-                ),
-                reducer: { EmptyReducer() }
+                    ),
+                    isIntelligenceEnabled: true,
+                    isBackdropFocalPointEnabled: true
+                )
             )
-        )
+        }
     }
-}
 
-#Preview("Loading") {
-    NavigationStack {
-        TVSeriesDetailsView(
-            store: Store(
-                initialState: TVSeriesDetailsFeature.State(
-                    tvSeriesID: 1,
-                    viewState: .loading
-                ),
-                reducer: { EmptyReducer() }
-            )
-        )
+    #Preview("Loading") {
+        NavigationStack {
+            TVSeriesDetailsView(viewModel: .preview(viewState: .loading))
+        }
     }
-}
 
-#Preview("Error") {
-    NavigationStack {
-        TVSeriesDetailsView(
-            store: Store(
-                initialState: TVSeriesDetailsFeature.State(
-                    tvSeriesID: 1,
-                    viewState: .error(ViewStateError(FetchTVSeriesError.notFound()))
-                ),
-                reducer: { EmptyReducer() }
+    #Preview("Error") {
+        NavigationStack {
+            TVSeriesDetailsView(
+                viewModel: .preview(viewState: .error(ViewStateError(FetchTVSeriesError.notFound())))
             )
-        )
+        }
     }
-}
+#endif

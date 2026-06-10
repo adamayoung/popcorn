@@ -5,23 +5,25 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import DesignSystem
+import Presentation
 import SwiftUI
-import TCAFoundation
 
+/// The movie details screen, driven by ``MovieDetailsViewModel``.
+///
+/// Renders ``MovieDetailsContentView`` along with toolbar, loading, and error chrome.
 public struct MovieDetailsView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @Bindable private var store: StoreOf<MovieDetailsFeature>
+    @State private var viewModel: MovieDetailsViewModel
 
-    public init(store: StoreOf<MovieDetailsFeature>) {
-        self._store = .init(store)
+    public init(viewModel: MovieDetailsViewModel) {
+        _viewModel = State(initialValue: viewModel)
     }
 
     public var body: some View {
         ZStack {
-            switch store.viewState {
+            switch viewModel.viewState {
             case .ready(let snapshot):
                 content(snapshot)
             case .error(let error):
@@ -32,8 +34,8 @@ public struct MovieDetailsView: View {
         }
         .accessibilityIdentifier("movie-details.view")
         .toolbar {
-            if case .ready(let snapshot) = store.viewState {
-                if store.isWatchlistEnabled {
+            if case .ready(let snapshot) = viewModel.viewState {
+                if viewModel.isWatchlistEnabled {
                     ToolbarItem(placement: toolbarTrailingPlacement) {
                         Button(
                             snapshot.movie.isOnWatchlist ?
@@ -41,7 +43,7 @@ public struct MovieDetailsView: View {
                                 LocalizedStringResource("ADD_TO_WATCHLIST", bundle: .module),
                             systemImage: snapshot.movie.isOnWatchlist ? "eye" : "plus"
                         ) {
-                            store.send(.toggleOnWatchlist)
+                            Task { await viewModel.toggleOnWatchlist() }
                         }
                         .accessibilityIdentifier(
                             snapshot.movie.isOnWatchlist
@@ -54,30 +56,30 @@ public struct MovieDetailsView: View {
                     }
                 }
 
-                if store.isIntelligenceEnabled {
+                if viewModel.isIntelligenceEnabled {
                     ToolbarItem(placement: toolbarTrailingPlacement) {
                         Button(
                             LocalizedStringResource("MOVIE_INTELLIGENCE", bundle: .module),
                             systemImage: "apple.intelligence"
                         ) {
-                            store.send(.navigate(.movieIntelligence(id: snapshot.movie.id)))
+                            viewModel.openIntelligence()
                         }
                     }
                 }
             }
         }
         .contentTransition(.opacity)
-        .animation(reduceMotion ? nil : .easeInOut(duration: 1), value: store.viewState.isReady)
+        .animation(reduceMotion ? nil : .easeInOut(duration: 1), value: viewModel.viewState.isReady)
         .overlay {
-            if store.viewState.isLoading {
+            if viewModel.viewState.isLoading {
                 loadingBody
             }
         }
         .onAppear {
-            store.send(.didAppear)
+            viewModel.didAppear()
         }
-        .task {
-            store.send(.fetch)
+        .task(id: viewModel.reloadID) {
+            await viewModel.load()
         }
     }
 
@@ -103,21 +105,21 @@ extension MovieDetailsView {
 
 extension MovieDetailsView {
 
-    private func content(_ snapshot: MovieDetailsFeature.ViewSnapshot) -> some View {
+    private func content(_ snapshot: MovieDetailsViewSnapshot) -> some View {
         MovieDetailsContentView(
             movie: snapshot.movie,
             recommendedMovies: snapshot.recommendedMovies,
             castMembers: snapshot.castMembers,
             crewMembers: snapshot.crewMembers,
-            isBackdropFocalPointEnabled: store.isBackdropFocalPointEnabled,
+            isBackdropFocalPointEnabled: viewModel.isBackdropFocalPointEnabled,
             didSelectPerson: { personID in
-                store.send(.navigate(.personDetails(id: personID)))
+                viewModel.selectPerson(id: personID)
             },
             didSelectMovie: { movieID in
-                store.send(.navigate(.movieDetails(id: movieID)))
+                viewModel.selectMovie(id: movieID)
             },
-            navigateToCastAndCrew: { movieID in
-                store.send(.navigate(.castAndCrew(movieID: movieID)))
+            navigateToCastAndCrew: { _ in
+                viewModel.openCastAndCrew()
             }
         )
     }
@@ -132,18 +134,17 @@ extension MovieDetailsView {
             systemImage: "film",
             reason: error.reason,
             isRetryable: error.isRetryable,
-            retryAction: { store.send(.fetch) }
+            retryAction: { viewModel.reload() }
         )
     }
 
 }
 
-#Preview("Ready") {
-    NavigationStack {
-        MovieDetailsView(
-            store: Store(
-                initialState: MovieDetailsFeature.State(
-                    movieID: Movie.mock.id,
+#if DEBUG
+    #Preview("Ready") {
+        NavigationStack {
+            MovieDetailsView(
+                viewModel: .preview(
                     viewState: .ready(
                         .init(
                             movie: Movie.mock,
@@ -152,39 +153,22 @@ extension MovieDetailsView {
                             crewMembers: CrewMember.mocks
                         )
                     )
-                ),
-                reducer: {
-                    EmptyReducer()
-                }
+                )
             )
-        )
+        }
     }
-}
 
-#Preview("Loading") {
-    NavigationStack {
-        MovieDetailsView(
-            store: Store(
-                initialState: MovieDetailsFeature.State(
-                    movieID: Movie.mock.id,
-                    viewState: .loading
-                ),
-                reducer: { EmptyReducer() }
-            )
-        )
+    #Preview("Loading") {
+        NavigationStack {
+            MovieDetailsView(viewModel: .preview(viewState: .loading))
+        }
     }
-}
 
-#Preview("Error") {
-    NavigationStack {
-        MovieDetailsView(
-            store: Store(
-                initialState: MovieDetailsFeature.State(
-                    movieID: Movie.mock.id,
-                    viewState: .error(ViewStateError(FetchMovieError.notFound()))
-                ),
-                reducer: { EmptyReducer() }
+    #Preview("Error") {
+        NavigationStack {
+            MovieDetailsView(
+                viewModel: .preview(viewState: .error(ViewStateError(FetchMovieError.notFound())))
             )
-        )
+        }
     }
-}
+#endif

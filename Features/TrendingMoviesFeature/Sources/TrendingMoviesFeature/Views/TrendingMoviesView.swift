@@ -5,35 +5,39 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import DesignSystem
 import SwiftUI
 
+/// The trending movies view, driven by ``TrendingMoviesViewModel``.
+///
+/// A standalone leaf view that owns its view model. Renders a list of trending
+/// movies. Takes a `transitionNamespace` even though it does not apply
+/// `.matchedTransitionSource` (no zoom transition).
 public struct TrendingMoviesView: View {
 
-    @Bindable var store: StoreOf<TrendingMoviesFeature>
+    @State private var viewModel: TrendingMoviesViewModel
     private let namespace: Namespace.ID
 
     private var movies: [MoviePreview] {
-        store.movies
+        viewModel.movies
     }
 
     private var isLoading: Bool {
-        store.isInitiallyLoading
+        viewModel.isInitiallyLoading
     }
 
     public init(
-        store: StoreOf<TrendingMoviesFeature>,
+        viewModel: TrendingMoviesViewModel,
         transitionNamespace: Namespace.ID
     ) {
-        self._store = .init(store)
+        _viewModel = State(initialValue: viewModel)
         self.namespace = transitionNamespace
     }
 
     public var body: some View {
         List(movies) { movie in
             NavigationRow {
-                store.send(.navigate(.movieDetails(id: movie.id)))
+                viewModel.selectMovie(id: movie.id)
             } content: {
                 MovieRow(
                     id: movie.id,
@@ -48,23 +52,22 @@ public struct TrendingMoviesView: View {
             }
         }
         .navigationTitle(Text("TRENDING", bundle: .module))
-        .task {
-            store.send(.loadTrendingMovies)
+        .task(id: viewModel.reloadID) {
+            await viewModel.load()
         }
     }
 
 }
 
-#Preview {
-    @Previewable @Namespace var namespace
+#if DEBUG
+    #Preview {
+        @Previewable @Namespace var namespace
 
-    TrendingMoviesView(
-        store: Store(
-            initialState: TrendingMoviesFeature.State(),
-            reducer: {
-                TrendingMoviesFeature()
-            }
-        ),
-        transitionNamespace: namespace
-    )
-}
+        NavigationStack {
+            TrendingMoviesView(
+                viewModel: .preview(),
+                transitionNamespace: namespace
+            )
+        }
+    }
+#endif

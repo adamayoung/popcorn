@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 @testable import DeveloperFeature
 import Foundation
 import SnapshotTestHelpers
@@ -19,10 +18,9 @@ struct DeveloperViewSnapshotTests {
     @Test
     func developerView() {
         let view = DeveloperView(
-            store: Store(
-                initialState: DeveloperFeature.State(),
-                reducer: { EmptyReducer() }
-            )
+            makeFeatureFlags: {
+                .preview(viewState: .ready(.init(featureFlags: FeatureFlag.mocks)))
+            }
         )
 
         verifyViewSnapshot(of: view)

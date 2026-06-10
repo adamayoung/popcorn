@@ -5,27 +5,27 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import DesignSystem
+import Presentation
 import SwiftUI
-import TCAFoundation
 
+/// The MVVM games catalog view, driven by ``GamesCatalogViewModel``.
 public struct GamesCatalogView: View {
 
-    @Bindable var store: StoreOf<GamesCatalogFeature>
+    @State private var viewModel: GamesCatalogViewModel
     private let namespace: Namespace.ID
 
     public init(
-        store: StoreOf<GamesCatalogFeature>,
+        viewModel: GamesCatalogViewModel,
         transitionNamespace: Namespace.ID
     ) {
-        self._store = .init(store)
+        _viewModel = State(initialValue: viewModel)
         self.namespace = transitionNamespace
     }
 
     public var body: some View {
         ScrollView {
-            switch store.viewState {
+            switch viewModel.viewState {
             case .ready(let snapshot):
                 content(games: snapshot.games)
             case .error(let error):
@@ -36,12 +36,14 @@ public struct GamesCatalogView: View {
         }
         .accessibilityIdentifier("games-catalog.view")
         .overlay {
-            if store.viewState.isLoading {
+            if viewModel.viewState.isLoading {
                 loadingBody
             }
         }
         .navigationTitle(Text("GAMES", bundle: .module))
-        .task { store.send(.fetch) }
+        .task(id: viewModel.reloadID) {
+            await viewModel.load()
+        }
     }
 
 }
@@ -54,7 +56,7 @@ extension GamesCatalogView {
             systemImage: "gamecontroller",
             reason: error.reason,
             isRetryable: error.isRetryable,
-            retryAction: { store.send(.fetch) }
+            retryAction: { viewModel.reload() }
         )
     }
 
@@ -68,7 +70,7 @@ extension GamesCatalogView {
         LazyVGrid(columns: [.init(), .init()]) {
             ForEach(games) { game in
                 Button {
-                    store.send(.navigate(.game(id: game.id)))
+                    viewModel.selectGame(id: game.id)
                 } label: {
                     card(for: game)
                 }
@@ -109,52 +111,37 @@ extension GamesCatalogView {
 
 }
 
-#Preview("Ready") {
-    @Previewable @Namespace var namespace
+#if DEBUG
+    #Preview("Ready") {
+        @Previewable @Namespace var namespace
 
-    NavigationStack {
-        GamesCatalogView(
-            store: Store(
-                initialState: GamesCatalogFeature.State(
-                    viewState: .ready(
-                        .init(games: GameMetadata.mocks)
-                    )
-                ),
-                reducer: { EmptyReducer() }
-            ),
-            transitionNamespace: namespace
-        )
+        NavigationStack {
+            GamesCatalogView(
+                viewModel: .preview(viewState: .ready(.init(games: GameMetadata.mocks))),
+                transitionNamespace: namespace
+            )
+        }
     }
-}
 
-#Preview("Loading") {
-    @Previewable @Namespace var namespace
+    #Preview("Loading") {
+        @Previewable @Namespace var namespace
 
-    NavigationStack {
-        GamesCatalogView(
-            store: Store(
-                initialState: GamesCatalogFeature.State(
-                    viewState: .loading
-                ),
-                reducer: { EmptyReducer() }
-            ),
-            transitionNamespace: namespace
-        )
+        NavigationStack {
+            GamesCatalogView(
+                viewModel: .preview(viewState: .loading),
+                transitionNamespace: namespace
+            )
+        }
     }
-}
 
-#Preview("Error") {
-    @Previewable @Namespace var namespace
+    #Preview("Error") {
+        @Previewable @Namespace var namespace
 
-    NavigationStack {
-        GamesCatalogView(
-            store: Store(
-                initialState: GamesCatalogFeature.State(
-                    viewState: .error(ViewStateError(FetchGamesCatalogError.unknown()))
-                ),
-                reducer: { EmptyReducer() }
-            ),
-            transitionNamespace: namespace
-        )
+        NavigationStack {
+            GamesCatalogView(
+                viewModel: .preview(viewState: .error(ViewStateError(FetchGamesCatalogError.unknown()))),
+                transitionNamespace: namespace
+            )
+        }
     }
-}
+#endif

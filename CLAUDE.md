@@ -8,9 +8,9 @@ Agents act as senior Swift collaborators. Keep responses concise, clarify uncert
 
 ## Project Overview
 
-Popcorn is a modular SwiftUI application for browsing movies and TV series across iOS, macOS, and visionOS. It uses The Composable Architecture (TCA) with domain-driven design and clean architecture.
+Popcorn is a modular SwiftUI application for browsing movies and TV series across iOS, macOS, and visionOS. It uses MVVM — `@Observable @MainActor` view models with a `ViewState` property, native SwiftUI navigation, and compile-time DI via per-feature `Dependencies` structs — with domain-driven design and clean architecture.
 
-**Tech Stack**: Swift 6.2 (strict concurrency), SwiftUI, TCA 1.23+, SwiftData with CloudKit, TMDb API
+**Tech Stack**: Swift 6.2 (strict concurrency), SwiftUI (MVVM, `@Observable`), SwiftData with CloudKit, TMDb API
 
 **Platforms**: iOS 26.0+, macOS 26.0+, visionOS 2.0+
 
@@ -94,10 +94,11 @@ This prevents CI failures and ensures code quality before review.
 
 | File | Purpose |
 |------|---------|
-| `App/PopcornApp.swift` | App entry point, creates root store |
-| `App/Features/AppRoot/AppRootFeature.swift` | Root TCA reducer, tab management |
-| `App/Features/AppRoot/AppRootClient.swift` | App initialization (observability, feature flags) |
-| `AppDependencies/` | Central DI hub — registers all use cases as TCA `DependencyKey`s, wires adapters to contexts |
+| `App/PopcornApp.swift` | App entry point — builds `AppServices` + `ViewModelFactory` and the root view model |
+| `App/Features/AppRoot/AppRootViewModel.swift` | Root view model — startup lifecycle, tab selection, feature-flag gating |
+| `App/Composition/AppBootstrapper.swift` | App initialization (observability, feature flags) |
+| `App/Composition/ViewModelFactory.swift` | Builds each feature's view model from `AppServices` + the tab's navigator |
+| `AppDependencies/Sources/AppDependencies/Composition/AppServices.swift` | Composition root — builds the shared factory/use-case graph consumed by feature `Dependencies` |
 
 ## Architecture
 
@@ -113,29 +114,28 @@ See [docs/TMDB_MAPPING.md](docs/TMDB_MAPPING.md) for the complete TMDb type refe
 
 | Dependency | Version | Used By |
 |------------|---------|---------|
-| swift-composable-architecture | 1.23+ | All Features, AppDependencies |
 | TMDb | 16.0+ | Context Adapters |
 | SDWebImageSwiftUI | 3.0+ | DesignSystem |
-| sentry-cocoa | 8.57+ | ObservabilityAdapters |
+| sentry-cocoa | 9.16+ | ObservabilityAdapters |
 | statsig-kit | 1.55+ | FeatureAccessAdapters |
-| swift-snapshot-testing | 1.18+ | ExploreFeature (snapshot tests) |
+| swift-snapshot-testing | 1.18+ | Feature snapshot tests |
 
 ## Code Style
 
-Detailed guides: [SWIFT.md](docs/SWIFT.md) · [SWIFTUI.md](docs/SWIFTUI.md) · [SWIFTDATA.md](docs/SWIFTDATA.md) · [TCA.md](docs/TCA.md) · [GIT.md](docs/GIT.md) · [UITESTING.md](docs/UITESTING.md)
+Detailed guides: [SWIFT.md](docs/SWIFT.md) · [SWIFTUI.md](docs/SWIFTUI.md) · [SWIFTDATA.md](docs/SWIFTDATA.md) · [GIT.md](docs/GIT.md) · [UITESTING.md](docs/UITESTING.md)
 
 Localization: [SWIFTUI.md § Localization](docs/SWIFTUI.md) — SCREAMING_SNAKE_CASE keys, build-first workflow, `bundle: .module` in packages
 
 ### Project-Specific Rules
 
-- When adding or removing feature flags in a Client/Reducer, always update the corresponding `*FeatureFlagsTests` (all existing tests and add new ones for the flag)
+- When adding or removing feature flags in a feature's `*Dependencies` / view model, always update the corresponding view-model tests for the flag-gated behavior (cover both enabled and disabled paths)
 - **Statsig gate creation**: When adding a new feature flag in code, also create the corresponding Statsig gate using the Statsig MCP (`mcp__statsig__Create_Gate`). Enable it for the `development` environment only (not a full public rollout). Use `mcp__statsig__Get_Gate_Details_by_ID` on a sibling gate to match the naming/config pattern. The gate ID must match the `FeatureFlag.id` in code (snake_case).
 - **Test plan registration**: When adding new Swift test targets that contain unit tests (NOT snapshot tests), add the target to `TestPlans/PopcornUnitTests.xctestplan`. Without this, the tests won't run when executing the test plan. Each entry needs `containerPath` (relative path from workspace root prefixed with `container:`), `identifier` (test target name), and `name` (test target name)
-- **Test coverage for new features**: Every new feature must have tests at ALL layers — adapter mappers, use cases, and TCA reducers. Don't just test the happy path; include error paths and edge cases. Check sibling implementations for the test patterns to follow.
+- **Test coverage for new features**: Every new feature must have tests at ALL layers — adapter mappers, use cases, and feature view models. Don't just test the happy path; include error paths and edge cases. Check sibling implementations for the test patterns to follow.
 
 ### SwiftLint Attributes
 
 ```yaml
-always_on_same_line: @Dependency, @Environment, @State, @Binding, @testable
+always_on_same_line: @Environment, @State, @Binding, @testable
 always_on_line_above: @ViewBuilder
 ```

@@ -18,7 +18,7 @@ Use this skill for authoritative guidance on snapshot testing in the Popcorn pro
 5. **Always annotate snapshot test suites with `@MainActor`** — SwiftUI views require main thread rendering.
 6. **Always use `.image(layout: .device(config: .iPhone13Pro))` as the default strategy** — consistent rendering across environments.
 7. **Always wrap views in `NavigationStack`** when testing screens that appear within navigation — matches production context.
-8. **Always use `EmptyReducer()` for TCA stores in snapshot tests** — snapshots capture visual state, not behavior.
+8. **Always drive views with a `.preview(viewState:)` view model in snapshot tests** — snapshots capture visual state, not behavior.
 9. **Never force unwrap** in snapshot tests — use optional chaining (SwiftLint `force_unwrapping` rule).
 10. **Preview data must use real TMDb IDs and image URLs** — ensures snapshots render authentic content.
 

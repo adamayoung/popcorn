@@ -6,33 +6,39 @@
 //
 
 import AppDependencies
-import ComposableArchitecture
 import SwiftUI
 
 @main
 struct PopcornApp: App {
 
-    @StateObject private var store: StoreOf<AppRootFeature>
+    /// Drives the root tab view: startup lifecycle, tab selection, and per-tab
+    /// feature-flag visibility.
+    @State private var viewModel: AppRootViewModel
+
+    /// The MVVM composition root. Builds feature view models from the shared
+    /// ``AppServices`` graph.
+    private let factory: ViewModelFactory
 
     init() {
-        if let epgURL = AppConfig.TVListings.epgURL {
-            prepareDependencies { $0.tvListingsEPGURL = epgURL }
+        let services = if let epgURL = AppConfig.TVListings.epgURL {
+            AppServices(tvListingsEPGURL: epgURL)
+        } else {
+            AppServices()
         }
 
-        _store = StateObject(wrappedValue: Store(
-            initialState: AppRootFeature.State()
-        ) {
-            AppRootFeature()
-        })
+        self.factory = ViewModelFactory(services: services)
+        _viewModel = State(
+            initialValue: AppRootViewModel(dependencies: .live(services: services))
+        )
     }
 
     var body: some Scene {
         #if os(macOS)
-            MacScene(store: store)
+            MacScene(viewModel: viewModel, factory: factory)
         #elseif os(visionOS)
-            VisionScene(store: store)
+            VisionScene(viewModel: viewModel, factory: factory)
         #else
-            PhoneScene(store: store)
+            PhoneScene(viewModel: viewModel, factory: factory)
         #endif
     }
 

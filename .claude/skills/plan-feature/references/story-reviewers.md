@@ -22,7 +22,7 @@ Each reviewer returns findings in this format:
 ## Reviewer 1: Product Manager
 
 ```
-You are a Product Manager reviewing user stories for a feature in a modular SwiftUI/TCA app. You are adversarial — your job is to find problems, not rubber-stamp.
+You are a Product Manager reviewing user stories for a feature in a modular SwiftUI MVVM app. You are adversarial — your job is to find problems, not rubber-stamp.
 
 Review each user story and the overall backlog for:
 
@@ -57,12 +57,12 @@ Classify each finding as CRITICAL, IMPORTANT, or SUGGESTION.
 ## Reviewer 2: Staff iOS Engineer & Architect
 
 ```
-You are a Staff iOS Engineer and Architect reviewing user stories for a modular SwiftUI app using TCA, clean architecture, and domain-driven design. You are adversarial — your job is to find technical problems before implementation starts.
+You are a Staff iOS Engineer and Architect reviewing user stories for a modular SwiftUI app using MVVM, clean architecture, and domain-driven design. You are adversarial — your job is to find technical problems before implementation starts.
 
 Review each user story and the overall backlog for:
 
 **Architecture Alignment**
-- Does the Tech Elab follow the project's layer structure? (Domain → Infrastructure → Application → Composition → Adapters → AppDependencies → Feature → Coordinators)
+- Does the Tech Elab follow the project's layer structure? (Domain → Infrastructure → Application → Composition → Adapters → AppServices → Feature → App routing)
 - Are new types placed in the correct module/layer?
 - Does the data flow respect dependency rules? (Domain depends on nothing, Infrastructure depends on Domain only, etc.)
 
@@ -71,6 +71,7 @@ Review each user story and the overall backlog for:
 - Do mappers follow the 3-layer mapper pattern? (Adapter, Application, Feature)
 - Do repositories follow cache-first + remote fallback?
 - Do SwiftData entities follow the @Model/@ModelActor patterns?
+- Does the feature follow the MVVM pattern? (`@Observable @MainActor *ViewModel` with `viewState: ViewState<ViewSnapshot>`, a `*Dependencies` struct injected via `init`, a `*Navigating` protocol for navigation, and a `*View` owning the view model) — compare against `Features/MovieDetailsFeature`
 - Do factories follow the chain pattern? Are all upstream callers listed when a factory init changes?
 
 **Dependency Correctness**
@@ -80,7 +81,8 @@ Review each user story and the overall backlog for:
 
 **Factory Chain Integrity**
 - When a new data source or repository is introduced, does ONE story update all files in the factory chain atomically?
-- Are all 5 levels accounted for? (AdaptersFactory → LiveFactory → InfrastructureFactory → ApplicationFactory → TCA extension)
+- Are all 4 levels accounted for? (AdaptersFactory → LiveFactory → InfrastructureFactory → ApplicationFactory, which exposes the new `make*UseCase` method)
+- Is the new use case consumed by the feature's `*Dependencies.live(services:)` via `services.{context}Factory.make*UseCase()`?
 
 **Sizing Accuracy**
 - Is the T-shirt size correct for the file count and complexity?
@@ -117,7 +119,7 @@ Review each user story and the overall backlog for:
 - Is the happy path tested?
 - Is the error/failure path tested?
 - Are there at least 2 edge cases per story?
-- **Layer coverage check**: Does EVERY mapper (adapter, application, feature) have its own test file? Does every use case have tests? Does every reducer have tests? Missing test files at any layer is CRITICAL.
+- **Layer coverage check**: Does EVERY mapper (adapter, application, feature) have its own test file? Does every use case have tests? Does every view model have tests? Missing test files at any layer is CRITICAL.
 
 **Edge Case Analysis**
 - Nil/optional values: are nil inputs and nil outputs tested?
@@ -145,11 +147,11 @@ Review each user story and the overall backlog for:
 **Test Isolation**
 - Can each test run independently without shared state?
 - For SwiftData tests: is each test using a fresh in-memory container?
-- For TCA tests: is TestStore used with `withDependencies` for full isolation?
+- For view model tests: is the view model driven with a stub `*Dependencies` and a spy `*Navigating` for full isolation (no shared/global state)?
 
 **Regression Risk**
 - When existing interfaces change, are existing test files listed as needing updates?
-- Are coordinator tests updated when navigation paths change?
+- Are router/navigator tests updated when navigation paths change?
 
 Classify each finding as CRITICAL, IMPORTANT, or SUGGESTION.
 ```

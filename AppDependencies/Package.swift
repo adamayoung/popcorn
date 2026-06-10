@@ -17,11 +17,6 @@ let package = Package(
     ],
 
     dependencies: [
-        // TCA
-        .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
-        ),
-
         // Core Packages
         .package(path: "../Core/CoreDomain"),
 
@@ -68,9 +63,6 @@ let package = Package(
         .target(
             name: "AppDependencies",
             dependencies: [
-                // TCA
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
-
                 // Context Composition & Application Layers
                 .product(name: "ConfigurationComposition", package: "PopcornConfiguration"),
                 .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),

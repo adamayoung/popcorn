@@ -5,28 +5,26 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import DesignSystem
+import Presentation
 import SwiftUI
-import TCAFoundation
 
+/// The TV episode details view, driven by ``TVEpisodeDetailsViewModel``.
+///
+/// Renders ``TVEpisodeDetailsContentView`` with loading and error chrome.
 public struct TVEpisodeDetailsView: View {
 
-    @Bindable private var store: StoreOf<TVEpisodeDetailsFeature>
+    @State private var viewModel: TVEpisodeDetailsViewModel
 
-    public init(store: StoreOf<TVEpisodeDetailsFeature>) {
-        self._store = .init(store)
+    public init(viewModel: TVEpisodeDetailsViewModel) {
+        _viewModel = State(initialValue: viewModel)
     }
 
     public var body: some View {
         ZStack {
-            switch store.viewState {
+            switch viewModel.viewState {
             case .ready(let snapshot):
-                content(
-                    episode: snapshot.episode,
-                    castMembers: snapshot.castMembers,
-                    crewMembers: snapshot.crewMembers
-                )
+                content(snapshot)
 
             case .error(let error):
                 errorBody(error)
@@ -36,16 +34,49 @@ public struct TVEpisodeDetailsView: View {
             }
         }
         .overlay {
-            if store.viewState.isLoading {
-                ProgressView()
-                    .accessibilityLabel(Text("LOADING", bundle: .module))
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            if viewModel.viewState.isLoading {
+                loadingBody
             }
         }
-        .task {
-            store.send(.didAppear)
+        .onAppear {
+            viewModel.didAppear()
+        }
+        .task(id: viewModel.reloadID) {
+            await viewModel.load()
         }
     }
+
+}
+
+extension TVEpisodeDetailsView {
+
+    private var loadingBody: some View {
+        ProgressView()
+            .accessibilityLabel(Text("LOADING", bundle: .module))
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+}
+
+extension TVEpisodeDetailsView {
+
+    private func content(_ snapshot: TVEpisodeDetailsViewSnapshot) -> some View {
+        TVEpisodeDetailsContentView(
+            episode: snapshot.episode,
+            castMembers: snapshot.castMembers,
+            crewMembers: snapshot.crewMembers,
+            didSelectCastAndCrew: {
+                viewModel.openCastAndCrew()
+            },
+            didSelectPerson: { personID in
+                viewModel.selectPerson(id: personID)
+            }
+        )
+    }
+
+}
+
+extension TVEpisodeDetailsView {
 
     private func errorBody(_ error: ViewStateError) -> some View {
         ContentLoadErrorView(
@@ -53,46 +84,17 @@ public struct TVEpisodeDetailsView: View {
             systemImage: "tv",
             reason: error.reason,
             isRetryable: error.isRetryable,
-            retryAction: { store.send(.fetch) }
-        )
-    }
-
-    private func content(
-        episode: TVEpisode,
-        castMembers: [CastMember],
-        crewMembers: [CrewMember]
-    ) -> some View {
-        TVEpisodeDetailsContentView(
-            episode: episode,
-            castMembers: castMembers,
-            crewMembers: crewMembers,
-            didSelectCastAndCrew: {
-                store.send(
-                    .navigate(
-                        .castAndCrew(
-                            tvSeriesID: episode.tvSeriesID,
-                            seasonNumber: episode.seasonNumber,
-                            episodeNumber: episode.episodeNumber
-                        )
-                    )
-                )
-            },
-            didSelectPerson: { personID in
-                store.send(.navigate(.personDetails(id: personID)))
-            }
+            retryAction: { viewModel.reload() }
         )
     }
 
 }
 
-#Preview("Ready") {
-    NavigationStack {
-        TVEpisodeDetailsView(
-            store: Store(
-                initialState: TVEpisodeDetailsFeature.State(
-                    tvSeriesID: 1396,
-                    seasonNumber: 1,
-                    episodeNumber: 1,
+#if DEBUG
+    #Preview("Ready") {
+        NavigationStack {
+            TVEpisodeDetailsView(
+                viewModel: .preview(
                     viewState: .ready(
                         .init(
                             episode: TVEpisode.mock,
@@ -100,41 +102,22 @@ public struct TVEpisodeDetailsView: View {
                             crewMembers: CrewMember.mocks
                         )
                     )
-                ),
-                reducer: { EmptyReducer() }
+                )
             )
-        )
+        }
     }
-}
 
-#Preview("Loading") {
-    NavigationStack {
-        TVEpisodeDetailsView(
-            store: Store(
-                initialState: TVEpisodeDetailsFeature.State(
-                    tvSeriesID: 1396,
-                    seasonNumber: 1,
-                    episodeNumber: 1,
-                    viewState: .loading
-                ),
-                reducer: { EmptyReducer() }
-            )
-        )
+    #Preview("Loading") {
+        NavigationStack {
+            TVEpisodeDetailsView(viewModel: .preview(viewState: .loading))
+        }
     }
-}
 
-#Preview("Error") {
-    NavigationStack {
-        TVEpisodeDetailsView(
-            store: Store(
-                initialState: TVEpisodeDetailsFeature.State(
-                    tvSeriesID: 1396,
-                    seasonNumber: 1,
-                    episodeNumber: 1,
-                    viewState: .error(ViewStateError(FetchEpisodeDetailsError.notFound()))
-                ),
-                reducer: { EmptyReducer() }
+    #Preview("Error") {
+        NavigationStack {
+            TVEpisodeDetailsView(
+                viewModel: .preview(viewState: .error(ViewStateError(FetchEpisodeDetailsError.notFound())))
             )
-        )
+        }
     }
-}
+#endif

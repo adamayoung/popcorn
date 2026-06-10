@@ -6,19 +6,19 @@
 //
 
 #if os(macOS)
-    import ComposableArchitecture
     import SwiftUI
 
     struct MacScene: Scene {
 
-        @Bindable var store: StoreOf<AppRootFeature>
+        let viewModel: AppRootViewModel
+        let factory: ViewModelFactory
 
         private let minWidth: CGFloat = 975
         private let minHeight: CGFloat = 570
 
         var body: some Scene {
             Window("MOVIES", id: "app") {
-                AppRootView(store: store)
+                AppRootView(viewModel: viewModel, factory: factory)
                     .frame(
                         minWidth: minWidth,
                         maxWidth: .infinity,

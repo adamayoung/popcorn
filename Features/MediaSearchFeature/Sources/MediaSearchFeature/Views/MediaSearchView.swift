@@ -5,40 +5,46 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import SwiftUI
 
+/// The media search screen, driven by ``MediaSearchViewModel``.
+///
+/// Renders the genres / search history / results / no-results surfaces, reusing
+/// the content subviews. The view model is owned above the seam (by `SearchRootView`),
+/// so this takes a plain `let viewModel`.
+///
+/// Focus is kept in two-way sync with the view model: `.onChange(of:)` pushes
+/// `@FocusState` changes into the model and pulls model-driven changes back.
 public struct MediaSearchView: View {
 
-    @Bindable private var store: StoreOf<MediaSearchFeature>
-    @FocusState private var focusedField: MediaSearchFeature.Field?
+    private let viewModel: MediaSearchViewModel
+    @FocusState private var focusedField: MediaSearchViewModel.Field?
 
-    public init(store: StoreOf<MediaSearchFeature>) {
-        self._store = .init(store)
+    public init(viewModel: MediaSearchViewModel) {
+        self.viewModel = viewModel
     }
 
     public var body: some View {
         ZStack {
-            switch store.viewState {
+            switch viewModel.viewState {
             case .genres(let snapshot):
-                MediaSearchGenresContentView(genres: snapshot.genres) { genre in
-                    store.send(.navigate(.genre(id: genre.id)))
-                }
+                // Genre selection is intentionally a no-op.
+                MediaSearchGenresContentView(genres: snapshot.genres) { _ in }
 
             case .searchHistory(let snapshot):
                 MediaSearchHistoryContentView(
                     media: snapshot.media,
-                    onMovieTapped: { store.send(.navigate(.movieDetails(id: $0.id))) },
-                    onTVSeriesTapped: { store.send(.navigate(.tvSeriesDetails(id: $0.id))) },
-                    onPersonTapped: { store.send(.navigate(.personDetails(id: $0.id))) }
+                    onMovieTapped: { viewModel.selectMovie(id: $0.id) },
+                    onTVSeriesTapped: { viewModel.selectTVSeries(id: $0.id) },
+                    onPersonTapped: { viewModel.selectPerson(id: $0.id) }
                 )
 
             case .searchResults(let snapshot):
                 MediaSearchResultsContentView(
                     results: snapshot.results,
-                    onMovieTapped: { store.send(.navigate(.movieDetails(id: $0.id))) },
-                    onTVSeriesTapped: { store.send(.navigate(.tvSeriesDetails(id: $0.id))) },
-                    onPersonTapped: { store.send(.navigate(.personDetails(id: $0.id))) }
+                    onMovieTapped: { viewModel.selectMovie(id: $0.id) },
+                    onTVSeriesTapped: { viewModel.selectTVSeries(id: $0.id) },
+                    onPersonTapped: { viewModel.selectPerson(id: $0.id) }
                 )
 
             default:
@@ -47,7 +53,7 @@ public struct MediaSearchView: View {
         }
         .accessibilityIdentifier("media-search.view")
         .overlay {
-            if case .noSearchResults(let snapshot) = store.viewState {
+            if case .noSearchResults(let snapshot) = viewModel.viewState {
                 ContentUnavailableView(
                     LocalizedStringResource("NO_RESULTS", bundle: .module),
                     systemImage: "magnifyingglass",
@@ -59,117 +65,101 @@ public struct MediaSearchView: View {
         .scrollDismissesKeyboard(.interactively)
         #endif
         .searchable(
-            text: $store.query.sending(\.queryChanged),
-            //            placement: .navigationBarDrawer(displayMode: .always),
+            text: Binding(
+                get: { viewModel.query },
+                set: { viewModel.queryChanged($0) }
+            ),
             prompt: Text("MOVIES_TV_OR_PEOPLE", bundle: .module)
         )
         .searchFocused($focusedField, equals: .search)
-        .bind($store.focusedField.sending(\.focusChanged), to: $focusedField)
-        .task { store.send(.fetchGenresAndSearchHistory) }
+        .onChange(of: focusedField) {
+            viewModel.focusChanged(focusedField)
+        }
+        .onChange(of: viewModel.focusedField) {
+            if focusedField != viewModel.focusedField {
+                focusedField = viewModel.focusedField
+            }
+        }
+        .task { await viewModel.fetchGenresAndSearchHistory() }
         .navigationTitle(Text("SEARCH", bundle: .module))
     }
 
 }
 
-#Preview("Genres") {
-    TabView {
-        Tab(
-            "SEARCH",
-            systemImage: "magnifyingglass",
-            role: .search
-        ) {
-            NavigationStack {
-                MediaSearchView(
-                    store: Store(
-                        initialState: MediaSearchFeature.State(
+#if DEBUG
+    #Preview("Genres") {
+        TabView {
+            Tab(
+                "SEARCH",
+                systemImage: "magnifyingglass",
+                role: .search
+            ) {
+                NavigationStack {
+                    MediaSearchView(
+                        viewModel: .preview(
                             viewState: .genres(.init(genres: Genre.mocks))
-                        ),
-                        reducer: {
-                            EmptyReducer()
-                        }
+                        )
                     )
-                )
+                }
             }
         }
     }
-}
 
-#Preview("Search History") {
-    TabView {
-        Tab(
-            "SEARCH",
-            systemImage: "magnifyingglass",
-            role: .search
-        ) {
-            NavigationStack {
-                MediaSearchView(
-                    store: Store(
-                        initialState: MediaSearchFeature.State(
+    #Preview("Search History") {
+        TabView {
+            Tab(
+                "SEARCH",
+                systemImage: "magnifyingglass",
+                role: .search
+            ) {
+                NavigationStack {
+                    MediaSearchView(
+                        viewModel: .preview(
                             viewState: .searchHistory(.init(media: MediaPreview.mocks))
-                        ),
-                        reducer: {
-                            EmptyReducer()
-                        }
+                        )
                     )
-                )
+                }
             }
         }
     }
-}
 
-#Preview("Search Results") {
-    TabView {
-        Tab(
-            "SEARCH",
-            systemImage: "magnifyingglass",
-            role: .search
-        ) {
-            NavigationStack {
-                MediaSearchView(
-                    store: Store(
-                        initialState: MediaSearchFeature.State(
+    #Preview("Search Results") {
+        TabView {
+            Tab(
+                "SEARCH",
+                systemImage: "magnifyingglass",
+                role: .search
+            ) {
+                NavigationStack {
+                    MediaSearchView(
+                        viewModel: .preview(
                             viewState: .searchResults(
-                                .init(
-                                    query: "running",
-                                    results: MediaPreview.mocks
-                                )
+                                .init(query: "running", results: MediaPreview.mocks)
                             ),
                             query: "running"
-                        ),
-                        reducer: {
-                            EmptyReducer()
-                        }
+                        )
                     )
-                )
+                }
             }
         }
     }
-}
 
-#Preview("No Search Results") {
-    TabView {
-        Tab(
-            "SEARCH",
-            systemImage: "magnifyingglass",
-            role: .search
-        ) {
-            NavigationStack {
-                MediaSearchView(
-                    store: Store(
-                        initialState: MediaSearchFeature.State(
-                            viewState: .noSearchResults(
-                                .init(
-                                    query: "running"
-                                )
-                            ),
+    #Preview("No Search Results") {
+        TabView {
+            Tab(
+                "SEARCH",
+                systemImage: "magnifyingglass",
+                role: .search
+            ) {
+                NavigationStack {
+                    MediaSearchView(
+                        viewModel: .preview(
+                            viewState: .noSearchResults(.init(query: "running")),
                             query: "running"
-                        ),
-                        reducer: {
-                            EmptyReducer()
-                        }
+                        )
                     )
-                )
+                }
             }
         }
     }
-}
+#endif

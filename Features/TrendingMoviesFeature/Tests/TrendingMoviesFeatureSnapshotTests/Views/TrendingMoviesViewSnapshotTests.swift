@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import Foundation
 import SnapshotTestHelpers
 import SwiftUI
@@ -19,12 +18,7 @@ struct TrendingMoviesViewSnapshotTests {
     @Test
     func trendingMoviesView() {
         let view = NamespaceContainer(
-            store: Store(
-                initialState: TrendingMoviesFeature.State(
-                    movies: MoviePreview.mocks
-                ),
-                reducer: { EmptyReducer() }
-            )
+            viewModel: .preview(movies: MoviePreview.mocks)
         )
 
         verifyViewSnapshot(of: view)
@@ -36,11 +30,11 @@ private struct NamespaceContainer: View {
 
     @Namespace var namespace
 
-    let store: StoreOf<TrendingMoviesFeature>
+    let viewModel: TrendingMoviesViewModel
 
     var body: some View {
         NavigationStack {
-            TrendingMoviesView(store: store, transitionNamespace: namespace)
+            TrendingMoviesView(viewModel: viewModel, transitionNamespace: namespace)
         }
     }
 

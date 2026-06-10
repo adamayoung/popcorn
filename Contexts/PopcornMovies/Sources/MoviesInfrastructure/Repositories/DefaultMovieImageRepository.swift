@@ -7,8 +7,11 @@
 
 import Foundation
 import MoviesDomain
+import OSLog
 
 final class DefaultMovieImageRepository: MovieImageRepository {
+
+    private static let logger = Logger.moviesInfrastructure
 
     private let remoteDataSource: any MovieRemoteDataSource
     private let localDataSource: any MovieImageLocalDataSource
@@ -52,9 +55,15 @@ final class DefaultMovieImageRepository: MovieImageRepository {
         let stream = await localDataSource.imageCollectionStream(forMovie: movieID)
 
         Task {
-            if try await localDataSource.imageCollection(forMovie: movieID) == nil {
-                let imageCollection = try await remoteDataSource.imageCollection(forMovie: movieID)
-                try await localDataSource.setImageCollection(imageCollection)
+            do {
+                if try await localDataSource.imageCollection(forMovie: movieID) == nil {
+                    let imageCollection = try await remoteDataSource.imageCollection(forMovie: movieID)
+                    try await localDataSource.setImageCollection(imageCollection)
+                }
+            } catch {
+                Self.logger.error(
+                    "Failed to fetch/cache image collection in stream [movieID: \(movieID)]: \(error)"
+                )
             }
         }
 

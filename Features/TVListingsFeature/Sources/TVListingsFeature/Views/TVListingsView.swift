@@ -5,23 +5,27 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import DesignSystem
+import Presentation
 import SwiftUI
-import TCAFoundation
+import TVListingsDomain
 
+/// The TV listings screen, driven by ``TVListingsViewModel``.
+///
+/// The view does **not** own the view model —
+/// `AppRootView` owns it via `@State` — so it is stored as a plain `let`.
 public struct TVListingsView: View {
 
-    @Bindable var store: StoreOf<TVListingsFeature>
+    let viewModel: TVListingsViewModel
 
-    public init(store: StoreOf<TVListingsFeature>) {
-        self.store = store
+    public init(viewModel: TVListingsViewModel) {
+        self.viewModel = viewModel
     }
 
     public var body: some View {
         content
             .overlay {
-                if store.viewState.isLoading {
+                if viewModel.viewState.isLoading {
                     ProgressView()
                         .accessibilityLabel(Text("TV_LISTINGS_LOADING", bundle: .module))
                 }
@@ -33,17 +37,19 @@ public struct TVListingsView: View {
                 }
             }
             .overlay(alignment: .bottom) {
-                if let kind = store.lastSyncErrorKind {
+                if let kind = viewModel.lastSyncErrorKind {
                     errorBanner(kind: kind)
                 }
             }
             .accessibilityIdentifier("tvListings.view")
-            .task { store.send(.didAppear) }
+            .task(id: viewModel.reloadID) {
+                await viewModel.load()
+            }
     }
 
     @ViewBuilder
     private var content: some View {
-        switch store.viewState {
+        switch viewModel.viewState {
         case .ready(let snapshot):
             if snapshot.items.isEmpty {
                 emptyBody
@@ -64,9 +70,9 @@ public struct TVListingsView: View {
 
     private var syncButton: some View {
         Button {
-            store.send(.syncTapped)
+            Task { await viewModel.sync() }
         } label: {
-            if store.isSyncing {
+            if viewModel.isSyncing {
                 ProgressView()
                     .accessibilityLabel(Text("TV_LISTINGS_SYNCING", bundle: .module))
             } else {
@@ -77,7 +83,7 @@ public struct TVListingsView: View {
                 }
             }
         }
-        .disabled(store.isSyncing)
+        .disabled(viewModel.isSyncing)
         .accessibilityIdentifier("tvListings.syncButton")
     }
 
@@ -92,12 +98,12 @@ public struct TVListingsView: View {
             Text("TV_LISTINGS_EMPTY_DESCRIPTION", bundle: .module)
         } actions: {
             Button {
-                store.send(.syncTapped)
+                Task { await viewModel.sync() }
             } label: {
                 Text("TV_LISTINGS_SYNC_BUTTON", bundle: .module)
             }
             .buttonStyle(.borderedProminent)
-            .disabled(store.isSyncing)
+            .disabled(viewModel.isSyncing)
         }
     }
 
@@ -112,7 +118,7 @@ public struct TVListingsView: View {
             Text(error.message)
         } actions: {
             Button {
-                store.send(.fetch)
+                viewModel.reload()
             } label: {
                 Text("TV_LISTINGS_RETRY", bundle: .module)
             }
@@ -120,9 +126,9 @@ public struct TVListingsView: View {
         }
     }
 
-    private func errorBanner(kind: TVListingsFeature.ErrorKind) -> some View {
+    private func errorBanner(kind: TVListingsViewModel.ErrorKind) -> some View {
         Button {
-            store.send(.dismissSyncError)
+            viewModel.dismissSyncError()
         } label: {
             Text(kind.localizedMessage)
                 .font(.footnote)
@@ -147,7 +153,7 @@ private struct NowPlayingRow: View {
     /// Square logo size that satisfies the iOS 44pt minimum tap target.
     private static let logoSize: CGFloat = 44
 
-    let item: TVListingsFeature.NowPlayingItem
+    let item: TVListingsNowPlayingItem
 
     var body: some View {
         HStack(spacing: .spacing12) {
@@ -180,7 +186,7 @@ private struct NowPlayingRow: View {
 
 }
 
-private extension TVListingsFeature.ErrorKind {
+private extension TVListingsViewModel.ErrorKind {
 
     var localizedMessage: LocalizedStringResource {
         switch self {
@@ -197,13 +203,58 @@ private extension TVListingsFeature.ErrorKind {
 
 }
 
-#Preview {
-    TVListingsView(
-        store: Store(
-            initialState: TVListingsFeature.State(),
-            reducer: {
-                TVListingsFeature()
-            }
-        )
-    )
-}
+#if DEBUG
+    #Preview("Ready") {
+        NavigationStack {
+            TVListingsView(
+                viewModel: .preview(
+                    viewState: .ready(
+                        TVListingsViewSnapshot(items: [
+                            TVListingsNowPlayingItem(
+                                channel: TVChannel(
+                                    id: "BBC_ONE",
+                                    name: "BBC One",
+                                    isHD: true,
+                                    logoURL: nil,
+                                    channelNumbers: []
+                                ),
+                                programme: TVProgramme(
+                                    id: "BBC_ONE:1",
+                                    channelID: "BBC_ONE",
+                                    title: "News at Ten",
+                                    description: "The latest headlines.",
+                                    startTime: Date(timeIntervalSince1970: 1000),
+                                    endTime: Date(timeIntervalSince1970: 1900),
+                                    duration: 900,
+                                    episodeNumber: nil,
+                                    seasonNumber: nil,
+                                    imageURL: nil,
+                                    tmdbTVSeriesID: nil,
+                                    tmdbMovieID: nil
+                                )
+                            )
+                        ])
+                    )
+                )
+            )
+        }
+    }
+
+    #Preview("Empty") {
+        NavigationStack {
+            TVListingsView(viewModel: .preview(viewState: .ready(TVListingsViewSnapshot())))
+        }
+    }
+
+    #Preview("Loading") {
+        NavigationStack {
+            TVListingsView(viewModel: .preview(viewState: .loading))
+        }
+    }
+
+    #Preview("Error") {
+        NavigationStack {
+            TVListingsView(viewModel: .preview(viewState: .error(ViewStateError(message: "Something went wrong"))))
+        }
+    }
+#endif

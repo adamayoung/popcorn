@@ -22,12 +22,9 @@ let package = Package(
         .package(path: "../../AppDependencies"),
         .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Core/DesignSystem"),
-        .package(path: "../../Core/TCAFoundation"),
+        .package(path: "../../Core/Presentation"),
         .package(path: "../../Contexts/PopcornGenres"),
         .package(path: "../../Contexts/PopcornSearch"),
-        .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
-        ),
         .package(path: "../../Core/SnapshotTestHelpers")
     ],
 
@@ -37,10 +34,9 @@ let package = Package(
             dependencies: [
                 "AppDependencies",
                 "DesignSystem",
-                "TCAFoundation",
+                "Presentation",
                 .product(name: "GenresApplication", package: "PopcornGenres"),
-                .product(name: "SearchApplication", package: "PopcornSearch"),
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                .product(name: "SearchApplication", package: "PopcornSearch")
             ],
             resources: [.process("Localizable.xcstrings")]
         ),
@@ -57,7 +53,6 @@ let package = Package(
             name: "MediaSearchFeatureSnapshotTests",
             dependencies: [
                 "MediaSearchFeature",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 "SnapshotTestHelpers"
             ]
         )

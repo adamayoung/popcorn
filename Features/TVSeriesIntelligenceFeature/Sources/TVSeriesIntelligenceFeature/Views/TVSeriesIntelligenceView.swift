@@ -1,0 +1,62 @@
+//
+//  TVSeriesIntelligenceView.swift
+//  TVSeriesIntelligenceFeature
+//
+//  Copyright © 2026 Adam Young.
+//
+
+import DesignSystem
+import SwiftUI
+
+/// The TV series intelligence chat screen, driven by
+/// ``TVSeriesIntelligenceViewModel``.
+///
+/// Renders ``ChatView`` with navigation chrome. Dismissal is handled
+/// view-level via `@Environment(\.dismiss)`.
+public struct TVSeriesIntelligenceView: View {
+
+    @State private var viewModel: TVSeriesIntelligenceViewModel
+    @Environment(\.dismiss) private var dismiss
+
+    public init(viewModel: TVSeriesIntelligenceViewModel) {
+        _viewModel = State(initialValue: viewModel)
+    }
+
+    public var body: some View {
+        NavigationStack {
+            ChatView(
+                messages: viewModel.messages,
+                send: { prompt in
+                    Task { await viewModel.sendPrompt(prompt) }
+                },
+                isThinking: viewModel.isThinking
+            )
+            .navigationTitle(viewModel.tvSeriesName ?? "")
+            #if !os(visionOS)
+                .navigationSubtitle(viewModel.tvSeriesTagline ?? "")
+            #endif
+            #if os(iOS)
+            .navigationBarTitleDisplayMode(.inline)
+            #endif
+            .toolbar {
+                ToolbarItem {
+                    Button(role: .close) {
+                        dismiss()
+                    }
+                }
+            }
+            .task {
+                await viewModel.startSession()
+            }
+        }
+    }
+
+}
+
+#if DEBUG
+    #Preview("Messages") {
+        TVSeriesIntelligenceView(
+            viewModel: .preview(messages: Message.mocks)
+        )
+    }
+#endif

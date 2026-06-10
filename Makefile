@@ -71,7 +71,7 @@ ifneq ($(CLEAN),0)
 endif
 	rm -rf $(RESULT_BUNDLE)
 	$(XCODEBUILD) build-for-testing $(XCODEBUILD_FLAGS) -testPlan $(TEST_PLAN) 2>&1
-	$(XCODEBUILD) test-without-building $(XCODEBUILD_FLAGS) -testPlan $(TEST_PLAN) 2>&1
+	$(XCODEBUILD) test-without-building $(XCODEBUILD_FLAGS) -testPlan $(TEST_PLAN) -parallel-testing-enabled NO 2>&1
 
 .PHONY: build-macos
 build-macos:

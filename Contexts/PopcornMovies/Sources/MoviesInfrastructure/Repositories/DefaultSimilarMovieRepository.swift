@@ -7,8 +7,11 @@
 
 import Foundation
 import MoviesDomain
+import OSLog
 
 final class DefaultSimilarMovieRepository: SimilarMovieRepository {
+
+    private static let logger = Logger.moviesInfrastructure
 
     private let remoteDataSource: any MovieRemoteDataSource
     private let localDataSource: any SimilarMovieLocalDataSource
@@ -55,9 +58,15 @@ final class DefaultSimilarMovieRepository: SimilarMovieRepository {
         let stream = await localDataSource.similarStream(toMovie: movieID, limit: limit)
 
         Task {
-            let page = 1
-            let movies = try await remoteDataSource.similar(toMovie: movieID, page: page)
-            try await localDataSource.setSimilar(movies, toMovie: movieID, page: page)
+            do {
+                let page = 1
+                let movies = try await remoteDataSource.similar(toMovie: movieID, page: page)
+                try await localDataSource.setSimilar(movies, toMovie: movieID, page: page)
+            } catch {
+                Self.logger.error(
+                    "Failed to fetch/cache similar movies in stream [movieID: \(movieID)]: \(error)"
+                )
+            }
         }
 
         return stream

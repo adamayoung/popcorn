@@ -6,16 +6,16 @@
 //
 
 #if os(iOS)
-    import ComposableArchitecture
     import SwiftUI
 
     struct PhoneScene: Scene {
 
-        @Bindable var store: StoreOf<AppRootFeature>
+        let viewModel: AppRootViewModel
+        let factory: ViewModelFactory
 
         var body: some Scene {
             WindowGroup {
-                AppRootView(store: store)
+                AppRootView(viewModel: viewModel, factory: factory)
             }
         }
 

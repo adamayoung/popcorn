@@ -22,12 +22,9 @@ let package = Package(
         .package(path: "../../AppDependencies"),
         .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Core/DesignSystem"),
-        .package(path: "../../Core/TCAFoundation"),
+        .package(path: "../../Core/Presentation"),
         .package(path: "../../Contexts/PopcornMovies"),
         .package(path: "../../Platform/Observability"),
-        .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
-        ),
         .package(path: "../../Core/SnapshotTestHelpers")
     ],
 
@@ -37,10 +34,9 @@ let package = Package(
             dependencies: [
                 "AppDependencies",
                 "DesignSystem",
-                "TCAFoundation",
+                "Presentation",
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
-                "Observability",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                "Observability"
             ],
             resources: [.process("Localizable.xcstrings")]
         ),
@@ -48,7 +44,7 @@ let package = Package(
             name: "MovieCastAndCrewFeatureTests",
             dependencies: [
                 "MovieCastAndCrewFeature",
-                "TCAFoundation",
+                "Presentation",
                 .product(name: "CoreDomain", package: "CoreDomain"),
                 .product(name: "MoviesApplication", package: "PopcornMovies")
             ]
@@ -57,7 +53,6 @@ let package = Package(
             name: "MovieCastAndCrewFeatureSnapshotTests",
             dependencies: [
                 "MovieCastAndCrewFeature",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 "SnapshotTestHelpers"
             ]
         )

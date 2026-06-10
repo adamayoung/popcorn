@@ -72,22 +72,30 @@ public func make{UseCaseName}UseCase() -> some {UseCaseName}UseCase {
 }
 ```
 
-### 5. Add TCA Dependency
+This is all the wiring the use case needs: the context factory is already exposed
+on `AppServices` (e.g. `services.{context}Factory`), so any feature can reach the
+new use case through it.
 
-Create `AppDependencies/{Context}/{UseCaseName}UseCase+TCA.swift`:
+### 5. Consume from a Feature
+
+There is no per-use-case dependency registration. A feature reaches the use case
+in its `{Feature}Dependencies.live(services:)` builder via the context factory on
+`AppServices`, mapping the domain result to a view model:
+
 ```swift
-enum {UseCaseName}UseCaseKey: DependencyKey {
-    static var liveValue: any {UseCaseName}UseCase {
-        @Dependency(\.{context}Factory) var factory
-        return factory.make{UseCaseName}UseCase()
-    }
-}
+public extension {Feature}Dependencies {
 
-public extension DependencyValues {
-    var {useCaseName}: any {UseCaseName}UseCase {
-        get { self[{UseCaseName}UseCaseKey.self] }
-        set { self[{UseCaseName}UseCaseKey.self] = newValue }
+    static func live(services: AppServices) -> {Feature}Dependencies {
+        let useCase = services.{context}Factory.make{UseCaseName}UseCase()
+
+        return {Feature}Dependencies(
+            fetch: { id in
+                let result = try await useCase.execute(id: id)
+                return {Feature}Mapper().map(result)
+            }
+        )
     }
+
 }
 ```
 
@@ -95,7 +103,7 @@ public extension DependencyValues {
 
 Create tests in `Contexts/{Context}/Tests/{Context}ApplicationTests/UseCases/{UseCaseName}/`:
 - Create mock repository
-- Test success and error cases
-- Use Swift Testing framework
+- Test the happy path and the translation of each error type
+- Use the Swift Testing framework
 
 $ARGUMENTS

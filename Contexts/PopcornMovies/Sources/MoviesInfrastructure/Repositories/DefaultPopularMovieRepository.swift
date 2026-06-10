@@ -7,8 +7,11 @@
 
 import Foundation
 import MoviesDomain
+import OSLog
 
 final class DefaultPopularMovieRepository: PopularMovieRepository {
+
+    private static let logger = Logger.moviesInfrastructure
 
     private let remoteDataSource: any MovieRemoteDataSource
     private let localDataSource: any PopularMovieLocalDataSource
@@ -44,10 +47,14 @@ final class DefaultPopularMovieRepository: PopularMovieRepository {
         let stream = await localDataSource.popularStream()
 
         Task {
-            let page = 1
-            if try await localDataSource.popular(page: 1) == nil {
-                let movies = try await remoteDataSource.popular(page: page)
-                try await localDataSource.setPopular(movies, page: page)
+            do {
+                let page = 1
+                if try await localDataSource.popular(page: 1) == nil {
+                    let movies = try await remoteDataSource.popular(page: page)
+                    try await localDataSource.setPopular(movies, page: page)
+                }
+            } catch {
+                Self.logger.error("Failed to fetch/cache popular movies in stream: \(error)")
             }
         }
 

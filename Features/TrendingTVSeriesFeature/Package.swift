@@ -23,9 +23,6 @@ let package = Package(
         .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Contexts/PopcornTrending"),
-        .package(
-            url: "https://github.com/pointfreeco/swift-composable-architecture.git", from: "1.23.1"
-        ),
         .package(path: "../../Core/SnapshotTestHelpers")
     ],
 
@@ -35,8 +32,7 @@ let package = Package(
             dependencies: [
                 "AppDependencies",
                 "DesignSystem",
-                .product(name: "TrendingApplication", package: "PopcornTrending"),
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture")
+                .product(name: "TrendingApplication", package: "PopcornTrending")
             ],
             resources: [.process("Localizable.xcstrings")]
         ),
@@ -52,7 +48,6 @@ let package = Package(
             name: "TrendingTVSeriesFeatureSnapshotTests",
             dependencies: [
                 "TrendingTVSeriesFeature",
-                .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
                 "SnapshotTestHelpers"
             ]
         )

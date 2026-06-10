@@ -5,22 +5,24 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
 import DesignSystem
 import SwiftUI
 
+/// The trending TV series view, driven by ``TrendingTVSeriesViewModel``.
+///
+/// Renders a `List` of ``TVSeriesRow`` items via `NavigationRow`.
 public struct TrendingTVSeriesView: View {
 
-    @Bindable var store: StoreOf<TrendingTVSeriesFeature>
+    @State private var viewModel: TrendingTVSeriesViewModel
 
-    public init(store: StoreOf<TrendingTVSeriesFeature>) {
-        self._store = .init(store)
+    public init(viewModel: TrendingTVSeriesViewModel) {
+        _viewModel = State(initialValue: viewModel)
     }
 
     public var body: some View {
-        List(store.tvSeries) { tvSeries in
+        List(viewModel.tvSeries) { tvSeries in
             NavigationRow {
-                store.send(.navigate(.tvSeriesDetails(id: tvSeries.id)))
+                viewModel.selectTVSeries(id: tvSeries.id)
             } content: {
                 TVSeriesRow(
                     id: tvSeries.id,
@@ -30,20 +32,17 @@ public struct TrendingTVSeriesView: View {
             }
         }
         .navigationTitle(Text("TRENDING", bundle: .module))
-        .task {
-            store.send(.loadTrendingTVSeries)
+        .task(id: viewModel.reloadID) {
+            await viewModel.load()
         }
     }
 
 }
 
-#Preview {
-    TrendingTVSeriesView(
-        store: Store(
-            initialState: TrendingTVSeriesFeature.State(),
-            reducer: {
-                TrendingTVSeriesFeature()
-            }
-        )
-    )
-}
+#if DEBUG
+    #Preview {
+        NavigationStack {
+            TrendingTVSeriesView(viewModel: .preview())
+        }
+    }
+#endif

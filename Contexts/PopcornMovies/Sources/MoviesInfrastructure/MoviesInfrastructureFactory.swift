@@ -51,10 +51,15 @@ package final class MoviesInfrastructureFactory {
 
         let storeURL = URL.documentsDirectory.appending(path: "popcorn-movies-cloudkit.sqlite")
 
+        let cloudKitDatabase: ModelConfiguration.CloudKitDatabase =
+            ModelContainerFactory.isCloudKitAvailable()
+            ? .private("iCloud.uk.co.adam-young.Popcorn")
+            : .none
+
         return ModelContainerFactory.makeCloudKitModelContainer(
             schema: schema,
             url: storeURL,
-            cloudKitDatabase: .private("iCloud.uk.co.adam-young.Popcorn"),
+            cloudKitDatabase: cloudKitDatabase,
             migrationPlan: MoviesWatchlistMigrationPlan.self,
             logger: logger
         )

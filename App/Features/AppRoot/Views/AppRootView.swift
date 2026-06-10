@@ -5,25 +5,42 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import ComposableArchitecture
-import DesignSystem
+import AppDependencies
 #if DEBUG
     import DeveloperFeature
 #endif
+import DesignSystem
 import SwiftUI
 import TVListingsFeature
 import WatchlistFeature
 
 struct AppRootView: View {
 
-    @Bindable var store: StoreOf<AppRootFeature>
+    @State private var viewModel: AppRootViewModel
+    let factory: ViewModelFactory
+
     @State private var customization = TabViewCustomization()
+    @State private var exploreRouter = ExploreRouter()
+    @Namespace private var exploreNamespace
+    @State private var gamesRouter = GamesRouter()
+    @Namespace private var gamesNamespace
+    @State private var watchlistRouter = WatchlistRouter()
+    @Namespace private var watchlistNamespace
+    @State private var searchRouter = SearchRouter()
+    @Namespace private var searchNamespace
+    @State private var tvListingsViewModel: TVListingsViewModel
+
+    init(viewModel: AppRootViewModel, factory: ViewModelFactory) {
+        _viewModel = State(initialValue: viewModel)
+        self.factory = factory
+        _tvListingsViewModel = State(initialValue: factory.makeTVListings())
+    }
 
     var body: some View {
         Group {
-            if store.isReady {
+            if viewModel.isReady {
                 content
-            } else if let error = store.error {
+            } else if let error = viewModel.error {
                 errorView(with: error)
             } else {
                 ProgressView()
@@ -31,110 +48,96 @@ struct AppRootView: View {
             }
         }
         #if DEBUG
-        .sheet(
-                item: $store.scope(
-                    state: \.developer,
-                    action: \.developer
-                )
-            ) { store in
-                DeveloperView(store: store)
+        .sheet(isPresented: $viewModel.isPresentingDeveloper) {
+                DeveloperView(makeFeatureFlags: { factory.makeFeatureFlags() })
             }
         #endif
         #if DEBUG && os(iOS)
         .onShake {
-            store.send(.navigate(.developer))
+            viewModel.presentDeveloper()
         }
         #endif
         .task {
-                store.send(.didAppear)
+                await viewModel.start()
             }
     }
 
     private var content: some View {
-        TabView(selection: $store.selectedTab) {
-            if store.isExploreEnabled {
+        TabView(selection: $viewModel.selectedTab) {
+            if viewModel.isExploreEnabled {
                 Tab(
                     "EXPLORE",
                     systemImage: "popcorn",
-                    value: AppRootFeature.Tab.explore
+                    value: AppRootViewModel.Tab.explore
                 ) {
                     ExploreRootView(
-                        store: store.scope(
-                            state: \.explore,
-                            action: \.explore
-                        )
+                        router: exploreRouter,
+                        factory: factory,
+                        namespace: exploreNamespace
                     )
                 }
-                .customizationID(AppRootFeature.Tab.explore.id)
+                .customizationID(AppRootViewModel.Tab.explore.id)
                 .accessibilityIdentifier("app.tabview.explore")
             }
 
-            if store.isWatchlistEnabled {
+            if viewModel.isWatchlistEnabled {
                 Tab(
                     "WATCHLIST",
                     systemImage: "eye",
-                    value: AppRootFeature.Tab.watchlist
+                    value: AppRootViewModel.Tab.watchlist
                 ) {
                     WatchlistRootView(
-                        store: store.scope(
-                            state: \.watchlist,
-                            action: \.watchlist
-                        )
+                        router: watchlistRouter,
+                        factory: factory,
+                        namespace: watchlistNamespace
                     )
                 }
-                .customizationID(AppRootFeature.Tab.watchlist.id)
+                .customizationID(AppRootViewModel.Tab.watchlist.id)
                 .accessibilityIdentifier("app.tabview.watchlist")
             }
 
-            if store.isGamesEnabled {
+            if viewModel.isGamesEnabled {
                 Tab(
                     "GAMES",
                     systemImage: "flag.and.flag.filled.crossed",
-                    value: AppRootFeature.Tab.games
+                    value: AppRootViewModel.Tab.games
                 ) {
                     GamesRootView(
-                        store: store.scope(
-                            state: \.games,
-                            action: \.games
-                        )
+                        router: gamesRouter,
+                        factory: factory,
+                        namespace: gamesNamespace
                     )
                 }
-                .customizationID(AppRootFeature.Tab.games.id)
+                .customizationID(AppRootViewModel.Tab.games.id)
                 .accessibilityIdentifier("app.tabview.games")
             }
 
-            if store.isTVListingsEnabled {
+            if viewModel.isTVListingsEnabled {
                 Tab(
                     "TV_LISTINGS",
                     systemImage: "tv",
-                    value: AppRootFeature.Tab.tvListings
+                    value: AppRootViewModel.Tab.tvListings
                 ) {
-                    TVListingsRootView(
-                        store: store.scope(
-                            state: \.tvListings,
-                            action: \.tvListings
-                        )
-                    )
+                    TVListingsRootView(viewModel: tvListingsViewModel)
                 }
-                .customizationID(AppRootFeature.Tab.tvListings.id)
+                .customizationID(AppRootViewModel.Tab.tvListings.id)
                 .accessibilityIdentifier("app.tabview.tvlistings")
             }
 
-            if store.isSearchEnabled {
+            if viewModel.isSearchEnabled {
                 Tab(
                     "SEARCH",
                     systemImage: "magnifyingglass",
-                    value: AppRootFeature.Tab.search,
+                    value: AppRootViewModel.Tab.search,
                     role: .search
                 ) {
                     SearchRootView(
-                        store: store.scope(
-                            state: \.search,
-                            action: \.search
-                        )
+                        router: searchRouter,
+                        factory: factory,
+                        namespace: searchNamespace
                     )
                 }
-                .customizationID(AppRootFeature.Tab.search.id)
+                .customizationID(AppRootViewModel.Tab.search.id)
                 .accessibilityIdentifier("app.tabview.search")
             }
         }
@@ -178,11 +181,7 @@ private extension View {
 
 #Preview {
     AppRootView(
-        store: Store(
-            initialState: AppRootFeature.State(),
-            reducer: {
-                AppRootFeature()
-            }
-        )
+        viewModel: AppRootViewModel(dependencies: .preview),
+        factory: ViewModelFactory(services: AppServices())
     )
 }

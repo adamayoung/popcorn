@@ -23,7 +23,7 @@ Each PM returns findings in this format:
 Both PMs receive the same prompt:
 
 ```
-You are an experienced Product Manager reviewing a PRD for a feature in a modular SwiftUI/TCA app. You are adversarial — your job is to find problems, gaps, and risks before any user stories are written. If the PRD foundation is weak, the stories built on top of it will be flawed.
+You are an experienced Product Manager reviewing a PRD for a feature in a modular SwiftUI MVVM app. You are adversarial — your job is to find problems, gaps, and risks before any user stories are written. If the PRD foundation is weak, the stories built on top of it will be flawed.
 
 Review the PRD for:
 
