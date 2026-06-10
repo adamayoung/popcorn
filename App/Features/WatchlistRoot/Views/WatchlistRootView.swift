@@ -60,6 +60,12 @@ struct WatchlistRootView: View {
         }
     }
 
+    /// A fresh navigator bound to this view's router. Each destination builds its
+    /// own (the navigator is a cheap value type wrapping the shared router).
+    private var navigator: WatchlistRouterNavigator {
+        WatchlistRouterNavigator(router: router)
+    }
+
     @ViewBuilder
     private func destination(_ route: WatchlistRoute) -> some View {
         switch route {
@@ -69,14 +75,14 @@ struct WatchlistRootView: View {
             PersonDetailsView(
                 viewModel: factory.makePersonDetails(
                     id: id,
-                    navigator: WatchlistRouterNavigator(router: router)
+                    navigator: navigator
                 )
             )
         case .movieCastAndCrew(let movieID):
             MovieCastAndCrewView(
                 viewModel: factory.makeMovieCastAndCrew(
                     movieID: movieID,
-                    navigator: WatchlistRouterNavigator(router: router)
+                    navigator: navigator
                 )
             )
         }
@@ -87,7 +93,7 @@ struct WatchlistRootView: View {
         let viewModel = factory.makeMovieDetails(
             id: id,
             transitionID: transitionID,
-            navigator: WatchlistRouterNavigator(router: router)
+            navigator: navigator
         )
         if let transitionID {
             MovieDetailsView(viewModel: viewModel)

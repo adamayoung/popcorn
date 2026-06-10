@@ -179,6 +179,9 @@ public final class MovieDetailsViewModel {
                 crewMembers: resolvedCredits?.crewMembers ?? []
             )
         } catch {
+            Self.logger.error(
+                "Failed fetching movie details: \(error.localizedDescription, privacy: .public)"
+            )
             viewState.applyLoadFailure(error)
             return
         }
