@@ -9,6 +9,12 @@
     }
   ],
   "defaultOptions" : {
+    "environmentVariableEntries" : [
+      {
+        "key" : "TMDB_API_KEY",
+        "value" : "ci-test-placeholder-key"
+      }
+    ],
     "testExecutionOrdering" : "random",
     "testTimeoutsEnabled" : true
   },
