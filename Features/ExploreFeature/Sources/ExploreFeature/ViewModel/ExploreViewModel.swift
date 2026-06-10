@@ -87,6 +87,9 @@ public final class ExploreViewModel {
         guard !viewState.isReady else {
             return
         }
+        guard !viewState.isLoading else {
+            return
+        }
 
         viewState = .loading
         Self.logger.info("User fetching explore content")
@@ -121,7 +124,7 @@ public final class ExploreViewModel {
             Self.logger.error(
                 "Failed fetching explore content: \(error.localizedDescription, privacy: .public)"
             )
-            viewState = .error(ViewStateError(error))
+            viewState.applyLoadFailure(error)
             return
         }
 

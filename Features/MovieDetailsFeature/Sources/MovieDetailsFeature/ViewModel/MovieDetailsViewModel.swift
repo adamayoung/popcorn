@@ -179,7 +179,7 @@ public final class MovieDetailsViewModel {
                 crewMembers: resolvedCredits?.crewMembers ?? []
             )
         } catch {
-            viewState = .error(ViewStateError(error))
+            viewState.applyLoadFailure(error)
             return
         }
 

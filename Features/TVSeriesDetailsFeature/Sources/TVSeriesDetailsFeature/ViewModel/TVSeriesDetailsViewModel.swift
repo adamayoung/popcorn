@@ -147,7 +147,7 @@ public final class TVSeriesDetailsViewModel {
             Self.logger.error(
                 "Failed fetching TV series [tvSeriesID: \(self.tvSeriesID, privacy: .private)]: \(error.localizedDescription, privacy: .public)"
             )
-            viewState = .error(ViewStateError(error))
+            viewState.applyLoadFailure(error)
             return
         }
 

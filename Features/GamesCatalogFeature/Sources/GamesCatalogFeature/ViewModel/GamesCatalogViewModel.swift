@@ -95,7 +95,7 @@ public final class GamesCatalogViewModel {
             snapshot = ViewSnapshot(games: games)
         } catch {
             Self.logger.error("Failed fetching games: \(error.localizedDescription, privacy: .public)")
-            viewState = .error(ViewStateError(error))
+            viewState.applyLoadFailure(error)
             return
         }
 

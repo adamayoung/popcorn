@@ -138,6 +138,14 @@ public final class MediaSearchViewModel {
             genres = try await genresTask
             searchHistoryMedia = try await historyTask
         } catch {
+            if Task.isCancelled || error is CancellationError {
+                // The view disappeared mid-load (SwiftUI cancelled `.task`). Reset
+                // to `.initial` so the next `.task` run re-fetches — otherwise
+                // `guard case .initial` permanently blocks re-entry and the Search
+                // tab stays empty until the app restarts.
+                viewState = .initial
+                return
+            }
             Self.logger.error(
                 "Failed fetching genres and search history: \(error.localizedDescription, privacy: .public)"
             )
@@ -195,19 +203,33 @@ public final class MediaSearchViewModel {
     /// Performs a media search for the current ``query``. Mirrors the former
     /// reducer's `search` effect: results, no-results, or a logged failure.
     public func search() async {
+        // Capture the query up front: `queryChanged` may mutate `self.query` (and
+        // cancel this task) while the await below is in flight, so building the
+        // snapshot from `self.query` afterwards could label stale results with a
+        // newer query (e.g. "ba" results shown as "bat").
+        let query = query
         Self.logger.info(
-            "User searching for media [query: \"\(self.query, privacy: .private)\"]"
+            "User searching for media [query: \"\(query, privacy: .private)\"]"
         )
 
         let results: [MediaPreview]
         do {
             results = try await dependencies.search(query)
         } catch {
+            if Task.isCancelled || error is CancellationError {
+                return
+            }
             Self.logger.error(
-                "Failed searching for media [query: \"\(self.query, privacy: .private)\"]: \(error.localizedDescription, privacy: .public)"
+                "Failed searching for media [query: \"\(query, privacy: .private)\"]: \(error.localizedDescription, privacy: .public)"
             )
             // Former `searchResultsLoadFailed` action tail: re-derive the surface.
             updateViewState()
+            return
+        }
+
+        // A newer query superseded this search (its debounce task was cancelled);
+        // don't overwrite the surface with now-stale results.
+        guard !Task.isCancelled else {
             return
         }
 

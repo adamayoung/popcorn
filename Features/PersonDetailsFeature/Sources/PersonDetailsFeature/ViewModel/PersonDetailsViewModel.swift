@@ -114,7 +114,7 @@ public final class PersonDetailsViewModel {
             Self.logger.error(
                 "Failed fetching person details: [personID: \"\(self.personID, privacy: .private)\"] \(error.localizedDescription, privacy: .public)"
             )
-            viewState = .error(ViewStateError(error))
+            viewState.applyLoadFailure(error)
             return
         }
 

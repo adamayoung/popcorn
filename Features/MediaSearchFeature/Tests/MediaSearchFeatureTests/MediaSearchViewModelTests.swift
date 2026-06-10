@@ -35,6 +35,24 @@ struct MediaSearchViewModelTests {
         )
     }
 
+    @Test("cancelled fetchGenresAndSearchHistory resets to .initial so the next .task re-fetches")
+    @MainActor
+    func fetchCancellationResetsToInitial() async {
+        // Simulates the view disappearing (tab switch) before the initial load
+        // completes. The state must return to `.initial` — otherwise the
+        // `guard case .initial` permanently blocks re-entry and the Search tab
+        // stays empty until the app restarts.
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchGenres: { throw CancellationError() }
+            )
+        )
+
+        await viewModel.fetchGenresAndSearchHistory()
+
+        #expect(viewModel.viewState == .initial)
+    }
+
     @Test("fetchGenresAndSearchHistory is a no-op when not initial")
     @MainActor
     func fetchNoOpWhenNotInitial() async {

@@ -80,6 +80,60 @@ struct TVListingsViewModelTests {
         #expect(viewModel.viewState == .error(ViewStateError(LoadFailure())))
     }
 
+    @Test("a superseded slow fetch does not overwrite a newer fetch's listings")
+    @MainActor
+    func staleFetchDoesNotClobberFreshListings() async {
+        let gate = AsyncGate()
+        let callCount = Mutex(0)
+        let staleChannel = Self.makeChannel(id: "STALE", name: "Stale")
+        let freshChannel = Self.makeChannel(id: "FRESH", name: "Fresh")
+        let staleProgramme = Self.makeProgramme(id: "STALE:1", channelID: "STALE", title: "Old")
+        let freshProgramme = Self.makeProgramme(id: "FRESH:1", channelID: "FRESH", title: "New")
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchChannels: {
+                    let callNumber = callCount.withLock { $0 += 1; return $0 }
+                    if callNumber == 1 {
+                        await gate.wait()
+                        return [staleChannel]
+                    }
+                    return [freshChannel]
+                },
+                fetchNowPlayingProgrammes: { [staleProgramme, freshProgramme] }
+            )
+        )
+        let expected = TVListingsViewSnapshot(items: [
+            TVListingsNowPlayingItem(channel: freshChannel, programme: freshProgramme)
+        ])
+
+        // Start the slow first fetch; it blocks inside fetchChannels.
+        async let firstFetch: Void = viewModel.load()
+        await gate.waitUntilWaiting()
+
+        // A second fetch (as `sync()` would trigger) completes with fresh data.
+        await viewModel.load()
+        #expect(viewModel.viewState == .ready(expected))
+
+        // Release the stale fetch; its result must be dropped, not clobber fresh.
+        gate.open()
+        await firstFetch
+        #expect(viewModel.viewState == .ready(expected))
+    }
+
+    @Test("cancelled load does not surface a spurious error")
+    @MainActor
+    func cancelledLoadDoesNotError() async {
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchChannels: { throw CancellationError() }
+            )
+        )
+
+        await viewModel.load()
+
+        #expect(viewModel.viewState.isError == false)
+    }
+
     // MARK: - sync
 
     @Test("sync sets isSyncing true mid-flight then false and refetches on success")

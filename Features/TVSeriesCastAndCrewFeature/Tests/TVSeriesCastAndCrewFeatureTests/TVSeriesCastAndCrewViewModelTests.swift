@@ -95,7 +95,7 @@ struct TVSeriesCastAndCrewViewModelTests {
         #expect(viewModel.reloadID == 1)
     }
 
-    @Test("selectPerson invokes the navigator with the correct identifiers")
+    @Test("selectPerson pushes person details without a transition id (no zoom)")
     @MainActor
     func selectPersonInvokesNavigator() {
         let navigator = SpyTVSeriesCastAndCrewNavigator()
@@ -104,7 +104,9 @@ struct TVSeriesCastAndCrewViewModelTests {
         viewModel.selectPerson(id: 456, transitionID: "transition-1")
 
         #expect(navigator.openedPersonID == 456)
-        #expect(navigator.openedPersonTransitionID == "transition-1")
+        // Transition id is intentionally dropped — cast & crew rows live in a
+        // different namespace from the tab's zoom, so they push without one.
+        #expect(navigator.openedPersonTransitionID == nil)
     }
 
 }

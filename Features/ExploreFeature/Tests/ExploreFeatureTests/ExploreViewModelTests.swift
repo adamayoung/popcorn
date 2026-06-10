@@ -40,6 +40,41 @@ struct ExploreViewModelTests {
         #expect(viewModel.viewState == .error(ViewStateError(TestError.generic)))
     }
 
+    @Test("load is a no-op when already loading (guards re-entrancy)")
+    @MainActor
+    func loadNoOpWhenLoading() async {
+        let fetchCalled = Mutex(false)
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchDiscoverMovies: {
+                    fetchCalled.withLock { $0 = true }
+                    return Self.movies
+                }
+            ),
+            viewState: .loading
+        )
+
+        await viewModel.load()
+
+        #expect(fetchCalled.withLock { $0 } == false)
+        #expect(viewModel.viewState == .loading)
+    }
+
+    @Test("cancelled load resets to initial (no spurious error) so the next .task re-fetches")
+    @MainActor
+    func loadCancellationResetsToInitial() async {
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchTrendingMovies: { throw CancellationError() }
+            )
+        )
+
+        await viewModel.load()
+
+        #expect(viewModel.viewState == .initial)
+        #expect(viewModel.viewState.isError == false)
+    }
+
     @Test("load is a no-op when already ready")
     @MainActor
     func loadNoOpWhenReady() async {

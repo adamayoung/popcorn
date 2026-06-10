@@ -75,6 +75,12 @@ public final class TVListingsViewModel {
 
     private let dependencies: TVListingsDependencies
 
+    /// Monotonic id for in-flight ``fetch()`` calls. Only the most recently
+    /// started fetch may commit its result, so a slow initial fetch can't
+    /// overwrite fresher listings produced by a concurrent ``sync()`` →
+    /// ``fetch()`` (the MVVM equivalent of the reducer's `cancelInFlight: true`).
+    private var fetchGeneration = 0
+
     public init(
         dependencies: TVListingsDependencies,
         viewState: ViewState<ViewSnapshot> = .initial,
@@ -138,6 +144,9 @@ public final class TVListingsViewModel {
     // MARK: - Loading
 
     func fetch() async {
+        fetchGeneration += 1
+        let generation = fetchGeneration
+
         if !viewState.isReady {
             viewState = .loading
         }
@@ -147,9 +156,24 @@ public final class TVListingsViewModel {
             async let programmesTask = dependencies.fetchNowPlayingProgrammes()
             let (channels, programmes) = try await (channelsTask, programmesTask)
 
+            // A newer fetch (e.g. one started by `sync()`) superseded this one —
+            // drop the stale result so it can't clobber fresher listings.
+            guard generation == fetchGeneration else {
+                return
+            }
+
             let snapshot = ViewSnapshot(items: Self.buildItems(channels: channels, programmes: programmes))
             viewState = .ready(snapshot)
         } catch {
+            // Superseded by a newer fetch, or cancelled because the view
+            // disappeared: leave the state for the winner / the next `.task` run
+            // rather than surfacing a stale error.
+            guard generation == fetchGeneration else {
+                return
+            }
+            if Task.isCancelled || error is CancellationError {
+                return
+            }
             Self.logger.error(
                 "Failed loading now-playing TV listings: \(error.localizedDescription, privacy: .public)"
             )

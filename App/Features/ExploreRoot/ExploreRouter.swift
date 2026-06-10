@@ -63,10 +63,11 @@ final class ExploreRouter {
 ///
 /// Implements every navigating protocol reachable from the Explore tab. Mirrors
 /// `ExploreRootFeature`'s reducer mapping exactly:
-/// - the home pushes movie / TV series details (forwarding `transitionID`) and
-///   person details (dropping `transitionID` — the route carries none)
-/// - `*CastAndCrewNavigating.openPersonDetails(id:transitionID:)` drops the
-///   `transitionID` (person details has none)
+/// - the home carousels forward `transitionID` to drive the zoom transition
+///   (movie / TV series / person details)
+/// - cast & crew screens push person details with no zoom — each
+///   `*CastAndCrewViewModel.selectPerson` passes `transitionID: nil`, because its
+///   transition source lives in a different namespace from the tab's zoom
 /// - `openMovieIntelligence(id:)` / `openTVSeriesIntelligence(id:)` present modals
 ///   instead of pushing
 @MainActor
@@ -90,9 +91,10 @@ struct ExploreRouterNavigator: ExploreNavigating, MovieDetailsNavigating,
     }
 
     func openPersonDetails(id: Int, transitionID: String?) {
-        // Forward `transitionID`; only the home people carousel shares the per-tab
-        // namespace, so cast & crew rows (which own their namespace) won't actually
-        // zoom — reproducing the old behaviour (home person zoom; cast & crew none).
+        // Forwards `transitionID` so the home people carousel zooms. Cast & crew
+        // person rows reach this via the same `*CastAndCrewNavigating` requirement
+        // but pass `transitionID: nil` (see each `*CastAndCrewViewModel.selectPerson`)
+        // so they push without an (unmatched) zoom — matching the former reducer.
         router.path.append(.personDetails(id: id, transitionID: transitionID))
     }
 

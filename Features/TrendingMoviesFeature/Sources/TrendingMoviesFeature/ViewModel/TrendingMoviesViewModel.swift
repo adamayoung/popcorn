@@ -58,18 +58,18 @@ public final class TrendingMoviesViewModel {
     /// and reruns it on reappear / ``reload()``.
     public func load() async {
         isLoading = true
+        defer { isLoading = false }
         Self.logger.info("User fetching trending movies")
 
-        let movies: [MoviePreview]
         do {
             movies = try await dependencies.fetchTrendingMovies()
         } catch {
-            Self.logger.error("Failed fetching trending movies: \(error, privacy: .public)")
-            return
+            // Don't log a tab-switch cancellation as a failure; `defer` clears
+            // `isLoading` on every path so the spinner can't get stuck.
+            if !Task.isCancelled, !(error is CancellationError) {
+                Self.logger.error("Failed fetching trending movies: \(error, privacy: .public)")
+            }
         }
-
-        self.movies = movies
-        isLoading = false
     }
 
     /// Retries loading by changing ``reloadID``, which reruns the view's `.task(id:)`.

@@ -92,6 +92,40 @@ struct ViewStateTests {
 
 }
 
+@Suite("ViewState applyLoadFailure")
+struct ViewStateApplyLoadFailureTests {
+
+    private struct SampleError: Error {}
+
+    @Test("cancellation from loading resets to initial so the next .task re-fetches")
+    func cancellationFromLoadingResetsToInitial() {
+        var state: ViewState<String> = .loading
+
+        state.applyLoadFailure(CancellationError())
+
+        #expect(state == .initial)
+    }
+
+    @Test("a real error from loading becomes error")
+    func realErrorFromLoadingBecomesError() {
+        var state: ViewState<String> = .loading
+
+        state.applyLoadFailure(SampleError())
+
+        #expect(state.isError == true)
+    }
+
+    @Test("cancellation does not clobber an already-ready state")
+    func cancellationDoesNotClobberReady() {
+        var state: ViewState<String> = .ready("content")
+
+        state.applyLoadFailure(CancellationError())
+
+        #expect(state == .ready("content"))
+    }
+
+}
+
 @Suite("ViewStateError")
 struct ViewStateErrorTests {
 

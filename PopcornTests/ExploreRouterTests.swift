@@ -156,14 +156,17 @@ struct ExploreRouterTests {
 
     // MARK: - Cast & Crew (Movie / TV Series / TV Episode)
 
-    @Test("cast & crew openPersonDetails forwards transitionID into the route (no zoom)")
-    func castAndCrewOpenPersonDetailsForwardsTransitionID() {
+    @Test("cast & crew person navigation pushes without a transition id (no zoom)")
+    func castAndCrewOpenPersonDetailsHasNoTransitionID() {
         let router = ExploreRouter()
         let navigator = ExploreRouterNavigator(router: router)
 
-        navigator.openPersonDetails(id: 314, transitionID: "314")
+        // Cast & crew view models call the shared openPersonDetails with `nil`
+        // (their transition source is in a different namespace), so the route
+        // carries no transition id and the destination pushes without a zoom.
+        navigator.openPersonDetails(id: 314, transitionID: nil)
 
-        #expect(router.path == [.personDetails(id: 314, transitionID: "314")])
+        #expect(router.path == [.personDetails(id: 314, transitionID: nil)])
     }
 
 }

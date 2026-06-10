@@ -59,4 +59,26 @@ public extension ViewState {
         if case .error(let error) = self { error } else { nil }
     }
 
+    /// Records the outcome of a failed `.task`-driven load.
+    ///
+    /// SwiftUI cancels a view's `.task` when it disappears (or its `id` changes),
+    /// which surfaces in a load's `catch` as a `CancellationError` (or, for
+    /// in-flight networking, a cancelled `URLError`). That is **not** a real
+    /// failure: committing `.error` would flash a spurious retry screen on long-
+    /// lived tab view models, and leaving `.loading` would block the next
+    /// `.task(id:)` run behind the `!isLoading` guard. So on cancellation this
+    /// resets `.loading` back to `.initial` (letting the next run re-fetch) and
+    /// leaves any other state untouched; genuine failures become `.error`.
+    ///
+    /// Call from the `catch` of a load: `viewState.applyLoadFailure(error)`.
+    mutating func applyLoadFailure(_ error: any Error) {
+        if Task.isCancelled || error is CancellationError {
+            if case .loading = self {
+                self = .initial
+            }
+        } else {
+            self = .error(ViewStateError(error))
+        }
+    }
+
 }

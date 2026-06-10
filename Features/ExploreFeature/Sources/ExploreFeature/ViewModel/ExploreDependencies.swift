@@ -9,6 +9,7 @@ import AppDependencies
 import DiscoverApplication
 import Foundation
 import MoviesApplication
+import Observability
 import TrendingApplication
 
 /// The dependencies required by ``ExploreViewModel``.
@@ -73,19 +74,29 @@ public extension ExploreDependencies {
 
         return ExploreDependencies(
             fetchDiscoverMovies: {
-                try await mapping { try await fetchDiscoverMovies.execute().map { MoviePreviewMapper().map($0) } }
+                try await mapping("ExploreClient.fetchDiscoverMovies") {
+                    try await fetchDiscoverMovies.execute().map { MoviePreviewMapper().map($0) }
+                }
             },
             fetchTrendingMovies: {
-                try await mapping { try await fetchTrendingMovies.execute().map { MoviePreviewMapper().map($0) } }
+                try await mapping("ExploreClient.fetchTrendingMovies") {
+                    try await fetchTrendingMovies.execute().map { MoviePreviewMapper().map($0) }
+                }
             },
             fetchPopularMovies: {
-                try await mapping { try await fetchPopularMovies.execute().map { MoviePreviewMapper().map($0) } }
+                try await mapping("ExploreClient.fetchPopularMovies") {
+                    try await fetchPopularMovies.execute().map { MoviePreviewMapper().map($0) }
+                }
             },
             fetchTrendingTVSeries: {
-                try await mapping { try await fetchTrendingTVSeries.execute().map { TVSeriesPreviewMapper().map($0) } }
+                try await mapping("ExploreClient.fetchTrendingTVSeries") {
+                    try await fetchTrendingTVSeries.execute().map { TVSeriesPreviewMapper().map($0) }
+                }
             },
             fetchTrendingPeople: {
-                try await mapping { try await fetchTrendingPeople.execute().map { PersonPreviewMapper().map($0) } }
+                try await mapping("ExploreClient.fetchTrendingPeople") {
+                    try await fetchTrendingPeople.execute().map { PersonPreviewMapper().map($0) }
+                }
             },
             isDiscoverMoviesEnabled: { featureFlags.isEnabled(.exploreDiscoverMovies) },
             isTrendingMoviesEnabled: { featureFlags.isEnabled(.exploreTrendingMovies) },
@@ -95,15 +106,22 @@ public extension ExploreDependencies {
         )
     }
 
-    /// Runs a content-fetch body, translating any thrown error into a
-    /// ``FetchExploreContentError``. Mirrors the former `ExploreClient`'s
-    /// per-source `catch { throw FetchExploreContentError(error) }`.
+    /// Runs a content-fetch body inside a `clientFetch` observability span,
+    /// translating any thrown error into a ``FetchExploreContentError``. Mirrors
+    /// the former `ExploreClient`'s per-source span + `catch { throw
+    /// FetchExploreContentError(error) }`.
     private static func mapping<T: Sendable>(
+        _ description: String,
         _ body: @Sendable () async throws -> T
     ) async throws -> T {
+        let span = SpanContext.startChild(operation: .clientFetch, description: description)
         do {
-            return try await body()
+            let result = try await body()
+            span?.finish()
+            return result
         } catch {
+            span?.setData(error: error)
+            span?.finish(status: .internalError)
             throw FetchExploreContentError(error)
         }
     }

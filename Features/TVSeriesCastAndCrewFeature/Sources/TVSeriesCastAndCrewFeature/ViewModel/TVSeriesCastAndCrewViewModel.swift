@@ -81,8 +81,12 @@ public final class TVSeriesCastAndCrewViewModel {
 
     // MARK: - Navigation
 
-    public func selectPerson(id: Int, transitionID: String?) {
-        navigator.openPersonDetails(id: id, transitionID: transitionID)
+    public func selectPerson(id: Int, transitionID _: String?) {
+        // Cast & crew rows register their transition source in this screen's own
+        // namespace, not the tab namespace the person-details destination zooms
+        // against — forwarding the id would trigger an unmatched-zoom fallback. So
+        // push without a transition id, matching the former reducer (plain push).
+        navigator.openPersonDetails(id: id, transitionID: nil)
     }
 
     // MARK: - Loading
@@ -111,7 +115,7 @@ public final class TVSeriesCastAndCrewViewModel {
             Self.logger.error(
                 "Failed fetching cast and crew [tvSeriesID: \(self.tvSeriesID, privacy: .private)]: \(error.localizedDescription, privacy: .public)"
             )
-            viewState = .error(ViewStateError(error))
+            viewState.applyLoadFailure(error)
             return
         }
 

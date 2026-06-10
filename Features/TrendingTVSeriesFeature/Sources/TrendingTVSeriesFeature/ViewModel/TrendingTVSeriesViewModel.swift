@@ -53,17 +53,16 @@ public final class TrendingTVSeriesViewModel {
     public func load() async {
         Self.logger.info("User fetching trending TV series")
 
-        let tvSeries: [TVSeriesPreview]
         do {
             tvSeries = try await dependencies.fetchTrendingTVSeries()
         } catch {
-            Self.logger.error(
-                "Failed fetching trending TV series: \(error.localizedDescription, privacy: .public)"
-            )
-            return
+            // A tab-switch cancellation isn't a failure — don't log it as one.
+            if !Task.isCancelled, !(error is CancellationError) {
+                Self.logger.error(
+                    "Failed fetching trending TV series: \(error.localizedDescription, privacy: .public)"
+                )
+            }
         }
-
-        self.tvSeries = tvSeries
     }
 
     /// Retries loading by changing ``reloadID``, which reruns the view's `.task(id:)`.

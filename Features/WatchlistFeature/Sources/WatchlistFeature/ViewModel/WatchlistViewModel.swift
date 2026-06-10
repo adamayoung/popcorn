@@ -102,7 +102,7 @@ public final class WatchlistViewModel {
             Self.logger.error(
                 "Failed fetching watchlist movies: \(error.localizedDescription, privacy: .public)"
             )
-            viewState = .error(ViewStateError(error))
+            viewState.applyLoadFailure(error)
             return
         }
 

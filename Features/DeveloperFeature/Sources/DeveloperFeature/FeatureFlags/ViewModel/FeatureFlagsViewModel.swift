@@ -94,7 +94,7 @@ public final class FeatureFlagsViewModel {
             Self.logger.error(
                 "Failed fetching feature flags content: \(error.localizedDescription, privacy: .public)"
             )
-            viewState = .error(ViewStateError(error))
+            viewState.applyLoadFailure(error)
             return
         }
 

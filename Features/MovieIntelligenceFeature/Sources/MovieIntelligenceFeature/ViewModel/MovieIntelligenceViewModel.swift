@@ -72,10 +72,8 @@ public final class MovieIntelligenceViewModel {
 
             // Matches the reducer: the intro is sent WITHOUT appending a user message.
             await respond(to: "Introduce yourself and what you're for")
-        } catch let error as LLMSessionError {
-            handleStartFailure(error)
         } catch {
-            handleStartFailure(.unknown(error.localizedDescription))
+            handleStartFailure(error)
         }
     }
 
@@ -121,11 +119,14 @@ public final class MovieIntelligenceViewModel {
         }
     }
 
-    private func handleStartFailure(_ error: LLMSessionError) {
+    private func handleStartFailure(_ error: any Error) {
+        // Capture the RAW error so Sentry keeps its original type/domain for
+        // grouping; wrapping it as `.unknown(localizedDescription)` first (e.g.
+        // turning a cancelled session into `.unknown("cancelled")`) destroys that.
         dependencies.captureError(error)
         Self.logger.error("Failed to start session: \(error.localizedDescription)")
         isThinking = false
-        self.error = error
+        self.error = error as? LLMSessionError
         messages.append(Message(role: .assistant, textContent: "There was a problem and I can't help you."))
     }
 

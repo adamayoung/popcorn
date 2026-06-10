@@ -133,29 +133,37 @@ public final class TVEpisodeDetailsViewModel {
 
         let isCastAndCrewEnabled = (try? dependencies.isCastAndCrewEnabled()) ?? false
 
+        // Episode and credits depend only on the init-time IDs, so start both
+        // concurrently — awaiting them sequentially roughly doubled time-to-ready.
+        async let episodeTask = dependencies.fetchEpisode(tvSeriesID, seasonNumber, episodeNumber)
+        async let creditsTask: Credits? = isCastAndCrewEnabled
+            ? dependencies.fetchCredits(tvSeriesID, seasonNumber, episodeNumber)
+            : nil
+
         let episode: TVEpisode
         do {
-            episode = try await dependencies.fetchEpisode(tvSeriesID, seasonNumber, episodeNumber)
+            episode = try await episodeTask
         } catch {
             Self.logger.error(
                 "Failed fetching episode details [tvSeriesID: \(self.tvSeriesID, privacy: .private), S\(self.seasonNumber)E\(self.episodeNumber)]: \(error.localizedDescription, privacy: .public)"
             )
-            viewState = .error(ViewStateError(error))
+            viewState.applyLoadFailure(error)
             return
         }
 
+        // Credits are non-fatal: a failure just yields no cast & crew, matching
+        // the former reducer.
         var castMembers: [CastMember] = []
         var crewMembers: [CrewMember] = []
-        if isCastAndCrewEnabled {
-            do {
-                let credits = try await dependencies.fetchCredits(tvSeriesID, seasonNumber, episodeNumber)
+        do {
+            if let credits = try await creditsTask {
                 castMembers = credits.castMembers
                 crewMembers = credits.crewMembers
-            } catch {
-                Self.logger.warning(
-                    "Failed fetching episode credits [tvSeriesID: \(self.tvSeriesID, privacy: .private), S\(self.seasonNumber)E\(self.episodeNumber)]: \(error.localizedDescription, privacy: .public)"
-                )
             }
+        } catch {
+            Self.logger.warning(
+                "Failed fetching episode credits [tvSeriesID: \(self.tvSeriesID, privacy: .private), S\(self.seasonNumber)E\(self.episodeNumber)]: \(error.localizedDescription, privacy: .public)"
+            )
         }
 
         viewState = .ready(ViewSnapshot(
