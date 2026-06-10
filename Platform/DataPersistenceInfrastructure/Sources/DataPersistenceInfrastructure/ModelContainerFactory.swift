@@ -45,15 +45,39 @@ public enum ModelContainerFactory {
         migrationPlan: (some SchemaMigrationPlan).Type,
         logger: Logger
     ) -> ModelContainer {
-        let config = ModelConfiguration(schema: schema, url: url, cloudKitDatabase: cloudKitDatabase)
+        let cloudKitConfig = ModelConfiguration(schema: schema, url: url, cloudKitDatabase: cloudKitDatabase)
 
         do {
-            return try ModelContainer(for: schema, migrationPlan: migrationPlan, configurations: [config])
+            return try ModelContainer(for: schema, migrationPlan: migrationPlan, configurations: [cloudKitConfig])
         } catch let error {
-            logger.critical(
-                "Cannot create CloudKit ModelContainer: \(error.localizedDescription, privacy: .public)"
+            // CloudKit may be unavailable — e.g. no iCloud entitlement (unsigned / CI
+            // builds) or the user isn't signed into iCloud. Degrade to a local-only
+            // store so the app still launches with on-device persistence rather than
+            // crashing.
+            logger.warning(
+                "CloudKit ModelContainer unavailable, falling back to a local store: \(error.localizedDescription, privacy: .public)"
             )
-            fatalError("Cannot create CloudKit ModelContainer: \(error.localizedDescription)")
+
+            let localConfig = ModelConfiguration(schema: schema, url: url, cloudKitDatabase: .none)
+
+            do {
+                return try ModelContainer(for: schema, migrationPlan: migrationPlan, configurations: [localConfig])
+            } catch let error {
+                logger.warning(
+                    "Local ModelContainer creation failed, removing database: \(error.localizedDescription, privacy: .public)"
+                )
+
+                removeSQLiteFiles(at: url)
+
+                do {
+                    return try ModelContainer(for: schema, migrationPlan: migrationPlan, configurations: [localConfig])
+                } catch let error {
+                    logger.critical(
+                        "Cannot create ModelContainer after reset: \(error.localizedDescription, privacy: .public)"
+                    )
+                    fatalError("Cannot create ModelContainer after reset: \(error.localizedDescription)")
+                }
+            }
         }
     }
 
