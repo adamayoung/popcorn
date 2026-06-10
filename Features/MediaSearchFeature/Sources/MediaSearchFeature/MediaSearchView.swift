@@ -10,18 +10,18 @@ import SwiftUI
 /// The media search screen, driven by ``MediaSearchViewModel``.
 ///
 /// Renders the genres / search history / results / no-results surfaces, reusing
-/// the content subviews. The view model is owned above the seam (by `SearchRootView`),
-/// so this takes a plain `let viewModel`.
+/// the content subviews. The view owns its view model via `@State`, so it is
+/// self-contained and behaves correctly regardless of how a host retains it.
 ///
 /// Focus is kept in two-way sync with the view model: `.onChange(of:)` pushes
 /// `@FocusState` changes into the model and pulls model-driven changes back.
 public struct MediaSearchView: View {
 
-    private let viewModel: MediaSearchViewModel
+    @State private var viewModel: MediaSearchViewModel
     @FocusState private var focusedField: MediaSearchViewModel.Field?
 
     public init(viewModel: MediaSearchViewModel) {
-        self.viewModel = viewModel
+        _viewModel = State(initialValue: viewModel)
     }
 
     public var body: some View {

@@ -12,19 +12,22 @@ import SwiftUI
 /// The explore screen, driven by ``ExploreViewModel``.
 ///
 /// Renders five carousels: discover movies, trending movies, popular movies,
-/// trending TV series, and trending people. The view model is owned above the seam
-/// (by the root coordinator), so this takes a plain `let viewModel` rather than `@State`.
+/// trending TV series, and trending people. The view owns its view model via
+/// `@State`, so it is self-contained and behaves correctly regardless of how a
+/// host retains it. The transition namespace is optional — supply one to enable
+/// the zoom transitions into details; omit it (e.g. in isolation or previews)
+/// to render without them.
 public struct ExploreView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    private let viewModel: ExploreViewModel
-    private let namespace: Namespace.ID
+    @State private var viewModel: ExploreViewModel
+    private let namespace: Namespace.ID?
 
     public init(
         viewModel: ExploreViewModel,
-        transitionNamespace: Namespace.ID
+        transitionNamespace: Namespace.ID? = nil
     ) {
-        self.viewModel = viewModel
+        _viewModel = State(initialValue: viewModel)
         self.namespace = transitionNamespace
     }
 

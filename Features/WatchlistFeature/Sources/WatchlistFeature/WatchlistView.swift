@@ -12,8 +12,10 @@ import SwiftUI
 /// The watchlist screen, driven by ``WatchlistViewModel``.
 ///
 /// Renders a grid of watchlist movie posters with loading, empty, and error
-/// states. The view model is owned by the root coordinator, so this takes a
-/// plain `let viewModel` rather than `@State`.
+/// states. The view owns its view model via `@State`, so it is self-contained
+/// and behaves correctly regardless of how a host retains it. The transition
+/// namespace is optional — supply one to enable the zoom transition into movie
+/// details; omit it (e.g. in isolation or previews) to render without it.
 public struct WatchlistView: View {
 
     private static let columns = [
@@ -21,14 +23,14 @@ public struct WatchlistView: View {
     ]
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    private let viewModel: WatchlistViewModel
-    private let namespace: Namespace.ID
+    @State private var viewModel: WatchlistViewModel
+    private let namespace: Namespace.ID?
 
     public init(
         viewModel: WatchlistViewModel,
-        transitionNamespace: Namespace.ID
+        transitionNamespace: Namespace.ID? = nil
     ) {
-        self.viewModel = viewModel
+        _viewModel = State(initialValue: viewModel)
         self.namespace = transitionNamespace
     }
 
@@ -60,6 +62,24 @@ public struct WatchlistView: View {
         .navigationTitle(Text("WATCHLIST", bundle: .module))
         .task(id: viewModel.reloadID) {
             await viewModel.load()
+        }
+    }
+
+}
+
+private extension View {
+
+    /// Applies `matchedTransitionSource(id:in:)` only when a namespace is
+    /// supplied, so the view renders unchanged when hosted without one.
+    @ViewBuilder
+    func matchedTransitionSource(
+        id: some Hashable & Sendable,
+        in namespace: Namespace.ID?
+    ) -> some View {
+        if let namespace {
+            matchedTransitionSource(id: id, in: namespace)
+        } else {
+            self
         }
     }
 

@@ -12,14 +12,14 @@ import TVListingsDomain
 
 /// The TV listings screen, driven by ``TVListingsViewModel``.
 ///
-/// The view does **not** own the view model —
-/// `AppRootView` owns it via `@State` — so it is stored as a plain `let`.
+/// The view owns its view model via `@State`, so it is self-contained and
+/// behaves correctly regardless of how a host retains it.
 public struct TVListingsView: View {
 
-    let viewModel: TVListingsViewModel
+    @State private var viewModel: TVListingsViewModel
 
     public init(viewModel: TVListingsViewModel) {
-        self.viewModel = viewModel
+        _viewModel = State(initialValue: viewModel)
     }
 
     public var body: some View {
