@@ -116,7 +116,7 @@ See [docs/TMDB_MAPPING.md](docs/TMDB_MAPPING.md) for the complete TMDb type refe
 |------------|---------|---------|
 | TMDb | 16.0+ | Context Adapters |
 | SDWebImageSwiftUI | 3.0+ | DesignSystem |
-| sentry-cocoa | 8.57+ | ObservabilityAdapters |
+| sentry-cocoa | 9.16+ | ObservabilityAdapters |
 | statsig-kit | 1.55+ | FeatureAccessAdapters |
 | swift-snapshot-testing | 1.18+ | Feature snapshot tests |
 
