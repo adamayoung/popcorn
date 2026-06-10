@@ -24,7 +24,7 @@ struct WatchProviderCollectionMapperTests {
         let freeProvider = TMDb.WatchProvider(id: 300, name: "Plex")
 
         let dto = TMDb.ShowWatchProvider(
-            link: link,
+            link: URL(string: link),
             free: [freeProvider],
             flatRate: [streamingProvider],
             buy: [buyProvider],
@@ -48,7 +48,7 @@ struct WatchProviderCollectionMapperTests {
     @Test
     func `map handles nil provider arrays`() throws {
         let dto = TMDb.ShowWatchProvider(
-            link: "https://www.themoviedb.org/movie/1/watch",
+            link: URL(string: "https://www.themoviedb.org/movie/1/watch"),
             free: nil,
             flatRate: nil,
             buy: nil,
@@ -66,7 +66,7 @@ struct WatchProviderCollectionMapperTests {
     @Test
     func `map converts multiple streaming providers`() throws {
         let dto = TMDb.ShowWatchProvider(
-            link: "https://www.themoviedb.org/movie/1/watch",
+            link: URL(string: "https://www.themoviedb.org/movie/1/watch"),
             flatRate: [
                 TMDb.WatchProvider(id: 8, name: "Netflix"),
                 TMDb.WatchProvider(id: 337, name: "Disney Plus"),

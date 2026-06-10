@@ -26,7 +26,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         inSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID,
         language: String?
-    ) async throws -> TVEpisode {
+    ) async throws(TMDbError) -> TVEpisode {
         detailsCallCount += 1
         detailsCalledWith.append(DetailsCall(
             episodeNumber: episodeNumber,
@@ -53,7 +53,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         inTVSeries tvSeriesID: TVSeries.ID,
         appending: TVEpisodeAppendOption,
         language: String?
-    ) async throws -> TVEpisodeDetailsResponse {
+    ) async throws(TMDbError) -> TVEpisodeDetailsResponse {
         throw TMDbError.unknown
     }
 
@@ -73,7 +73,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         inSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID,
         language: String?
-    ) async throws -> ShowCredits {
+    ) async throws(TMDbError) -> ShowCredits {
         creditsCallCount += 1
         creditsCalledWith.append(CreditsCall(
             episodeNumber: episodeNumber,
@@ -99,7 +99,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         inSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID,
         filter: TVEpisodeImageFilter?
-    ) async throws -> TVEpisodeImageCollection {
+    ) async throws(TMDbError) -> TVEpisodeImageCollection {
         throw TMDbError.unknown
     }
 
@@ -108,7 +108,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         inSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID,
         filter: TVEpisodeVideoFilter?
-    ) async throws -> VideoCollection {
+    ) async throws(TMDbError) -> VideoCollection {
         throw TMDbError.unknown
     }
 
@@ -117,7 +117,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         inSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID,
         session: Session
-    ) async throws -> AccountStates {
+    ) async throws(TMDbError) -> AccountStates {
         throw TMDbError.unknown
     }
 
@@ -127,7 +127,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         inSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID,
         session: Session
-    ) async throws {
+    ) async throws(TMDbError) {
         throw TMDbError.unknown
     }
 
@@ -136,7 +136,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         inSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID,
         session: Session
-    ) async throws {
+    ) async throws(TMDbError) {
         throw TMDbError.unknown
     }
 
@@ -144,7 +144,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         forEpisode episodeNumber: Int,
         inSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID
-    ) async throws -> TVEpisodeExternalLinksCollection {
+    ) async throws(TMDbError) -> TVEpisodeExternalLinksCollection {
         throw TMDbError.unknown
     }
 
@@ -152,7 +152,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         forEpisode episodeNumber: Int,
         inSeason seasonNumber: Int,
         inTVSeries tvSeriesID: TVSeries.ID
-    ) async throws -> TranslationCollection<TVEpisodeTranslationData> {
+    ) async throws(TMDbError) -> TranslationCollection<TVEpisodeTranslationData> {
         throw TMDbError.unknown
     }
 
@@ -161,7 +161,7 @@ final class MockTVEpisodeService: TVEpisodeService, @unchecked Sendable {
         startDate: Date?,
         endDate: Date?,
         page: Int?
-    ) async throws -> ChangeCollection {
+    ) async throws(TMDbError) -> ChangeCollection {
         throw TMDbError.unknown
     }
 

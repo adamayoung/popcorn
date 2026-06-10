@@ -20,7 +20,7 @@ let package = Package(
 
     dependencies: [
         .package(path: "../../../Platform/FeatureAccess"),
-        .package(url: "https://github.com/statsig-io/statsig-kit.git", from: "1.55.1")
+        .package(url: "https://github.com/statsig-io/statsig-kit.git", from: "1.62.6")
     ],
 
     targets: [

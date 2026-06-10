@@ -29,7 +29,7 @@ final class MockConfigurationService: ConfigurationService, @unchecked Sendable 
     var timezonesCallCount = 0
     var timezonesStub: Result<[Timezone], TMDbError>?
 
-    func apiConfiguration() async throws -> APIConfiguration {
+    func apiConfiguration() async throws(TMDbError) -> APIConfiguration {
         apiConfigurationCallCount += 1
 
         guard let stub = apiConfigurationStub else {
@@ -44,7 +44,7 @@ final class MockConfigurationService: ConfigurationService, @unchecked Sendable 
         }
     }
 
-    func countries(language: String?) async throws -> [Country] {
+    func countries(language: String?) async throws(TMDbError) -> [Country] {
         countriesCallCount += 1
         countriesCalledWithLanguage.append(language)
 
@@ -60,7 +60,7 @@ final class MockConfigurationService: ConfigurationService, @unchecked Sendable 
         }
     }
 
-    func jobsByDepartment() async throws -> [Department] {
+    func jobsByDepartment() async throws(TMDbError) -> [Department] {
         jobsByDepartmentCallCount += 1
 
         guard let stub = jobsByDepartmentStub else {
@@ -75,7 +75,7 @@ final class MockConfigurationService: ConfigurationService, @unchecked Sendable 
         }
     }
 
-    func languages() async throws -> [Language] {
+    func languages() async throws(TMDbError) -> [Language] {
         languagesCallCount += 1
 
         guard let stub = languagesStub else {
@@ -90,7 +90,7 @@ final class MockConfigurationService: ConfigurationService, @unchecked Sendable 
         }
     }
 
-    func primaryTranslations() async throws -> [String] {
+    func primaryTranslations() async throws(TMDbError) -> [String] {
         primaryTranslationsCallCount += 1
 
         guard let stub = primaryTranslationsStub else {
@@ -105,7 +105,7 @@ final class MockConfigurationService: ConfigurationService, @unchecked Sendable 
         }
     }
 
-    func timezones() async throws -> [Timezone] {
+    func timezones() async throws(TMDbError) -> [Timezone] {
         timezonesCallCount += 1
 
         guard let stub = timezonesStub else {

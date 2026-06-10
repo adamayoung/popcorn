@@ -1,5 +1,5 @@
 {
-  "originHash" : "8f18e6c6cc7be4558483bb7d3d8aa69f033360bd82f8f6ac55117e3c95e9fbd3",
+  "originHash" : "4378e1e750656254629c70c3a9eb0edc9f38105410795070ba8e99a0bf0e644a",
   "pins" : [
     {
       "identity" : "sdwebimage",
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/getsentry/sentry-cocoa.git",
       "state" : {
-        "revision" : "e6d00b6171c0c055debdf278554db035ae958926",
-        "version" : "9.16.1"
+        "revision" : "f296a015239d68ad4214981f4a1d3d7ab4cc82c4",
+        "version" : "9.17.0"
       }
     },
     {
@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/statsig-io/statsig-kit.git",
       "state" : {
-        "revision" : "55d50b74421b955cd9b24da730f39b7141d5a6a8",
-        "version" : "1.62.4"
+        "revision" : "ca19474601d61dfcc9fc38b82dcb6408ea0b8631",
+        "version" : "1.62.6"
       }
     },
     {
@@ -69,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/adamayoung/TMDb.git",
       "state" : {
-        "revision" : "5b7725058bd673d5c13c07cd73d6ad6bfd867cd1",
-        "version" : "16.0.1"
+        "revision" : "930a9ce13f6be02940cf87a8db34dc4180b5cee8",
+        "version" : "18.0.0"
       }
     },
     {

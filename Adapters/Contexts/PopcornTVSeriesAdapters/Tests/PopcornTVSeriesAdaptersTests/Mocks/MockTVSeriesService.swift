@@ -46,7 +46,7 @@ final class MockTVSeriesService: TVSeriesService, @unchecked Sendable {
     var aggregateCreditsCalledWith: [AggregateCreditsCall] = []
     var aggregateCreditsStub: Result<TVSeriesAggregateCredits, TMDbError>?
 
-    func details(forTVSeries id: TVSeries.ID, language: String?) async throws -> TVSeries {
+    func details(forTVSeries id: TVSeries.ID, language: String?) async throws(TMDbError) -> TVSeries {
         detailsCallCount += 1
         detailsCalledWith.append(DetailsCall(id: id, language: language))
 
@@ -66,11 +66,11 @@ final class MockTVSeriesService: TVSeriesService, @unchecked Sendable {
         forTVSeries tvSeriesID: TVSeries.ID,
         appending: TVSeriesAppendOption,
         language: String?
-    ) async throws -> TVSeriesDetailsResponse {
+    ) async throws(TMDbError) -> TVSeriesDetailsResponse {
         fatalError("Not implemented")
     }
 
-    func credits(forTVSeries tvSeriesID: TVSeries.ID, language: String?) async throws -> ShowCredits {
+    func credits(forTVSeries tvSeriesID: TVSeries.ID, language: String?) async throws(TMDbError) -> ShowCredits {
         creditsCallCount += 1
         creditsCalledWith.append(CreditsCall(tvSeriesID: tvSeriesID, language: language))
 
@@ -89,7 +89,7 @@ final class MockTVSeriesService: TVSeriesService, @unchecked Sendable {
     func aggregateCredits(
         forTVSeries tvSeriesID: TVSeries.ID,
         language: String?
-    ) async throws -> TVSeriesAggregateCredits {
+    ) async throws(TMDbError) -> TVSeriesAggregateCredits {
         aggregateCreditsCallCount += 1
         aggregateCreditsCalledWith.append(
             AggregateCreditsCall(tvSeriesID: tvSeriesID, language: language)
@@ -111,14 +111,14 @@ final class MockTVSeriesService: TVSeriesService, @unchecked Sendable {
         forTVSeries tvSeriesID: TVSeries.ID,
         page: Int?,
         language: String?
-    ) async throws -> ReviewPageableList {
+    ) async throws(TMDbError) -> ReviewPageableList {
         fatalError("Not implemented")
     }
 
     func images(
         forTVSeries tvSeriesID: TVSeries.ID,
         filter: TVSeriesImageFilter?
-    ) async throws -> ImageCollection {
+    ) async throws(TMDbError) -> ImageCollection {
         imagesCallCount += 1
         imagesCalledWith.append(ImagesCall(tvSeriesID: tvSeriesID, filter: filter))
 
@@ -137,7 +137,7 @@ final class MockTVSeriesService: TVSeriesService, @unchecked Sendable {
     func videos(
         forTVSeries tvSeriesID: TVSeries.ID,
         filter: TVSeriesVideoFilter?
-    ) async throws -> VideoCollection {
+    ) async throws(TMDbError) -> VideoCollection {
         fatalError("Not implemented")
     }
 
@@ -145,7 +145,7 @@ final class MockTVSeriesService: TVSeriesService, @unchecked Sendable {
         forTVSeries tvSeriesID: TVSeries.ID,
         page: Int?,
         language: String?
-    ) async throws -> TVSeriesPageableList {
+    ) async throws(TMDbError) -> TVSeriesPageableList {
         fatalError("Not implemented")
     }
 
@@ -153,11 +153,11 @@ final class MockTVSeriesService: TVSeriesService, @unchecked Sendable {
         toTVSeries tvSeriesID: TVSeries.ID,
         page: Int?,
         language: String?
-    ) async throws -> TVSeriesPageableList {
+    ) async throws(TMDbError) -> TVSeriesPageableList {
         fatalError("Not implemented")
     }
 
-    func popular(page: Int?, language: String?) async throws -> TVSeriesPageableList {
+    func popular(page: Int?, language: String?) async throws(TMDbError) -> TVSeriesPageableList {
         fatalError("Not implemented")
     }
 
@@ -165,7 +165,7 @@ final class MockTVSeriesService: TVSeriesService, @unchecked Sendable {
         page: Int?,
         timezone: String?,
         language: String?
-    ) async throws -> TVSeriesPageableList {
+    ) async throws(TMDbError) -> TVSeriesPageableList {
         fatalError("Not implemented")
     }
 
@@ -173,58 +173,58 @@ final class MockTVSeriesService: TVSeriesService, @unchecked Sendable {
         page: Int?,
         timezone: String?,
         language: String?
-    ) async throws -> TVSeriesPageableList {
+    ) async throws(TMDbError) -> TVSeriesPageableList {
         fatalError("Not implemented")
     }
 
     func topRated(
         page: Int?,
         language: String?
-    ) async throws -> TVSeriesPageableList {
+    ) async throws(TMDbError) -> TVSeriesPageableList {
         fatalError("Not implemented")
     }
 
     func watchProviders(
         forTVSeries tvSeriesID: TVSeries.ID
-    ) async throws -> [ShowWatchProvidersByCountry] {
+    ) async throws(TMDbError) -> [ShowWatchProvidersByCountry] {
         fatalError("Not implemented")
     }
 
     func externalLinks(
         forTVSeries tvSeriesID: TVSeries.ID
-    ) async throws -> TVSeriesExternalLinksCollection {
+    ) async throws(TMDbError) -> TVSeriesExternalLinksCollection {
         fatalError("Not implemented")
     }
 
     func contentRatings(
         forTVSeries tvSeriesID: TVSeries.ID
-    ) async throws -> [ContentRating] {
+    ) async throws(TMDbError) -> [ContentRating] {
         fatalError("Not implemented")
     }
 
-    func accountStates(forTVSeries tvSeriesID: TVSeries.ID, session: Session) async throws -> AccountStates {
+    func accountStates(forTVSeries tvSeriesID: TVSeries.ID, session: Session) async throws(TMDbError) -> AccountStates {
         fatalError("Not implemented")
     }
 
-    func addRating(_ rating: Double, toTVSeries tvSeriesID: TVSeries.ID, session: Session) async throws {
+    func addRating(_ rating: Double, toTVSeries tvSeriesID: TVSeries.ID, session: Session) async throws(TMDbError) {
         fatalError("Not implemented")
     }
 
-    func deleteRating(forTVSeries tvSeriesID: TVSeries.ID, session: Session) async throws {
+    func deleteRating(forTVSeries tvSeriesID: TVSeries.ID, session: Session) async throws(TMDbError) {
         fatalError("Not implemented")
     }
 
-    func keywords(forTVSeries tvSeriesID: TVSeries.ID) async throws -> KeywordCollection {
+    func keywords(forTVSeries tvSeriesID: TVSeries.ID) async throws(TMDbError) -> KeywordCollection {
         fatalError("Not implemented")
     }
 
-    func alternativeTitles(forTVSeries tvSeriesID: TVSeries.ID) async throws -> AlternativeTitleCollection {
+    func alternativeTitles(forTVSeries tvSeriesID: TVSeries.ID) async throws(TMDbError) -> AlternativeTitleCollection {
         fatalError("Not implemented")
     }
 
     func translations(
         forTVSeries tvSeriesID: TVSeries.ID
-    ) async throws -> TranslationCollection<TVSeriesTranslationData> {
+    ) async throws(TMDbError) -> TranslationCollection<TVSeriesTranslationData> {
         fatalError("Not implemented")
     }
 
@@ -232,7 +232,7 @@ final class MockTVSeriesService: TVSeriesService, @unchecked Sendable {
         forTVSeries tvSeriesID: TVSeries.ID,
         page: Int?,
         language: String?
-    ) async throws -> MediaListSummaryPageableList {
+    ) async throws(TMDbError) -> MediaListSummaryPageableList {
         fatalError("Not implemented")
     }
 
@@ -241,11 +241,11 @@ final class MockTVSeriesService: TVSeriesService, @unchecked Sendable {
         startDate: Date?,
         endDate: Date?,
         page: Int?
-    ) async throws -> ChangeCollection {
+    ) async throws(TMDbError) -> ChangeCollection {
         fatalError("Not implemented")
     }
 
-    func latest() async throws -> TVSeries {
+    func latest() async throws(TMDbError) -> TVSeries {
         fatalError("Not implemented")
     }
 
@@ -253,17 +253,17 @@ final class MockTVSeriesService: TVSeriesService, @unchecked Sendable {
         startDate: Date?,
         endDate: Date?,
         page: Int?
-    ) async throws -> ChangedIDCollection {
+    ) async throws(TMDbError) -> ChangedIDCollection {
         fatalError("Not implemented")
     }
 
     func screenedTheatrically(
         forTVSeries tvSeriesID: TVSeries.ID
-    ) async throws -> ScreenedTheatricallyCollection {
+    ) async throws(TMDbError) -> ScreenedTheatricallyCollection {
         fatalError("Not implemented")
     }
 
-    func episodeGroups(forTVSeries tvSeriesID: TVSeries.ID) async throws -> TVEpisodeGroupCollection {
+    func episodeGroups(forTVSeries tvSeriesID: TVSeries.ID) async throws(TMDbError) -> TVEpisodeGroupCollection {
         fatalError("Not implemented")
     }
 

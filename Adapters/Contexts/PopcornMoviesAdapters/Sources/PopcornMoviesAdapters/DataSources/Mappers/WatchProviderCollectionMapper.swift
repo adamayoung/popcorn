@@ -14,7 +14,7 @@ struct WatchProviderCollectionMapper {
     private static let watchProviderMapper = WatchProviderMapper()
 
     func map(movieID: Int, _ dto: TMDb.ShowWatchProvider) -> MoviesDomain.WatchProviderCollection? {
-        guard let link = URL(string: dto.link) else {
+        guard let link = dto.link else {
             return nil
         }
 
