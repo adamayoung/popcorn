@@ -6,56 +6,51 @@
 //
 
 import ConfigurationApplication
-import CoreDomain
-import Foundation
 import MoviesApplication
 import TMDb
-import TrendingComposition
+import TrendingDomain
+import TrendingInfrastructure
 import TVSeriesApplication
 
+/// Builds the Trending context's TMDb-backed adapters (port implementations).
+///
+/// This factory is responsible only for adapting external services to the
+/// Trending context's ports. Assembling the context's factory from these adapters
+/// is the composition root's responsibility, so the adapters layer stays a leaf
+/// and never depends on the context's composition module.
 public final class PopcornTrendingAdaptersFactory {
 
-    private let trendingService: any TrendingService
+    private let trendingService: any TMDb.TrendingService
     private let fetchAppConfigurationUseCase: any FetchAppConfigurationUseCase
     private let fetchMovieImageCollectionUseCase: any FetchMovieImageCollectionUseCase
     private let fetchTVSeriesImageCollectionUseCase: any FetchTVSeriesImageCollectionUseCase
-    private let themeColorProvider: (any ThemeColorProviding)?
 
     public init(
-        trendingService: some TrendingService,
+        trendingService: some TMDb.TrendingService,
         fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase,
         fetchMovieImageCollectionUseCase: some FetchMovieImageCollectionUseCase,
-        fetchTVSeriesImageCollectionUseCase: some FetchTVSeriesImageCollectionUseCase,
-        themeColorProvider: (any ThemeColorProviding)? = nil
+        fetchTVSeriesImageCollectionUseCase: some FetchTVSeriesImageCollectionUseCase
     ) {
         self.trendingService = trendingService
         self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
         self.fetchMovieImageCollectionUseCase = fetchMovieImageCollectionUseCase
         self.fetchTVSeriesImageCollectionUseCase = fetchTVSeriesImageCollectionUseCase
-        self.themeColorProvider = themeColorProvider
     }
 
-    public func makeTrendingFactory() -> some PopcornTrendingFactory {
-        let trendingRemoteDataSource = TMDbTrendingRemoteDataSource(
-            trendingService: trendingService
-        )
-        let appConfigurationProvider = AppConfigurationProviderAdapter(
-            fetchUseCase: fetchAppConfigurationUseCase
-        )
-        let movieLogoProvider = MovieLogoImageProviderAdapter(
-            fetchImageCollectionUseCase: fetchMovieImageCollectionUseCase
-        )
-        let tvSeriesLogoProvider = TVSeriesLogoImageProviderAdapter(
-            fetchTVSeriesImageCollectionUseCase: fetchTVSeriesImageCollectionUseCase
-        )
+    public func makeTrendingRemoteDataSource() -> some TrendingRemoteDataSource {
+        TMDbTrendingRemoteDataSource(trendingService: trendingService)
+    }
 
-        return LivePopcornTrendingFactory(
-            trendingRemoteDataSource: trendingRemoteDataSource,
-            appConfigurationProvider: appConfigurationProvider,
-            movieLogoImageProvider: movieLogoProvider,
-            tvSeriesLogoImageProvider: tvSeriesLogoProvider,
-            themeColorProvider: themeColorProvider
-        )
+    public func makeAppConfigurationProvider() -> some AppConfigurationProviding {
+        AppConfigurationProviderAdapter(fetchUseCase: fetchAppConfigurationUseCase)
+    }
+
+    public func makeMovieLogoImageProvider() -> some MovieLogoImageProviding {
+        MovieLogoImageProviderAdapter(fetchImageCollectionUseCase: fetchMovieImageCollectionUseCase)
+    }
+
+    public func makeTVSeriesLogoImageProvider() -> some TVSeriesLogoImageProviding {
+        TVSeriesLogoImageProviderAdapter(fetchTVSeriesImageCollectionUseCase: fetchTVSeriesImageCollectionUseCase)
     }
 
 }

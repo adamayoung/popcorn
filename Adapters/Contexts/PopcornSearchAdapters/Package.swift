@@ -35,7 +35,8 @@ let package = Package(
         .target(
             name: "PopcornSearchAdapters",
             dependencies: [
-                .product(name: "SearchComposition", package: "PopcornSearch"),
+                .product(name: "SearchDomain", package: "PopcornSearch"),
+                .product(name: "SearchInfrastructure", package: "PopcornSearch"),
                 .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),

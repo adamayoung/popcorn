@@ -6,57 +6,49 @@
 //
 
 import ConfigurationApplication
-import CoreDomain
-import Foundation
 import TMDb
-import TVSeriesComposition
+import TVSeriesDomain
+import TVSeriesInfrastructure
 
+/// Builds the TV Series context's TMDb-backed adapters (port implementations).
+///
+/// This factory is responsible only for adapting external services to the
+/// TV Series context's ports. Assembling the context's factory from these adapters
+/// is the composition root's responsibility, so the adapters layer stays a leaf
+/// and never depends on the context's composition module.
 public final class PopcornTVSeriesAdaptersFactory {
 
-    private let tvSeriesService: any TVSeriesService
-    private let tvSeasonService: any TVSeasonService
-    private let tvEpisodeService: any TVEpisodeService
+    private let tvSeriesService: any TMDb.TVSeriesService
+    private let tvSeasonService: any TMDb.TVSeasonService
+    private let tvEpisodeService: any TMDb.TVEpisodeService
     private let fetchAppConfigurationUseCase: any FetchAppConfigurationUseCase
-    private let themeColorProvider: (any ThemeColorProviding)?
 
     public init(
-        tvSeriesService: some TVSeriesService,
-        tvSeasonService: some TVSeasonService,
-        tvEpisodeService: some TVEpisodeService,
-        fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase,
-        themeColorProvider: (any ThemeColorProviding)? = nil
+        tvSeriesService: some TMDb.TVSeriesService,
+        tvSeasonService: some TMDb.TVSeasonService,
+        tvEpisodeService: some TMDb.TVEpisodeService,
+        fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase
     ) {
         self.tvSeriesService = tvSeriesService
         self.tvSeasonService = tvSeasonService
         self.tvEpisodeService = tvEpisodeService
         self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
-        self.themeColorProvider = themeColorProvider
     }
 
-    public func makeTVSeriesFactory() -> some PopcornTVSeriesFactory {
-        let tvSeriesRemoteDataSource = TMDbTVSeriesRemoteDataSource(
-            tvSeriesService: tvSeriesService
-        )
+    public func makeTVSeriesRemoteDataSource() -> some TVSeriesRemoteDataSource {
+        TMDbTVSeriesRemoteDataSource(tvSeriesService: tvSeriesService)
+    }
 
-        let tvSeasonRemoteDataSource = TMDbTVSeasonRemoteDataSource(
-            tvSeasonService: tvSeasonService
-        )
+    public func makeTVSeasonRemoteDataSource() -> some TVSeasonRemoteDataSource {
+        TMDbTVSeasonRemoteDataSource(tvSeasonService: tvSeasonService)
+    }
 
-        let tvEpisodeRemoteDataSource = TMDbTVEpisodeRemoteDataSource(
-            tvEpisodeService: tvEpisodeService
-        )
+    public func makeTVEpisodeRemoteDataSource() -> some TVEpisodeRemoteDataSource {
+        TMDbTVEpisodeRemoteDataSource(tvEpisodeService: tvEpisodeService)
+    }
 
-        let appConfigurationProvider = AppConfigurationProviderAdapter(
-            fetchUseCase: fetchAppConfigurationUseCase
-        )
-
-        return LivePopcornTVSeriesFactory(
-            tvSeriesRemoteDataSource: tvSeriesRemoteDataSource,
-            tvSeasonRemoteDataSource: tvSeasonRemoteDataSource,
-            tvEpisodeRemoteDataSource: tvEpisodeRemoteDataSource,
-            appConfigurationProvider: appConfigurationProvider,
-            themeColorProvider: themeColorProvider
-        )
+    public func makeAppConfigurationProvider() -> some AppConfigurationProviding {
+        AppConfigurationProviderAdapter(fetchUseCase: fetchAppConfigurationUseCase)
     }
 
 }

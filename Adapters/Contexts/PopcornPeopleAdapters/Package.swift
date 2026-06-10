@@ -29,7 +29,6 @@ let package = Package(
         .target(
             name: "PopcornPeopleAdapters",
             dependencies: [
-                .product(name: "PeopleComposition", package: "PopcornPeople"),
                 .product(name: "PeopleDomain", package: "PopcornPeople"),
                 .product(name: "PeopleInfrastructure", package: "PopcornPeople"),
                 .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),

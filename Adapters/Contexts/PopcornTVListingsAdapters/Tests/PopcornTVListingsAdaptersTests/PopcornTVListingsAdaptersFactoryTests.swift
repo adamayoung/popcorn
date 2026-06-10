@@ -13,12 +13,15 @@ import TVListingsComposition
 @Suite("PopcornTVListingsAdaptersFactory")
 struct PopcornTVListingsAdaptersFactoryTests {
 
-    @Test("factory builds tv listings factory without crashing")
+    @Test("factory builds a remote data source that drives the tv listings factory")
     func factoryBuildsTVListingsFactory() throws {
         let modelContainer = try LivePopcornTVListingsFactory.makeInMemoryModelContainer()
-        let factory = PopcornTVListingsAdaptersFactory(modelContainer: modelContainer)
+        let adapters = PopcornTVListingsAdaptersFactory()
 
-        let tvListingsFactory = factory.makeTVListingsFactory()
+        let tvListingsFactory = LivePopcornTVListingsFactory(
+            remoteDataSource: adapters.makeRemoteDataSource(),
+            modelContainer: modelContainer
+        )
 
         _ = tvListingsFactory.makeSyncTVListingsUseCase()
         _ = tvListingsFactory.makeFetchTVChannelsUseCase()

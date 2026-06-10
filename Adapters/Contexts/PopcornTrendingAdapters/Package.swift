@@ -31,8 +31,8 @@ let package = Package(
         .target(
             name: "PopcornTrendingAdapters",
             dependencies: [
-                .product(name: "TrendingComposition", package: "PopcornTrending"),
                 .product(name: "TrendingDomain", package: "PopcornTrending"),
+                .product(name: "TrendingInfrastructure", package: "PopcornTrending"),
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
                 .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),

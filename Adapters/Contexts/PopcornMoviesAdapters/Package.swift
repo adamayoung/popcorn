@@ -30,7 +30,6 @@ let package = Package(
         .target(
             name: "PopcornMoviesAdapters",
             dependencies: [
-                .product(name: "MoviesComposition", package: "PopcornMovies"),
                 .product(name: "MoviesDomain", package: "PopcornMovies"),
                 .product(name: "MoviesInfrastructure", package: "PopcornMovies"),
                 .product(name: "ConfigurationApplication", package: "PopcornConfiguration"),

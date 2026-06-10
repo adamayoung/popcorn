@@ -6,11 +6,16 @@
 //
 
 import ConfigurationApplication
-import Foundation
-import GenresComposition
 import GenresDomain
+import GenresInfrastructure
 import TMDb
 
+/// Builds the Genres context's TMDb-backed adapters (port implementations).
+///
+/// This factory is responsible only for adapting external services to the
+/// Genres context's ports. Assembling the context's factory from these adapters
+/// is the composition root's responsibility, so the adapters layer stays a leaf
+/// and never depends on the context's composition module.
 public final class PopcornGenresAdaptersFactory {
 
     private let genreService: any GenreService
@@ -27,24 +32,16 @@ public final class PopcornGenresAdaptersFactory {
         self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
     }
 
-    public func makeGenresFactory() -> some PopcornGenresFactory {
-        let genreRemoteDataSource = TMDbGenreRemoteDataSource(
-            genreService: genreService
-        )
+    public func makeGenreRemoteDataSource() -> some GenreRemoteDataSource {
+        TMDbGenreRemoteDataSource(genreService: genreService)
+    }
 
-        let appConfigurationProvider = AppConfigurationProviderAdapter(
-            fetchUseCase: fetchAppConfigurationUseCase
-        )
+    public func makeAppConfigurationProvider() -> some AppConfigurationProviding {
+        AppConfigurationProviderAdapter(fetchUseCase: fetchAppConfigurationUseCase)
+    }
 
-        let genreBackdropProvider = GenreBackdropProviderAdapter(
-            discoverService: discoverService
-        )
-
-        return LivePopcornGenresFactory(
-            genreRemoteDataSource: genreRemoteDataSource,
-            appConfigurationProvider: appConfigurationProvider,
-            genreBackdropProvider: genreBackdropProvider
-        )
+    public func makeGenreBackdropProvider() -> some GenreBackdropProviding {
+        GenreBackdropProviderAdapter(discoverService: discoverService)
     }
 
 }

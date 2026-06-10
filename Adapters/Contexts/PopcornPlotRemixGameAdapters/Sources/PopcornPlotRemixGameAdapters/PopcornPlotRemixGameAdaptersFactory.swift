@@ -7,12 +7,9 @@
 
 import ConfigurationApplication
 import DiscoverApplication
-import Foundation
 import GenresApplication
 import MoviesApplication
-import Observability
-import PlotRemixGameComposition
-import TMDb
+import PlotRemixGameDomain
 
 public final class PopcornPlotRemixGameAdaptersFactory {
 
@@ -20,38 +17,32 @@ public final class PopcornPlotRemixGameAdaptersFactory {
     private let fetchDiscoverMoviesUseCase: any FetchDiscoverMoviesUseCase
     private let fetchMovieRecommendationsUseCase: any FetchMovieRecommendationsUseCase
     private let fetchMovieGenresUseCase: any FetchMovieGenresUseCase
-    private let observability: any Observing
 
     public init(
         fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase,
         fetchDiscoverMoviesUseCase: some FetchDiscoverMoviesUseCase,
         fetchMovieRecommendationsUseCase: some FetchMovieRecommendationsUseCase,
-        fetchMovieGenresUseCase: some FetchMovieGenresUseCase,
-        observability: any Observing
+        fetchMovieGenresUseCase: some FetchMovieGenresUseCase
     ) {
         self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
         self.fetchDiscoverMoviesUseCase = fetchDiscoverMoviesUseCase
         self.fetchMovieRecommendationsUseCase = fetchMovieRecommendationsUseCase
         self.fetchMovieGenresUseCase = fetchMovieGenresUseCase
-        self.observability = observability
     }
 
-    public func makePlotRemixGameFactory() -> some PopcornPlotRemixGameFactory {
-        let appConfigurationProvider = AppConfigurationProviderAdapter(
-            fetchUseCase: fetchAppConfigurationUseCase
-        )
-        let movieProvider = MovieProviderAdapter(
+    public func makeAppConfigurationProvider() -> some AppConfigurationProviding {
+        AppConfigurationProviderAdapter(fetchUseCase: fetchAppConfigurationUseCase)
+    }
+
+    public func makeMovieProvider() -> some MovieProviding {
+        MovieProviderAdapter(
             fetchDiscoverMoviesUseCase: fetchDiscoverMoviesUseCase,
             fetchMovieRecommendationsUseCase: fetchMovieRecommendationsUseCase
         )
-        let genreProvider = GenreProviderAdapter(fetchMovieGenresUseCase: fetchMovieGenresUseCase)
+    }
 
-        return LivePopcornPlotRemixGameFactory(
-            appConfigurationProvider: appConfigurationProvider,
-            movieProvider: movieProvider,
-            genreProvider: genreProvider,
-            observability: observability
-        )
+    public func makeGenreProvider() -> some GenreProviding {
+        GenreProviderAdapter(fetchMovieGenresUseCase: fetchMovieGenresUseCase)
     }
 
 }

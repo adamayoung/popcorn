@@ -29,7 +29,6 @@ let package = Package(
         .target(
             name: "PopcornIntelligenceAdapters",
             dependencies: [
-                .product(name: "IntelligenceComposition", package: "PopcornIntelligence"),
                 .product(name: "IntelligenceDomain", package: "PopcornIntelligence"),
                 .product(name: "IntelligenceInfrastructure", package: "PopcornIntelligence"),
                 .product(name: "MoviesApplication", package: "PopcornMovies"),

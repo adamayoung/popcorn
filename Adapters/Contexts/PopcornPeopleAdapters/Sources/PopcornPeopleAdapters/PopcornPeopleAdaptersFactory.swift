@@ -6,34 +6,35 @@
 //
 
 import ConfigurationApplication
-import Foundation
-import PeopleComposition
+import PeopleDomain
+import PeopleInfrastructure
 import TMDb
 
+/// Builds the People context's TMDb-backed adapters (port implementations).
+///
+/// This factory is responsible only for adapting external services to the
+/// People context's ports. Assembling the context's factory from these adapters
+/// is the composition root's responsibility, so the adapters layer stays a leaf
+/// and never depends on the context's composition module.
 public final class PopcornPeopleAdaptersFactory {
 
-    private let personService: any PersonService
+    private let personService: any TMDb.PersonService
     private let fetchAppConfigurationUseCase: any FetchAppConfigurationUseCase
 
     public init(
-        personService: some PersonService,
+        personService: some TMDb.PersonService,
         fetchAppConfigurationUseCase: some FetchAppConfigurationUseCase
     ) {
         self.personService = personService
         self.fetchAppConfigurationUseCase = fetchAppConfigurationUseCase
     }
 
-    public func makePeopleFactory() -> some PopcornPeopleFactory {
-        let personRemoteDataSource = TMDbPersonRemoteDataSource(personService: personService)
+    public func makePersonRemoteDataSource() -> some PersonRemoteDataSource {
+        TMDbPersonRemoteDataSource(personService: personService)
+    }
 
-        let appConfigurationProvider = AppConfigurationProviderAdapter(
-            fetchUseCase: fetchAppConfigurationUseCase
-        )
-
-        return LivePopcornPeopleFactory(
-            personRemoteDataSource: personRemoteDataSource,
-            appConfigurationProvider: appConfigurationProvider
-        )
+    public func makeAppConfigurationProvider() -> some AppConfigurationProviding {
+        AppConfigurationProviderAdapter(fetchUseCase: fetchAppConfigurationUseCase)
     }
 
 }

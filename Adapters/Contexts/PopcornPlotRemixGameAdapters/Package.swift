@@ -33,7 +33,6 @@ let package = Package(
         .target(
             name: "PopcornPlotRemixGameAdapters",
             dependencies: [
-                .product(name: "PlotRemixGameComposition", package: "PopcornPlotRemixGame"),
                 .product(name: "PlotRemixGameDomain", package: "PopcornPlotRemixGame"),
                 .product(name: "DiscoverApplication", package: "PopcornDiscover"),
                 .product(name: "DiscoverDomain", package: "PopcornDiscover"),
