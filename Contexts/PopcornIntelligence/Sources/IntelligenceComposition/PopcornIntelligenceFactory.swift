@@ -7,12 +7,40 @@
 
 import Foundation
 import IntelligenceApplication
+import IntelligenceDomain
+import IntelligenceInfrastructure
 
-/// Defines the ``PopcornIntelligenceFactory`` contract.
-public protocol PopcornIntelligenceFactory: Sendable {
+/// Represents ``PopcornIntelligenceFactory``.
+public final class PopcornIntelligenceFactory: Sendable {
 
-    func makeCreateMovieIntelligenceSessionUseCase() -> CreateMovieIntelligenceSessionUseCase
+    private let applicationFactory: IntelligenceApplicationFactory
 
-    func makeCreateTVSeriesIntelligenceSessionUseCase() -> CreateTVSeriesIntelligenceSessionUseCase
+    /// Creates a new instance.
+    public init(
+        movieProvider: some MovieProviding,
+        tvSeriesProvider: some TVSeriesProviding,
+        creditsProvider: some CreditsProviding
+    ) {
+        let infrastructureFactory = IntelligenceInfrastructureFactory(
+            movieProvider: movieProvider,
+            tvSeriesProvider: tvSeriesProvider,
+            creditsProvider: creditsProvider
+        )
+
+        self.applicationFactory = IntelligenceApplicationFactory(
+            movieSessionRepository: infrastructureFactory.makeMovieLLMSessionRepository(),
+            tvSeriesSessionRepository: infrastructureFactory.makeTVSeriesLLMSessionRepository()
+        )
+    }
+
+    /// Executes ``makeCreateMovieIntelligenceSessionUseCase``.
+    public func makeCreateMovieIntelligenceSessionUseCase() -> CreateMovieIntelligenceSessionUseCase {
+        applicationFactory.makeCreateMovieIntelligenceSessionUseCase()
+    }
+
+    /// Executes ``makeCreateTVSeriesIntelligenceSessionUseCase``.
+    public func makeCreateTVSeriesIntelligenceSessionUseCase() -> CreateTVSeriesIntelligenceSessionUseCase {
+        applicationFactory.makeCreateTVSeriesIntelligenceSessionUseCase()
+    }
 
 }

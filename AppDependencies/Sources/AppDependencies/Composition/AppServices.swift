@@ -63,7 +63,7 @@ public final class AppServices: Sendable {
     public let gamesCatalogFactory: PopcornGamesCatalogFactory
     public let intelligenceFactory: PopcornIntelligenceFactory
     public let plotRemixGameFactory: PopcornPlotRemixGameFactory
-    public let tvListingsFactory: any PopcornTVListingsFactory
+    public let tvListingsFactory: PopcornTVListingsFactory
 
     // MARK: - Platform services
 
@@ -139,7 +139,7 @@ public final class AppServices: Sendable {
         let gamesCatalogFactory: PopcornGamesCatalogFactory
         let intelligenceFactory: PopcornIntelligenceFactory
         let plotRemixGameFactory: PopcornPlotRemixGameFactory
-        let tvListingsFactory: any PopcornTVListingsFactory
+        let tvListingsFactory: PopcornTVListingsFactory
         let featureFlagService: any FeatureFlagging & FeatureFlagOverriding & FeatureFlagInitialising
         let observabilityService: any Observing & ObservabilityInitialising
     }

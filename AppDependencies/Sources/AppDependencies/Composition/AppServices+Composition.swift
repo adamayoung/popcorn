@@ -58,7 +58,7 @@ extension AppServices {
         let gamesCatalogAdapters = PopcornGamesCatalogAdaptersFactory(
             featureFlags: featureFlagService
         )
-        let gamesCatalogFactory = LivePopcornGamesCatalogFactory(
+        let gamesCatalogFactory = PopcornGamesCatalogFactory(
             featureFlagProvider: gamesCatalogAdapters.makeFeatureFlagProvider()
         )
         let observabilityService = makeObservabilityService()
@@ -76,7 +76,7 @@ extension AppServices {
         let tvListingsAdapters = PopcornTVListingsAdaptersFactory(
             epgURL: tvListingsEPGURL
         )
-        let tvListingsFactory = LivePopcornTVListingsFactory(
+        let tvListingsFactory = PopcornTVListingsFactory(
             remoteDataSource: tvListingsAdapters.makeRemoteDataSource()
         )
 
@@ -183,7 +183,7 @@ extension AppServices {
         let adapters = PopcornConfigurationAdaptersFactory(
             configurationService: tmdb.configurations
         )
-        let factory = LivePopcornConfigurationFactory(
+        let factory = PopcornConfigurationFactory(
             configurationRemoteDataSource: adapters.makeConfigurationRemoteDataSource()
         )
         return ConfigurationBundle(
@@ -198,7 +198,7 @@ extension AppServices {
             discoverService: foundations.tmdb.discover,
             fetchAppConfigurationUseCase: foundations.fetchAppConfiguration
         )
-        let factory = LivePopcornGenresFactory(
+        let factory = PopcornGenresFactory(
             genreRemoteDataSource: adapters.makeGenreRemoteDataSource(),
             appConfigurationProvider: adapters.makeAppConfigurationProvider(),
             genreBackdropProvider: adapters.makeGenreBackdropProvider()
@@ -215,7 +215,7 @@ extension AppServices {
             movieService: foundations.tmdb.movies,
             fetchAppConfigurationUseCase: foundations.fetchAppConfiguration
         )
-        let factory = LivePopcornMoviesFactory(
+        let factory = PopcornMoviesFactory(
             movieRemoteDataSource: adapters.makeMovieRemoteDataSource(),
             appConfigurationProvider: adapters.makeAppConfigurationProvider(),
             themeColorProvider: foundations.themeColorProvider
@@ -236,7 +236,7 @@ extension AppServices {
             tvEpisodeService: foundations.tmdb.tvEpisodes,
             fetchAppConfigurationUseCase: foundations.fetchAppConfiguration
         )
-        let factory = LivePopcornTVSeriesFactory(
+        let factory = PopcornTVSeriesFactory(
             tvSeriesRemoteDataSource: adapters.makeTVSeriesRemoteDataSource(),
             tvSeasonRemoteDataSource: adapters.makeTVSeasonRemoteDataSource(),
             tvEpisodeRemoteDataSource: adapters.makeTVEpisodeRemoteDataSource(),
@@ -255,7 +255,7 @@ extension AppServices {
             personService: foundations.tmdb.people,
             fetchAppConfigurationUseCase: foundations.fetchAppConfiguration
         )
-        let factory = LivePopcornPeopleFactory(
+        let factory = PopcornPeopleFactory(
             personRemoteDataSource: adapters.makePersonRemoteDataSource(),
             appConfigurationProvider: adapters.makeAppConfigurationProvider()
         )
@@ -276,7 +276,7 @@ extension AppServices {
             fetchMovieImageCollectionUseCase: movies.fetchImageCollection,
             fetchTVSeriesImageCollectionUseCase: tvSeries.fetchImageCollection
         )
-        let factory = LivePopcornDiscoverFactory(
+        let factory = PopcornDiscoverFactory(
             discoverRemoteDataSource: adapters.makeDiscoverRemoteDataSource(),
             appConfigurationProvider: adapters.makeAppConfigurationProvider(),
             genreProvider: adapters.makeGenreProvider(),
@@ -298,7 +298,7 @@ extension AppServices {
             fetchMovieImageCollectionUseCase: movies.fetchImageCollection,
             fetchTVSeriesImageCollectionUseCase: tvSeries.fetchImageCollection
         )
-        return LivePopcornTrendingFactory(
+        return PopcornTrendingFactory(
             trendingRemoteDataSource: adapters.makeTrendingRemoteDataSource(),
             appConfigurationProvider: adapters.makeAppConfigurationProvider(),
             movieLogoImageProvider: adapters.makeMovieLogoImageProvider(),
@@ -320,7 +320,7 @@ extension AppServices {
             fetchTVSeriesDetailsUseCase: tvSeries.fetchDetails,
             fetchPersonDetailsUseCase: people.fetchDetails
         )
-        return LivePopcornSearchFactory(
+        return PopcornSearchFactory(
             mediaRemoteDataSource: adapters.makeMediaRemoteDataSource(),
             appConfigurationProvider: adapters.makeAppConfigurationProvider(),
             mediaProvider: adapters.makeMediaProvider(),
@@ -337,7 +337,7 @@ extension AppServices {
             fetchTVSeriesDetailsUseCase: tvSeries.fetchDetails,
             fetchMovieCreditsUseCase: movies.fetchCredits
         )
-        return LivePopcornIntelligenceFactory(
+        return PopcornIntelligenceFactory(
             movieProvider: adapters.makeMovieProvider(),
             tvSeriesProvider: adapters.makeTVSeriesProvider(),
             creditsProvider: adapters.makeCreditsProvider()
@@ -357,7 +357,7 @@ extension AppServices {
             fetchMovieRecommendationsUseCase: movies.fetchRecommendations,
             fetchMovieGenresUseCase: genres.fetchMovieGenres
         )
-        return LivePopcornPlotRemixGameFactory(
+        return PopcornPlotRemixGameFactory(
             appConfigurationProvider: adapters.makeAppConfigurationProvider(),
             movieProvider: adapters.makeMovieProvider(),
             genreProvider: adapters.makeGenreProvider(),

@@ -5,15 +5,43 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import Foundation
 import SearchApplication
+import SearchDomain
+import SearchInfrastructure
 
-public protocol PopcornSearchFactory: Sendable {
+public final class PopcornSearchFactory: Sendable {
 
-    func makeSearchMediaUseCase() -> SearchMediaUseCase
+    private let applicationFactory: SearchApplicationFactory
 
-    func makeFetchMediaSearchHistory() -> FetchMediaSearchHistoryUseCase
+    public init(
+        mediaRemoteDataSource: some MediaRemoteDataSource,
+        appConfigurationProvider: some AppConfigurationProviding,
+        mediaProvider: some MediaProviding,
+        themeColorProvider: (any ThemeColorProviding)? = nil
+    ) {
+        let infrastructureFactory = SearchInfrastructureFactory(
+            mediaRemoteDataSource: mediaRemoteDataSource
+        )
+        self.applicationFactory = SearchApplicationFactory(
+            mediaRepository: infrastructureFactory.makeMediaRepository(),
+            appConfigurationProvider: appConfigurationProvider,
+            mediaProvider: mediaProvider,
+            themeColorProvider: themeColorProvider
+        )
+    }
 
-    func makeAddMediaSearchHistoryEntryUseCase() -> AddMediaSearchHistoryEntryUseCase
+    public func makeSearchMediaUseCase() -> SearchMediaUseCase {
+        applicationFactory.makeSearchMediaUseCase()
+    }
+
+    public func makeFetchMediaSearchHistory() -> FetchMediaSearchHistoryUseCase {
+        applicationFactory.makeFetchMediaSearchHistory()
+    }
+
+    public func makeAddMediaSearchHistoryEntryUseCase() -> AddMediaSearchHistoryEntryUseCase {
+        applicationFactory.makeAddMediaSearchHistoryEntryUseCase()
+    }
 
 }

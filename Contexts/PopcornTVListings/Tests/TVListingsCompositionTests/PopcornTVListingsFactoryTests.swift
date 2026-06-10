@@ -1,5 +1,5 @@
 //
-//  LivePopcornTVListingsFactoryTests.swift
+//  PopcornTVListingsFactoryTests.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -11,14 +11,14 @@ import Testing
 import TVListingsDomain
 import TVListingsInfrastructure
 
-@Suite("LivePopcornTVListingsFactory")
-struct LivePopcornTVListingsFactoryTests {
+@Suite("PopcornTVListingsFactory")
+struct PopcornTVListingsFactoryTests {
 
     @Test("factory builds all use cases without crashing")
     func factoryBuildsAllUseCases() throws {
         let modelContainer = try TVListingsInfrastructureFactory.makeInMemoryModelContainer()
 
-        let factory = LivePopcornTVListingsFactory(
+        let factory = PopcornTVListingsFactory(
             remoteDataSource: StubRemote(),
             modelContainer: modelContainer
         )

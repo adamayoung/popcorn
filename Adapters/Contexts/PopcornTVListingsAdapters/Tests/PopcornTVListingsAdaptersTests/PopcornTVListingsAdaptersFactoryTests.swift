@@ -15,10 +15,10 @@ struct PopcornTVListingsAdaptersFactoryTests {
 
     @Test("factory builds a remote data source that drives the tv listings factory")
     func factoryBuildsTVListingsFactory() throws {
-        let modelContainer = try LivePopcornTVListingsFactory.makeInMemoryModelContainer()
+        let modelContainer = try PopcornTVListingsFactory.makeInMemoryModelContainer()
         let adapters = PopcornTVListingsAdaptersFactory()
 
-        let tvListingsFactory = LivePopcornTVListingsFactory(
+        let tvListingsFactory = PopcornTVListingsFactory(
             remoteDataSource: adapters.makeRemoteDataSource(),
             modelContainer: modelContainer
         )

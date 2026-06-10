@@ -5,23 +5,67 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import Foundation
 import TVSeriesApplication
+import TVSeriesDomain
+import TVSeriesInfrastructure
 
-public protocol PopcornTVSeriesFactory: Sendable {
+public final class PopcornTVSeriesFactory: Sendable {
 
-    func makeFetchTVSeriesDetailsUseCase() -> FetchTVSeriesDetailsUseCase
+    private let applicationFactory: TVSeriesApplicationFactory
 
-    func makeFetchTVSeriesImageCollectionUseCase() -> FetchTVSeriesImageCollectionUseCase
+    public init(
+        tvSeriesRemoteDataSource: some TVSeriesRemoteDataSource,
+        tvSeasonRemoteDataSource: some TVSeasonRemoteDataSource,
+        tvEpisodeRemoteDataSource: some TVEpisodeRemoteDataSource,
+        appConfigurationProvider: some AppConfigurationProviding,
+        themeColorProvider: (any ThemeColorProviding)? = nil
+    ) {
+        let infrastructureFactory = TVSeriesInfrastructureFactory(
+            tvSeriesRemoteDataSource: tvSeriesRemoteDataSource,
+            tvSeasonRemoteDataSource: tvSeasonRemoteDataSource,
+            tvEpisodeRemoteDataSource: tvEpisodeRemoteDataSource
+        )
 
-    func makeFetchTVSeasonDetailsUseCase() -> FetchTVSeasonDetailsUseCase
+        self.applicationFactory = TVSeriesApplicationFactory(
+            tvSeriesRepository: infrastructureFactory.makeTVSeriesRepository(),
+            tvSeasonRepository: infrastructureFactory.makeTVSeasonRepository(),
+            tvEpisodeRepository: infrastructureFactory.makeTVEpisodeRepository(),
+            tvSeriesCreditsRepository: infrastructureFactory.makeTVSeriesCreditsRepository(),
+            tvEpisodeCreditsRepository: infrastructureFactory.makeTVEpisodeCreditsRepository(),
+            appConfigurationProvider: appConfigurationProvider,
+            themeColorProvider: themeColorProvider
+        )
+    }
 
-    func makeFetchTVEpisodeDetailsUseCase() -> FetchTVEpisodeDetailsUseCase
+    public func makeFetchTVSeriesDetailsUseCase() -> FetchTVSeriesDetailsUseCase {
+        applicationFactory.makeFetchTVSeriesDetailsUseCase()
+    }
 
-    func makeFetchTVSeriesCreditsUseCase() -> FetchTVSeriesCreditsUseCase
+    public func makeFetchTVSeriesImageCollectionUseCase() -> FetchTVSeriesImageCollectionUseCase {
+        applicationFactory.makeFetchTVSeriesImageCollectionUseCase()
+    }
 
-    func makeFetchTVEpisodeCreditsUseCase() -> FetchTVEpisodeCreditsUseCase
+    public func makeFetchTVSeasonDetailsUseCase() -> FetchTVSeasonDetailsUseCase {
+        applicationFactory.makeFetchTVSeasonDetailsUseCase()
+    }
 
-    func makeFetchTVSeriesAggregateCreditsUseCase() -> FetchTVSeriesAggregateCreditsUseCase
+    public func makeFetchTVEpisodeDetailsUseCase() -> FetchTVEpisodeDetailsUseCase {
+        applicationFactory.makeFetchTVEpisodeDetailsUseCase()
+    }
+
+    public func makeFetchTVSeriesCreditsUseCase() -> FetchTVSeriesCreditsUseCase {
+        applicationFactory.makeFetchTVSeriesCreditsUseCase()
+    }
+
+    public func makeFetchTVEpisodeCreditsUseCase() -> FetchTVEpisodeCreditsUseCase {
+        applicationFactory.makeFetchTVEpisodeCreditsUseCase()
+    }
+
+    public func makeFetchTVSeriesAggregateCreditsUseCase()
+    -> FetchTVSeriesAggregateCreditsUseCase {
+        applicationFactory.makeFetchTVSeriesAggregateCreditsUseCase()
+    }
 
 }

@@ -5,13 +5,44 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import CoreDomain
 import DiscoverApplication
+import DiscoverDomain
+import DiscoverInfrastructure
 import Foundation
 
-public protocol PopcornDiscoverFactory: Sendable {
+public final class PopcornDiscoverFactory: Sendable {
 
-    func makeFetchDiscoverMoviesUseCase() -> FetchDiscoverMoviesUseCase
+    private let applicationFactory: DiscoverApplicationFactory
 
-    func makeFetchDiscoverTVSeriesUseCase() -> FetchDiscoverTVSeriesUseCase
+    public init(
+        discoverRemoteDataSource: some DiscoverRemoteDataSource,
+        appConfigurationProvider: some AppConfigurationProviding,
+        genreProvider: some GenreProviding,
+        movieLogoImageProvider: some MovieLogoImageProviding,
+        tvSeriesLogoImageProvider: some TVSeriesLogoImageProviding,
+        themeColorProvider: (any ThemeColorProviding)? = nil
+    ) {
+        let infrastructureFactory = DiscoverInfrastructureFactory(
+            discoverRemoteDataSource: discoverRemoteDataSource
+        )
+        self.applicationFactory = DiscoverApplicationFactory(
+            discoverMovieRepository: infrastructureFactory.makeDiscoverMovieRepository(),
+            discoverTVSeriesRepository: infrastructureFactory.makeDiscoverTVSeriesRepository(),
+            genreProvider: genreProvider,
+            appConfigurationProvider: appConfigurationProvider,
+            movieLogoImageProvider: movieLogoImageProvider,
+            tvSeriesLogoImageProvider: tvSeriesLogoImageProvider,
+            themeColorProvider: themeColorProvider
+        )
+    }
+
+    public func makeFetchDiscoverMoviesUseCase() -> FetchDiscoverMoviesUseCase {
+        applicationFactory.makeFetchDiscoverMoviesUseCase()
+    }
+
+    public func makeFetchDiscoverTVSeriesUseCase() -> FetchDiscoverTVSeriesUseCase {
+        applicationFactory.makeFetchDiscoverTVSeriesUseCase()
+    }
 
 }
