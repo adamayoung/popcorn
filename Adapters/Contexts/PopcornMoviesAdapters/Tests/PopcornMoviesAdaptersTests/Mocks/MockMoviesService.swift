@@ -255,8 +255,9 @@ final class MockMoviesService: MovieService, @unchecked Sendable {
         fatalError("Not implemented")
     }
 
-    func translations(forMovie movieID: Movie
-        .ID) async throws(TMDbError) -> TranslationCollection<MovieTranslationData> {
+    func translations(
+        forMovie movieID: Movie.ID
+    ) async throws(TMDbError) -> TranslationCollection<MovieTranslationData> {
         fatalError("Not implemented")
     }
 
