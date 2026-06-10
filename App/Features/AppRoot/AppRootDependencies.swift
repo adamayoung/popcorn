@@ -11,10 +11,9 @@ import Foundation
 
 /// The dependencies required by ``AppRootViewModel``.
 ///
-/// A plain `Sendable` struct of closures — the MVVM replacement for the former
-/// `AppRootClient` (`@DependencyClient`). Building the production instance with
-/// ``live(services:)`` wires the one-time startup sequence (``bootstrap``) and the
-/// per-tab feature-flag reads to the app's shared ``AppServices`` graph.
+/// A plain `Sendable` struct of closures providing the startup sequence and
+/// per-tab feature-flag reads. Building the production instance with
+/// ``live(services:)`` wires these to the app's shared ``AppServices`` graph.
 struct AppRootDependencies {
 
     /// Runs the app's one-time startup sequence (observability + feature-flag
@@ -33,9 +32,8 @@ extension AppRootDependencies {
 
     /// Builds the production dependencies from the app's shared services.
     ///
-    /// Mirrors the former `AppRootClient.liveValue` exactly: the same startup
-    /// sequence (via ``AppBootstrapper``) and the same feature flags (note that
-    /// search reads `.mediaSearch`).
+    /// Wires the startup sequence (via ``AppBootstrapper``) and the feature flags
+    /// (note that search reads `.mediaSearch`) to the shared ``AppServices`` graph.
     static func live(services: AppServices) -> AppRootDependencies {
         let featureFlags = services.featureFlags
 

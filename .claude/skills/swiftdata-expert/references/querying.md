@@ -132,7 +132,7 @@ init(searchText: String) {
 
 SwiftUI re-evaluates the initialiser when inputs change.
 
-**Project note:** This project does NOT use `@Query` in views — TCA features fetch data through use cases and reducers. `@Query` is documented here for completeness.
+**Project note:** This project does NOT use `@Query` in views — feature view models fetch data through use cases. `@Query` is documented here for completeness.
 
 ## Batch operations
 

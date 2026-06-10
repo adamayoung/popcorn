@@ -11,10 +11,10 @@ import GamesCatalogApplication
 
 /// The dependencies required by ``GamesCatalogViewModel``.
 ///
-/// A plain `Sendable` struct of closures — the MVVM replacement for the former
-/// `GamesCatalogClient` (`@DependencyClient`). Constructing it requires every
-/// closure, so a missing dependency is a compile error. Build the production
-/// instance with ``live(services:)``.
+/// A plain `Sendable` struct of closures providing the data dependencies for
+/// ``GamesCatalogViewModel``. Constructing it requires every closure, so a
+/// missing dependency is a compile error. Build the production instance with
+/// ``live(services:)``.
 public struct GamesCatalogDependencies: Sendable {
 
     public var fetchGames: @Sendable () async throws -> [GameMetadata]
@@ -31,8 +31,8 @@ public extension GamesCatalogDependencies {
 
     /// Builds the production dependencies from the app's shared services.
     ///
-    /// Mirrors the former `GamesCatalogClient.liveValue` exactly: same use case,
-    /// same mapper, same error translation.
+    /// Uses the fetch-games use case with its mapper and translates domain errors to
+    /// ``FetchGamesCatalogError``.
     static func live(services: AppServices) -> GamesCatalogDependencies {
         let fetchGames = services.gamesCatalogFactory.makeFetchGamesUseCase()
 
@@ -54,8 +54,7 @@ public extension GamesCatalogDependencies {
 #if DEBUG
     public extension GamesCatalogDependencies {
 
-        /// Mock dependencies for previews and snapshot tests (mirrors the former
-        /// `GamesCatalogClient.previewValue`).
+        /// Mock dependencies for previews and snapshot tests.
         static var preview: GamesCatalogDependencies {
             GamesCatalogDependencies(
                 fetchGames: { GameMetadata.mocks }

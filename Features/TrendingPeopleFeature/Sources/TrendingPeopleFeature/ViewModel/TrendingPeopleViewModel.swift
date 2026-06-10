@@ -9,7 +9,7 @@ import Foundation
 import Observation
 import OSLog
 
-/// Drives ``TrendingPeopleView``. The MVVM replacement for `TrendingPeopleFeature`.
+/// Drives ``TrendingPeopleView``.
 ///
 /// Loading is driven by the view through ``load()`` from a `.task`, so SwiftUI owns
 /// the lifetime: the work is cancelled on disappear and restarted on reappear (or
@@ -45,8 +45,8 @@ public final class TrendingPeopleViewModel {
     /// Fetches trending people and publishes them to ``people``.
     ///
     /// Drive this from the view's `.task`; SwiftUI cancels it on disappear and
-    /// reruns it on reappear / ``reload()``. Mirrors the former reducer: on failure
-    /// it logs and leaves ``people`` unchanged.
+    /// reruns it on reappear / ``reload()``. On failure it logs and leaves
+    /// ``people`` unchanged.
     public func load() async {
         Self.logger.info("User fetching trending people")
 

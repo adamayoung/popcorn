@@ -25,7 +25,6 @@ Add a separate test target for snapshots (keep them isolated from unit tests):
     name: "{FeatureName}SnapshotTests",
     dependencies: [
         "{FeatureName}",
-        .product(name: "ComposableArchitecture", package: "swift-composable-architecture"),
         .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
     ],
     resources: [.copy("Views/__Snapshots__")]
@@ -53,7 +52,6 @@ Add the new target to `TestPlans/PopcornSnapshotTests.xctestplan`:
 Place test files under `Tests/{FeatureName}SnapshotTests/Views/`:
 
 ```swift
-import ComposableArchitecture
 @testable import {FeatureName}
 import Foundation
 import SnapshotTesting
@@ -68,12 +66,7 @@ struct {ViewName}SnapshotTests {
     func {viewName}() {
         let view = NavigationStack {
             {ViewName}(
-                store: Store(
-                    initialState: .init(
-                        viewState: .ready(/* preview data */)
-                    ),
-                    reducer: { EmptyReducer() }
-                )
+                viewModel: .preview(viewState: .ready(/* preview data */))
             )
         }
 
@@ -161,15 +154,12 @@ Commit the snapshot PNG alongside the test code.
 
 ## Key Patterns
 
-### TCA Store Setup for Snapshots
+### View Model Setup for Snapshots
 
-Always use `EmptyReducer()` — snapshot tests capture visual state, not behavior:
+Drive the view with the feature view model's `.preview(viewState:)` factory — snapshot tests capture visual state, not behavior. Feature view models expose a `#if DEBUG static func preview(viewState:)` that pins a fixed view state with no-op dependencies and navigation (chat-style view models use `.preview(messages:)`):
 
 ```swift
-Store(
-    initialState: .init(viewState: .ready(previewData)),
-    reducer: { EmptyReducer() }
-)
+{ViewName}(viewModel: .preview(viewState: .ready(previewData)))
 ```
 
 ### Multiple Snapshots Per Test
@@ -199,23 +189,13 @@ Create separate test functions for each meaningful state:
 ```swift
 @Test
 func loadingState() {
-    let view = MyView(
-        store: Store(
-            initialState: .init(viewState: .loading),
-            reducer: { EmptyReducer() }
-        )
-    )
+    let view = MyView(viewModel: .preview(viewState: .loading))
     // verifySnapshot...
 }
 
 @Test
 func errorState() {
-    let view = MyView(
-        store: Store(
-            initialState: .init(viewState: .error),
-            reducer: { EmptyReducer() }
-        )
-    )
+    let view = MyView(viewModel: .preview(viewState: .error(/* error */)))
     // verifySnapshot...
 }
 ```

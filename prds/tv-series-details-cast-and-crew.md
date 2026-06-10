@@ -58,16 +58,16 @@ TVSeriesDomain.Credits
 TVSeriesApplication.CreditsDetails { id, cast: [CastMemberDetails], crew: [CrewMemberDetails] }
   |
   v
-@Dependency(\.fetchTVSeriesCredits)  [AppDependencies TCA wiring]
+services.tvSeriesFactory.makeFetchTVSeriesCreditsUseCase()  [resolved in TVSeriesDetailsDependencies.live(services:)]
   |
   v
-TVSeriesDetailsClient.fetchCredits(tvSeriesID:)
+TVSeriesDetailsDependencies.fetchCredits(tvSeriesID:)
   |  [CreditsMapper — .prefix(5) + .profileURLSet?.detail]
   v
 TVSeriesDetailsFeature.Credits { id, castMembers: [CastMember], crewMembers: [CrewMember] }
   |
   v
-TVSeriesDetailsFeature.ViewSnapshot { tvSeries, castMembers, crewMembers }
+TVSeriesDetailsViewModel.ViewSnapshot { tvSeries, castMembers, crewMembers }
   |
   v
 CastAndCrewCarousel -> ProfileCarouselCell (DesignSystem)
@@ -192,9 +192,9 @@ CastAndCrewCarousel -> ProfileCarouselCell (DesignSystem)
 
 ---
 
-### US-4: Adapters — TMDb credits mappers + AppDependencies wiring — `M`
+### US-4: Adapters — TMDb credits mappers + composition wiring — `M`
 
-> As a **developer**, I want TMDb-to-domain credits mappers and TCA dependency wiring so that the feature layer can access TV series credits via `@Dependency`.
+> As a **developer**, I want TMDb-to-domain credits mappers wired into the shared services graph so that the feature layer can access TV series credits via its `Dependencies.live(services:)`.
 
 **Acceptance Criteria**:
 - [ ] `CreditsMapper` maps `TMDb.ShowCredits` → `TVSeriesDomain.Credits`
@@ -202,8 +202,7 @@ CastAndCrewCarousel -> ProfileCarouselCell (DesignSystem)
 - [ ] `CrewMemberMapper` maps `TMDb.CrewMember` → `TVSeriesDomain.CrewMember`
 - [ ] `GenderMapper` maps `TMDb.Gender` → `CoreDomain.Gender`
 - [ ] `TMDbTVSeriesRemoteDataSource` updated with `credits(forTVSeries:)` calling `tvSeriesService.credits(forTVSeries:language:)`
-- [ ] `FetchTVSeriesCreditsUseCaseKey` TCA dependency key in AppDependencies
-- [ ] `DependencyValues.fetchTVSeriesCredits` extension
+- [ ] `makeFetchTVSeriesCreditsUseCase()` reachable from `AppServices.tvSeriesFactory`
 - [ ] Package builds in both PopcornTVSeriesAdapters and AppDependencies
 
 **Tech Elab**:
@@ -212,7 +211,7 @@ CastAndCrewCarousel -> ProfileCarouselCell (DesignSystem)
 - Create `Adapters/Contexts/PopcornTVSeriesAdapters/Sources/PopcornTVSeriesAdapters/DataSources/Mappers/CrewMemberMapper.swift`
 - Create `Adapters/Contexts/PopcornTVSeriesAdapters/Sources/PopcornTVSeriesAdapters/DataSources/Mappers/GenderMapper.swift` — maps `TMDb.Gender` → `CoreDomain.Gender`
 - Modify `Adapters/Contexts/PopcornTVSeriesAdapters/Sources/PopcornTVSeriesAdapters/DataSources/TMDbTVSeriesRemoteDataSource.swift` — add `credits(forTVSeries:)` with SpanContext tracing
-- Create `AppDependencies/Sources/AppDependencies/TVSeries/FetchTVSeriesCreditsUseCase+TCA.swift` — follow `FetchMovieCreditsUseCase+TCA.swift`
+- The TV series factory's `makeFetchTVSeriesCreditsUseCase()` (added in US-3) is already part of the `AppServices` graph, so no extra AppDependencies wiring is needed — `TVSeriesDetailsDependencies.live(services:)` calls `services.tvSeriesFactory.makeFetchTVSeriesCreditsUseCase()` directly
 
 **Test Elab**:
 - Test `CreditsMapper` maps ShowCredits → Credits with correct cast/crew arrays
@@ -235,12 +234,12 @@ CastAndCrewCarousel -> ProfileCarouselCell (DesignSystem)
 - [ ] Cast & Crew carousel displayed below the seasons carousel when credits are available
 - [ ] Carousel shows up to 5 cast members + 5 crew members with circular profile images
 - [ ] Each cell shows person name and character name (cast) or job title (crew)
-- [ ] Tapping a person navigates to `.personDetails(id:)` via the Navigation enum
+- [ ] Tapping a person calls `TVSeriesDetailsNavigating.openPersonDetails(id:)`
 - [ ] Section header reads "CAST_AND_CREW" (localized)
 - [ ] Carousel hidden when feature flag disabled or no credits available
 - [ ] Credits fetched in parallel with TV series details (feature flag gated)
 - [ ] Accessibility identifiers: `tv-series-details.cast-and-crew.carousel`, `.cast.{offset}`, `.crew.{offset}`
-- [ ] All existing tests pass, new tests for mapper, feature flags, client, and navigation
+- [ ] All existing tests pass, new tests for mapper, feature flags, dependencies, and navigation
 - [ ] App builds with no warnings
 
 **Tech Elab**:
@@ -250,13 +249,14 @@ CastAndCrewCarousel -> ProfileCarouselCell (DesignSystem)
 - Create `Features/TVSeriesDetailsFeature/Sources/TVSeriesDetailsFeature/Models/CrewMember.swift` — follow movie pattern
 - Create `Features/TVSeriesDetailsFeature/Sources/TVSeriesDetailsFeature/Mappers/CreditsMapper.swift` — maps `TVSeriesApplication.CreditsDetails` → feature `Credits`, `.prefix(5)` for both cast and crew, extract `.detail` from `profileURLSet`
 - Create `Features/TVSeriesDetailsFeature/Sources/TVSeriesDetailsFeature/Views/Components/CastAndCrewCarousel.swift` — follow movie `CastAndCrewCarousel.swift` exactly, update accessibility IDs to `tv-series-details.*`
-- Modify `Features/TVSeriesDetailsFeature/Sources/TVSeriesDetailsFeature/TVSeriesDetailsClient.swift` — add `fetchCredits: @Sendable (Int) async throws -> Credits` and `isCastAndCrewEnabled: @Sendable () throws -> Bool`, wire live + preview values
-- Modify `Features/TVSeriesDetailsFeature/Sources/TVSeriesDetailsFeature/TVSeriesDetailsFeature.swift`:
+- Modify `Features/TVSeriesDetailsFeature/Sources/TVSeriesDetailsFeature/ViewModel/TVSeriesDetailsDependencies.swift` — add `fetchCredits: @Sendable (Int) async throws -> Credits` and `isCastAndCrewEnabled: @Sendable () throws -> Bool`, wire `live(services:)` + preview values
+- Modify `Features/TVSeriesDetailsFeature/Sources/TVSeriesDetailsFeature/ViewModel/TVSeriesDetailsNavigating.swift` — add `openPersonDetails(id: Int)` to the navigation protocol (+ the no-op preview navigator)
+- Modify `Features/TVSeriesDetailsFeature/Sources/TVSeriesDetailsFeature/ViewModel/TVSeriesDetailsViewModel.swift`:
   - Add `castMembers: [CastMember]` and `crewMembers: [CrewMember]` to `ViewSnapshot`
-  - Add `isCastAndCrewEnabled: Bool` to `State` (default `false`)
-  - Update `updateFeatureFlags` to set `isCastAndCrewEnabled`
-  - Update `handleFetchTVSeries` to fetch credits in parallel (feature flag gated)
-  - Add `.personDetails(id: Int)` to `Navigation` enum
+  - Add `isCastAndCrewEnabled: Bool` published property (default `false`)
+  - Update `updateFeatureFlags()` to set `isCastAndCrewEnabled`
+  - Update the fetch to load credits in parallel (feature flag gated)
+  - Add a `selectPerson(id:)` method that calls `navigator.openPersonDetails(id:)`
 - Modify `Features/TVSeriesDetailsFeature/Sources/TVSeriesDetailsFeature/Views/TVSeriesDetailsContentView.swift` — add `castMembers`, `crewMembers`, `didSelectPerson` params, render `CastAndCrewCarousel` below seasons
 - Add localization key `CAST_AND_CREW` and `VIEW_PERSON_DETAILS_HINT` to TVSeriesDetailsFeature's `Localizable.xcstrings`
 - Update TVSeriesDetailsFeature `Package.swift` if needed (should already have `TVSeriesApplication` dependency)
@@ -268,9 +268,8 @@ CastAndCrewCarousel -> ProfileCarouselCell (DesignSystem)
 - Test `CreditsMapper` handles empty arrays
 - Test `CreditsMapper` handles nil `profileURLSet`
 - Test `CreditsMapper` preserves order
-- Test `isCastAndCrewEnabled` returns true/false based on feature flag
-- Test `updateFeatureFlags` sets `isCastAndCrewEnabled` (enabled, disabled, error cases)
-- Test navigation `.personDetails(id:)` returns `.none`
+- Test `isCastAndCrewEnabled` reflects the feature flag (enabled, disabled, error cases) after `updateFeatureFlags()`
+- Test `selectPerson(id:)` invokes the spy navigator with the correct id
 - Edge case: credits fetch disabled by feature flag returns empty cast/crew
 - Edge case: credits fetch throws — TV series still loads (error isolated)
 

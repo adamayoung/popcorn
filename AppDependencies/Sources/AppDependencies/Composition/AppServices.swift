@@ -27,16 +27,12 @@ import TVListingsComposition
 import TVSeriesComposition
 
 ///
-/// A plain, TCA-free composition root that builds the app's shared service and factory
-/// graph exactly once, in dependency order.
+/// The app's composition root. Builds the shared service and factory graph exactly
+/// once, in dependency order.
 ///
-/// `AppServices` mirrors what the existing `*+TCA.swift` `liveValue`s build, but as plain
-/// sequential construction with no swift-dependencies, `@Dependency`, or TCA involvement.
-/// It is the foundation for the in-progress TCA→MVVM migration: per-feature
-/// `Dependencies.live(services:)` builders call these factories to obtain use cases.
-///
-/// The graph is acyclic and is constructed in `init` so that a unit test can build it
-/// offline without touching the network. The construction itself lives in
+/// Per-feature `Dependencies.live(services:)` builders call these factories to obtain
+/// use cases. The graph is acyclic and is constructed in `init` so that a unit test
+/// can build it offline without touching the network. The construction itself lives in
 /// `AppServices+Composition.swift`.
 ///
 public final class AppServices: Sendable {
@@ -76,8 +72,7 @@ public final class AppServices: Sendable {
     public let featureFlags: any FeatureFlagging
 
     /// Feature-flag override service used by the developer feature-flags screen. Same instance
-    /// as `featureFlags` (single service, single lifetime). Mirrors the former
-    /// `@Dependency(\.featureFlagsOverride)`, which resolved the same `featureFlagService`.
+    /// as `featureFlags` (single service, single lifetime).
     public let featureFlagsOverride: any FeatureFlagOverriding
 
     /// Feature-flag initialiser. Same instance as `featureFlags` (single service, single lifetime).
@@ -94,9 +89,9 @@ public final class AppServices: Sendable {
     ///
     /// - Parameters:
     ///   - tvListingsEPGURL: The EPG feed URL passed to the TV listings adapters factory.
-    ///     Defaults to the same pinned URL used by `TVListingsEPGURL+TCA.liveValue`.
-    ///   - tmdbAPIKey: The TMDb API key passed to the `TMDbClient`. Defaults to the same
-    ///     resolution used by `TMDbClient+TCA.liveValue`.
+    ///     Defaults to the pinned production URL.
+    ///   - tmdbAPIKey: The TMDb API key passed to the `TMDbClient`. Defaults to the key
+    ///     resolved from the app's configuration.
     ///
     public init(
         tvListingsEPGURL: URL = HTTPTVListingsRemoteDataSource.defaultEPGURL,

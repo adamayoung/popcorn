@@ -9,12 +9,11 @@ import DesignSystem
 import Presentation
 import SwiftUI
 
-/// The MVVM explore screen, driven by ``ExploreViewModel``.
+/// The explore screen, driven by ``ExploreViewModel``.
 ///
-/// Renders the same five carousels (discover / trending / popular movies, trending
-/// TV series, trending people) of the former `ExploreFeature`, so recorded snapshots
-/// stay byte-identical. The view model is owned above the seam (by the root
-/// coordinator), so this takes a plain `let viewModel` rather than `@State`.
+/// Renders five carousels: discover movies, trending movies, popular movies,
+/// trending TV series, and trending people. The view model is owned above the seam
+/// (by the root coordinator), so this takes a plain `let viewModel` rather than `@State`.
 public struct ExploreView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion

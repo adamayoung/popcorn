@@ -12,10 +12,9 @@ import PersonDetailsFeature
 import SwiftUI
 import WatchlistFeature
 
-/// The MVVM Watchlist tab root. Hosts the watchlist home in a `NavigationStack`,
+/// The Watchlist tab root. Hosts the watchlist home in a `NavigationStack`,
 /// drives push navigation (movie details, person details, cast and crew) and the
-/// movie intelligence modal via ``WatchlistRouter``. The MVVM replacement for the
-/// store-based `WatchlistRootView` + `WatchlistRootFeature`.
+/// movie intelligence modal via ``WatchlistRouter``.
 struct WatchlistRootView: View {
 
     @Bindable private var router: WatchlistRouter
@@ -24,8 +23,7 @@ struct WatchlistRootView: View {
 
     /// The home view model, owned here (above the screen seam) so it survives the
     /// router-driven body re-renders that push/present cause. ``WatchlistView``
-    /// therefore stores it as a plain `let`. Mirrors how `AppRootView` owns the
-    /// TV Listings view model.
+    /// therefore stores it as a plain `let`.
     @State private var watchlistViewModel: WatchlistViewModel
 
     init(

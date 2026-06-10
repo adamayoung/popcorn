@@ -11,10 +11,10 @@ import TVListingsDomain
 
 /// The dependencies required by ``TVListingsViewModel``.
 ///
-/// A plain `Sendable` struct of closures — the MVVM replacement for the former
-/// `TVListingsClient` (`@DependencyClient`). Constructing it requires every
-/// closure, so a missing dependency is a compile error. Build the production
-/// instance with ``live(services:)``.
+/// A plain `Sendable` struct of closures providing the data dependencies for
+/// ``TVListingsViewModel``. Constructing it requires every closure, so a
+/// missing dependency is a compile error. Build the production instance with
+/// ``live(services:)``.
 public struct TVListingsDependencies: Sendable {
 
     public var sync: @Sendable () async throws -> Void
@@ -36,8 +36,6 @@ public struct TVListingsDependencies: Sendable {
 public extension TVListingsDependencies {
 
     /// Builds the production dependencies from the app's shared services.
-    ///
-    /// Mirrors the former `TVListingsClient.liveValue` exactly: same use cases.
     static func live(services: AppServices) -> TVListingsDependencies {
         let syncTVListings = services.tvListingsFactory.makeSyncTVListingsUseCase()
         let fetchTVChannels = services.tvListingsFactory.makeFetchTVChannelsUseCase()
@@ -61,8 +59,7 @@ public extension TVListingsDependencies {
 #if DEBUG
     public extension TVListingsDependencies {
 
-        /// Mock dependencies for previews and snapshot tests (mirrors the former
-        /// `TVListingsClient.previewValue`).
+        /// Mock dependencies for previews and snapshot tests.
         static var preview: TVListingsDependencies {
             TVListingsDependencies(
                 sync: {},

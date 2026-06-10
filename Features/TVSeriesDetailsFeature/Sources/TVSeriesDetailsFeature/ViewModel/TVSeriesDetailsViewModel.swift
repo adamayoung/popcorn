@@ -29,7 +29,7 @@ public struct TVSeriesDetailsViewSnapshot: Equatable, Sendable {
 
 }
 
-/// Drives ``TVSeriesDetailsView``. The MVVM replacement for `TVSeriesDetailsFeature`.
+/// Drives ``TVSeriesDetailsView``.
 ///
 /// Loading is driven by the view through ``load()`` from a `.task(id:)`, so SwiftUI
 /// owns the lifetime: the work is cancelled on disappear and restarted on reappear

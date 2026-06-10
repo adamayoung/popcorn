@@ -11,10 +11,10 @@ import TrendingApplication
 
 /// The dependencies required by ``TrendingMoviesViewModel``.
 ///
-/// A plain `Sendable` struct of closures — the MVVM replacement for the former
-/// `TrendingMoviesClient` (`@DependencyClient`). Constructing it requires every
-/// closure, so a missing dependency is a compile error. Build the production
-/// instance with ``live(services:)``.
+/// A plain `Sendable` struct of closures providing the data dependencies for
+/// ``TrendingMoviesViewModel``. Constructing it requires every closure, so a
+/// missing dependency is a compile error. Build the production instance with
+/// ``live(services:)``.
 public struct TrendingMoviesDependencies: Sendable {
 
     public var fetchTrendingMovies: @Sendable () async throws -> [MoviePreview]
@@ -31,8 +31,7 @@ public extension TrendingMoviesDependencies {
 
     /// Builds the production dependencies from the app's shared services.
     ///
-    /// Mirrors the former `TrendingMoviesClient.liveValue` exactly: same use case,
-    /// same mapper.
+    /// Uses the trending use case and maps results to ``MoviePreview`` values.
     static func live(services: AppServices) -> TrendingMoviesDependencies {
         let fetchTrendingMovies = services.trendingFactory.makeFetchTrendingMoviesUseCase()
 
@@ -50,8 +49,7 @@ public extension TrendingMoviesDependencies {
 #if DEBUG
     public extension TrendingMoviesDependencies {
 
-        /// Mock dependencies for previews and snapshot tests (mirrors the former
-        /// `TrendingMoviesClient.previewValue`).
+        /// Mock dependencies for previews and snapshot tests.
         static var preview: TrendingMoviesDependencies {
             TrendingMoviesDependencies(
                 fetchTrendingMovies: { MoviePreview.mocks }

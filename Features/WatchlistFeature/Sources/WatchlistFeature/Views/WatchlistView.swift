@@ -9,13 +9,11 @@ import DesignSystem
 import Presentation
 import SwiftUI
 
-/// The MVVM watchlist screen, driven by ``WatchlistViewModel``.
+/// The watchlist screen, driven by ``WatchlistViewModel``.
 ///
-/// Renders the same grid / loading / empty / error chrome of the former
-/// `WatchlistFeature` store-driven view, so recorded snapshots stay
-/// byte-identical. The view model is
-/// owned above the seam (by the root coordinator), so this takes a plain
-/// `let viewModel` rather than `@State`.
+/// Renders a grid of watchlist movie posters with loading, empty, and error
+/// states. The view model is owned by the root coordinator, so this takes a
+/// plain `let viewModel` rather than `@State`.
 public struct WatchlistView: View {
 
     private static let columns = [

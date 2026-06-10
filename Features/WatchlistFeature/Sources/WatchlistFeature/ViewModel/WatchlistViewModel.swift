@@ -21,7 +21,7 @@ public struct WatchlistViewSnapshot: Equatable, Sendable {
 
 }
 
-/// Drives ``WatchlistView``. The MVVM replacement for `WatchlistFeature`.
+/// Drives ``WatchlistView``.
 ///
 /// Loading and live updates are driven by the view through ``load()`` from a
 /// `.task(id:)`, so SwiftUI owns the lifetime: the work is cancelled on disappear

@@ -13,8 +13,7 @@ import Presentation
 /// A snapshot of all explore content loaded from various sources.
 ///
 /// Contains collections of different media types displayed together in the explore
-/// screen. Each collection is controlled by a feature flag. The MVVM replacement
-/// for `ExploreFeature.ViewSnapshot`.
+/// screen. Each collection is controlled by a feature flag.
 public struct ExploreViewSnapshot: Equatable, Sendable {
 
     /// Movies from the discover endpoint.
@@ -44,12 +43,11 @@ public struct ExploreViewSnapshot: Equatable, Sendable {
 
 }
 
-/// Drives ``ExploreView``. The MVVM replacement for `ExploreFeature`.
+/// Drives ``ExploreView``.
 ///
-/// Loads every enabled content source once in parallel (`async let`), exactly as
-/// the former reducer's `handleFetchAll` did. There is no live stream: the content
-/// is fetched once when the view appears and re-fetched only when ``reload()``
-/// bumps ``reloadID`` (which reruns the view's `.task(id:)`).
+/// Loads every enabled content source once in parallel (`async let`). There is no
+/// live stream: the content is fetched once when the view appears and re-fetched
+/// only when ``reload()`` bumps ``reloadID`` (which reruns the view's `.task(id:)`).
 @Observable
 @MainActor
 public final class ExploreViewModel {
@@ -81,8 +79,7 @@ public final class ExploreViewModel {
     /// Fetches every enabled content source in parallel.
     ///
     /// Drive this from the view's `.task(id:)`; SwiftUI cancels it on disappear
-    /// and reruns it on reappear / ``reload()``. A no-op once the content is
-    /// already loaded, mirroring the former reducer's `guard !state.viewState.isReady`.
+    /// and reruns it on reappear / ``reload()``. A no-op once the content is already loaded.
     public func load() async {
         guard !viewState.isReady else {
             return

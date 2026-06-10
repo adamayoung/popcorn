@@ -9,12 +9,9 @@ import DesignSystem
 import Presentation
 import SwiftUI
 
-/// The MVVM TV episode cast and crew view, driven by
-/// ``TVEpisodeCastAndCrewViewModel``.
+/// The TV episode cast and crew view, driven by ``TVEpisodeCastAndCrewViewModel``.
 ///
-/// Renders the same store-free ``TVEpisodeCastAndCrewContentView`` and reproduces
-/// the exact loading / error chrome of the former TCA view, so recorded snapshots
-/// stay byte-identical.
+/// Renders ``TVEpisodeCastAndCrewContentView`` with loading and error chrome.
 public struct TVEpisodeCastAndCrewView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion

@@ -9,7 +9,7 @@ import Foundation
 import Observation
 import OSLog
 
-/// Drives ``TrendingMoviesView``. The MVVM replacement for `TrendingMoviesFeature`.
+/// Drives ``TrendingMoviesView``.
 ///
 /// Loading is driven by the view through ``load()`` from a `.task(id:)`, so SwiftUI
 /// owns the lifetime: the work is cancelled on disappear and restarted on reappear
@@ -17,8 +17,7 @@ import OSLog
 /// view-model-owned `Task` — structured concurrency keeps the work tied to the
 /// view's lifetime with no manual cancellation.
 ///
-/// Mirrors the former `TrendingMoviesFeature` reducer exactly: there is no error
-/// path — a failed fetch is logged and leaves ``movies`` unchanged.
+/// There is no error path — a failed fetch is logged and leaves ``movies`` unchanged.
 @Observable
 @MainActor
 public final class TrendingMoviesViewModel {

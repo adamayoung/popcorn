@@ -11,10 +11,9 @@ import PeopleApplication
 
 /// The dependencies required by ``PersonDetailsViewModel``.
 ///
-/// A plain `Sendable` struct of closures — the MVVM replacement for the former
-/// `PersonDetailsClient` (`@DependencyClient`). Constructing it requires every
-/// closure, so a missing dependency is a compile error. Build the production
-/// instance with ``live(services:)``.
+/// A plain `Sendable` struct of closures providing the data dependencies for
+/// ``PersonDetailsViewModel``. Constructing it requires every closure, so a missing
+/// dependency is a compile error. Build the production instance with ``live(services:)``.
 public struct PersonDetailsDependencies: Sendable {
 
     public var fetchPerson: @Sendable (_ id: Int) async throws -> Person
@@ -34,9 +33,6 @@ public struct PersonDetailsDependencies: Sendable {
 public extension PersonDetailsDependencies {
 
     /// Builds the production dependencies from the app's shared services.
-    ///
-    /// Mirrors the former `PersonDetailsClient.liveValue` exactly: same use case,
-    /// same mapper, same feature flag.
     static func live(services: AppServices) -> PersonDetailsDependencies {
         let fetchPersonDetails = services.peopleFactory.makeFetchPersonDetailsUseCase()
         let featureFlags = services.featureFlags
@@ -64,8 +60,7 @@ public extension PersonDetailsDependencies {
 #if DEBUG
     public extension PersonDetailsDependencies {
 
-        /// Mock dependencies for previews and snapshot tests (mirrors the former
-        /// `PersonDetailsClient.previewValue`).
+        /// Mock dependencies for previews and snapshot tests.
         static var preview: PersonDetailsDependencies {
             PersonDetailsDependencies(
                 fetchPerson: { _ in Person.mock },

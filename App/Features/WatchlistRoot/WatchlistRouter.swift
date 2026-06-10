@@ -11,17 +11,14 @@ import Observation
 import PersonDetailsFeature
 import WatchlistFeature
 
-/// A pushed destination on the Watchlist tab's navigation stack. The MVVM
-/// replacement for `WatchlistRootFeature`'s `StackState<Path.State>` cases.
+/// A pushed destination on the Watchlist tab's navigation stack.
 enum WatchlistRoute: Hashable {
     case movieDetails(id: Int, transitionID: String?)
     case personDetails(id: Int)
     case movieCastAndCrew(movieID: Int)
 }
 
-/// Owns the Watchlist tab's push stack and modal presentation. The MVVM
-/// replacement for `WatchlistRootFeature`'s `StackState<Path.State>` +
-/// `@Presents var movieIntelligence`.
+/// Owns the Watchlist tab's push stack and the movie intelligence modal presentation.
 @Observable
 @MainActor
 final class WatchlistRouter {
@@ -45,8 +42,7 @@ final class WatchlistRouter {
 
 /// Translates leaf-feature navigation requests into ``WatchlistRouter`` mutations.
 ///
-/// Implements every navigating protocol reachable from the Watchlist tab. Mirrors
-/// `WatchlistRootFeature`'s reducer mapping exactly:
+/// Implements every navigating protocol reachable from the Watchlist tab:
 /// - the home's `movieDetails(id, transitionID)` forwards the `transitionID` (zoom)
 /// - `MovieDetailsNavigating.openMovieDetails(id:)` pushes with no `transitionID`
 /// - `MovieCastAndCrewNavigating.openPersonDetails(id:transitionID:)` drops the

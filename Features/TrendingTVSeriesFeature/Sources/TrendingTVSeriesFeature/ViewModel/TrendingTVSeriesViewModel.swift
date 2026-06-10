@@ -9,7 +9,7 @@ import Foundation
 import Observation
 import OSLog
 
-/// Drives ``TrendingTVSeriesView``. The MVVM replacement for `TrendingTVSeriesFeature`.
+/// Drives ``TrendingTVSeriesView``.
 ///
 /// Loading is driven by the view through ``load()`` from a `.task(id:)`, so SwiftUI
 /// owns the lifetime: the work is cancelled on disappear and restarted on reappear
@@ -17,9 +17,8 @@ import OSLog
 /// view-model-owned `Task` — structured concurrency keeps the work tied to the
 /// view's lifetime with no manual cancellation.
 ///
-/// Mirrors the former reducer's state shape exactly — a single ``tvSeries`` array
-/// with no loading or error state. As in the reducer's `loadTrendingTVSeriesFailed`
-/// handler, a fetch failure is logged and leaves the existing ``tvSeries`` untouched.
+/// Holds a single ``tvSeries`` array with no loading or error state. A fetch failure
+/// is logged and leaves the existing ``tvSeries`` untouched.
 @Observable
 @MainActor
 public final class TrendingTVSeriesViewModel {

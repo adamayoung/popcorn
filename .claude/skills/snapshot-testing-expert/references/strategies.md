@@ -96,10 +96,7 @@ let failure = verifySnapshot(of: view, as: strategy, record: .all)
 @Test
 func myView() {
     let view = NavigationStack {
-        MyView(store: Store(
-            initialState: .init(viewState: .ready(previewData)),
-            reducer: { EmptyReducer() }
-        ))
+        MyView(viewModel: .preview(viewState: .ready(previewData)))
     }
 
     // Standard iPhone

@@ -10,17 +10,15 @@ import Observation
 import OSLog
 import Presentation
 
-/// Drives ``MediaSearchView``. The MVVM replacement for `MediaSearchFeature`.
+/// Drives ``MediaSearchView``.
 ///
 /// Keeps the feature's bespoke ``ViewState`` enum (genres / search history /
 /// results / no results) rather than the generic `Presentation.ViewState<T>`,
 /// because the empty-query / focus interplay drives several distinct surfaces.
 ///
-/// `updateViewState()` is invoked after every state-mutating method, exactly as
-/// the former reducer called it on the tail of every `Reduce`. The debounced
-/// search is owned by a single ``searchTask`` so a rapid second keystroke cancels
-/// the first in-flight debounce — the MVVM replacement for the reducer's
-/// `.cancellable(id:cancelInFlight:)`.
+/// `updateViewState()` is invoked after every state-mutating method to keep the
+/// displayed surface consistent. The debounced search is owned by a single
+/// ``searchTask`` so a rapid second keystroke cancels the first in-flight debounce.
 @Observable
 @MainActor
 public final class MediaSearchViewModel {
@@ -114,18 +112,14 @@ public final class MediaSearchViewModel {
     /// Fetches genres and search history, then derives the initial surface.
     ///
     /// Drive this from the view's `.task`; SwiftUI cancels it on disappear. A
-    /// no-op unless the view state is `.initial`, mirroring the former reducer's
-    /// `guard case .initial` on `fetchGenresAndSearchHistory`.
+    /// no-op unless the view state is `.initial`.
     public func fetchGenresAndSearchHistory() async {
-        // Tail-`updateViewState` after every former reducer action is replicated
-        // here so the surface stays identical even if the field is focused mid-load.
         guard case .initial = viewState else {
             return
         }
 
         viewState = .loading
-        // Former `fetchGenresAndSearchHistory` action tail: with an empty,
-        // unfocused query this immediately derives `.genres(empty)`.
+        // With an empty, unfocused query this immediately derives `.genres(empty)`.
         updateViewState()
 
         Self.logger.info("User fetching genres and search history")
@@ -149,13 +143,12 @@ public final class MediaSearchViewModel {
             Self.logger.error(
                 "Failed fetching genres and search history: \(error.localizedDescription, privacy: .public)"
             )
-            // Former `genresAndSearchHistoryLoadFailed` action tail.
             updateViewState()
             return
         }
 
-        // Former `genresAndSearchHistoryLoaded` action: store snapshots, promote
-        // `.loading`, then re-derive the surface from the current query / focus.
+        // Store snapshots, promote `.loading`, then re-derive the surface from
+        // the current query / focus.
         genresSnapshot = GenresViewSnapshot(genres: genres)
         searchHistorySnapshot = SearchHistoryViewSnapshot(media: searchHistoryMedia)
         if case .loading = viewState {
@@ -168,7 +161,6 @@ public final class MediaSearchViewModel {
 
     /// Updates the query and (de)bounces a search. An empty query cancels any
     /// in-flight search; a non-empty query schedules one after ``debounceInterval``.
-    /// Mirrors the former reducer's `queryChanged` effect.
     public func queryChanged(_ query: String) {
         self.query = query
 
@@ -191,8 +183,7 @@ public final class MediaSearchViewModel {
         updateViewState()
     }
 
-    /// Records the focused field and recomputes the surface. Mirrors the former
-    /// reducer's `focusChanged`.
+    /// Records the focused field and recomputes the surface.
     public func focusChanged(_ field: Field?) {
         focusedField = field
         updateViewState()
@@ -200,8 +191,8 @@ public final class MediaSearchViewModel {
 
     // MARK: - Search
 
-    /// Performs a media search for the current ``query``. Mirrors the former
-    /// reducer's `search` effect: results, no-results, or a logged failure.
+    /// Performs a media search for the current ``query``, producing results,
+    /// a no-results state, or a logged failure.
     public func search() async {
         // Capture the query up front: `queryChanged` may mutate `self.query` (and
         // cancel this task) while the await below is in flight, so building the
@@ -222,7 +213,6 @@ public final class MediaSearchViewModel {
             Self.logger.error(
                 "Failed searching for media [query: \"\(query, privacy: .private)\"]: \(error.localizedDescription, privacy: .public)"
             )
-            // Former `searchResultsLoadFailed` action tail: re-derive the surface.
             updateViewState()
             return
         }
@@ -263,8 +253,7 @@ public final class MediaSearchViewModel {
 
 extension MediaSearchViewModel {
 
-    /// Re-derives the surface from `query` + `focusedField`. Ported verbatim from
-    /// the former reducer's `updateViewState(state:)`:
+    /// Re-derives the surface from `query` + `focusedField`:
     /// - empty query + focused → search history
     /// - empty query + unfocused → genres
     /// - non-empty query + focused + no results yet → search history

@@ -32,7 +32,7 @@ public struct MovieDetailsViewSnapshot: Equatable, Sendable {
 
 }
 
-/// Drives ``MovieDetailsView``. The MVVM replacement for `MovieDetailsFeature`.
+/// Drives ``MovieDetailsView``.
 ///
 /// Loading and live updates are driven by the view through ``load()`` from a
 /// `.task(id:)`, so SwiftUI owns the lifetime: the work is cancelled on disappear

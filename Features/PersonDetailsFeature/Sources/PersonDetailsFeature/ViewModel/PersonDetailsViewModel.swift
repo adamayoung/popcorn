@@ -21,7 +21,7 @@ public struct PersonDetailsViewSnapshot: Equatable, Sendable {
 
 }
 
-/// Drives ``PersonDetailsView``. The MVVM replacement for `PersonDetailsFeature`.
+/// Drives ``PersonDetailsView``.
 ///
 /// Loading is driven by the view through ``load()`` from a `.task(id:)`, so SwiftUI
 /// owns the lifetime: the work is cancelled on disappear and restarted on reappear
@@ -29,8 +29,7 @@ public struct PersonDetailsViewSnapshot: Equatable, Sendable {
 /// view-model-owned `Task` — structured concurrency keeps the fetch tied to the
 /// view's lifetime with no manual cancellation.
 ///
-/// Person details is a one-shot fetch: there is no live stream and no watchlist
-/// toggle, mirroring the former `PersonDetailsClient`.
+/// Person details is a one-shot fetch: there is no live stream and no watchlist toggle.
 @Observable
 @MainActor
 public final class PersonDetailsViewModel {

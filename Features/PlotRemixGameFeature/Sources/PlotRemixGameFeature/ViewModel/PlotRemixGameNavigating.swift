@@ -8,8 +8,7 @@
 /// Navigation actions a ``PlotRemixGameViewModel`` can request.
 ///
 /// The root coordinator supplies a concrete implementation (a `RouterNavigator`)
-/// that dismisses the modal. The MVVM replacement for the former
-/// `PlotRemixGameFeature`'s `@Dependency(\.dismiss)`.
+/// that dismisses the modal.
 @MainActor
 public protocol PlotRemixGameNavigating {
 

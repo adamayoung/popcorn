@@ -8,12 +8,11 @@
 import DesignSystem
 import SwiftUI
 
-/// The MVVM TV series intelligence chat screen, driven by
+/// The TV series intelligence chat screen, driven by
 /// ``TVSeriesIntelligenceViewModel``.
 ///
-/// Renders the same store-free ``ChatView`` and reproduces the exact navigation
-/// chrome of the former `TVSeriesChatView`, so recorded snapshots stay identical.
-/// Dismissal stays view-level via `@Environment(\.dismiss)`.
+/// Renders ``ChatView`` with navigation chrome. Dismissal is handled
+/// view-level via `@Environment(\.dismiss)`.
 public struct TVSeriesIntelligenceView: View {
 
     @State private var viewModel: TVSeriesIntelligenceViewModel

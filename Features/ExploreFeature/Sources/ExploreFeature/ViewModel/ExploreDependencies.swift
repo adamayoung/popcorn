@@ -14,10 +14,9 @@ import TrendingApplication
 
 /// The dependencies required by ``ExploreViewModel``.
 ///
-/// A plain `Sendable` struct of closures — the MVVM replacement for the former
-/// `ExploreClient` (`@DependencyClient`). Constructing it requires every closure,
-/// so a missing dependency is a compile error. Build the production instance with
-/// ``live(services:)``.
+/// A plain `Sendable` struct of closures providing the data dependencies for
+/// ``ExploreViewModel``. Constructing it requires every closure, so a missing
+/// dependency is a compile error. Build the production instance with ``live(services:)``.
 public struct ExploreDependencies: Sendable {
 
     public var fetchDiscoverMovies: @Sendable () async throws -> [MoviePreview]
@@ -61,9 +60,6 @@ public struct ExploreDependencies: Sendable {
 public extension ExploreDependencies {
 
     /// Builds the production dependencies from the app's shared services.
-    ///
-    /// Mirrors the former `ExploreClient.liveValue` exactly: same use cases, same
-    /// mappers, same error translation, same feature flags.
     static func live(services: AppServices) -> ExploreDependencies {
         let fetchDiscoverMovies = services.discoverFactory.makeFetchDiscoverMoviesUseCase()
         let fetchTrendingMovies = services.trendingFactory.makeFetchTrendingMoviesUseCase()
@@ -107,9 +103,7 @@ public extension ExploreDependencies {
     }
 
     /// Runs a content-fetch body inside a `clientFetch` observability span,
-    /// translating any thrown error into a ``FetchExploreContentError``. Mirrors
-    /// the former `ExploreClient`'s per-source span + `catch { throw
-    /// FetchExploreContentError(error) }`.
+    /// translating any thrown error into a ``FetchExploreContentError``.
     private static func mapping<T: Sendable>(
         _ description: String,
         _ body: @Sendable () async throws -> T
@@ -131,8 +125,7 @@ public extension ExploreDependencies {
 #if DEBUG
     public extension ExploreDependencies {
 
-        /// Mock dependencies for previews and snapshot tests (mirrors the former
-        /// `ExploreClient.previewValue`).
+        /// Mock dependencies for previews and snapshot tests.
         static var preview: ExploreDependencies {
             ExploreDependencies(
                 fetchDiscoverMovies: {

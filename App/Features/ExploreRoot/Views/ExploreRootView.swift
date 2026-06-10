@@ -18,11 +18,10 @@ import TVSeriesCastAndCrewFeature
 import TVSeriesDetailsFeature
 import TVSeriesIntelligenceFeature
 
-/// The MVVM Explore tab root. Hosts the explore home in a `NavigationStack`,
+/// The Explore tab root. Hosts the explore home in a `NavigationStack`,
 /// drives push navigation (movie / TV series / season / episode details, person
 /// details, cast and crew) and the movie / TV series intelligence modals via
-/// ``ExploreRouter``. The MVVM replacement for the store-based `ExploreRootView` +
-/// `ExploreRootFeature`.
+/// ``ExploreRouter``.
 struct ExploreRootView: View {
 
     @Bindable private var router: ExploreRouter

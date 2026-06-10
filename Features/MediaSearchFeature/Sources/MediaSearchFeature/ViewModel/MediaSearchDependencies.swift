@@ -12,10 +12,9 @@ import SearchApplication
 
 /// The dependencies required by ``MediaSearchViewModel``.
 ///
-/// A plain `Sendable` struct of closures — the MVVM replacement for the former
-/// `MediaSearchClient` (`@DependencyClient`). Constructing it requires every
-/// closure, so a missing dependency is a compile error. Build the production
-/// instance with ``live(services:)``.
+/// A plain `Sendable` struct of closures providing the data dependencies for
+/// ``MediaSearchViewModel``. Constructing it requires every closure, so a missing
+/// dependency is a compile error. Build the production instance with ``live(services:)``.
 public struct MediaSearchDependencies: Sendable {
 
     public var fetchGenres: @Sendable () async throws -> [Genre]
@@ -46,9 +45,6 @@ public struct MediaSearchDependencies: Sendable {
 public extension MediaSearchDependencies {
 
     /// Builds the production dependencies from the app's shared services.
-    ///
-    /// Mirrors the former `MediaSearchClient.liveValue` exactly: same use cases,
-    /// same mappers, no error translation.
     static func live(services: AppServices) -> MediaSearchDependencies {
         let fetchAllGenres = services.genresFactory.makeFetchAllGenresUseCase()
         let searchMedia = services.searchFactory.makeSearchMediaUseCase()
@@ -88,8 +84,7 @@ public extension MediaSearchDependencies {
 #if DEBUG
     public extension MediaSearchDependencies {
 
-        /// Mock dependencies for previews and snapshot tests (mirrors the former
-        /// `MediaSearchClient.previewValue`).
+        /// Mock dependencies for previews and snapshot tests.
         static var preview: MediaSearchDependencies {
             MediaSearchDependencies(
                 fetchGenres: {

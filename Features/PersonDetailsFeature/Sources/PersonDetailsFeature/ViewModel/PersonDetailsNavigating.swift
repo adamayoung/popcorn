@@ -8,12 +8,10 @@
 /// Navigation actions a ``PersonDetailsViewModel`` can request.
 ///
 /// The root coordinator supplies a concrete implementation (a `RouterNavigator`).
-/// The MVVM replacement for the former `PersonDetailsFeature` navigation handling.
 ///
-/// `PersonDetailsFeature` exposed no navigation cases — person details is a leaf
-/// screen with no onward navigation — so this protocol has no requirements. It
-/// exists to keep a consistent injection point for the coordinator and to match
-/// the MVVM pattern used across the other detail features.
+/// Person details is a leaf screen with no onward navigation, so this protocol
+/// has no requirements. It exists to keep a consistent injection point for the
+/// coordinator and to match the pattern used across the other detail features.
 @MainActor
 public protocol PersonDetailsNavigating {}
 

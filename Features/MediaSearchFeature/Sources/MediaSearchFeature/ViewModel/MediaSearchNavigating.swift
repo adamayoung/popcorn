@@ -8,10 +8,8 @@
 /// Navigation actions a ``MediaSearchViewModel`` can request.
 ///
 /// The root coordinator supplies a concrete implementation (a `RouterNavigator`)
-/// that translates these into pushes. The MVVM replacement for the former
-/// `MediaSearchFeature.Navigation` cases (`movieDetails`, `tvSeriesDetails`,
-/// `personDetails`), which the parent reducer intercepted. The former `.genre`
-/// case was a no-op in the reducer, so it has no protocol requirement here.
+/// that translates these into pushes. Genre selection is a no-op and has no
+/// protocol requirement.
 @MainActor
 public protocol MediaSearchNavigating {
 

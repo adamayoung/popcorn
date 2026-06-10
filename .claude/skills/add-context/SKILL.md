@@ -46,7 +46,7 @@ Contexts/Popcorn{Context}/
 ### 2. Create Package.swift
 
 ```swift
-// swift-tools-version: 6.0
+// swift-tools-version: 6.2
 
 import PackageDescription
 
@@ -55,7 +55,7 @@ let package = Package(
     platforms: [
         .iOS(.v26),
         .macOS(.v26),
-        .visionOS(.v2)
+        .visionOS(.v26)
     ],
     products: [
         .library(name: "{Context}Domain", targets: ["{Context}Domain"]),
@@ -210,11 +210,37 @@ Adapters/Contexts/Popcorn{Context}Adapters/
 │       └── Popcorn{Context}AdaptersFactory.swift
 ```
 
-### 8. Wire in AppDependencies
+### 8. Wire in AppServices
 
-Create `AppDependencies/{Context}/`:
-- `{Context}Factory+TCA.swift`
-- Use case TCA extensions
+`AppServices` (in `AppDependencies/Sources/AppDependencies/Composition/`) is the
+app's composition root: it builds the shared service and factory graph once, in
+dependency order. Add the new context factory there so features can reach its use
+cases:
+
+**`AppServices.swift`** — declare the factory as a stored property, and add a
+matching field to the `Graph` struct + the `init` assignment:
+```swift
+public let {context}Factory: Popcorn{Context}Factory
+// ...in Graph:
+let {context}Factory: Popcorn{Context}Factory
+// ...in init:
+self.{context}Factory = graph.{context}Factory
+```
+
+**`AppServices+Composition.swift`** — construct the factory in `buildGraph` (wiring
+its adapters factory to the shared TMDb client / model container) and pass it into
+the returned `Graph`:
+```swift
+let {context}Factory = Popcorn{Context}AdaptersFactory(
+    tmdbClient: domain.tmdb,
+    modelContainer: modelContainer
+).make{Context}Factory()
+```
+
+A feature then consumes these use cases in its `Dependencies.live(services:)`
+builder via `services.{context}Factory.make{UseCaseName}UseCase()` — see the
+`add-use-case` and `add-feature` workflows. There is no `*+TCA.swift` file and no
+per-use-case dependency registration.
 
 ### 9. Add to Xcode Project
 

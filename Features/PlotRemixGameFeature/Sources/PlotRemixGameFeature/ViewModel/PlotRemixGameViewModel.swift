@@ -9,10 +9,10 @@ import Foundation
 import Observation
 import OSLog
 
-/// Drives ``PlotRemixGameView``. The MVVM replacement for the former store-backed feature.
+/// Drives ``PlotRemixGameView``.
 ///
-/// Mirrors the former reducer's discrete state (no `ViewState` wrapper, because the
-/// game's start / generating / playing phases are not a simple loading lifecycle).
+/// Manages discrete state for the game's start / generating / playing phases (no
+/// `ViewState` wrapper, because these phases are not a simple loading lifecycle).
 ///
 /// Metadata loading is driven by the view through ``fetchMetadata()`` from a
 /// `.task`. Game generation is driven through ``generateGame()`` from a
@@ -73,7 +73,7 @@ public final class PlotRemixGameViewModel {
 
     /// Fetches the game metadata. Drive this from the view's `.task`.
     ///
-    /// Mirrors the reducer's `fetchMetadata` guard: a no-op once metadata is loaded.
+    /// A no-op once metadata is already loaded.
     public func fetchMetadata() async {
         guard metadata == nil else {
             return
@@ -105,8 +105,8 @@ public final class PlotRemixGameViewModel {
     /// Generates the game, reporting progress on the main actor. Drive this from the
     /// view's `.task(id: generateToken)`.
     ///
-    /// Mirrors the reducer's `generateGame` effect: a no-op without metadata, hops
-    /// progress callbacks to the main actor, and starts the game on success.
+    /// A no-op without metadata. Hops progress callbacks to the main actor and
+    /// starts the game on success.
     public func generateGame() async {
         guard metadata != nil else {
             return
@@ -183,26 +183,24 @@ public final class PlotRemixGameViewModel {
 
     // MARK: - Game play
 
-    /// Mirrors the reducer's `startGame`: a no-op once a game exists (the game is
-    /// already set by ``generateGame()`` before this is called).
+    /// Called once a game is ready. A no-op if the game has not been set yet.
     public func startGame() {
         guard game != nil else {
             return
         }
     }
 
-    /// Mirrors the reducer's `answerQuestion` (currently a no-op).
+    /// Records an answer for a question (currently a no-op).
     public func answerQuestion(_ questionIndex: Int, _ answerIndex: Int) {}
 
-    /// Mirrors the reducer's `endGame` (currently a no-op).
+    /// Ends the current game (currently a no-op).
     public func endGame() {}
 
     // MARK: - Dismissal
 
-    /// Cancels any in-flight generation *first*, then asks the navigator to dismiss.
+    /// Cancels any in-flight generation first, then asks the navigator to dismiss.
     ///
-    /// Mirrors the reducer's `close` effect (`await dismiss()`), with the added
-    /// guarantee that generation never outlives the modal.
+    /// This ensures generation never outlives the modal.
     public func close() async {
         generateTask?.cancel()
         generateTask = nil

@@ -9,10 +9,10 @@ import DesignSystem
 import Presentation
 import SwiftUI
 
-/// The MVVM feature-flags screen, driven by ``FeatureFlagsViewModel``.
+/// The feature-flags screen, driven by ``FeatureFlagsViewModel``.
 ///
-/// Renders the same store-free ``FeatureFlagsContentView`` and reproduces the
-/// exact toolbar / loading / error chrome of the former `FeatureFlagsFeature`.
+/// Renders ``FeatureFlagsContentView`` with toolbar, loading overlay, and error
+/// chrome.
 public struct FeatureFlagsView: View {
 
     @State private var viewModel: FeatureFlagsViewModel

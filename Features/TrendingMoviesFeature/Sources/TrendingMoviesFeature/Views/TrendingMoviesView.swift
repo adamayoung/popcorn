@@ -8,10 +8,10 @@
 import DesignSystem
 import SwiftUI
 
-/// The MVVM trending movies view, driven by ``TrendingMoviesViewModel``.
+/// The trending movies view, driven by ``TrendingMoviesViewModel``.
 ///
-/// A standalone leaf view that owns its view model. Renders a store-free
-/// list. Takes a `transitionNamespace` even though it does not apply
+/// A standalone leaf view that owns its view model. Renders a list of trending
+/// movies. Takes a `transitionNamespace` even though it does not apply
 /// `.matchedTransitionSource` (no zoom transition).
 public struct TrendingMoviesView: View {
 

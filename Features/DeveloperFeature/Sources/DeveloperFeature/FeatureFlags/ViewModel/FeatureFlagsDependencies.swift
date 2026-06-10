@@ -11,10 +11,10 @@ import Foundation
 
 /// The dependencies required by ``FeatureFlagsViewModel``.
 ///
-/// A plain `Sendable` struct of closures — the MVVM replacement for the former
-/// `FeatureFlagsClient` (`@DependencyClient`). Constructing it requires every
-/// closure, so a missing dependency is a compile error. Build the production
-/// instance with ``live(services:)``.
+/// A plain `Sendable` struct of closures providing the data dependencies for
+/// ``FeatureFlagsViewModel``. Constructing it requires every closure, so a
+/// missing dependency is a compile error. Build the production instance with
+/// ``live(services:)``.
 public struct FeatureFlagsDependencies: Sendable {
 
     public var fetchFeatureFlags: @Sendable () async throws -> [FeatureFlag]
@@ -37,9 +37,7 @@ public extension FeatureFlagsDependencies {
 
     /// Builds the production dependencies from the app's shared services.
     ///
-    /// Mirrors the former `FeatureFlagsClient.liveValue` exactly: it reads and
-    /// mutates the shared feature-flag override service (the same instance the
-    /// former `@Dependency(\.featureFlagsOverride)` resolved) and maps
+    /// Reads and mutates the shared feature-flag override service, mapping
     /// `FeatureAccess.FeatureFlag.allFlags` via ``FeatureFlagMapper`` with the
     /// service's actual and override values.
     static func live(services: AppServices) -> FeatureFlagsDependencies {
@@ -78,8 +76,7 @@ public extension FeatureFlagsDependencies {
 #if DEBUG
     public extension FeatureFlagsDependencies {
 
-        /// Mock dependencies for previews and snapshot tests (mirrors the former
-        /// `FeatureFlagsClient.previewValue`).
+        /// Mock dependencies for previews and snapshot tests.
         static var preview: FeatureFlagsDependencies {
             FeatureFlagsDependencies(
                 fetchFeatureFlags: { FeatureFlag.mocks },

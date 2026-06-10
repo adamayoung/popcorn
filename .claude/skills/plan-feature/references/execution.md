@@ -44,14 +44,16 @@ You are implementing user story US-{N}: {Title} for the Popcorn app.
 - If the story only changes internal code within a single module (no public interface changes), package-level verification is sufficient. If it adds/modifies public types, protocols, or functions, or spans multiple packages, use a full-app build to verify integration.
 
 ## Architecture Context
-- This is a modular Swift app using TCA (The Composable Architecture)
+- This is a modular Swift app using MVVM (`@Observable @MainActor` view models)
 - Domain-driven design with 4 layers: Domain, Infrastructure, Application, Composition
 - Features are separate Swift packages in `Features/`
 - Contexts are separate Swift packages in `Contexts/`
+- The canonical MVVM reference feature is `Features/MovieDetailsFeature`
 - Read `docs/ARCHITECTURE.md` for full layer structure
 
 ## Code Patterns
 - Read `docs/SWIFT.md` for code conventions
+- A feature is an `@Observable @MainActor final class *ViewModel` exposing `viewState: ViewState<ViewSnapshot>` (from the `Presentation` module), with a `*Dependencies` struct and `*Navigating` protocol injected via `init`
 - Public types need `///` doc comments on type and all public properties
 - All entities: `Identifiable`, `Equatable`, `Sendable`
 - Swift Testing framework for tests (`@Suite`, `@Test`, `#expect`, `#require`)
@@ -60,8 +62,7 @@ You are implementing user story US-{N}: {Title} for the Popcorn app.
 ## Test Coverage Requirements
 - EVERY mapper (adapter, application, feature) needs its own test file
 - EVERY use case needs tests (success, error types, edge cases)
-- EVERY TCA reducer needs tests (`@MainActor`, `State: Equatable` required for TestStore)
-- TCA type inference: use explicit types like `Feature.Action.loaded(snapshot)` and `ViewState<Feature.ViewSnapshot>.error(...)` when `@ObservableState` obscures inference
+- EVERY view model needs tests: drive it with a stub `*Dependencies` and a spy `*Navigating`, then assert on `viewModel.viewState` (`.ready` / `.error`), the loading guards, and navigation calls. The suite/tests are `@MainActor`; `ViewSnapshot` must be `Equatable`
 - Sibling views must use consistent fonts/styles — check existing views before writing new ones
 
 ## Verification
@@ -95,7 +96,7 @@ When a subagent reports build or test failures:
 A story is considered complete when:
 - All acceptance criteria are met
 - All tests from Test Elab pass
-- **Test coverage at every layer**: adapter mapper tests, use case tests, reducer tests — see `references/patterns.md` § Required Test Coverage Per Layer
+- **Test coverage at every layer**: adapter mapper tests, use case tests, view model tests — see `references/patterns.md` § Required Test Coverage Per Layer
 - Package-level `swift build` succeeds (no warnings)
 - Package-level `swift test` succeeds (all pass)
 - If the story changed public interfaces or spans multiple packages, full-app build also succeeds

@@ -17,12 +17,12 @@ This skill syncs **Statsig → Code** (Statsig is the source of truth). For the 
 |------|------|
 | `Platform/FeatureAccess/Sources/FeatureAccess/Models/FeatureFlag.swift` | Static flag definitions + `allFlags` array |
 | `Platform/FeatureAccess/Tests/FeatureAccessTests/FeatureFlagTests.swift` | Count assertion + ID arguments list |
-| `Features/*/Sources/*/*.swift` | Client, Feature, and View files that consume flags |
-| `Features/*/Tests/*/*.swift` | Feature flag tests (`*FeatureFlagsTests.swift`, `*ClientTests.swift`) |
+| `Features/*/Sources/*/*.swift` | `*Dependencies`, view model, and View files that consume flags |
+| `Features/*/Tests/*/*.swift` | View model tests covering feature flags (`*ViewModelTests.swift`) |
 | `Adapters/Contexts/*/Sources/*/*.swift` | Adapter `FeatureFlagProvider` implementations |
 | `Adapters/Contexts/*/Tests/*/*.swift` | Adapter provider tests |
-| `App/Features/AppRoot/AppRootClient.swift` | Root client with navigation-level flags |
-| `App/Features/AppRoot/AppRootFeature.swift` | Root reducer reading navigation-level flags |
+| `App/Features/AppRoot/AppRootDependencies.swift` | Root dependencies with navigation-level flags |
+| `App/Features/AppRoot/AppRootViewModel.swift` | Root view model mirroring navigation-level flags |
 | `PopcornUITests/FeatureFlag.swift` | UI test feature flag enum (mirrors flag IDs as `String` raw values) |
 
 ## Naming Convention
@@ -134,7 +134,7 @@ For a flag named `.myFlag` with ID `my_flag`, search for:
 ```
 # Direct flag references
 rg "\.myFlag" -- find .myFlag references in code
-rg "isMyFlagEnabled" -- find Client/State/View properties
+rg "isMyFlagEnabled" -- find *Dependencies / view model / View properties
 rg "my_flag" -- find ID string references in tests
 ```
 
@@ -146,19 +146,19 @@ Show the user every file and usage that will be affected:
 Removing flag: .myFlag ("my_flag")
 
 Affected files:
-  Client:   Features/SomeFeature/Sources/.../SomeClient.swift
+  Dependencies: Features/SomeFeature/Sources/.../SomeDependencies.swift
             - var isMyFlagEnabled: @Sendable () throws -> Bool
-            - liveValue: isMyFlagEnabled closure
-            - previewValue: isMyFlagEnabled closure
-  Reducer:  Features/SomeFeature/Sources/.../SomeFeature.swift
-            - State.isMyFlagEnabled property
-            - State.init parameter
-            - .updateFeatureFlags case
-  View:     Features/SomeFeature/Sources/.../SomeView.swift
-            - if store.isMyFlagEnabled { ... }
-  Tests:    Features/SomeFeature/Tests/.../SomeFeatureFeatureFlagsTests.swift
+            - live(services:) isMyFlagEnabled closure
+            - preview isMyFlagEnabled closure
+  ViewModel:    Features/SomeFeature/Sources/.../SomeViewModel.swift
+            - isMyFlagEnabled property
+            - init parameter
+            - updateFeatureFlags() assignment
+  View:         Features/SomeFeature/Sources/.../SomeView.swift
+            - if viewModel.isMyFlagEnabled { ... }
+  Tests:        Features/SomeFeature/Tests/.../SomeViewModelTests.swift
             - All test methods referencing isMyFlagEnabled
-  Adapter:  Adapters/.../FeatureFlagProvider.swift (if applicable)
+  Adapter:      Adapters/.../FeatureFlagProvider.swift (if applicable)
             - isMyFlagEnabled() method
 
 Confirm removal of .myFlag? (y/n)
@@ -169,22 +169,22 @@ Confirm removal of .myFlag? (y/n)
 When the user confirms removal of a flag, remove in this order:
 
 1. **FeatureFlag.swift**: Remove `static let` property and `allFlags` entry
-2. **Client** (`*Client.swift`):
-   - Remove `var is<Flag>Enabled` property from the struct
-   - Remove the closure from `liveValue`
-   - Remove the closure from `previewValue`
-   - If this was the last flag in the Client, also remove the `@Dependency(\.featureFlags) var featureFlags` line
-3. **Reducer** (`*Feature.swift`):
-   - Remove `State.is<Flag>Enabled` property and its init parameter
-   - Remove the line from `.updateFeatureFlags` case
-   - Remove any `guard state.is<Flag>Enabled` checks and their associated logic
+2. **Dependencies** (`*Dependencies.swift`):
+   - Remove `var is<Flag>Enabled` property from the struct (and its `init` parameter/assignment)
+   - Remove the closure from `live(services:)`
+   - Remove the closure from the `#if DEBUG` `preview` value
+   - If this was the last feature-flag closure, also remove the now-unused `let featureFlags = services.featureFlags` line
+3. **ViewModel** (`*ViewModel.swift`):
+   - Remove the `is<Flag>Enabled` property and its `init` parameter
+   - Remove the line from `updateFeatureFlags()`
+   - Remove any `guard is<Flag>Enabled` checks and their associated logic
 4. **View** (`*View.swift`):
-   - Remove `if store.is<Flag>Enabled { ... }` conditionals
+   - Remove `if viewModel.is<Flag>Enabled { ... }` conditionals
    - Keep the content inside the conditional if it should always show, or remove it entirely if the feature is being deleted
-5. **Tests** (`*FeatureFlagsTests.swift`, `*ClientTests.swift`):
+5. **Tests** (`*ViewModelTests.swift`):
    - Remove/update all test methods that reference the flag
-   - Update "all flags enabled/disabled" tests to remove the flag
-   - Update partial enablement tests
+   - Update the stub `*Dependencies` factory (`stubDependencies`) to drop the flag closure
+   - Update "all flags enabled/disabled" and partial-enablement tests to remove the flag
 6. **Adapter** (if applicable):
    - Remove method from `FeatureFlagProvider`
    - Remove method from domain `FeatureFlagProviding` protocol
@@ -227,50 +227,50 @@ Do NOT run these automatically — let the user invoke them.
 
 ## Usage Patterns Reference
 
-### Client Pattern
+### Dependencies Pattern
 
 ```swift
-// In @DependencyClient struct:
-var is<Flag>Enabled: @Sendable () throws -> Bool
+// In the *Dependencies struct (a plain Sendable struct of closures):
+public var is<Flag>Enabled: @Sendable () throws -> Bool
 
-// In liveValue:
-is<Flag>Enabled: {
-    featureFlags.isEnabled(.<flagProperty>)
-}
+// In live(services:):
+is<Flag>Enabled: { featureFlags.isEnabled(.<flagProperty>) }
 
-// In previewValue:
+// In the #if DEBUG preview value:
 is<Flag>Enabled: { true }
 ```
 
-### Reducer Pattern
+### ViewModel Pattern
+
+The view model mirrors each `*Dependencies` flag closure into an observable property:
 
 ```swift
-// State:
-var is<Flag>Enabled: Bool  // default false in init
+// Property (read-only to the view):
+public private(set) var is<Flag>Enabled = false
 
-// Action:
-case updateFeatureFlags
+// init parameter (defaults to false so previews/tests can override):
+is<Flag>Enabled: Bool = false
 
-// Reduce:
-case .updateFeatureFlags:
-    state.is<Flag>Enabled = (try? client.is<Flag>Enabled()) ?? false
-    return .none
+// Refresh from dependencies (called from didAppear() / updateFeatureFlags()):
+func updateFeatureFlags() {
+    is<Flag>Enabled = (try? dependencies.is<Flag>Enabled()) ?? false
+}
 ```
 
 ### View Pattern
 
 ```swift
-if store.is<Flag>Enabled {
+if viewModel.is<Flag>Enabled {
     // Conditional UI
 }
 ```
 
 ### Feature Flags Test Pattern
 
-Four required test cases per feature:
-1. All flags **enabled** — all client closures return `true`
-2. All flags **disabled** — all client closures return `false`
-3. Client **throws** — all closures throw, flags default to `false`
+Instantiate the view model with a stub `*Dependencies` and assert on the mirrored property after calling `updateFeatureFlags()`. Four required cases per feature:
+1. All flags **enabled** — all stub closures return `true`
+2. All flags **disabled** — all stub closures return `false`
+3. Dependency **throws** — all closures throw, flags default to `false`
 4. **Partial** enablement — one flag per test case, only that flag `true`
 
 ### Adapter Pattern (context-level flags only)
@@ -292,10 +292,10 @@ func is<Flag>Enabled() throws(FeatureFlagProviderError) -> Bool {
 To find all usage of a flag with property name `myFlag` and ID `my_flag`:
 
 ```bash
-# Static property references (Client liveValue, Adapter providers)
+# Static property references (*Dependencies live(services:), Adapter providers)
 rg "\.myFlag\b"
 
-# Client/State/View property references
+# *Dependencies / view model / View property references
 rg "isMyFlagEnabled"
 
 # String ID references (tests, FeatureFlag.swift)

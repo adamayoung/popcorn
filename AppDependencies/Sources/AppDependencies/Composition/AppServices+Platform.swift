@@ -19,7 +19,7 @@ extension AppServices {
 
     // MARK: - Platform builders
 
-    /// Builds the TMDb client (mirrors `TMDbClient+TCA.liveValue` exactly).
+    /// Builds the TMDb client using the app's configured API key and locale defaults.
     static func makeTMDbClient(tmdbAPIKey: String?) -> TMDbClient {
         TMDbClient(
             apiKey: tmdbAPIKey ?? TMDbAPIKeyProvider.apiKey(),

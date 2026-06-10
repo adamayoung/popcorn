@@ -22,7 +22,6 @@ opt_in_rules:
 
 attributes:
   always_on_same_line:
-    - "@Dependency"
     - "@Environment"
     - "@State"
     - "@Binding"

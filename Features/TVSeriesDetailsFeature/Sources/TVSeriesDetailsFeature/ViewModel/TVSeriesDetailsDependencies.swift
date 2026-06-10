@@ -12,10 +12,10 @@ import TVSeriesApplication
 
 /// The dependencies required by ``TVSeriesDetailsViewModel``.
 ///
-/// A plain `Sendable` struct of closures — the MVVM replacement for the former
-/// `TVSeriesDetailsClient` (`@DependencyClient`). Constructing it requires every
-/// closure, so a missing dependency is a compile error. Build the production
-/// instance with ``live(services:)``.
+/// A plain `Sendable` struct of closures providing the data dependencies for
+/// ``TVSeriesDetailsViewModel``. Constructing it requires every closure, so a
+/// missing dependency is a compile error. Build the production instance with
+/// ``live(services:)``.
 public struct TVSeriesDetailsDependencies: Sendable {
 
     public var fetchTVSeries: @Sendable (_ id: Int) async throws -> TVSeries
@@ -43,10 +43,8 @@ public struct TVSeriesDetailsDependencies: Sendable {
 
 public extension TVSeriesDetailsDependencies {
 
-    /// Builds the production dependencies from the app's shared services.
-    ///
-    /// Mirrors the former `TVSeriesDetailsClient.liveValue` exactly: same use cases,
-    /// same mappers, same feature flags, same observability spans.
+    /// Builds the production dependencies from the app's shared services,
+    /// including use cases, mappers, feature flags, and observability spans.
     static func live(services: AppServices) -> TVSeriesDetailsDependencies {
         let fetchTVSeriesDetails = services.tvSeriesFactory.makeFetchTVSeriesDetailsUseCase()
         let fetchTVSeriesCredits = services.tvSeriesFactory.makeFetchTVSeriesCreditsUseCase()
@@ -102,8 +100,7 @@ public extension TVSeriesDetailsDependencies {
 #if DEBUG
     public extension TVSeriesDetailsDependencies {
 
-        /// Mock dependencies for previews and snapshot tests (mirrors the former
-        /// `TVSeriesDetailsClient.previewValue`).
+        /// Mock dependencies for previews and snapshot tests.
         static var preview: TVSeriesDetailsDependencies {
             TVSeriesDetailsDependencies(
                 fetchTVSeries: { _ in TVSeries.mock },

@@ -11,10 +11,10 @@ import TVSeriesApplication
 
 /// The dependencies required by ``TVSeriesCastAndCrewViewModel``.
 ///
-/// A plain `Sendable` struct of closures — the MVVM replacement for the former
-/// `TVSeriesCastAndCrewClient` (`@DependencyClient`). Constructing it requires every
-/// closure, so a missing dependency is a compile error. Build the production
-/// instance with ``live(services:)``.
+/// A plain `Sendable` struct of closures providing the data dependencies for
+/// ``TVSeriesCastAndCrewViewModel``. Constructing it requires every closure, so a
+/// missing dependency is a compile error. Build the production instance with
+/// ``live(services:)``.
 public struct TVSeriesCastAndCrewDependencies: Sendable {
 
     public var fetchCredits: @Sendable (_ tvSeriesID: Int) async throws -> Credits
@@ -29,10 +29,8 @@ public struct TVSeriesCastAndCrewDependencies: Sendable {
 
 public extension TVSeriesCastAndCrewDependencies {
 
-    /// Builds the production dependencies from the app's shared services.
-    ///
-    /// Mirrors the former `TVSeriesCastAndCrewClient.liveValue` exactly: same use
-    /// case, same mapper, same error translation.
+    /// Builds the production dependencies from the app's shared services,
+    /// wiring the use case, mapper, and error translation.
     static func live(services: AppServices) -> TVSeriesCastAndCrewDependencies {
         let fetchTVSeriesAggregateCredits = services.tvSeriesFactory
             .makeFetchTVSeriesAggregateCreditsUseCase()
@@ -56,8 +54,7 @@ public extension TVSeriesCastAndCrewDependencies {
 #if DEBUG
     public extension TVSeriesCastAndCrewDependencies {
 
-        /// Mock dependencies for previews and snapshot tests (mirrors the former
-        /// `TVSeriesCastAndCrewClient.previewValue`).
+        /// Mock dependencies for previews and snapshot tests.
         static var preview: TVSeriesCastAndCrewDependencies {
             TVSeriesCastAndCrewDependencies(
                 fetchCredits: { _ in Credits.mock }

@@ -12,10 +12,10 @@ import PlotRemixGameDomain
 
 /// The dependencies required by ``PlotRemixGameViewModel``.
 ///
-/// A plain `Sendable` struct of closures — the MVVM replacement for the former
-/// `PlotRemixGameClient` (`@DependencyClient`). Constructing it requires every
-/// closure, so a missing dependency is a compile error. Build the production
-/// instance with ``live(services:)``.
+/// A plain `Sendable` struct of closures providing the data dependencies for
+/// ``PlotRemixGameViewModel``. Constructing it requires every closure, so a
+/// missing dependency is a compile error. Build the production instance with
+/// ``live(services:)``.
 public struct PlotRemixGameDependencies: Sendable {
 
     public var gameMetadata: @Sendable (_ id: Int) async throws -> GameMetadata
@@ -35,8 +35,8 @@ public extension PlotRemixGameDependencies {
 
     /// Builds the production dependencies from the app's shared services.
     ///
-    /// Mirrors the former `PlotRemixGameClient.liveValue` exactly: same use cases,
-    /// same mappers, same game configuration.
+    /// Wires the fetch-game and generate-game use cases with their mappers and
+    /// the default game configuration.
     static func live(services: AppServices) -> PlotRemixGameDependencies {
         let fetchGame = services.gamesCatalogFactory.makeFetchGameUseCase()
         let generatePlotRemixGame = services.plotRemixGameFactory.makeGeneratePlotRemixGameUseCase()
@@ -69,8 +69,7 @@ public extension PlotRemixGameDependencies {
 #if DEBUG
     public extension PlotRemixGameDependencies {
 
-        /// Mock dependencies for previews and snapshot tests (mirrors the former
-        /// `PlotRemixGameClient.previewValue`).
+        /// Mock dependencies for previews and snapshot tests.
         static var preview: PlotRemixGameDependencies {
             PlotRemixGameDependencies(
                 gameMetadata: { _ in GameMetadata.mock },

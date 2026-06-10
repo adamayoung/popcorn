@@ -9,11 +9,9 @@ import DesignSystem
 import Presentation
 import SwiftUI
 
-/// The MVVM movie details screen, driven by ``MovieDetailsViewModel``.
+/// The movie details screen, driven by ``MovieDetailsViewModel``.
 ///
-/// Renders the same store-free ``MovieDetailsContentView`` and reproduces the
-/// exact toolbar / loading / error chrome of the former TCA `MovieDetailsView`,
-/// so recorded snapshots stay byte-identical.
+/// Renders ``MovieDetailsContentView`` along with toolbar, loading, and error chrome.
 public struct MovieDetailsView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion

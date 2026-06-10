@@ -26,7 +26,7 @@ public struct TVSeasonDetailsViewSnapshot: Equatable, Sendable {
 
 }
 
-/// Drives ``TVSeasonDetailsView``. The MVVM replacement for `TVSeasonDetailsFeature`.
+/// Drives ``TVSeasonDetailsView``.
 ///
 /// Loading is driven by the view through ``load()`` from a `.task(id:)`, so SwiftUI
 /// owns the lifetime: the work is cancelled on disappear and restarted on reappear

@@ -78,7 +78,7 @@ public final class TVListingsViewModel {
     /// Monotonic id for in-flight ``fetch()`` calls. Only the most recently
     /// started fetch may commit its result, so a slow initial fetch can't
     /// overwrite fresher listings produced by a concurrent ``sync()`` →
-    /// ``fetch()`` (the MVVM equivalent of the reducer's `cancelInFlight: true`).
+    /// ``fetch()``.
     private var fetchGeneration = 0
 
     public init(

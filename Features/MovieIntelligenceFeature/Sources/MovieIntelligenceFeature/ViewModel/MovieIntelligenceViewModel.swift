@@ -10,8 +10,7 @@ import IntelligenceDomain
 import Observation
 import OSLog
 
-/// Drives ``MovieIntelligenceView``. The MVVM replacement for
-/// `MovieIntelligenceFeature`.
+/// Drives ``MovieIntelligenceView``.
 ///
 /// Unlike the fetch-based feature view models, this chat leaf exposes discrete
 /// observable properties (``messages``, ``isThinking``, ``error``) rather than a
@@ -52,8 +51,7 @@ public final class MovieIntelligenceViewModel {
 
     /// Fetches the movie and creates the LLM session, then sends the auto-intro
     /// prompt. Driven by the view's `.task`; idempotent so reappearance does not
-    /// start a second session. Mirrors `.startSession` → `.sessionStarted` /
-    /// `.sessionStartFailed` in the reducer.
+    /// start a second session.
     public func startSession() async {
         guard session == nil else {
             return
@@ -70,15 +68,14 @@ public final class MovieIntelligenceViewModel {
             self.movie = movie
             self.session = session
 
-            // Matches the reducer: the intro is sent WITHOUT appending a user message.
+            // The intro is sent WITHOUT appending a user message.
             await respond(to: "Introduce yourself and what you're for")
         } catch {
             handleStartFailure(error)
         }
     }
 
-    /// Appends the user's prompt then responds. Mirrors `.sendPrompt` followed by
-    /// `handleSendPrompt` in the reducer.
+    /// Appends the user's prompt then responds.
     public func sendPrompt(_ prompt: String) async {
         messages.append(Message(role: .user, textContent: prompt))
         await respond(to: prompt)
@@ -86,8 +83,7 @@ public final class MovieIntelligenceViewModel {
 
     // MARK: - Responding
 
-    /// Sends `prompt` to the session and appends the assistant's reply. Mirrors
-    /// `handleSendPrompt` → `.responseReceived` / `.sendPromptFailed`.
+    /// Sends `prompt` to the session and appends the assistant's reply.
     private func respond(to prompt: String) async {
         guard let session else {
             Self.logger.warning("No current session")

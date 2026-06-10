@@ -9,11 +9,9 @@ import DesignSystem
 import Presentation
 import SwiftUI
 
-/// The MVVM TV series details screen, driven by ``TVSeriesDetailsViewModel``.
+/// The TV series details screen, driven by ``TVSeriesDetailsViewModel``.
 ///
-/// Renders the same store-free ``TVSeriesDetailsContentView`` and reproduces the
-/// exact toolbar / loading / error chrome of the former `TVSeriesDetailsFeature`, so
-/// recorded snapshots stay byte-identical.
+/// Renders ``TVSeriesDetailsContentView`` with toolbar, loading, and error chrome.
 public struct TVSeriesDetailsView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion

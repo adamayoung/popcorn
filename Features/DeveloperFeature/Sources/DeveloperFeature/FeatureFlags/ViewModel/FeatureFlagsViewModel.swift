@@ -10,12 +10,11 @@ import Observation
 import OSLog
 import Presentation
 
-/// Drives ``FeatureFlagsView``. The MVVM replacement for `FeatureFlagsFeature`.
+/// Drives ``FeatureFlagsView``.
 ///
 /// Loading is driven by the view through ``load()`` from a `.task`, so SwiftUI
 /// owns the lifetime. ``setFeatureFlagOverride(_:_:)`` and ``resetAllOverrides()``
-/// mutate the shared override service and then refetch the flags — mirroring the
-/// reducer's `.concatenate(update, fetchAll)` / `.concatenate(removeAll, fetchAll)`.
+/// mutate the shared override service and then refetch the flags.
 @Observable
 @MainActor
 public final class FeatureFlagsViewModel {
@@ -65,8 +64,7 @@ public final class FeatureFlagsViewModel {
 
     // MARK: - Overrides
 
-    /// Updates a single flag's override, then refetches the flags. Mirrors the
-    /// reducer's `.concatenate(handleUpdateFeatureFlagOverride, handleFetchAll)`.
+    /// Updates a single flag's override, then refetches the flags.
     public func setFeatureFlagOverride(
         _ featureFlag: FeatureFlag,
         _ override: FeatureFlagOverrideState
@@ -75,8 +73,7 @@ public final class FeatureFlagsViewModel {
         await fetchAll()
     }
 
-    /// Removes all overrides, then refetches the flags. Mirrors the reducer's
-    /// `.concatenate(handleResetAllOverrides, handleFetchAll)`.
+    /// Removes all overrides, then refetches the flags.
     public func resetAllOverrides() async {
         dependencies.removeAllOverrides()
         await fetchAll()

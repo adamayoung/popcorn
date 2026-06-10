@@ -9,8 +9,7 @@ import GamesCatalogFeature
 import Observation
 import PlotRemixGameFeature
 
-/// Owns the Games tab's modal navigation state. The MVVM replacement for
-/// `GamesRootFeature`'s `@Presents var plotRemixGame`.
+/// Owns the Games tab's modal navigation state.
 ///
 /// The Games tab has no push stack — only a single modal presentation (the Plot
 /// Remix game), so the router holds just the presented-game item.
@@ -39,9 +38,8 @@ final class GamesRouter {
 /// Translates leaf-feature navigation requests into ``GamesRouter`` mutations.
 ///
 /// Implements both games leaves' navigating protocols: ``GamesCatalogNavigating``
-/// maps a game selection to a modal presentation, and ``PlotRemixGameNavigating``
-/// dismisses it. Mirrors `GamesRootFeature`'s reducer mapping (`id == 1` →
-/// present, other ids no-op).
+/// maps a game selection to a modal presentation (`id == 1` → present, other ids
+/// no-op), and ``PlotRemixGameNavigating`` dismisses it.
 @MainActor
 struct GamesRouterNavigator: GamesCatalogNavigating, PlotRemixGameNavigating {
 

@@ -8,10 +8,8 @@
 /// Navigation actions an ``ExploreViewModel`` can request.
 ///
 /// The root coordinator supplies a concrete implementation (a `RouterNavigator`)
-/// that translates these into pushes. The MVVM replacement for the former
-/// `ExploreFeature.Navigation` cases, which the parent reducer intercepted. Each
-/// destination carries an optional `transitionID` so the root can drive a zoom
-/// transition from the carousel cell.
+/// that translates these into pushes. Each destination carries an optional
+/// `transitionID` so the root can drive a zoom transition from the carousel cell.
 @MainActor
 public protocol ExploreNavigating {
 

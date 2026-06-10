@@ -11,8 +11,7 @@ import SwiftUI
 
 /// The movie cast and crew view, driven by ``MovieCastAndCrewViewModel``.
 ///
-/// Renders the store-free ``MovieCastAndCrewContentView`` along with its loading /
-/// error chrome.
+/// Renders ``MovieCastAndCrewContentView`` along with its loading / error chrome.
 public struct MovieCastAndCrewView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion

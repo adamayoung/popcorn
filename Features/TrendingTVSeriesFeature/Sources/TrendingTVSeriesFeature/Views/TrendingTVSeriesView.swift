@@ -8,9 +8,9 @@
 import DesignSystem
 import SwiftUI
 
-/// The MVVM trending TV series view, driven by ``TrendingTVSeriesViewModel``.
+/// The trending TV series view, driven by ``TrendingTVSeriesViewModel``.
 ///
-/// Renders the same store-free row/list as the former TCA `TrendingTVSeriesView`.
+/// Renders a `List` of ``TVSeriesRow`` items via `NavigationRow`.
 public struct TrendingTVSeriesView: View {
 
     @State private var viewModel: TrendingTVSeriesViewModel

@@ -9,10 +9,9 @@ import DesignSystem
 import Presentation
 import SwiftUI
 
-/// The MVVM TV season details screen, driven by ``TVSeasonDetailsViewModel``.
+/// The TV season details screen, driven by ``TVSeasonDetailsViewModel``.
 ///
-/// Renders the store-free ``TVSeasonDetailsContentView`` with the loading / error
-/// chrome, so recorded snapshots stay byte-identical.
+/// Renders ``TVSeasonDetailsContentView`` with loading and error chrome.
 public struct TVSeasonDetailsView: View {
 
     @State private var viewModel: TVSeasonDetailsViewModel

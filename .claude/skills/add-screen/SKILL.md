@@ -3,136 +3,140 @@ name: add-screen
 description: Add a screen to an existing feature
 ---
 
-# Add a Screen to Existing Feature
+# Add a Screen to an Existing Tab
 
-Guide for adding a new screen/view to an existing TCA feature with proper navigation.
+Guide for adding a new screen/view to an existing tab with MVVM navigation.
+
+In MVVM, navigation is owned by the App layer: each tab has a `Router`
+(`@Observable @MainActor`) holding a typed `Route` enum stack bound to a
+`NavigationStack(path:)`, plus a `RouterNavigator` value type that implements every
+leaf feature's `Navigating` protocol by mutating the router. A view model never
+pushes screens itself — it calls a method on its injected navigator.
+
+Use `App/Features/ExploreRoot/{ExploreRouter.swift, Views/ExploreRootView.swift}`
+and `App/Composition/ViewModelFactory.swift` as the canonical reference.
 
 ## Required Information
 
 Ask the user for:
-- **Parent feature** (e.g., ExploreRootFeature, MovieDetailsFeature)
+- **Tab / parent root** (e.g., ExploreRoot, WatchlistRoot)
 - **New screen name** (e.g., MovieCredits, PersonFilmography)
-- **Navigation trigger** (what action leads to this screen)
+- **Navigation trigger** (which view model action leads to this screen)
 
 ## Steps
 
-### 1. Create the New Feature Reducer
+### 1. Create the New Feature
 
-If the screen needs its own reducer, create it in the feature package:
+If the screen needs its own feature module, build it following the `add-feature`
+workflow: a `{ScreenName}ViewModel` (`@Observable @MainActor` exposing
+`ViewState<ViewSnapshot>`), a `{ScreenName}Dependencies` struct with
+`live(services:)`, a `{ScreenName}Navigating` protocol, and a `{ScreenName}View`
+owning the view model via `@State`.
+
+### 2. Add a Factory Method
+
+In `App/Composition/ViewModelFactory.swift`, add a `make{ScreenName}` method that
+wires the feature's `Dependencies.live(services:)` to a navigator:
 
 ```swift
-@Reducer
-public struct {ScreenName}Feature: Sendable {
-    @Dependency(\.{screenName}Client) private var client
+func make{ScreenName}(
+    id: Int,
+    navigator: some {ScreenName}Navigating
+) -> {ScreenName}ViewModel {
+    {ScreenName}ViewModel(
+        id: id,
+        dependencies: .live(services: services),
+        navigator: navigator
+    )
+}
+```
 
-    @ObservableState
-    public struct State: Sendable {
-        let id: Int
-        var viewState: ViewState = .initial
+### 3. Add a Route Case
 
-        public init(id: Int) {
-            self.id = id
+In the tab's router file, add a case to the `Route` enum. The enum is `Hashable`
+and carries the values needed to build the destination view model:
+
+```swift
+enum {Tab}Route: Hashable {
+    case existingScreen(id: Int)
+    case {screenName}(id: Int)  // Add this
+}
+```
+
+### 4. Add the Navigator Method
+
+The source feature's view model calls a method on its `Navigating` protocol. Add
+that requirement to the protocol if it doesn't exist:
+
+```swift
+@MainActor
+public protocol {SourceFeature}Navigating {
+    func open{ScreenName}(id: Int)  // Add this
+}
+```
+
+Then implement it in the tab's `RouterNavigator` by appending the new route:
+
+```swift
+@MainActor
+struct {Tab}RouterNavigator: {SourceFeature}Navigating /* , ... */ {
+    let router: {Tab}Router
+
+    func open{ScreenName}(id: Int) {
+        router.path.append(.{screenName}(id: id))
+    }
+}
+```
+
+And call it from the source view model:
+
+```swift
+public func selectSomeItem(id: Int) {
+    navigator.open{ScreenName}(id: id)
+}
+```
+
+### 5. Wire the Destination in the NavigationStack
+
+In the tab's root view, the `NavigationStack(path:)` is bound to `$router.path`.
+Add the new case to the `navigationDestination` switch, building the view model
+through the factory and a navigator bound to this router:
+
+```swift
+NavigationStack(path: $router.path) {
+    {Tab}View(viewModel: {tab}ViewModel)
+        .navigationDestination(for: {Tab}Route.self) { route in
+            destination(route)
         }
-    }
+}
 
-    public enum ViewState: Sendable {
-        case initial
-        case loading
-        case ready(ViewSnapshot)
-        case error(Error)
+@ViewBuilder
+private func destination(_ route: {Tab}Route) -> some View {
+    switch route {
+    case .existingScreen(let id):
+        ExistingView(viewModel: factory.makeExisting(id: id, navigator: navigator))
+    case .{screenName}(let id):
+        {ScreenName}View(viewModel: factory.make{ScreenName}(id: id, navigator: navigator))  // Add this
     }
+}
 
-    public enum Action: Sendable {
-        case didAppear
-        case fetch
-        case loaded(ViewSnapshot)
-        case failed(Error)
-        case navigate(Navigation)
-    }
-
-    public enum Navigation: Equatable, Hashable, Sendable {
-        // Define navigation destinations
-    }
-
-    public init() {}
-
-    public var body: some Reducer<State, Action> {
-        Reduce { state, action in
-            // Implementation
-        }
-    }
+private var navigator: {Tab}RouterNavigator {
+    {Tab}RouterNavigator(router: router)
 }
 ```
 
-### 2. Add to Parent's Path Enum
+For a modal instead of a push, add an `@Observable` presentation item property to
+the router (e.g. `presented{ScreenName}: Presented{ScreenName}?`), have the
+navigator method set it, and present it with `.sheet(item:)` /
+`.fullScreenCover(item:)` in the root view.
 
-In the parent feature's `Path` reducer enum:
+Use SCREAMING_SNAKE_CASE keys for all user-facing strings. Build first, then add
+English values in `Localizable.xcstrings` — see [SWIFTUI.md § Localization](docs/SWIFTUI.md).
 
-```swift
-@Reducer
-enum Path {
-    case existingScreen(ExistingFeature)
-    case {screenName}({ScreenName}Feature)  // Add this
-}
-```
+### 6. Update Tests
 
-### 3. Add Navigation Action Handling
-
-In the parent reducer's body:
-
-```swift
-case .existingScreen(.navigate(.{screenName}(let id))):
-    state.path.append(.{screenName}({ScreenName}Feature.State(id: id)))
-    return .none
-```
-
-Or if navigating from the root:
-
-```swift
-case .{rootFeature}(.navigate(.{screenName}(let id))):
-    state.path.append(.{screenName}({ScreenName}Feature.State(id: id)))
-    return .none
-```
-
-### 4. Wire View in NavigationStack
-
-In the parent's view, add to the `destination` closure:
-
-```swift
-NavigationStack(path: $store.scope(state: \.path, action: \.path)) {
-    RootView(store: store.scope(state: \.root, action: \.root))
-} destination: { store in
-    switch store.case {
-    case .existingScreen(let store):
-        ExistingView(store: store)
-    case .{screenName}(let store):
-        {ScreenName}View(store: store)  // Add this
-    }
-}
-```
-
-### 5. Create the View
-
-```swift
-struct {ScreenName}View: View {
-    @Bindable var store: StoreOf<{ScreenName}Feature>
-
-    var body: some View {
-        // View implementation
-    }
-}
-```
-
-Use SCREAMING_SNAKE_CASE keys for all user-facing strings. Build first, then add English values in `Localizable.xcstrings` — see [SWIFTUI.md § Localization](docs/SWIFTUI.md).
-
-### 6. Add Navigation Enum Case to Source Feature
-
-In the feature that triggers navigation:
-
-```swift
-public enum Navigation: Equatable, Hashable, Sendable {
-    case {screenName}(id: Int)
-}
-```
+- Add a spy implementing the source feature's `Navigating` protocol and assert the
+  new method fires when the triggering view-model action runs.
+- Add view-model and snapshot tests for the new screen following `add-feature`.
 
 $ARGUMENTS

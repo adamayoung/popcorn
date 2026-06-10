@@ -11,10 +11,10 @@ import TrendingApplication
 
 /// The dependencies required by ``TrendingPeopleViewModel``.
 ///
-/// A plain `Sendable` struct of closures — the MVVM replacement for the former
-/// `TrendingPeopleClient` (`@DependencyClient`). Constructing it requires every
-/// closure, so a missing dependency is a compile error. Build the production
-/// instance with ``live(services:)``.
+/// A plain `Sendable` struct of closures providing the data dependencies for
+/// ``TrendingPeopleViewModel``. Constructing it requires every closure, so a
+/// missing dependency is a compile error. Build the production instance with
+/// ``live(services:)``.
 public struct TrendingPeopleDependencies: Sendable {
 
     public var fetchTrendingPeople: @Sendable () async throws -> [PersonPreview]
@@ -31,8 +31,7 @@ public extension TrendingPeopleDependencies {
 
     /// Builds the production dependencies from the app's shared services.
     ///
-    /// Mirrors the former `TrendingPeopleClient.liveValue` exactly: same use case,
-    /// same mapper.
+    /// Uses the trending use case and maps results to ``PersonPreview`` values.
     static func live(services: AppServices) -> TrendingPeopleDependencies {
         let fetchTrendingPeople = services.trendingFactory.makeFetchTrendingPeopleUseCase()
 
@@ -50,8 +49,7 @@ public extension TrendingPeopleDependencies {
 #if DEBUG
     public extension TrendingPeopleDependencies {
 
-        /// Mock dependencies for previews and snapshot tests (mirrors the former
-        /// `TrendingPeopleClient.previewValue`).
+        /// Mock dependencies for previews and snapshot tests.
         static var preview: TrendingPeopleDependencies {
             TrendingPeopleDependencies(
                 fetchTrendingPeople: { PersonPreview.mocks }

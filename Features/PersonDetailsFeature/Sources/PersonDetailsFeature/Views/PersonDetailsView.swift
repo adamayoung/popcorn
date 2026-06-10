@@ -9,11 +9,9 @@ import DesignSystem
 import Presentation
 import SwiftUI
 
-/// The MVVM person details screen, driven by ``PersonDetailsViewModel``.
+/// The person details screen, driven by ``PersonDetailsViewModel``.
 ///
-/// Renders the same store-free ``PersonDetailsContentView`` and reproduces the
-/// exact loading / error chrome of the former TCA view, so recorded
-/// snapshots stay byte-identical.
+/// Renders ``PersonDetailsContentView`` along with its loading / error chrome.
 public struct PersonDetailsView: View {
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion

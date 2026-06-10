@@ -21,7 +21,7 @@ public struct GamesCatalogViewSnapshot: Equatable, Sendable {
 
 }
 
-/// Drives ``GamesCatalogView``. The MVVM replacement for `GamesCatalogFeature`.
+/// Drives ``GamesCatalogView``.
 ///
 /// Loading is driven by the view through ``load()`` from a `.task(id:)`, so SwiftUI
 /// owns the lifetime: the work is cancelled on disappear and restarted on reappear

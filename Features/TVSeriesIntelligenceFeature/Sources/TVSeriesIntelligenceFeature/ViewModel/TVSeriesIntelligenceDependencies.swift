@@ -11,10 +11,10 @@ import IntelligenceDomain
 
 /// The dependencies required by ``TVSeriesIntelligenceViewModel``.
 ///
-/// A plain `Sendable` struct of closures — the MVVM replacement for the former
-/// `TVSeriesIntelligenceClient` (`@DependencyClient`). Constructing it requires
-/// every closure, so a missing dependency is a compile error. Build the
-/// production instance with ``live(services:)``.
+/// A plain `Sendable` struct of closures providing the data dependencies for
+/// ``TVSeriesIntelligenceViewModel``. Constructing it requires every closure,
+/// so a missing dependency is a compile error. Build the production instance
+/// with ``live(services:)``.
 public struct TVSeriesIntelligenceDependencies: Sendable {
 
     public var fetchTVSeries: @Sendable (_ id: Int) async throws -> TVSeries
@@ -37,8 +37,7 @@ public extension TVSeriesIntelligenceDependencies {
 
     /// Builds the production dependencies from the app's shared services.
     ///
-    /// Mirrors the former `TVSeriesIntelligenceClient.liveValue` exactly: same use
-    /// cases, same mapper. `captureError` reports to the shared observability
+    /// Wires the use cases, mapper, and error capture via the shared observability
     /// service.
     static func live(services: AppServices) -> TVSeriesIntelligenceDependencies {
         let fetchTVSeriesDetails = services.tvSeriesFactory.makeFetchTVSeriesDetailsUseCase()
@@ -66,8 +65,7 @@ public extension TVSeriesIntelligenceDependencies {
 #if DEBUG
     public extension TVSeriesIntelligenceDependencies {
 
-        /// Stub dependencies for previews and snapshot tests (mirrors the former
-        /// `TVSeriesIntelligenceClient.previewValue`).
+        /// Stub dependencies for previews and snapshot tests.
         static var preview: TVSeriesIntelligenceDependencies {
             TVSeriesIntelligenceDependencies(
                 fetchTVSeries: { id in

@@ -8,8 +8,7 @@
 /// Navigation actions a ``GamesCatalogViewModel`` can request.
 ///
 /// The root coordinator supplies a concrete implementation (a `RouterNavigator`)
-/// that translates these into presentations. The MVVM replacement for the former
-/// `GamesCatalogFeature.Navigation` cases, which the parent reducer intercepted.
+/// that translates these into presentations.
 @MainActor
 public protocol GamesCatalogNavigating {
 

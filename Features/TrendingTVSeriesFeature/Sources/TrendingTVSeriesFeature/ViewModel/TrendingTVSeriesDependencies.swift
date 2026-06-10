@@ -11,10 +11,10 @@ import TrendingApplication
 
 /// The dependencies required by ``TrendingTVSeriesViewModel``.
 ///
-/// A plain `Sendable` struct of closures — the MVVM replacement for the former
-/// `TrendingTVSeriesClient` (`@DependencyClient`). Constructing it requires every
-/// closure, so a missing dependency is a compile error. Build the production
-/// instance with ``live(services:)``.
+/// A plain `Sendable` struct of closures providing the data dependencies for
+/// ``TrendingTVSeriesViewModel``. Constructing it requires every closure, so a
+/// missing dependency is a compile error. Build the production instance with
+/// ``live(services:)``.
 public struct TrendingTVSeriesDependencies: Sendable {
 
     public var fetchTrendingTVSeries: @Sendable () async throws -> [TVSeriesPreview]
@@ -31,8 +31,7 @@ public extension TrendingTVSeriesDependencies {
 
     /// Builds the production dependencies from the app's shared services.
     ///
-    /// Mirrors the former `TrendingTVSeriesClient.liveValue` exactly: same use case,
-    /// same mapper.
+    /// Uses the trending use case and maps results to ``TVSeriesPreview`` values.
     static func live(services: AppServices) -> TrendingTVSeriesDependencies {
         let fetchTrendingTVSeries = services.trendingFactory.makeFetchTrendingTVSeriesUseCase()
 
@@ -50,8 +49,7 @@ public extension TrendingTVSeriesDependencies {
 #if DEBUG
     public extension TrendingTVSeriesDependencies {
 
-        /// Mock dependencies for previews and snapshot tests (mirrors the former
-        /// `TrendingTVSeriesClient.previewValue`).
+        /// Mock dependencies for previews and snapshot tests.
         static var preview: TrendingTVSeriesDependencies {
             TrendingTVSeriesDependencies(
                 fetchTrendingTVSeries: { TVSeriesPreview.mocks }

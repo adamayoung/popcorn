@@ -9,16 +9,16 @@ import Foundation
 
 /// An equatable error type for use with ``ViewState``.
 ///
-/// This provides an `Equatable` wrapper around errors for use in TCA state,
-/// since `Error` itself does not conform to `Equatable`.
+/// Wraps any `Error` as an `Equatable` value so view models can store it in
+/// `@Observable` state without a custom conformance.
 ///
 /// Example usage:
 /// ```swift
 /// do {
 ///     let data = try await fetchData()
-///     await send(.loaded(data))
+///     viewState = .ready(data)
 /// } catch {
-///     await send(.loadFailed(ViewStateError(error)))
+///     viewState = .error(ViewStateError(error))
 /// }
 /// ```
 public struct ViewStateError: LocalizedError, Equatable, Sendable {

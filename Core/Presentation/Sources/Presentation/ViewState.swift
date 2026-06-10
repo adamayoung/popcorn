@@ -15,8 +15,8 @@
 ///
 /// Example usage:
 /// ```swift
-/// @ObservableState
-/// struct State {
+/// @Observable @MainActor
+/// final class MovieDetailsViewModel {
 ///     var viewState: ViewState<MovieDetails> = .initial
 /// }
 /// ```

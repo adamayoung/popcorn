@@ -356,7 +356,7 @@ Button(
     // ✅ State-dependent icon gives sighted users visual feedback
     systemImage: item.isOnWatchlist ? "eye" : "plus"
 ) {
-    store.send(.toggleOnWatchlist)
+    Task { await viewModel.toggleOnWatchlist() }
 }
 // ✅ State-dependent identifier enables UI testing of toggle state
 .accessibilityIdentifier(

@@ -18,11 +18,10 @@ import TVSeriesCastAndCrewFeature
 import TVSeriesDetailsFeature
 import TVSeriesIntelligenceFeature
 
-/// The MVVM Search tab root. Hosts the media search home in a `NavigationStack`,
+/// The Search tab root. Hosts the media search home in a `NavigationStack`,
 /// drives push navigation (movie / TV series / season / episode details, person
 /// details, cast and crew) and the movie / TV series intelligence modals via
-/// ``SearchRouter``. The MVVM replacement for the store-based `SearchRootView` +
-/// `SearchRootFeature`.
+/// ``SearchRouter``.
 struct SearchRootView: View {
 
     @Bindable private var router: SearchRouter

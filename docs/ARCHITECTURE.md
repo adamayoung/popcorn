@@ -2,7 +2,7 @@
 
 Use `/add-context`, `/add-feature`, `/add-use-case`, or `/add-screen` for guided scaffolding of new architectural components.
 
-Popcorn follows Clean Architecture with Domain-Driven Design, using The Composable Architecture (TCA) for state management.
+Popcorn follows Clean Architecture with Domain-Driven Design, using MVVM (`@Observable` view models) for presentation and state management.
 
 ## Directory Structure
 
@@ -10,7 +10,7 @@ Popcorn follows Clean Architecture with Domain-Driven Design, using The Composab
 popcorn/
 ├── App/                    # Application shell & platform scenes
 ├── Contexts/               # Business domains (Domain → Application → Infrastructure)
-├── Features/               # TCA feature modules (UI vertical slices)
+├── Features/               # MVVM feature modules (UI vertical slices)
 ├── Adapters/               # Bridge contexts to external services
 ├── AppDependencies/        # Central dependency injection hub
 ├── Platform/               # Cross-cutting concerns (Caching, Observability, etc.)
@@ -290,120 +290,211 @@ public struct PopcornMoviesFactory {
 }
 ```
 
-## Features: TCA UI Modules
+## Features: MVVM UI Modules
 
-Features are vertical slices containing TCA reducers, views, and clients.
+Features are vertical slices containing an `@Observable` view model, a per-feature dependencies struct, a navigation protocol, SwiftUI views, and feature-local models.
+
+The canonical reference feature is `Features/MovieDetailsFeature` — model new features on it.
 
 ### Structure
 
 ```
 Features/MovieDetailsFeature/
 ├── Sources/MovieDetailsFeature/
-│   ├── MovieDetailsFeature.swift   # TCA Reducer
-│   ├── MovieDetailsClient.swift    # Dependency bridge
-│   ├── Views/                      # SwiftUI views
-│   ├── Models/                     # Feature-specific models
-│   └── Mappers/                    # Transform application → feature models
+│   ├── ViewModel/
+│   │   ├── MovieDetailsViewModel.swift    # @Observable @MainActor view model
+│   │   ├── MovieDetailsDependencies.swift # Sendable struct of @Sendable closures
+│   │   └── MovieDetailsNavigating.swift   # @MainActor navigation protocol
+│   ├── Views/                             # SwiftUI views (MovieDetailsView owns the VM)
+│   ├── Models/                            # Feature-specific models
+│   └── Mappers/                           # Transform application → feature models
 └── Tests/
 ```
 
-### TCA Reducer
+### View Model
+
+A feature's view model is an `@Observable @MainActor final class` that exposes a single
+`viewState` driving the view. `ViewState<Content>` lives in the `Presentation` module and
+has four cases: `.initial`, `.loading`, `.ready(Content)`, `.error(ViewStateError)`.
 
 ```swift
-@Reducer
-public struct MovieDetailsFeature: Sendable {
-    @Dependency(\.movieDetailsClient) private var client
+@Observable
+@MainActor
+public final class MovieDetailsViewModel {
 
-    @ObservableState
-    public struct State: Sendable {
-        let movieID: Int
-        var viewState: ViewState
+    public typealias ViewSnapshot = MovieDetailsViewSnapshot
+
+    public private(set) var viewState: ViewState<ViewSnapshot>
+
+    /// Drives `.task(id:)` reruns. `reload()` bumps it to retry after an error.
+    public private(set) var reloadID = 0
+
+    public let movieID: Int
+
+    private let dependencies: MovieDetailsDependencies
+    private let navigator: any MovieDetailsNavigating
+
+    public init(
+        movieID: Int,
+        dependencies: MovieDetailsDependencies,
+        navigator: any MovieDetailsNavigating,
+        viewState: ViewState<ViewSnapshot> = .initial
+    ) {
+        self.movieID = movieID
+        self.dependencies = dependencies
+        self.navigator = navigator
+        self.viewState = viewState
     }
 
-    public enum ViewState: Sendable {
-        case initial
-        case loading
-        case ready(ViewSnapshot)
-        case error(Error)
-    }
-
-    public enum Action {
-        case didAppear
-        case fetch
-        case loaded(ViewSnapshot)
-        case navigate(Navigation)
-    }
-
-    var body: some Reducer<State, Action> {
-        Reduce { state, action in
-            switch action {
-            case .fetch:
-                return .run { [state] send in
-                    let movie = try await client.fetchMovie(id: state.movieID)
-                    await send(.loaded(ViewSnapshot(movie: movie)))
-                }
-            // ...
-            }
+    /// Driven by the view's `.task(id:)`; SwiftUI cancels it on disappear and
+    /// reruns it on reappear / `reload()`.
+    public func load() async {
+        guard !viewState.isReady, !viewState.isLoading else { return }
+        viewState = .loading
+        do {
+            let movie = try await dependencies.fetchMovie(movieID)
+            viewState = .ready(ViewSnapshot(movie: movie))
+        } catch {
+            viewState.applyLoadFailure(error)
         }
+    }
+
+    public func reload() {
+        reloadID += 1
+    }
+
+    // Navigation requests are delegated to the injected navigator.
+    public func selectPerson(id: Int) {
+        navigator.openPersonDetails(id: id)
     }
 }
 ```
 
-### Feature Client
+### Feature Dependencies
 
-Bridges TCA dependencies to AppDependencies:
+Each feature declares a `Sendable` struct of `@Sendable` closures — the dependency surface
+the view model needs. Constructing it requires every closure, so a missing dependency is a
+compile error. Build the production instance with `static func live(services:)`, which reads
+use cases and feature flags from the shared `AppServices` graph.
 
 ```swift
-@DependencyClient
-struct MovieDetailsClient: Sendable {
-    var fetchMovie: @Sendable (_ id: Int) async throws -> Movie
-    var toggleOnWatchlist: @Sendable (_ id: Int) async throws -> Void
+public struct MovieDetailsDependencies: Sendable {
+
+    public var fetchMovie: @Sendable (_ id: Int) async throws -> Movie
+    public var toggleOnWatchlist: @Sendable (_ id: Int) async throws -> Void
+    public var isWatchlistEnabled: @Sendable () throws -> Bool
+
+    public init(/* ... */) { /* ... */ }
 }
 
-extension MovieDetailsClient: DependencyKey {
-    static var liveValue: MovieDetailsClient {
-        @Dependency(\.fetchMovieDetails) var fetchMovieDetails
+public extension MovieDetailsDependencies {
 
-        return MovieDetailsClient(
+    /// Builds the production dependencies from the app's shared services.
+    static func live(services: AppServices) -> MovieDetailsDependencies {
+        let fetchMovieDetails = services.moviesFactory.makeFetchMovieDetailsUseCase()
+        let toggleWatchlistMovie = services.moviesFactory.makeToggleWatchlistMovieUseCase()
+        let featureFlags = services.featureFlags
+
+        return MovieDetailsDependencies(
             fetchMovie: { id in
                 let details = try await fetchMovieDetails.execute(id: id)
                 return MovieMapper().map(details)
-            }
+            },
+            toggleOnWatchlist: { id in
+                try await toggleWatchlistMovie.execute(id: id)
+            },
+            isWatchlistEnabled: { featureFlags.isEnabled(.watchlist) }
         )
     }
 }
 ```
 
-## AppDependencies: Dependency Injection Hub
+A `#if DEBUG` `static var preview` provides mock dependencies for previews and snapshot tests.
 
-Wires all contexts into TCA's dependency system.
+### Feature Navigation Protocol
+
+Each feature declares a `@MainActor` `*Navigating` protocol describing the navigation actions
+its view model can request. The App layer supplies a concrete implementation; the feature
+package never knows about routes or other features.
+
+```swift
+@MainActor
+public protocol MovieDetailsNavigating {
+    func openPersonDetails(id: Int)
+    func openMovieCastAndCrew(movieID: Int)
+    func openMovieIntelligence(id: Int)
+}
+```
+
+### View
+
+The SwiftUI `*View` owns its view model via `@State private var viewModel` and an
+`init(viewModel:)`, and drives loading from a `.task(id:)` keyed on `reloadID`:
+
+```swift
+public struct MovieDetailsView: View {
+
+    @State private var viewModel: MovieDetailsViewModel
+
+    public init(viewModel: MovieDetailsViewModel) {
+        _viewModel = State(initialValue: viewModel)
+    }
+
+    public var body: some View {
+        ZStack {
+            switch viewModel.viewState {
+            case .ready(let snapshot): content(snapshot)
+            case .error(let error): errorBody(error)
+            default: EmptyView()
+            }
+        }
+        .overlay { if viewModel.viewState.isLoading { ProgressView() } }
+        .task(id: viewModel.reloadID) {
+            await viewModel.load()
+        }
+    }
+}
+```
+
+## AppDependencies: Composition Root
+
+`AppServices` (in `AppDependencies/Sources/AppDependencies/Composition/`) is the shared
+composition root. It builds the app's service and context-factory graph exactly once, in
+dependency order, with no global registry — plain sequential construction.
 
 ```
 AppDependencies/
-├── Movies/
-│   ├── FetchMovieDetailsUseCase+TCA.swift
-│   └── MoviesFactory+TCA.swift
-├── Configuration/
-├── Observability/
-└── ...
+├── Composition/
+│   ├── AppServices.swift             # Shared service + factory graph (built once)
+│   ├── AppServices+Composition.swift # buildGraph(...) — constructs the graph in order
+│   └── AppServices+Platform.swift    # Platform services (feature flags, observability)
+└── TMDb/
+    └── TMDbAPIKeyProvider.swift
 ```
 
 ```swift
-// FetchMovieDetailsUseCase+TCA.swift
-enum FetchMovieDetailsUseCaseKey: DependencyKey {
-    static var liveValue: any FetchMovieDetailsUseCase {
-        @Dependency(\.moviesFactory) var moviesFactory
-        return moviesFactory.makeFetchMovieDetailsUseCase()
-    }
-}
+// AppServices.swift
+public final class AppServices: Sendable {
 
-public extension DependencyValues {
-    var fetchMovieDetails: any FetchMovieDetailsUseCase {
-        get { self[FetchMovieDetailsUseCaseKey.self] }
-        set { self[FetchMovieDetailsUseCaseKey.self] = newValue }
+    public let moviesFactory: PopcornMoviesFactory
+    public let tvSeriesFactory: PopcornTVSeriesFactory
+    public let peopleFactory: PopcornPeopleFactory
+    // ... other context factories ...
+
+    public let featureFlags: any FeatureFlagging
+    public let observability: any Observing
+
+    public init(/* ... */) {
+        let graph = Self.buildGraph(/* ... */)
+        self.moviesFactory = graph.moviesFactory
+        // ... assign the rest of the graph ...
     }
 }
 ```
+
+Each feature's `Dependencies.live(services:)` reads use cases and platform services off this
+graph (e.g. `services.moviesFactory.makeFetchMovieDetailsUseCase()`,
+`services.featureFlags`).
 
 ## Adapters: External Service Bridges
 
@@ -423,13 +514,13 @@ public final class PopcornMoviesAdaptersFactory {
 ## Dependency Flow
 
 ```
-TCA Feature
+MovieDetailsView (@State viewModel)
     ↓
-@Dependency(\.movieDetailsClient)     # Feature Client
+MovieDetailsViewModel                 # Feature view model
     ↓
-@Dependency(\.fetchMovieDetails)      # AppDependencies
-    ↓
-@Dependency(\.moviesFactory)          # AppDependencies
+MovieDetailsDependencies              # Per-feature Sendable struct of closures
+    ↓  (.live(services:))
+AppServices                           # AppDependencies composition root
     ↓
 PopcornMoviesAdaptersFactory          # Adapters
     ↓
@@ -440,48 +531,100 @@ PopcornMoviesFactory                  # Context Composition
 
 ## Navigation Patterns
 
+Navigation lives in the App layer. Each tab has an `@Observable` `*Router` (owns a typed
+`Route` stack and any modal items) and a `*RouterNavigator` value type that implements every
+feature `*Navigating` protocol reachable from that tab, translating navigation requests into
+router mutations. View models stay route-agnostic — they only call their `*Navigating`
+protocol.
+
 ### Stack Navigation
 
 ```swift
-@Reducer
-struct ExploreRootFeature {
-    @ObservableState
-    struct State {
-        var path = StackState<Path.State>()
-        var explore = ExploreFeature.State()
+/// A pushed destination on the Explore tab's navigation stack.
+enum ExploreRoute: Hashable {
+    case movieDetails(id: Int, transitionID: String?)
+    case personDetails(id: Int, transitionID: String?)
+    // ...
+}
+
+@Observable
+@MainActor
+final class ExploreRouter {
+    /// Bound to the root's `NavigationStack(path:)`.
+    var path: [ExploreRoute] = []
+}
+
+/// Translates leaf-feature navigation requests into `ExploreRouter` mutations.
+@MainActor
+struct ExploreRouterNavigator: MovieDetailsNavigating, PersonDetailsNavigating /* ... */ {
+    let router: ExploreRouter
+
+    func openMovieDetails(id: Int) {
+        router.path.append(.movieDetails(id: id, transitionID: nil))
     }
 
-    @Reducer
-    enum Path {
-        case movieDetails(MovieDetailsFeature)
-        case personDetails(PersonDetailsFeature)
+    func openPersonDetails(id: Int) {
+        router.path.append(.personDetails(id: id, transitionID: nil))
     }
+}
+```
 
-    var body: some Reducer<State, Action> {
-        Reduce { state, action in
-            switch action {
-            case .explore(.navigate(.movieDetails(let id))):
-                state.path.append(.movieDetails(MovieDetailsFeature.State(movieID: id)))
-                return .none
-            // ...
-            }
+The root view drives a `NavigationStack(path:)` bound to `router.path` and builds each
+destination's view model via the `ViewModelFactory`, injecting a navigator bound to the router:
+
+```swift
+NavigationStack(path: $router.path) {
+    ExploreView(viewModel: exploreViewModel, transitionNamespace: namespace)
+        .navigationDestination(for: ExploreRoute.self) { route in
+            destination(route)   // builds the screen's view model + navigator
         }
-        .forEach(\.path, action: \.path)
-    }
 }
 ```
 
 ### Modal Navigation
 
+Modals are an optional item on the router, presented with `.sheet(item:)` /
+`.fullScreenCover(item:)` (the project wraps these as `.platformModal(item:)`):
+
 ```swift
-@Presents var movieIntelligence: MovieIntelligenceFeature.State?
+@Observable
+@MainActor
+final class ExploreRouter {
+    var presentedMovieIntelligence: PresentedMovieIntelligence?
+}
 
-// Present
-state.movieIntelligence = MovieIntelligenceFeature.State(movieID: id)
+// Navigator presents instead of pushing
+func openMovieIntelligence(id: Int) {
+    router.presentedMovieIntelligence = PresentedMovieIntelligence(movieID: id)
+}
 
-// Reducer composition
-.ifLet(\.$movieIntelligence, action: \.movieIntelligence) {
-    MovieIntelligenceFeature()
+// Root view
+.platformModal(item: $router.presentedMovieIntelligence) { intel in
+    MovieIntelligenceView(viewModel: factory.makeMovieIntelligence(movieID: intel.movieID))
+}
+```
+
+### ViewModelFactory
+
+`ViewModelFactory` (in `App/Composition/`) is the App-layer seam that builds each feature's
+view model from the shared `AppServices` graph, wiring `Dependencies.live(services:)` to a
+navigator supplied by the tab's router:
+
+```swift
+@MainActor
+final class ViewModelFactory {
+    private let services: AppServices
+
+    func makeMovieDetails(
+        id: Int,
+        navigator: some MovieDetailsNavigating
+    ) -> MovieDetailsViewModel {
+        MovieDetailsViewModel(
+            movieID: id,
+            dependencies: .live(services: services),
+            navigator: navigator
+        )
+    }
 }
 ```
 
@@ -521,18 +664,30 @@ public protocol FeatureFlagging: Sendable {
 
 ## App Shell
 
-Platform-specific scenes with shared root feature:
+The app builds the shared `AppServices` graph and a `ViewModelFactory` once at launch, then
+hands them to platform-specific scenes alongside the root `AppRootViewModel`:
 
 ```swift
 @main
 struct PopcornApp: App {
+    @State private var viewModel: AppRootViewModel
+    private let factory: ViewModelFactory
+
+    init() {
+        let services = AppServices()
+        self.factory = ViewModelFactory(services: services)
+        _viewModel = State(
+            initialValue: AppRootViewModel(dependencies: .live(services: services))
+        )
+    }
+
     var body: some Scene {
         #if os(macOS)
-            MacScene(store: store)
+            MacScene(viewModel: viewModel, factory: factory)
         #elseif os(visionOS)
-            VisionScene(store: store)
+            VisionScene(viewModel: viewModel, factory: factory)
         #else
-            PhoneScene(store: store)
+            PhoneScene(viewModel: viewModel, factory: factory)
         #endif
     }
 }
@@ -543,7 +698,7 @@ struct PopcornApp: App {
 Use the corresponding skills for step-by-step guides:
 - `/add-use-case` — Add a use case to an existing context
 - `/add-screen` — Add a screen to an existing feature
-- `/add-feature` — Create a new TCA feature package
+- `/add-feature` — Create a new MVVM feature package
 - `/add-context` — Create a new business domain context
 
 For cross-context communication patterns, see the section below.
@@ -570,13 +725,13 @@ When one context needs another's data:
    }
    ```
 
-3. Inject via AppDependencies:
+3. Consume via the shared services graph — the consuming context's factory is built with the
+   provider obtained from `AppServices`:
    ```swift
-   // AppDependencies/Chat/MoviesChatToolsProviding+TCA.swift
-   extension DependencyValues {
-       var moviesChatToolsProvider: any MoviesChatToolsProviding {
-           @Dependency(\.moviesFactory) var moviesFactory
-           return moviesFactory
-       }
-   }
+   // AppServices+Composition.swift (buildGraph)
+   // The movies factory already conforms to MoviesChatToolsProviding, so it is passed
+   // straight into the chat/intelligence factory as the provider.
+   let intelligenceFactory = PopcornIntelligenceFactory(
+       moviesChatToolsProvider: moviesFactory
+   )
    ```

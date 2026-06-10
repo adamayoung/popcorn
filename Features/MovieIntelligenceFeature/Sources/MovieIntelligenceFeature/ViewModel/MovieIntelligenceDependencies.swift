@@ -13,10 +13,9 @@ import MoviesApplication
 
 /// The dependencies required by ``MovieIntelligenceViewModel``.
 ///
-/// A plain `Sendable` struct of closures — the MVVM replacement for the former
-/// `MovieIntelligenceClient` (`@DependencyClient`). Constructing it requires every
-/// closure, so a missing dependency is a compile error. Build the production
-/// instance with ``live(services:)``.
+/// A plain `Sendable` struct of closures providing the data dependencies for
+/// ``MovieIntelligenceViewModel``. Constructing it requires every closure, so a missing
+/// dependency is a compile error. Build the production instance with ``live(services:)``.
 public struct MovieIntelligenceDependencies: Sendable {
 
     public var fetchMovie: @Sendable (_ id: Int) async throws -> IntelligenceDomain.Movie
@@ -39,9 +38,7 @@ public extension MovieIntelligenceDependencies {
 
     /// Builds the production dependencies from the app's shared services.
     ///
-    /// Mirrors the former `MovieIntelligenceClient.liveValue` exactly: same use
-    /// cases, same mapper. `captureError` reports through the shared observability
-    /// service, matching the reducer's `@Dependency(\.observability).capture(error:)`.
+    /// `captureError` reports through the shared observability service.
     static func live(services: AppServices) -> MovieIntelligenceDependencies {
         let fetchMovieDetails = services.moviesFactory.makeFetchMovieDetailsUseCase()
         let createMovieIntelligenceSession = services.intelligenceFactory
@@ -64,8 +61,7 @@ public extension MovieIntelligenceDependencies {
 #if DEBUG
     public extension MovieIntelligenceDependencies {
 
-        /// Mock dependencies for previews and snapshot tests (mirrors the former
-        /// `MovieIntelligenceClient.previewValue`).
+        /// Mock dependencies for previews and snapshot tests.
         static var preview: MovieIntelligenceDependencies {
             MovieIntelligenceDependencies(
                 fetchMovie: { id in

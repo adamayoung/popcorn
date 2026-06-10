@@ -11,10 +11,9 @@ import MoviesApplication
 
 /// The dependencies required by ``MovieCastAndCrewViewModel``.
 ///
-/// A plain `Sendable` struct of closures — the MVVM replacement for the former
-/// `MovieCastAndCrewClient` (`@DependencyClient`). Constructing it requires every
-/// closure, so a missing dependency is a compile error. Build the production
-/// instance with ``live(services:)``.
+/// A plain `Sendable` struct of closures providing the data dependencies for
+/// ``MovieCastAndCrewViewModel``. Constructing it requires every closure, so a missing
+/// dependency is a compile error. Build the production instance with ``live(services:)``.
 public struct MovieCastAndCrewDependencies: Sendable {
 
     public var fetchCredits: @Sendable (_ movieID: Int) async throws -> Credits
@@ -30,9 +29,6 @@ public struct MovieCastAndCrewDependencies: Sendable {
 public extension MovieCastAndCrewDependencies {
 
     /// Builds the production dependencies from the app's shared services.
-    ///
-    /// Mirrors the former `MovieCastAndCrewClient.liveValue` exactly: same use case,
-    /// same mapper, same error translation.
     static func live(services: AppServices) -> MovieCastAndCrewDependencies {
         let fetchMovieCredits = services.moviesFactory.makeFetchMovieCreditsUseCase()
 
@@ -54,8 +50,7 @@ public extension MovieCastAndCrewDependencies {
 #if DEBUG
     public extension MovieCastAndCrewDependencies {
 
-        /// Mock dependencies for previews and snapshot tests (mirrors the former
-        /// `MovieCastAndCrewClient.previewValue`).
+        /// Mock dependencies for previews and snapshot tests.
         static var preview: MovieCastAndCrewDependencies {
             MovieCastAndCrewDependencies(
                 fetchCredits: { _ in Credits.mock }

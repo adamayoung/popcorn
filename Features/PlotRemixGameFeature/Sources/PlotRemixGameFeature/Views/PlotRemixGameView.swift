@@ -8,11 +8,10 @@
 import DesignSystem
 import SwiftUI
 
-/// The MVVM Plot Remix game screen, driven by ``PlotRemixGameViewModel``.
+/// The Plot Remix game screen, driven by ``PlotRemixGameViewModel``.
 ///
-/// Reuses the same ``PlotRemixGameStartView`` / ``PlotRemixGameQuestionsView`` and
-/// reproduces the exact chrome of the former store-backed view, so recorded
-/// snapshots stay byte-identical.
+/// Composes ``PlotRemixGameStartView`` and ``PlotRemixGameQuestionsView`` with an
+/// animated mesh background and a close toolbar button.
 public struct PlotRemixGameView: View {
 
     @State private var viewModel: PlotRemixGameViewModel

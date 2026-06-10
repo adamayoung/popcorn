@@ -6,7 +6,6 @@ permissionMode: auto
 skills:
   - swift-concurrency
   - swiftui-expert-skill
-  - tca-expert
   - swift-testing-expert
 ---
 
@@ -27,7 +26,7 @@ After an initial review, launch an adversarial re-evaluation challenging your ow
 ## Core Tech
 
 - SwiftUI
-- The Composable Architecture (TCA 1.23+)
+- MVVM (`@Observable @MainActor` view models with `ViewState<ViewSnapshot>`)
 - SwiftData (with CloudKit)
 - Clean Architecture / DDD
 - Swift 6.2 strict concurrency
@@ -59,33 +58,48 @@ Adapters/Contexts/{Context}Adapters/
 ```
 Features/{Feature}Feature/
 ├── Sources/{Feature}Feature/
-│   ├── {Feature}Feature.swift     # TCA Reducer
-│   ├── {Feature}Client.swift      # @DependencyClient bridging to use cases
-│   ├── Models/                    # Feature-local view models
-│   ├── Mappers/                   # Application→Feature mappers
-│   └── Views/                     # SwiftUI views
-└── Tests/{Feature}FeatureTests/   # Reducer tests, mapper tests, flag tests
+│   ├── ViewModel/
+│   │   ├── {Feature}ViewModel.swift     # @Observable @MainActor view model + ViewSnapshot
+│   │   ├── {Feature}Dependencies.swift  # Sendable struct of @Sendable closures + live(services:)
+│   │   └── {Feature}Navigating.swift    # @MainActor navigation protocol
+│   ├── Models/                          # Feature-local view models
+│   ├── Mappers/                         # Application→Feature mappers
+│   └── Views/                           # SwiftUI views ({Feature}View owns the view model)
+└── Tests/{Feature}FeatureTests/         # View model tests, mapper tests, flag tests
 ```
 
-### AppDependencies Wiring
+The canonical reference is `Features/MovieDetailsFeature`.
 
-Each use case needs a `DependencyKey` in `AppDependencies/Sources/AppDependencies/{Context}/`:
+### AppDependencies / Composition Wiring
+
+Use cases are exposed through context factories on the shared `AppServices` graph
+(`AppDependencies/Sources/AppDependencies/Composition/`). Each feature builds its
+production dependencies from those factories in `{Feature}Dependencies.live(services:)`:
 ```swift
-enum {UseCaseName}UseCaseKey: DependencyKey {
-    static var liveValue: any {UseCaseName}UseCase {
-        @Dependency(\.{context}Factory) var factory
-        return factory.make{UseCaseName}UseCase()
-    }
+static func live(services: AppServices) -> {Feature}Dependencies {
+    let useCase = services.{context}Factory.make{UseCaseName}UseCase()
+    return {Feature}Dependencies(
+        fetchThing: { id in try await useCase.execute(id: id) }
+        // ... remaining closures ...
+    )
 }
 ```
 
+The App-layer `ViewModelFactory` (`App/Composition/ViewModelFactory.swift`) then wires
+`Dependencies.live(services:)` to a navigator from the tab's router in a `make{Feature}` method.
+
 ### App Coordinator Pattern
 
-Navigation coordinators (`ExploreRootFeature`, `SearchRootFeature`) use:
-- `@Reducer enum Path` with cases for each destination feature
-- `StackState<Path.State>` for navigation stack
-- Action pattern matching in `Reduce` body
-- Corresponding view with `navigationDestination(for:)` or `switch` on path
+Each tab's navigation is owned by an App-layer router (`ExploreRouter`, `SearchRouter`, …):
+- An `@Observable @MainActor` `{Tab}Router` holding `var path: [{Tab}Route]` (and any
+  `presented*` modal items)
+- A typed `{Tab}Route: Hashable` enum with one case per destination
+- A `{Tab}RouterNavigator` value type that conforms to every leaf feature's `*Navigating`
+  protocol and translates requests into `router.path` mutations / modal presentations
+- A `{Tab}RootView` that hosts the home screen in `NavigationStack(path: $router.path)`,
+  resolves destinations via `.navigationDestination(for: {Tab}Route.self)`, and builds each
+  destination's view model through the `ViewModelFactory`. Each destination is rendered by a
+  `private func` helper, never inline in the `switch`.
 
 ## Review Checklist
 
@@ -113,7 +127,7 @@ Navigation coordinators (`ExploreRootFeature`, `SearchRootFeature`) use:
 
 - [ ] Every new mapper has dedicated test file?
 - [ ] Existing mapper tests updated for new properties?
-- [ ] Feature reducer tests cover new actions?
+- [ ] View model tests cover the new `viewState` transitions (`.loading → .ready / .error`) and navigation calls?
 - [ ] Feature flag tests updated if flags added/changed?
 - [ ] Edge cases covered (nil values, empty arrays, defaults)?
 
@@ -126,11 +140,11 @@ Navigation coordinators (`ExploreRootFeature`, `SearchRootFeature`) use:
 
 ### 5. Navigation & Coordinator
 
-- [ ] Navigation actions defined in feature reducer?
-- [ ] ALL coordinators that host this feature handle the new navigation?
-- [ ] `Path` enum updated with new destination cases?
-- [ ] Destination views provided in coordinator views?
-- [ ] Both `ExploreRootView` AND `SearchRootView` updated consistently?
+- [ ] Navigation requests declared on the feature's `*Navigating` protocol and called from the view model?
+- [ ] ALL routers/navigators that host this feature implement the new navigation requirement?
+- [ ] Each tab's `Route` enum updated with new destination cases?
+- [ ] Destination view models built via `ViewModelFactory` in the root views?
+- [ ] Both `ExploreRootView` AND `SearchRootView` (and their `RouterNavigator`s) updated consistently?
 - [ ] Each destination rendered via a `private func` helper (not inline in `switch` case)?
 
 ### 6. Risks

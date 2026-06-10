@@ -9,9 +9,8 @@ import GamesCatalogFeature
 import PlotRemixGameFeature
 import SwiftUI
 
-/// The MVVM Games tab root. Hosts the catalog in a `NavigationStack` and presents
-/// the Plot Remix game modally, driven by ``GamesRouter``. The MVVM replacement
-/// for the store-based `GamesRootView` + `GamesRootFeature`.
+/// The Games tab root. Hosts the catalog in a `NavigationStack` and presents
+/// the Plot Remix game modally, driven by ``GamesRouter``.
 struct GamesRootView: View {
 
     @Bindable private var router: GamesRouter

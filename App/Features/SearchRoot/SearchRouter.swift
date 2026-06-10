@@ -16,8 +16,7 @@ import TVSeasonDetailsFeature
 import TVSeriesCastAndCrewFeature
 import TVSeriesDetailsFeature
 
-/// A pushed destination on the Search tab's navigation stack. The MVVM
-/// replacement for `SearchRootFeature`'s `StackState<Path.State>` cases.
+/// A pushed destination on the Search tab's navigation stack.
 enum SearchRoute: Hashable {
     case movieDetails(id: Int, transitionID: String?)
     case tvSeriesDetails(id: Int)
@@ -29,9 +28,7 @@ enum SearchRoute: Hashable {
     case tvEpisodeCastAndCrew(tvSeriesID: Int, seasonNumber: Int, episodeNumber: Int)
 }
 
-/// Owns the Search tab's push stack and modal presentations. The MVVM replacement
-/// for `SearchRootFeature`'s `StackState<Path.State>` + the two `@Presents`
-/// intelligence presentations.
+/// Owns the Search tab's push stack and the two intelligence modal presentations.
 @Observable
 @MainActor
 final class SearchRouter {
@@ -61,8 +58,7 @@ final class SearchRouter {
 
 /// Translates leaf-feature navigation requests into ``SearchRouter`` mutations.
 ///
-/// Implements every navigating protocol reachable from the Search tab. Mirrors
-/// `SearchRootFeature`'s reducer mapping exactly:
+/// Implements every navigating protocol reachable from the Search tab:
 /// - the home pushes movie / TV series / person details (no `transitionID`)
 /// - `*CastAndCrewNavigating.openPersonDetails(id:transitionID:)` drops the
 ///   `transitionID` (person details has none)

@@ -8,9 +8,7 @@
 /// Navigation actions a ``TVEpisodeCastAndCrewViewModel`` can request.
 ///
 /// The root coordinator supplies a concrete implementation (a `RouterNavigator`)
-/// that translates these into pushes / presentations. The MVVM replacement for
-/// the former `TVEpisodeCastAndCrewFeature.Navigation` cases, which the parent
-/// reducer intercepted.
+/// that translates these into pushes and presentations.
 @MainActor
 public protocol TVEpisodeCastAndCrewNavigating {
 

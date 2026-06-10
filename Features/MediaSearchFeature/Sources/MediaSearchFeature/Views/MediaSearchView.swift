@@ -7,15 +7,13 @@
 
 import SwiftUI
 
-/// The MVVM media search screen, driven by ``MediaSearchViewModel``.
+/// The media search screen, driven by ``MediaSearchViewModel``.
 ///
-/// Renders the genres / search history / results / no-results surfaces, reusing the
-/// store-free content subviews.
-/// The view model is owned above the seam (by `SearchRootView`), so this takes a
-/// plain `let viewModel`.
+/// Renders the genres / search history / results / no-results surfaces, reusing
+/// the content subviews. The view model is owned above the seam (by `SearchRootView`),
+/// so this takes a plain `let viewModel`.
 ///
-/// Focus is kept in two-way sync with the view model manually (the native
-/// replacement for the former swift-navigation `.bind`): `.onChange(of:)` pushes
+/// Focus is kept in two-way sync with the view model: `.onChange(of:)` pushes
 /// `@FocusState` changes into the model and pulls model-driven changes back.
 public struct MediaSearchView: View {
 
@@ -30,7 +28,7 @@ public struct MediaSearchView: View {
         ZStack {
             switch viewModel.viewState {
             case .genres(let snapshot):
-                // `.genre` tap was a no-op in the former reducer; kept a no-op here.
+                // Genre selection is intentionally a no-op.
                 MediaSearchGenresContentView(genres: snapshot.genres) { _ in }
 
             case .searchHistory(let snapshot):

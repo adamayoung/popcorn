@@ -11,9 +11,9 @@ import MoviesApplication
 
 /// The dependencies required by ``WatchlistViewModel``.
 ///
-/// A plain `Sendable` struct of closures — the MVVM replacement for the former
-/// `WatchlistClient` (`@DependencyClient`). Constructing it requires every closure,
-/// so a missing dependency is a compile error. Build the production instance with
+/// A plain `Sendable` struct of closures providing the data dependencies for
+/// ``WatchlistViewModel``. Constructing it requires every closure, so a missing
+/// dependency is a compile error. Build the production instance with
 /// ``live(services:)``.
 public struct WatchlistDependencies: Sendable {
 
@@ -34,8 +34,8 @@ public extension WatchlistDependencies {
 
     /// Builds the production dependencies from the app's shared services.
     ///
-    /// Mirrors the former `WatchlistClient.liveValue` exactly: same use cases, same
-    /// mapper, same error translation.
+    /// Wires the fetch and stream watchlist use cases with their mapper and
+    /// translates domain errors to ``FetchWatchlistError``.
     static func live(services: AppServices) -> WatchlistDependencies {
         let fetchWatchlistMovies = services.moviesFactory.makeFetchWatchlistMoviesUseCase()
         let streamWatchlistMovies = services.moviesFactory.makeStreamWatchlistMoviesUseCase()
@@ -75,8 +75,7 @@ public extension WatchlistDependencies {
 #if DEBUG
     public extension WatchlistDependencies {
 
-        /// Mock dependencies for previews and snapshot tests (mirrors the former
-        /// `WatchlistClient.previewValue`).
+        /// Mock dependencies for previews and snapshot tests.
         static var preview: WatchlistDependencies {
             WatchlistDependencies(
                 fetchWatchlistMovies: {

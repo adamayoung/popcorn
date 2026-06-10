@@ -8,10 +8,10 @@
 import DesignSystem
 import SwiftUI
 
-/// The MVVM trending people view, driven by ``TrendingPeopleViewModel``.
+/// The trending people view, driven by ``TrendingPeopleViewModel``.
 ///
-/// A standalone leaf view: it owns its view model. Renders a store-free
-/// `List` / `NavigationRow` / `PersonRow`.
+/// A standalone leaf view that owns its view model. Renders a `List` of
+/// ``PersonRow`` items via `NavigationRow`.
 public struct TrendingPeopleView: View {
 
     @State private var viewModel: TrendingPeopleViewModel

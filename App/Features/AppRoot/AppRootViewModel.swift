@@ -8,19 +8,19 @@
 import Foundation
 import Observation
 
-/// Drives ``AppRootView``. The MVVM replacement for `AppRootFeature`.
+/// Drives ``AppRootView``.
 ///
 /// Owns the selected tab, the per-tab feature-flag visibility, and the one-time
 /// startup lifecycle. ``start()`` runs the bootstrap sequence once (observability +
 /// feature-flag initialisation), then reads the feature flags and marks the app
 /// ready. If bootstrap throws, ``error`` is set and the app stays not-ready, which
-/// the view renders as the error state — matching the former reducer's behaviour.
+/// the view renders as the error state.
 @Observable
 @MainActor
 final class AppRootViewModel {
 
-    /// The tabs hosted by the root tab view. Moved here from `AppRootFeature.Tab`;
-    /// the `id`s are unchanged so tab customisation identifiers remain stable.
+    /// The tabs hosted by the root tab view. The `id`s are stable so tab
+    /// customisation identifiers are preserved across launches.
     enum Tab: Equatable, Hashable {
         case explore
         case watchlist
@@ -65,10 +65,9 @@ final class AppRootViewModel {
 
     /// Runs the one-time startup sequence. A no-op after the first call.
     ///
-    /// On success: reads the feature flags, then marks the app ready. On failure:
-    /// records the error and leaves the app not-ready so the view shows the error
-    /// state. Mirrors the former reducer's `setupComplete`/`setupFailed` handling
-    /// (feature flags are updated *before* `isReady` is set).
+    /// On success: reads the feature flags, then marks the app ready (feature flags
+    /// are updated *before* `isReady` is set). On failure: records the error and
+    /// leaves the app not-ready so the view shows the error state.
     func start() async {
         guard !hasStarted else {
             return

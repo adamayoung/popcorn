@@ -49,7 +49,7 @@ extension AppServices {
 
     // MARK: - Graph construction
 
-    /// Builds the acyclic graph in strict dependency order, mirroring the `*+TCA.liveValue`s.
+    /// Builds the acyclic graph in strict dependency order.
     static func buildGraph(tvListingsEPGURL: URL, tmdbAPIKey: String?) -> Graph {
         let domain = buildDomain(tmdbAPIKey: tmdbAPIKey)
 

@@ -16,8 +16,7 @@ import TVSeasonDetailsFeature
 import TVSeriesCastAndCrewFeature
 import TVSeriesDetailsFeature
 
-/// A pushed destination on the Explore tab's navigation stack. The MVVM
-/// replacement for `ExploreRootFeature`'s `StackState<Path.State>` cases.
+/// A pushed destination on the Explore tab's navigation stack.
 enum ExploreRoute: Hashable {
     case movieDetails(id: Int, transitionID: String?)
     case tvSeriesDetails(id: Int, transitionID: String?)
@@ -29,9 +28,7 @@ enum ExploreRoute: Hashable {
     case tvEpisodeCastAndCrew(tvSeriesID: Int, seasonNumber: Int, episodeNumber: Int)
 }
 
-/// Owns the Explore tab's push stack and modal presentations. The MVVM replacement
-/// for `ExploreRootFeature`'s `StackState<Path.State>` + the two `@Presents`
-/// intelligence presentations.
+/// Owns the Explore tab's push stack and the two intelligence modal presentations.
 @Observable
 @MainActor
 final class ExploreRouter {
@@ -61,8 +58,7 @@ final class ExploreRouter {
 
 /// Translates leaf-feature navigation requests into ``ExploreRouter`` mutations.
 ///
-/// Implements every navigating protocol reachable from the Explore tab. Mirrors
-/// `ExploreRootFeature`'s reducer mapping exactly:
+/// Implements every navigating protocol reachable from the Explore tab:
 /// - the home carousels forward `transitionID` to drive the zoom transition
 ///   (movie / TV series / person details)
 /// - cast & crew screens push person details with no zoom — each
@@ -94,7 +90,7 @@ struct ExploreRouterNavigator: ExploreNavigating, MovieDetailsNavigating,
         // Forwards `transitionID` so the home people carousel zooms. Cast & crew
         // person rows reach this via the same `*CastAndCrewNavigating` requirement
         // but pass `transitionID: nil` (see each `*CastAndCrewViewModel.selectPerson`)
-        // so they push without an (unmatched) zoom — matching the former reducer.
+        // so they push without an (unmatched) zoom.
         router.path.append(.personDetails(id: id, transitionID: transitionID))
     }
 

@@ -10,14 +10,12 @@ import IntelligenceDomain
 import Observation
 import OSLog
 
-/// Drives ``TVSeriesIntelligenceView``. The MVVM replacement for
-/// `TVSeriesIntelligenceFeature`.
+/// Drives ``TVSeriesIntelligenceView``.
 ///
 /// A chat view model: it owns the conversation ``messages``, the ``isThinking``
 /// indicator, and the most recent ``error``. The session is created lazily by
 /// ``startSession()`` (driven from the view's `.task`), which also sends a single
-/// auto-introduction prompt with no corresponding user message — exactly as the
-/// former reducer did on `sessionStarted`.
+/// auto-introduction prompt with no corresponding user message.
 ///
 /// Concurrency: there is deliberately no view-model-owned `Task`, `deinit`, or
 /// `nonisolated(unsafe)` state. The view drives ``startSession()`` from `.task`

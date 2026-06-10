@@ -4,7 +4,6 @@ description: Plan a new feature end-to-end — explore patterns, write user stor
 skills:
   - swift-concurrency
   - swiftui-expert-skill
-  - tca-expert
   - swift-testing-expert
 ---
 
@@ -41,7 +40,7 @@ Then verify which project resources exist:
 
 1. Check for `docs/ARCHITECTURE.md` — if missing, skip architecture-specific exploration and rely on codebase patterns directly
 2. Check for `docs/TMDB_MAPPING.md` — if missing or the feature doesn't involve TMDb data, skip all TMDb-specific steps (TMDb type exploration, adapter layer stories, TMDb service wiring)
-3. Check for `docs/TCA.md` — if missing, skip TCA-specific guidance and infer patterns from existing features
+3. Check for the canonical MVVM reference feature `Features/MovieDetailsFeature` — if missing, infer the MVVM patterns from whichever existing feature is closest
 4. Check for `prds/` directory — if missing, write the PRD to the plan file instead
 
 This ensures the skill works for non-TMDb features and projects with different documentation structures.
@@ -51,15 +50,16 @@ This ensures the skill works for non-TMDb features and projects with different d
 Launch up to 3 Explore agents in parallel to understand:
 
 1. **Relevant context module** — directory structure, existing entities, repositories, data sources, mappers, use cases, factories, tests
-2. **Relevant feature module** — reducer, client, models, mappers, views, navigation, tests
+2. **Relevant feature module** — view model (`*ViewModel` + `ViewSnapshot`), `*Dependencies`, `*Navigating`, models, mappers, views, tests
 3. **UI patterns to reuse** — existing components in DesignSystem, carousel/grid/list patterns in other features
 
 Key files to check (if they exist — see Phase 0):
 - `docs/ARCHITECTURE.md` — layer structure and workflows
 - `docs/TMDB_MAPPING.md` — TMDb type reference (only if feature involves TMDb data)
 - The context's `Package.swift`, factory protocol, live factory
-- The feature's reducer, client, view, and test files
-- `AppDependencies/` wiring for the relevant context
+- The feature's `*ViewModel`, `*Dependencies`, `*Navigating`, view, and test files
+- `AppServices` / `ViewModelFactory` wiring for the relevant context and feature
+- The canonical reference feature `Features/MovieDetailsFeature`
 
 ### Phase 2: Clarify Architecture Decisions
 
@@ -131,9 +131,9 @@ Walk through the data flow from API to screen and identify which layers need wor
 3. **Application** — use cases, application models, mappers
 4. **Composition** — factory updates wiring infrastructure to application
 5. **Adapters** — TMDb API bridges, adapter factory updates
-6. **AppDependencies** — TCA dependency key registrations
-7. **Feature** — reducer, client, models, mappers, views
-8. **Coordinators** — navigation wiring in ExploreRoot/SearchRoot
+6. **AppDependencies / Composition** — exposing new use cases on the context factory consumed by `AppServices`
+7. **Feature** — `*ViewModel` (+ `ViewSnapshot`), `*Dependencies`, `*Navigating`, models, mappers, views
+8. **App composition & routing** — `ViewModelFactory` `make*` method, plus router/`Route` enum/`RouterNavigator` wiring in ExploreRoot/SearchRoot
 
 Also identify **cross-cutting work** that doesn't fit neatly into one layer (e.g., adding a new DesignSystem component, adding URL support to `ImagesConfiguration`).
 
@@ -144,16 +144,16 @@ Create one story per logical unit of work. Follow these rules:
 - **One story per layer** is a good default — don't bundle Domain + Infrastructure + Application into one giant story
 - **Cross-cutting work gets its own story** (e.g., "StillImage DesignSystem Component" is separate from the feature that uses it)
 - **Factory chain updates** that span 5+ files should be in the same story as the layer that introduces the new dependency (typically the Adapter story)
-- **Coordinator wiring** (ExploreRoot + SearchRoot) goes in the final feature story since it depends on everything else
+- **Router/coordinator wiring** (`ViewModelFactory` + ExploreRoot + SearchRoot routers) goes in the final feature story since it depends on everything else
 - **Each story must be independently buildable and testable** — after implementing a story, `swift build` and `swift test` must pass in the relevant package. If the story only changes internal code within a single module (no public interface changes), package-level verification is sufficient. If it changes public interfaces or spans multiple packages, verify with a full-app build.
 
 #### 5c. Size Each Story
 
 | Size | Scope | Files | Example |
 |------|-------|-------|---------|
-| **S** | Single-layer, few files | 1-3 | Domain entity, TCA wiring, DesignSystem component |
+| **S** | Single-layer, few files | 1-3 | Domain entity, factory/composition wiring, DesignSystem component |
 | **M** | Multi-file within one layer | 3-5 | Use case + models + mapper, adapter + data source + mock |
-| **L** | Cross-layer, significant logic | 5-10 | Full persistence layer, complete feature UI + coordinator |
+| **L** | Cross-layer, significant logic | 5-10 | Full persistence layer, complete feature UI + router wiring |
 | **XL** | NOT ALLOWED | 10+ | Must be broken into smaller stories |
 
 #### 5d. Order Dependencies
@@ -161,7 +161,7 @@ Create one story per logical unit of work. Follow these rules:
 Map which stories block which. Follow the natural architecture flow:
 
 ```
-Domain → Infrastructure → Application → Composition → Adapters → AppDependencies → Feature → Coordinators
+Domain → Infrastructure → Application → Composition → Adapters → AppServices → Feature → App routing
 ```
 
 Identify parallel tracks (stories with no shared dependencies) and merge points (stories that need multiple tracks to complete).
@@ -173,7 +173,7 @@ For every story, fill in ALL of these sections — no exceptions:
 - **Description**: "As a [developer/user], I want [what] so that [why]" — use **developer** for infrastructure stories, **user** for UI stories
 - **Acceptance Criteria**: Checkboxes with specific, testable assertions (not vague descriptions like "data is cached" — instead "SwiftData entity persisted with 24h TTL")
 - **Tech Elab**: Every file to create or modify with full path, specific patterns to follow (e.g., "follow `BackdropImage` pattern"), key implementation details
-- **Test Elab**: Happy path, error path, and at least 2 edge cases per story. **Every mapper, use case, and reducer must have a dedicated test file listed.** See `references/patterns.md` § Required Test Coverage Per Layer.
+- **Test Elab**: Happy path, error path, and at least 2 edge cases per story. **Every mapper, use case, and view model must have a dedicated test file listed.** See `references/patterns.md` § Required Test Coverage Per Layer.
 - **Dependencies**: Which stories must be done first (or "none")
 
 #### 5f. Adversarial Story Review
@@ -218,11 +218,11 @@ Final checklist:
 - [ ] No story is XL — break it down if >10 files
 - [ ] New unit test targets note `PopcornUnitTests.xctestplan` registration
 - [ ] The dependency graph has no cycles
-- [ ] Both ExploreRoot and SearchRoot coordinators are updated (if navigation changes)
+- [ ] Both ExploreRoot and SearchRoot routers/navigators are updated (if navigation changes)
 - [ ] All CRITICAL and IMPORTANT review findings are addressed
 - [ ] Every adapter mapper has a test file in the Test Elab
 - [ ] Every use case has a test file in the Test Elab
-- [ ] Every TCA reducer has a test file with `State: Equatable` noted
+- [ ] Every view model has a test file (a stub `*Dependencies` + spy `*Navigating`, asserting `viewState`)
 
 ### Phase 6: Write Plan File
 
@@ -295,7 +295,7 @@ After the pre-PR checklist passes:
 |----------|------|---------|
 | Architecture | `docs/ARCHITECTURE.md` | Layer structure, patterns |
 | TMDb Mapping | `docs/TMDB_MAPPING.md` | TMDb types, mapping pipeline |
-| TCA Guide | `docs/TCA.md` | Reducer, navigation, testing |
+| MVVM Reference | `Features/MovieDetailsFeature` | View model, dependencies, navigation, view, tests |
 | Swift Style | `docs/SWIFT.md` | Code conventions |
 | SwiftUI Guide | `docs/SWIFTUI.md` | View patterns |
 | Git Guide | `docs/GIT.md` | Commit/PR conventions |

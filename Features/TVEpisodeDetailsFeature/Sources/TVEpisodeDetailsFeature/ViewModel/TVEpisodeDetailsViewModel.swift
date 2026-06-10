@@ -151,8 +151,7 @@ public final class TVEpisodeDetailsViewModel {
             return
         }
 
-        // Credits are non-fatal: a failure just yields no cast & crew, matching
-        // the former reducer.
+        // Credits are non-fatal: a failure just yields no cast & crew.
         var castMembers: [CastMember] = []
         var crewMembers: [CrewMember] = []
         do {

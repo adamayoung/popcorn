@@ -38,21 +38,21 @@ User taps "Cast & Crew >" header
          ↓
 [TVSeriesDetailsContentView] navigateToCastAndCrew(tvSeries.id)
          ↓
-[TVSeriesDetailsView] store.send(.navigate(.castAndCrew(tvSeriesID:)))
+[TVSeriesDetailsViewModel] navigator.openTVSeriesCastAndCrew(tvSeriesID:)
          ↓
-[ExploreRoot/SearchRoot] state.path.append(.tvSeriesCastAndCrew(...))
+[ExploreRouterNavigator/SearchRouterNavigator] router.path.append(.tvSeriesCastAndCrew(...))
          ↓
-[TVSeriesCastAndCrewView] .task { store.send(.fetch) }
+[TVSeriesCastAndCrewView] .task(id: viewModel.reloadID) { await viewModel.load() }
          ↓
-[TVSeriesCastAndCrewClient] fetchTVSeriesAggregateCredits.execute(tvSeriesID:)
+[TVSeriesCastAndCrewDependencies] fetchTVSeriesAggregateCredits.execute(tvSeriesID:)
          ↓
 [CreditsMapper] maps AggregateCreditsDetails → Credits (all members with roles/jobs and episode counts)
          ↓
 [TVSeriesCastAndCrewView] List with CastSection + CrewSection (grouped by department)
          ↓
-User taps person → .navigate(.personDetails(id:, transitionID:))
+User taps person → navigator.openPersonDetails(id:, transitionID:)
          ↓
-[ExploreRoot/SearchRoot] state.path.append(.personDetails(...))
+[ExploreRouterNavigator/SearchRouterNavigator] router.path.append(.personDetails(...))
 ```
 
 ---
@@ -65,13 +65,14 @@ User taps person → .navigate(.personDetails(id:, transitionID:))
 
 **Acceptance Criteria**:
 - [ ] New Swift package at `Features/TVSeriesCastAndCrewFeature/`
-- [ ] TCA reducer with `State(tvSeriesID:)`, `ViewSnapshot(castMembers:, crewMembers:, crewByDepartment:)`, `Navigation.personDetails(id:, transitionID:)`
-- [ ] Client fetches credits via `@Dependency(\.fetchTVSeriesCredits)` and maps all members (no prefix limit)
+- [ ] `@Observable @MainActor` `TVSeriesCastAndCrewViewModel` with `init(tvSeriesID:, dependencies:, navigator:)`, exposing `viewState: ViewState<ViewSnapshot>` where `ViewSnapshot(castMembers:, crewMembers:, crewByDepartment:)`
+- [ ] `TVSeriesCastAndCrewNavigating` protocol with `openPersonDetails(id:, transitionID:)`
+- [ ] `TVSeriesCastAndCrewDependencies` fetches credits via `services.tvSeriesFactory.makeFetchTVSeriesCreditsUseCase()` and maps all members (no prefix limit)
 - [ ] Views: main view with List, CastSection, CrewSection, CastMemberRow, CrewMemberRow
 - [ ] Crew grouped by department with priority ordering (Directing, Writing, Production, etc.)
 - [ ] Localised strings: `CAST_AND_CREW`, `CAST`, `CREW`
 - [ ] Transition namespace support for matched geometry transitions
-- [ ] Unit tests for reducer, mapper, and client
+- [ ] Unit tests for the view model, mapper, and dependencies
 - [ ] Test target registered in `PopcornUnitTests.xctestplan`
 
 **Dependencies**: None
@@ -79,9 +80,10 @@ User taps person → .navigate(.personDetails(id:, transitionID:))
 **Tech Elab**:
 
 Files to create (mirroring `MovieCastAndCrewFeature`):
-- `Features/TVSeriesCastAndCrewFeature/Package.swift` — depends on `TVSeriesApplication` (not `MoviesApplication`), `AppDependencies`, `DesignSystem`, `TCAFoundation`, `Observability`, `ComposableArchitecture`
-- `Features/TVSeriesCastAndCrewFeature/Sources/TVSeriesCastAndCrewFeature/TVSeriesCastAndCrewFeature.swift` — reducer with `tvSeriesID` in State
-- `Features/TVSeriesCastAndCrewFeature/Sources/TVSeriesCastAndCrewFeature/TVSeriesCastAndCrewClient.swift` — uses `@Dependency(\.fetchTVSeriesCredits)`
+- `Features/TVSeriesCastAndCrewFeature/Package.swift` — depends on `TVSeriesApplication` (not `MoviesApplication`), `AppDependencies`, `DesignSystem`, `Presentation`, `CoreDomain`
+- `Features/TVSeriesCastAndCrewFeature/Sources/TVSeriesCastAndCrewFeature/ViewModel/TVSeriesCastAndCrewViewModel.swift` — `@Observable @MainActor` view model with `tvSeriesID`
+- `Features/TVSeriesCastAndCrewFeature/Sources/TVSeriesCastAndCrewFeature/ViewModel/TVSeriesCastAndCrewDependencies.swift` — `Sendable` struct of closures with `live(services:)` calling `services.tvSeriesFactory.makeFetchTVSeriesCreditsUseCase()`
+- `Features/TVSeriesCastAndCrewFeature/Sources/TVSeriesCastAndCrewFeature/ViewModel/TVSeriesCastAndCrewNavigating.swift` — `@MainActor` navigation protocol
 - `Features/TVSeriesCastAndCrewFeature/Sources/TVSeriesCastAndCrewFeature/Logger.swift`
 - `Features/TVSeriesCastAndCrewFeature/Sources/TVSeriesCastAndCrewFeature/Models/Credits.swift`
 - `Features/TVSeriesCastAndCrewFeature/Sources/TVSeriesCastAndCrewFeature/Models/CastMember.swift`
@@ -93,14 +95,14 @@ Files to create (mirroring `MovieCastAndCrewFeature`):
 - `Features/TVSeriesCastAndCrewFeature/Sources/TVSeriesCastAndCrewFeature/Views/CastMemberRow.swift`
 - `Features/TVSeriesCastAndCrewFeature/Sources/TVSeriesCastAndCrewFeature/Views/CrewMemberRow.swift`
 - `Features/TVSeriesCastAndCrewFeature/Sources/TVSeriesCastAndCrewFeature/Localizable.xcstrings`
-- `Features/TVSeriesCastAndCrewFeature/Tests/TVSeriesCastAndCrewFeatureTests/TVSeriesCastAndCrewFeatureTests.swift`
+- `Features/TVSeriesCastAndCrewFeature/Tests/TVSeriesCastAndCrewFeatureTests/TVSeriesCastAndCrewViewModelTests.swift`
 - `Features/TVSeriesCastAndCrewFeature/Tests/TVSeriesCastAndCrewFeatureTests/Mappers/CreditsMapperTests.swift`
 
 Files to modify:
 - `TestPlans/PopcornUnitTests.xctestplan` — register `TVSeriesCastAndCrewFeatureTests`
 
 **Test Elab**:
-- Reducer: fetch success populates ViewSnapshot, fetch failure sends loadFailed, skips fetch when already ready
+- View model: `load()` success populates `viewState` to `.ready(ViewSnapshot)`, failure sets `.error`, skips fetch when already ready/loading
 - Mapper: maps all cast/crew (no limit), handles empty arrays, nil profile URLs, extracts `.detail` URL
 
 ---
@@ -121,33 +123,35 @@ Files to modify:
 **Tech Elab**:
 
 Files to modify:
-- `Features/TVSeriesDetailsFeature/Sources/TVSeriesDetailsFeature/TVSeriesDetailsFeature.swift` — add `.castAndCrew(tvSeriesID: Int)` to `Navigation` enum
+- `Features/TVSeriesDetailsFeature/Sources/TVSeriesDetailsFeature/ViewModel/TVSeriesDetailsNavigating.swift` — add `openTVSeriesCastAndCrew(tvSeriesID: Int)` to the navigation protocol (+ the no-op preview navigator)
+- `Features/TVSeriesDetailsFeature/Sources/TVSeriesDetailsFeature/ViewModel/TVSeriesDetailsViewModel.swift` — add an `openCastAndCrew()` method that calls `navigator.openTVSeriesCastAndCrew(tvSeriesID:)`
 - `Features/TVSeriesDetailsFeature/Sources/TVSeriesDetailsFeature/Views/TVSeriesDetailsContentView.swift`:
   - Add `navigateToCastAndCrew` callback parameter
   - Change `sectionHeader("CAST_AND_CREW")` to use the action overload with `navigateToCastAndCrew(tvSeries.id)`
   - Add the `sectionHeader(_:action:)` overload (copy from MovieDetailsContentView pattern)
   - Update previews
-- `Features/TVSeriesDetailsFeature/Sources/TVSeriesDetailsFeature/Views/TVSeriesDetailsView.swift` — pass `navigateToCastAndCrew` callback that sends `.navigate(.castAndCrew(tvSeriesID:))`
-- `App/Features/ExploreRoot/ExploreRootFeature.swift`:
-  - Add `case tvSeriesCastAndCrew(TVSeriesCastAndCrewFeature)` to Path enum
-  - Add handler for `.tvSeriesDetails(.navigate(.castAndCrew(let id)))` → append `.tvSeriesCastAndCrew`
-  - Add handler for `.tvSeriesCastAndCrew(.navigate(.personDetails(let id, _)))` → append `.personDetails`
-  - Add `import TVSeriesCastAndCrewFeature`
+- `Features/TVSeriesDetailsFeature/Sources/TVSeriesDetailsFeature/Views/TVSeriesDetailsView.swift` — pass `navigateToCastAndCrew` callback that calls `viewModel.openCastAndCrew()`
+- `App/Features/ExploreRoot/ExploreRouter.swift`:
+  - Add `case tvSeriesCastAndCrew(tvSeriesID: Int)` to the `ExploreRoute` enum
+  - Conform `ExploreRouterNavigator` to `TVSeriesCastAndCrewNavigating`
+  - Implement `openTVSeriesCastAndCrew(tvSeriesID:)` → `router.path.append(.tvSeriesCastAndCrew(...))`
+  - Ensure the existing `openPersonDetails(id:, transitionID:)` covers person navigation from cast & crew (pass `transitionID: nil`)
 - `App/Features/ExploreRoot/Views/ExploreRootView.swift`:
-  - Add `case .tvSeriesCastAndCrew` to destination switch
-  - Add `tvSeriesCastAndCrew(store:)` helper method
+  - Add `case .tvSeriesCastAndCrew` to the `destination(_:)` switch
+  - Add a `tvSeriesCastAndCrew(tvSeriesID:)` helper that builds the view model via `factory.makeTVSeriesCastAndCrew(...)`
   - Add `import TVSeriesCastAndCrewFeature`
-- `App/Features/SearchRoot/SearchRootFeature.swift` — same coordinator additions as ExploreRoot
+- `App/Composition/ViewModelFactory.swift` — add `makeTVSeriesCastAndCrew(tvSeriesID:, navigator:)`
+- `App/Features/SearchRoot/SearchRouter.swift` — same router additions as ExploreRoot
 - `App/Features/SearchRoot/Views/SearchRootView.swift` — same view additions as ExploreRoot
-- `Features/TVSeriesDetailsFeature/Tests/TVSeriesDetailsFeatureTests/TVSeriesDetailsFeatureTests.swift` — add test for `.navigate(.castAndCrew(...))` returns `.none`
-- `PopcornTests/ExploreRootFeatureTests.swift` — add tests for castAndCrew navigation and person details from cast & crew
-- `PopcornTests/SearchRootFeatureTests.swift` — same tests
+- `Features/TVSeriesDetailsFeature/Tests/TVSeriesDetailsFeatureTests/TVSeriesDetailsViewModelTests.swift` — add test that `openCastAndCrew()` invokes the spy navigator
+- `PopcornTests/ExploreRouterTests.swift` — add tests for castAndCrew navigation and person details from cast & crew
+- `PopcornTests/SearchRouterTests.swift` — same tests
 
 **Test Elab**:
-- TVSeriesDetailsFeature: navigate castAndCrew returns .none
-- ExploreRoot: tvSeriesDetails navigate castAndCrew appends tvSeriesCastAndCrew to path
-- ExploreRoot: tvSeriesCastAndCrew navigate personDetails appends personDetails to path
-- SearchRoot: same two tests
+- TVSeriesDetailsViewModel: `openCastAndCrew()` invokes the spy navigator with the correct id
+- ExploreRouterNavigator: `openTVSeriesCastAndCrew` appends `.tvSeriesCastAndCrew` to `router.path`
+- ExploreRouterNavigator: `openPersonDetails` (from cast & crew) appends `.personDetails` to `router.path`
+- SearchRouterNavigator: same two tests
 
 ---
 

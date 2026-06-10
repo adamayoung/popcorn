@@ -26,7 +26,7 @@ public struct TVSeriesCastAndCrewViewSnapshot: Equatable, Sendable {
 
 }
 
-/// Drives ``TVSeriesCastAndCrewView``. The MVVM replacement for `TVSeriesCastAndCrewFeature`.
+/// Drives ``TVSeriesCastAndCrewView``.
 ///
 /// Loading is driven by the view through ``load()`` from a `.task(id:)`, so SwiftUI
 /// owns the lifetime: the work is cancelled on disappear and restarted on reappear
@@ -85,7 +85,7 @@ public final class TVSeriesCastAndCrewViewModel {
         // Cast & crew rows register their transition source in this screen's own
         // namespace, not the tab namespace the person-details destination zooms
         // against — forwarding the id would trigger an unmatched-zoom fallback. So
-        // push without a transition id, matching the former reducer (plain push).
+        // push without a transition id (plain push).
         navigator.openPersonDetails(id: id, transitionID: nil)
     }
 

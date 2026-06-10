@@ -8,10 +8,10 @@
 import DesignSystem
 import SwiftUI
 
-/// The MVVM movie intelligence chat screen, driven by ``MovieIntelligenceViewModel``.
+/// The movie intelligence chat screen, driven by ``MovieIntelligenceViewModel``.
 ///
-/// Reuses the same store-free ``ChatView`` chrome as the former `MovieChatView`,
-/// keeping `@Environment(\.dismiss)` for the close button exactly as before.
+/// Wraps ``ChatView`` and provides a navigation title and close button via
+/// `@Environment(\.dismiss)`.
 public struct MovieIntelligenceView: View {
 
     @State private var viewModel: MovieIntelligenceViewModel

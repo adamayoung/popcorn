@@ -11,8 +11,7 @@ import SwiftUI
 
 /// The TV episode details view, driven by ``TVEpisodeDetailsViewModel``.
 ///
-/// Renders the store-free ``TVEpisodeDetailsContentView`` and reproduces the
-/// exact loading / error chrome, so recorded snapshots stay byte-identical.
+/// Renders ``TVEpisodeDetailsContentView`` with loading and error chrome.
 public struct TVEpisodeDetailsView: View {
 
     @State private var viewModel: TVEpisodeDetailsViewModel

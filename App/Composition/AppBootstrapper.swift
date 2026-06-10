@@ -14,12 +14,10 @@ import OSLog
 
 /// Runs the app's one-time startup sequence against the shared ``AppServices`` graph.
 ///
-/// The TCA-free replacement for `AppRootFeature.handleSetup` + `AppRootClient`'s
-/// `setupObservability`/`setupFeatureFlags` `liveValue` bodies. ``start()`` warms the
-/// image focal-point analyzer, then initialises observability and feature flags in
-/// parallel.
+/// ``start()`` warms the image focal-point analyzer, then initialises observability
+/// and feature flags in parallel.
 ///
-/// Error handling mirrors the former reducer/client exactly:
+/// Error handling:
 /// - Observability swallows its own initialisation error (logged, not rethrown) so a
 ///   missing/failed Sentry setup never blocks app start.
 /// - Feature flags rethrow on failure, so ``start()`` throws if feature-flag
@@ -41,9 +39,8 @@ struct AppBootstrapper {
         _ = try await (observability, featureFlags)
     }
 
-    /// Initialises observability. Mirrors `AppRootClient.liveValue.setupObservability`:
-    /// returns early (logging) when Sentry is unconfigured, and swallows any
-    /// initialisation error (logged, not rethrown).
+    /// Initialises observability. Returns early (logging) when Sentry is unconfigured,
+    /// and swallows any initialisation error (logged, not rethrown).
     private func setupObservability(userID: String) async {
         guard let dsn = AppConfig.Sentry.dsn else {
             Self.logger.warning("Sentry DSN not configured. Disabling observability.")
@@ -72,9 +69,8 @@ struct AppBootstrapper {
         }
     }
 
-    /// Initialises feature flags. Mirrors `AppRootClient.liveValue.setupFeatureFlags`:
-    /// returns early (logging) when Statsig is unconfigured, and rethrows any
-    /// initialisation error (logged, then rethrown).
+    /// Initialises feature flags. Returns early (logging) when Statsig is unconfigured,
+    /// and rethrows any initialisation error (logged, then rethrown).
     private func setupFeatureFlags(userID: String) async throws {
         guard let apiKey = AppConfig.Statsig.sdkKey else {
             Self.logger.warning("Statsig SDK key not configured. Disabling feature flags.")
