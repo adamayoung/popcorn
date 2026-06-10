@@ -147,11 +147,24 @@ failing or pending (`claude-code-review` being un-converged does not block).
 
 - **Watch-only**: report "PR is ready" with a short summary (threads handled,
   checks green) and stop.
-- **Merge-when-ready**: on ready, merge and clean up, then report the result:
+- **Merge-when-ready**: on ready, merge and clean up, then report the result.
+
+  **First ensure a clean working tree** — `gh pr merge --delete-branch` switches
+  to `main` and pulls afterward, which fails if anything is dirty. Building via the
+  Xcode MCP can leave a stray edit in a feature's `Localizable.xcstrings`
+  (`extractionState: stale`); revert any such build artifact first:
 
   ```bash
+  git checkout -- '*.xcstrings'   # drop any build-touched string-catalog edits
+  git status --porcelain          # must be empty before merging
   gh pr merge --squash --delete-branch
   ```
+
+  If `gh pr merge` reports the **server merge succeeded but local cleanup failed**
+  (e.g. "cannot pull with rebase: You have unstaged changes"), the PR did merge —
+  recover the local repo: confirm with `gh pr view <NUMBER> --json state` (expect
+  `MERGED`), then `git checkout -- '*.xcstrings'`, `git checkout main`,
+  `git pull --ff-only`, and `git branch -D <branch>`.
 
 ## Guardrails
 
