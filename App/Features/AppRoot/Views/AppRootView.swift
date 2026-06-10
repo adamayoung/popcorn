@@ -179,9 +179,11 @@ private extension View {
 
 }
 
-#Preview {
-    AppRootView(
-        viewModel: AppRootViewModel(dependencies: .preview),
-        factory: ViewModelFactory(services: AppServices())
-    )
-}
+#if DEBUG
+    #Preview {
+        AppRootView(
+            viewModel: AppRootViewModel(dependencies: .preview),
+            factory: ViewModelFactory(services: AppServices())
+        )
+    }
+#endif
