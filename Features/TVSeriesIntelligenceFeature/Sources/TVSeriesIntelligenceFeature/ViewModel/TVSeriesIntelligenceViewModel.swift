@@ -92,9 +92,10 @@ public final class TVSeriesIntelligenceViewModel {
             Self.logger.error(
                 "Failed starting TV series intelligence session: \(error.localizedDescription, privacy: .public)"
             )
-            // `error` is the published surface; session-start errors are typically
-            // not `LLMSessionError`, so only surface those that are.
-            self.error = error as? LLMSessionError
+            // Surface a non-nil error even for non-LLM failures (e.g. a URLError),
+            // so the UI reflects the failure rather than silently dropping it. The
+            // raw error was already captured above for accurate observability grouping.
+            self.error = (error as? LLMSessionError) ?? .unknown(error.localizedDescription)
             messages.append(Message(role: .assistant, textContent: Self.sessionStartFailureMessage))
             isThinking = false
             return

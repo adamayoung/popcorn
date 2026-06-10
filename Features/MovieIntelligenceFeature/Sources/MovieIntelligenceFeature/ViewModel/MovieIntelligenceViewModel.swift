@@ -122,7 +122,10 @@ public final class MovieIntelligenceViewModel {
         dependencies.captureError(error)
         Self.logger.error("Failed to start session: \(error.localizedDescription)")
         isThinking = false
-        self.error = error as? LLMSessionError
+        // Surface a non-nil error even for non-LLM failures (e.g. a URLError), so
+        // the UI reflects the failure rather than silently dropping it. The raw
+        // error was already captured above for accurate observability grouping.
+        self.error = (error as? LLMSessionError) ?? .unknown(error.localizedDescription)
         messages.append(Message(role: .assistant, textContent: "There was a problem and I can't help you."))
     }
 
