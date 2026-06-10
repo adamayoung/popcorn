@@ -116,6 +116,31 @@ struct ModelContainerFactoryTests {
         Self.cleanUpSQLiteFiles(at: url)
     }
 
+    // MARK: - isCloudKitAvailable
+
+    @Test("CloudKit is available in a clean environment")
+    func isCloudKitAvailableInCleanEnvironment() {
+        #expect(ModelContainerFactory.isCloudKitAvailable(environment: [:]))
+    }
+
+    @Test("CloudKit is unavailable when explicitly disabled")
+    func isCloudKitUnavailableWhenDisabled() {
+        #expect(
+            ModelContainerFactory.isCloudKitAvailable(
+                environment: ["POPCORN_DISABLE_CLOUDKIT": "1"]
+            ) == false
+        )
+    }
+
+    @Test("CloudKit is unavailable under XCTest")
+    func isCloudKitUnavailableUnderXCTest() {
+        #expect(
+            ModelContainerFactory.isCloudKitAvailable(
+                environment: ["XCTestConfigurationFilePath": "/tmp/Tests.xctestconfiguration"]
+            ) == false
+        )
+    }
+
     // MARK: - removeSQLiteFiles
 
     @Test("removes all SQLite files including WAL and SHM")

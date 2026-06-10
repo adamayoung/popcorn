@@ -13,6 +13,10 @@
       {
         "key" : "TMDB_API_KEY",
         "value" : "ci-test-placeholder-key"
+      },
+      {
+        "key" : "POPCORN_DISABLE_CLOUDKIT",
+        "value" : "1"
       }
     ],
     "testExecutionOrdering" : "random",
