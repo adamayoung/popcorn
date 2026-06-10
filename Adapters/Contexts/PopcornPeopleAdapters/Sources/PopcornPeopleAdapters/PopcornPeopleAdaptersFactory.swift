@@ -11,11 +11,6 @@ import PeopleInfrastructure
 import TMDb
 
 /// Builds the People context's TMDb-backed adapters (port implementations).
-///
-/// This factory is responsible only for adapting external services to the
-/// People context's ports. Assembling the context's factory from these adapters
-/// is the composition root's responsibility, so the adapters layer stays a leaf
-/// and never depends on the context's composition module.
 public final class PopcornPeopleAdaptersFactory {
 
     private let personService: any TMDb.PersonService

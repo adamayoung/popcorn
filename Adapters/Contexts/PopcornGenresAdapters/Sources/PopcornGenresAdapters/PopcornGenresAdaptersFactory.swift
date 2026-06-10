@@ -11,11 +11,6 @@ import GenresInfrastructure
 import TMDb
 
 /// Builds the Genres context's TMDb-backed adapters (port implementations).
-///
-/// This factory is responsible only for adapting external services to the
-/// Genres context's ports. Assembling the context's factory from these adapters
-/// is the composition root's responsibility, so the adapters layer stays a leaf
-/// and never depends on the context's composition module.
 public final class PopcornGenresAdaptersFactory {
 
     private let genreService: any GenreService
