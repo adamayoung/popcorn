@@ -18,6 +18,11 @@ struct GamesRootView: View {
     private let factory: ViewModelFactory
     private let namespace: Namespace.ID
 
+    /// The catalog home view model, owned here (above the screen seam) so it
+    /// survives the router-driven body re-renders that presenting the game causes —
+    /// matching the other tab roots (it was previously rebuilt inline in `body`).
+    @State private var gamesCatalogViewModel: GamesCatalogViewModel
+
     init(
         router: GamesRouter,
         factory: ViewModelFactory,
@@ -26,19 +31,21 @@ struct GamesRootView: View {
         _router = Bindable(wrappedValue: router)
         self.factory = factory
         self.namespace = namespace
+        _gamesCatalogViewModel = State(
+            initialValue: factory.makeGamesCatalog(
+                navigator: GamesRouterNavigator(router: router)
+            )
+        )
     }
 
     var body: some View {
         NavigationStack {
             GamesCatalogView(
-                viewModel: factory.makeGamesCatalog(
-                    navigator: GamesRouterNavigator(router: router)
-                ),
+                viewModel: gamesCatalogViewModel,
                 transitionNamespace: namespace
             )
         }
-        #if !os(macOS)
-        .fullScreenCover(item: $router.presentedGame) { presented in
+        .platformModal(item: $router.presentedGame) { presented in
             PlotRemixGameView(
                 viewModel: factory.makePlotRemixGame(
                     gameID: presented.gameID,
@@ -47,17 +54,6 @@ struct GamesRootView: View {
                 transitionNamespace: namespace
             )
         }
-        #else
-        .sheet(item: $router.presentedGame) { presented in
-                    PlotRemixGameView(
-                        viewModel: factory.makePlotRemixGame(
-                            gameID: presented.gameID,
-                            navigator: GamesRouterNavigator(router: router)
-                        ),
-                        transitionNamespace: namespace
-                    )
-                }
-        #endif
     }
 
 }

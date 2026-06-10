@@ -49,11 +49,6 @@ public struct PlotRemixGameView: View {
                 AnimatedMeshBackground(baseColor: backgroundColor)
                     .ignoresSafeArea()
             }
-            .overlay {
-                if viewModel.isLoading {
-                    loadingBody
-                }
-            }
             .task {
                 await viewModel.fetchMetadata()
             }
@@ -68,16 +63,6 @@ public struct PlotRemixGameView: View {
                 }
             }
         }
-    }
-
-}
-
-extension PlotRemixGameView {
-
-    private var loadingBody: some View {
-        ProgressView()
-            .accessibilityLabel(Text("LOADING", bundle: .module))
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
 }

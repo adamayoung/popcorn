@@ -53,19 +53,11 @@ struct WatchlistRootView: View {
                 destination(route)
             }
         }
-        #if !os(macOS)
-        .fullScreenCover(item: $router.presentedMovieIntelligence) { intel in
+        .platformModal(item: $router.presentedMovieIntelligence) { intel in
             MovieIntelligenceView(
                 viewModel: factory.makeMovieIntelligence(movieID: intel.movieID)
             )
         }
-        #else
-        .sheet(item: $router.presentedMovieIntelligence) { intel in
-                    MovieIntelligenceView(
-                        viewModel: factory.makeMovieIntelligence(movieID: intel.movieID)
-                    )
-                }
-        #endif
     }
 
     @ViewBuilder

@@ -56,29 +56,16 @@ struct SearchRootView: View {
                     destination(route)
                 }
         }
-        #if !os(macOS)
-        .fullScreenCover(item: $router.presentedMovieIntelligence) { intel in
+        .platformModal(item: $router.presentedMovieIntelligence) { intel in
             MovieIntelligenceView(
                 viewModel: factory.makeMovieIntelligence(movieID: intel.movieID)
             )
         }
-        .fullScreenCover(item: $router.presentedTVSeriesIntelligence) { intel in
+        .platformModal(item: $router.presentedTVSeriesIntelligence) { intel in
             TVSeriesIntelligenceView(
                 viewModel: factory.makeTVSeriesIntelligence(tvSeriesID: intel.tvSeriesID)
             )
         }
-        #else
-        .sheet(item: $router.presentedMovieIntelligence) { intel in
-                    MovieIntelligenceView(
-                        viewModel: factory.makeMovieIntelligence(movieID: intel.movieID)
-                    )
-                }
-                .sheet(item: $router.presentedTVSeriesIntelligence) { intel in
-                    TVSeriesIntelligenceView(
-                        viewModel: factory.makeTVSeriesIntelligence(tvSeriesID: intel.tvSeriesID)
-                    )
-                }
-        #endif
     }
 
     /// A fresh navigator bound to this view's router. Each destination builds its

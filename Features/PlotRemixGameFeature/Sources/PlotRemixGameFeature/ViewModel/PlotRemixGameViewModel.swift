@@ -29,7 +29,6 @@ public final class PlotRemixGameViewModel {
 
     public let gameID: Int
 
-    public private(set) var isLoading: Bool
     public private(set) var metadata: GameMetadata?
     public private(set) var isGeneratingGame: Bool
     public private(set) var generatingProgress: Float?
@@ -54,7 +53,6 @@ public final class PlotRemixGameViewModel {
         gameID: Int,
         dependencies: PlotRemixGameDependencies,
         navigator: any PlotRemixGameNavigating,
-        isLoading: Bool = false,
         metadata: GameMetadata? = nil,
         isGeneratingGame: Bool = false,
         generatingProgress: Float? = nil,
@@ -64,7 +62,6 @@ public final class PlotRemixGameViewModel {
         self.gameID = gameID
         self.dependencies = dependencies
         self.navigator = navigator
-        self.isLoading = isLoading
         self.metadata = metadata
         self.isGeneratingGame = isGeneratingGame
         self.generatingProgress = generatingProgress
@@ -126,19 +123,20 @@ public final class PlotRemixGameViewModel {
 
     /// Performs the actual game generation task with structured cancellation handling.
     private func performGameGeneration(with token: Int) async {
+        let task = createGameGenerationTask()
+        generateTask = task
+        generateTaskToken = token
+        // Cancel *this* generation's task on cancellation. Cancelling the shared
+        // `generateTask` instead would let a rapid second Start (which replaces it)
+        // cancel the new generation when the first task's `.task(id:)` tears down.
         await withTaskCancellationHandler {
-            let task = createGameGenerationTask()
-            generateTask = task
-            generateTaskToken = token
             await task.value
-            if generateTaskToken == token {
-                generateTask = nil
-                generateTaskToken = 0
-            }
         } onCancel: {
-            Task { @MainActor [weak self] in
-                self?.generateTask?.cancel()
-            }
+            task.cancel()
+        }
+        if generateTaskToken == token {
+            generateTask = nil
+            generateTaskToken = 0
         }
     }
 
