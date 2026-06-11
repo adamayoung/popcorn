@@ -92,20 +92,4 @@ struct SwiftDataTVListingsLocalDataSourceFileBackedTests {
         return (container, storeURL)
     }
 
-    private func ukDate(year: Int, month: Int, day: Int, hour: Int, minute: Int = 0) -> Date {
-        guard let timeZone = TimeZone(identifier: "Europe/London") else {
-            return .distantPast
-        }
-        var components = DateComponents()
-        components.year = year
-        components.month = month
-        components.day = day
-        components.hour = hour
-        components.minute = minute
-        components.timeZone = timeZone
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = timeZone
-        return calendar.date(from: components) ?? .distantPast
-    }
-
 }

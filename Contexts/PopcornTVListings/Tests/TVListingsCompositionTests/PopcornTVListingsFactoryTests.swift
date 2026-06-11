@@ -23,7 +23,6 @@ struct PopcornTVListingsFactoryTests {
             modelContainer: modelContainer
         )
 
-        _ = factory.makeSyncTVListingsUseCase()
         _ = factory.makeSyncTVListingsIfNeededUseCase()
         _ = factory.makeFetchTVChannelsUseCase()
         _ = factory.makeFetchTVChannelScheduleUseCase()
