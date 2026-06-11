@@ -69,8 +69,16 @@ final class AppRootViewModel {
 
     private let dependencies: AppRootDependencies
 
-    init(dependencies: AppRootDependencies) {
+    /// Optional observation point fired when a sync trigger coalesces onto an in-flight run.
+    /// `nil` in production; a test sets it to observe coalescing without relying on scheduler timing.
+    private let onTVListingsCoalesce: (@Sendable () -> Void)?
+
+    init(
+        dependencies: AppRootDependencies,
+        onTVListingsCoalesce: (@Sendable () -> Void)? = nil
+    ) {
         self.dependencies = dependencies
+        self.onTVListingsCoalesce = onTVListingsCoalesce
     }
 
     /// Runs the one-time startup sequence. A no-op after the first call.
@@ -105,6 +113,7 @@ final class AppRootViewModel {
         }
 
         if let tvListingsSyncTask {
+            onTVListingsCoalesce?()
             await tvListingsSyncTask.value
             return
         }

@@ -65,6 +65,12 @@ public final class HTTPTVListingsRemoteDataSource: TVListingsRemoteDataSource {
     public func fetchSchedule(
         forDate date: String
     ) async throws(TVListingsRemoteDataSourceError) -> [TVProgramme] {
+        // Validate at the boundary too (defence in depth): only a bare yyyyMMdd is safe to
+        // interpolate into the request path, so a malformed value can't alter the URL.
+        guard date.count == 8, date.allSatisfy(\.isNumber) else {
+            Self.logger.error("Rejecting malformed schedule date: \(date, privacy: .public)")
+            throw .network(nil)
+        }
         let dto: EPGScheduleResponseDTO = try await fetch(path: "schedules/\(date).json")
         return scheduleMapper.map(dto)
     }

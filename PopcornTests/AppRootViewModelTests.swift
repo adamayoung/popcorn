@@ -153,6 +153,7 @@ struct AppRootViewModelTests {
         let recorder = SyncRecorder()
         let entered = TestSignal()
         let release = TestSignal()
+        let coalesced = TestSignal()
         let viewModel = AppRootViewModel(
             dependencies: .stub(
                 isTVListingsEnabled: true,
@@ -161,15 +162,17 @@ struct AppRootViewModelTests {
                     await release.wait()
                     await recorder.record()
                 }
-            )
+            ),
+            onTVListingsCoalesce: { Task { await coalesced.signal() } }
         )
 
         // `start()` becomes ready then blocks on the gated sync (run #1).
         let startTask = Task { await viewModel.start() }
         await entered.wait()
-        // A concurrent foreground trigger must coalesce onto the in-flight run.
+        // A concurrent foreground trigger must coalesce onto the in-flight run. Wait for the
+        // coalesce hook (deterministic) rather than relying on Task.yield scheduling.
         let foregroundTask = Task { await viewModel.syncTVListingsIfNeeded() }
-        await Task.yield()
+        await coalesced.wait()
         await release.signal()
 
         await startTask.value

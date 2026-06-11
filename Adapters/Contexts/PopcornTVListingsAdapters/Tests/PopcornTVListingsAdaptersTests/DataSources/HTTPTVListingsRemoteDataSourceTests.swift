@@ -105,6 +105,21 @@ struct HTTPTVListingsRemoteDataSourceTests {
         )
     }
 
+    @Test("fetchSchedule rejects a malformed date without making a request")
+    func fetchScheduleRejectsMalformedDate() async {
+        let requested = LockedBox<Bool>(false)
+        URLProtocolStub.setHandler { request in
+            requested.value = true
+            return try (ok(request), Data())
+        }
+
+        await #expect(
+            performing: { _ = try await makeDataSource().fetchSchedule(forDate: "../../evil") },
+            throws: { isError($0, .network) }
+        )
+        #expect(requested.value == false, "a malformed date must never reach the network")
+    }
+
     // MARK: - Helpers
 
     private func makeDataSource() -> HTTPTVListingsRemoteDataSource {
