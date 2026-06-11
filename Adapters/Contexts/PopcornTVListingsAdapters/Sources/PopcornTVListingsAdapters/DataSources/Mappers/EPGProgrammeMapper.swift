@@ -26,7 +26,14 @@ struct EPGProgrammeMapper {
             seasonNumber: dto.seasonNumber,
             imageURL: dto.imageURL,
             tmdbTVSeriesID: dto.tmdbTVSeriesID,
-            tmdbMovieID: dto.tmdbMovieID
+            tmdbMovieID: dto.tmdbMovieID,
+            genres: dto.genres ?? [],
+            certification: dto.certification,
+            voteAverage: dto.voteAverage,
+            voteCount: dto.voteCount,
+            isPremiere: dto.isPremiere ?? false,
+            keywords: dto.keywords ?? [],
+            watchProviders: dto.watchProviders ?? []
         )
     }
 

@@ -11,25 +11,59 @@ import TVListingsDomain
 
 actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
 
+    // MARK: - Read stubs
+
     var channelsStub: Result<[TVChannel], TVListingsLocalDataSourceError> = .success([])
-    var channelsCallCount = 0
-
     var programmesStub: Result<[TVProgramme], TVListingsLocalDataSourceError> = .success([])
-    var programmesCallCount = 0
-    var programmesCalledWith: [(channelID: String, date: Date)] = []
-
     var nowPlayingStub: Result<[TVProgramme], TVListingsLocalDataSourceError> = .success([])
-    var nowPlayingCallCount = 0
-    var nowPlayingCalledWith: [Date] = []
+    var fileStatesStub: Result<[String: String], TVListingsLocalDataSourceError> = .success([:])
+    var lastSyncedAtStub: Result<Date?, TVListingsLocalDataSourceError> = .success(nil)
 
-    var replaceAllStub: Result<Void, TVListingsLocalDataSourceError> = .success(())
-    var replaceAllCallCount = 0
-    var replaceAllCalledWith: [(channels: [TVChannel], programmes: [TVProgramme])] = []
+    // MARK: - Write stubs
+
+    var upsertChannelsStub: Result<Void, TVListingsLocalDataSourceError> = .success(())
+    var replaceProgrammesStub: Result<Void, TVListingsLocalDataSourceError> = .success(())
+    var deleteProgrammesStub: Result<Void, TVListingsLocalDataSourceError> = .success(())
+    var completeSyncStub: Result<Void, TVListingsLocalDataSourceError> = .success(())
+
+    // MARK: - Recorded calls
+
+    var fileStatesCallCount = 0
+    var lastSyncedAtCallCount = 0
+    var upsertChannelsCalls: [(channels: [TVChannel], hash: String)] = []
+    var replaceProgrammesCalls: [(programmes: [TVProgramme], date: String, hash: String)] = []
+    var deleteProgrammesCalls: [[String]] = []
+    var completeSyncCalls: [(lastSyncedAt: Date, paths: Set<String>)] = []
+
+    /// Total number of mutating calls — used to assert "no local mutation on failure".
+    var mutationCount: Int {
+        upsertChannelsCalls.count + replaceProgrammesCalls.count
+            + deleteProgrammesCalls.count + completeSyncCalls.count
+    }
+
+    // MARK: - Setters (actor properties can't be assigned cross-actor)
+
+    func setFileStatesStub(_ stub: Result<[String: String], TVListingsLocalDataSourceError>) {
+        fileStatesStub = stub
+    }
+
+    func setLastSyncedAtStub(_ stub: Result<Date?, TVListingsLocalDataSourceError>) {
+        lastSyncedAtStub = stub
+    }
+
+    func setReplaceProgrammesStub(_ stub: Result<Void, TVListingsLocalDataSourceError>) {
+        replaceProgrammesStub = stub
+    }
+
+    func setUpsertChannelsStub(_ stub: Result<Void, TVListingsLocalDataSourceError>) {
+        upsertChannelsStub = stub
+    }
+
+    // MARK: - Reads
 
     func channels() async throws(TVListingsLocalDataSourceError) -> [TVChannel] {
-        channelsCallCount += 1
         switch channelsStub {
-        case .success(let channels): return channels
+        case .success(let value): return value
         case .failure(let error): throw error
         }
     }
@@ -38,10 +72,8 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
         forChannelID channelID: String,
         onDate date: Date
     ) async throws(TVListingsLocalDataSourceError) -> [TVProgramme] {
-        programmesCallCount += 1
-        programmesCalledWith.append((channelID, date))
         switch programmesStub {
-        case .success(let programmes): return programmes
+        case .success(let value): return value
         case .failure(let error): throw error
         }
     }
@@ -49,21 +81,69 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
     func nowPlayingProgrammes(
         at date: Date
     ) async throws(TVListingsLocalDataSourceError) -> [TVProgramme] {
-        nowPlayingCallCount += 1
-        nowPlayingCalledWith.append(date)
         switch nowPlayingStub {
-        case .success(let programmes): return programmes
+        case .success(let value): return value
         case .failure(let error): throw error
         }
     }
 
-    func replaceAll(
-        channels: [TVChannel],
-        programmes: [TVProgramme]
+    func fileStates() async throws(TVListingsLocalDataSourceError) -> [String: String] {
+        fileStatesCallCount += 1
+        switch fileStatesStub {
+        case .success(let value): return value
+        case .failure(let error): throw error
+        }
+    }
+
+    func lastSyncedAt() async throws(TVListingsLocalDataSourceError) -> Date? {
+        lastSyncedAtCallCount += 1
+        switch lastSyncedAtStub {
+        case .success(let value): return value
+        case .failure(let error): throw error
+        }
+    }
+
+    // MARK: - Writes
+
+    func upsertChannels(
+        _ channels: [TVChannel],
+        hash: String
     ) async throws(TVListingsLocalDataSourceError) {
-        replaceAllCallCount += 1
-        replaceAllCalledWith.append((channels, programmes))
-        switch replaceAllStub {
+        upsertChannelsCalls.append((channels, hash))
+        switch upsertChannelsStub {
+        case .success: return
+        case .failure(let error): throw error
+        }
+    }
+
+    func replaceProgrammes(
+        _ programmes: [TVProgramme],
+        forDate date: String,
+        hash: String
+    ) async throws(TVListingsLocalDataSourceError) {
+        replaceProgrammesCalls.append((programmes, date, hash))
+        switch replaceProgrammesStub {
+        case .success: return
+        case .failure(let error): throw error
+        }
+    }
+
+    func deleteProgrammes(
+        notInDates dates: [String]
+    ) async throws(TVListingsLocalDataSourceError) {
+        deleteProgrammesCalls.append(dates)
+        switch deleteProgrammesStub {
+        case .success: return
+        case .failure(let error): throw error
+        }
+    }
+
+    func completeSync(
+        lastSyncedAt date: Date,
+        keepingFileStatePaths paths: Set<String>
+    ) async throws(TVListingsLocalDataSourceError) {
+        completeSyncCalls.append((date, paths))
+        switch completeSyncStub {
         case .success: return
         case .failure(let error): throw error
         }

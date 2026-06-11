@@ -16,6 +16,7 @@ import TVListingsDomain
 /// behaves correctly regardless of how a host retains it.
 public struct TVListingsView: View {
 
+    @Environment(\.scenePhase) private var scenePhase
     @State private var viewModel: TVListingsViewModel
 
     public init(viewModel: TVListingsViewModel) {
@@ -31,19 +32,16 @@ public struct TVListingsView: View {
                 }
             }
             .navigationTitle(Text("TV_LISTINGS_TITLE", bundle: .module))
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    syncButton
-                }
-            }
-            .overlay(alignment: .bottom) {
-                if let kind = viewModel.lastSyncErrorKind {
-                    errorBanner(kind: kind)
-                }
-            }
             .accessibilityIdentifier("tvListings.view")
             .task(id: viewModel.reloadID) {
                 await viewModel.load()
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                // Refresh on foreground so the view picks up data produced by the
+                // app-level background sync.
+                if newPhase == .active {
+                    viewModel.reload()
+                }
             }
     }
 
@@ -58,6 +56,9 @@ public struct TVListingsView: View {
                     NowPlayingRow(item: item)
                 }
                 .listStyle(.plain)
+                .refreshable {
+                    await viewModel.refresh()
+                }
             }
 
         case .error(let error):
@@ -66,25 +67,6 @@ public struct TVListingsView: View {
         default:
             Color.clear
         }
-    }
-
-    private var syncButton: some View {
-        Button {
-            Task { await viewModel.sync() }
-        } label: {
-            if viewModel.isSyncing {
-                ProgressView()
-                    .accessibilityLabel(Text("TV_LISTINGS_SYNCING", bundle: .module))
-            } else {
-                Label {
-                    Text("TV_LISTINGS_SYNC_BUTTON", bundle: .module)
-                } icon: {
-                    Image(systemName: "arrow.clockwise")
-                }
-            }
-        }
-        .disabled(viewModel.isSyncing)
-        .accessibilityIdentifier("tvListings.syncButton")
     }
 
     private var emptyBody: some View {
@@ -96,14 +78,6 @@ public struct TVListingsView: View {
             }
         } description: {
             Text("TV_LISTINGS_EMPTY_DESCRIPTION", bundle: .module)
-        } actions: {
-            Button {
-                Task { await viewModel.sync() }
-            } label: {
-                Text("TV_LISTINGS_SYNC_BUTTON", bundle: .module)
-            }
-            .buttonStyle(.borderedProminent)
-            .disabled(viewModel.isSyncing)
         }
     }
 
@@ -124,25 +98,6 @@ public struct TVListingsView: View {
             }
             .buttonStyle(.borderedProminent)
         }
-    }
-
-    private func errorBanner(kind: TVListingsViewModel.ErrorKind) -> some View {
-        Button {
-            viewModel.dismissSyncError()
-        } label: {
-            Text(kind.localizedMessage)
-                .font(.footnote)
-                .foregroundStyle(.white)
-                .padding(.spacing12)
-                .frame(maxWidth: .infinity)
-                .background(.red)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .padding(.spacing16)
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(Text(kind.localizedMessage))
-        .accessibilityHint(Text("TV_LISTINGS_SYNC_ERROR_DISMISS_HINT", bundle: .module))
-        .accessibilityIdentifier("tvListings.syncError")
     }
 
 }
@@ -182,23 +137,6 @@ private struct NowPlayingRow: View {
         }
         .padding(.vertical, .spacing4)
         .accessibilityElement(children: .combine)
-    }
-
-}
-
-private extension TVListingsViewModel.ErrorKind {
-
-    var localizedMessage: LocalizedStringResource {
-        switch self {
-        case .network:
-            LocalizedStringResource("TV_LISTINGS_SYNC_ERROR_NETWORK", bundle: .atURL(Bundle.module.bundleURL))
-
-        case .local:
-            LocalizedStringResource("TV_LISTINGS_SYNC_ERROR_LOCAL", bundle: .atURL(Bundle.module.bundleURL))
-
-        case .unknown:
-            LocalizedStringResource("TV_LISTINGS_SYNC_ERROR_UNKNOWN", bundle: .atURL(Bundle.module.bundleURL))
-        }
     }
 
 }

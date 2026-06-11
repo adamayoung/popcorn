@@ -9,7 +9,6 @@ import Foundation
 import Presentation
 import Synchronization
 import Testing
-@testable import TVListingsApplication
 import TVListingsDomain
 @testable import TVListingsFeature
 
@@ -110,8 +109,8 @@ struct TVListingsViewModelTests {
         async let firstFetch: Void = viewModel.load()
         await gate.waitUntilWaiting()
 
-        // A second fetch (as `sync()` would trigger) completes with fresh data.
-        await viewModel.load()
+        // A second fetch (as `refresh()` would trigger) completes with fresh data.
+        await viewModel.refresh()
         #expect(viewModel.viewState == .ready(expected))
 
         // Release the stale fetch; its result must be dropped, not clobber fresh.
@@ -134,128 +133,25 @@ struct TVListingsViewModelTests {
         #expect(viewModel.viewState.isError == false)
     }
 
-    // MARK: - sync
+    // MARK: - refresh / reload
 
-    @Test("sync sets isSyncing true mid-flight then false and refetches on success")
+    @Test("refresh re-reads the cache and updates the snapshot")
     @MainActor
-    func syncTogglesIsSyncingAndRefetches() async {
-        let gate = AsyncGate()
-        let fetchCount = Mutex(0)
+    func refreshReReadsCache() async {
+        let channels = Mutex([Self.makeChannel(id: "BBC", name: "BBC")])
         let viewModel = Self.makeViewModel(
             dependencies: Self.stubDependencies(
-                sync: { await gate.wait() },
-                fetchChannels: {
-                    fetchCount.withLock { $0 += 1 }
-                    return []
-                },
-                fetchNowPlayingProgrammes: { [] }
+                fetchChannels: { channels.withLock { $0 } },
+                fetchNowPlayingProgrammes: { [Self.makeProgramme(id: "BBC:1000", channelID: "BBC", title: "News")] }
             )
         )
 
-        let task = Task { await viewModel.sync() }
-        await gate.waitUntilWaiting()
+        await viewModel.load()
+        // Simulate a background sync clearing the cache; a refresh must reflect it.
+        channels.withLock { $0 = [] }
+        await viewModel.refresh()
 
-        #expect(viewModel.isSyncing == true)
-        #expect(viewModel.lastSyncErrorKind == nil)
-
-        gate.open()
-        await task.value
-
-        #expect(viewModel.isSyncing == false)
-        #expect(viewModel.lastSyncErrorKind == nil)
-        // A successful sync triggers a refetch.
-        #expect(fetchCount.withLock { $0 } == 1)
         #expect(viewModel.viewState == .ready(TVListingsViewSnapshot(items: [])))
-    }
-
-    @Test("sync failure maps remote error to network kind and resets isSyncing")
-    @MainActor
-    func syncFailureMapsRemoteToNetwork() async {
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                sync: { throw SyncTVListingsError.remote(nil) }
-            )
-        )
-
-        await viewModel.sync()
-
-        #expect(viewModel.isSyncing == false)
-        #expect(viewModel.lastSyncErrorKind == .network)
-    }
-
-    @Test("sync failure maps local error to local kind")
-    @MainActor
-    func syncFailureMapsLocalToLocal() async {
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                sync: { throw SyncTVListingsError.local(nil) }
-            )
-        )
-
-        await viewModel.sync()
-
-        #expect(viewModel.isSyncing == false)
-        #expect(viewModel.lastSyncErrorKind == .local)
-    }
-
-    @Test("sync failure maps unexpected errors to unknown kind")
-    @MainActor
-    func syncFailureMapsUnexpectedToUnknown() async {
-        struct UnexpectedFailure: Error {}
-
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                sync: { throw UnexpectedFailure() }
-            )
-        )
-
-        await viewModel.sync()
-
-        #expect(viewModel.isSyncing == false)
-        #expect(viewModel.lastSyncErrorKind == .unknown)
-    }
-
-    @Test("sync is a no-op while already syncing")
-    @MainActor
-    func syncNoOpWhileSyncing() async {
-        let syncCalled = Mutex(false)
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                sync: { syncCalled.withLock { $0 = true } }
-            ),
-            isSyncing: true
-        )
-
-        await viewModel.sync()
-
-        #expect(syncCalled.withLock { $0 } == false)
-        #expect(viewModel.isSyncing == true)
-    }
-
-    @Test("sync clears a previous error before starting")
-    @MainActor
-    func syncClearsPreviousError() async {
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(sync: {}),
-            lastSyncErrorKind: .network
-        )
-
-        await viewModel.sync()
-
-        #expect(viewModel.lastSyncErrorKind == nil)
-    }
-
-    @Test("dismissSyncError clears the error kind")
-    @MainActor
-    func dismissSyncErrorClearsErrorKind() {
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(),
-            lastSyncErrorKind: .network
-        )
-
-        viewModel.dismissSyncError()
-
-        #expect(viewModel.lastSyncErrorKind == nil)
     }
 
     @Test("reload bumps reloadID")
@@ -329,25 +225,16 @@ extension TVListingsViewModelTests {
     @MainActor
     static func makeViewModel(
         dependencies: TVListingsDependencies = stubDependencies(),
-        viewState: ViewState<TVListingsViewSnapshot> = .initial,
-        isSyncing: Bool = false,
-        lastSyncErrorKind: TVListingsViewModel.ErrorKind? = nil
+        viewState: ViewState<TVListingsViewSnapshot> = .initial
     ) -> TVListingsViewModel {
-        TVListingsViewModel(
-            dependencies: dependencies,
-            viewState: viewState,
-            isSyncing: isSyncing,
-            lastSyncErrorKind: lastSyncErrorKind
-        )
+        TVListingsViewModel(dependencies: dependencies, viewState: viewState)
     }
 
     static func stubDependencies(
-        sync: @escaping @Sendable () async throws -> Void = {},
         fetchChannels: @escaping @Sendable () async throws -> [TVChannel] = { [] },
         fetchNowPlayingProgrammes: @escaping @Sendable () async throws -> [TVProgramme] = { [] }
     ) -> TVListingsDependencies {
         TVListingsDependencies(
-            sync: sync,
             fetchChannels: fetchChannels,
             fetchNowPlayingProgrammes: fetchNowPlayingProgrammes
         )
@@ -360,13 +247,7 @@ extension TVListingsViewModelTests {
 extension TVListingsViewModelTests {
 
     static func makeChannel(id: String, name: String) -> TVChannel {
-        TVChannel(
-            id: id,
-            name: name,
-            isHD: false,
-            logoURL: nil,
-            channelNumbers: []
-        )
+        TVChannel(id: id, name: name, isHD: false, logoURL: nil, channelNumbers: [])
     }
 
     static func makeProgramme(id: String, channelID: String, title: String) -> TVProgramme {

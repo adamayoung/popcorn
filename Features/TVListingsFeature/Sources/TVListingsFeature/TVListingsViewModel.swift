@@ -9,7 +9,6 @@ import Foundation
 import Observation
 import OSLog
 import Presentation
-import TVListingsApplication
 import TVListingsDomain
 
 /// A now-playing entry pairing a channel with the programme currently airing on it.
@@ -48,49 +47,36 @@ public struct TVListingsViewSnapshot: Equatable, Sendable {
 /// view-model-owned `Task` — structured concurrency keeps the work tied to the
 /// view's lifetime with no manual cancellation.
 ///
-/// The manual refresh ``sync()`` is guarded by ``isSyncing``: the sync button is
-/// disabled while a sync is in flight, so a plain guarded async method is correct
-/// — no cancellation or stored task is needed.
+/// Syncing is fully automatic and app-level (see `AppRootViewModel`); this view
+/// model only reads the cached listings. ``refresh()`` re-reads the cache so the
+/// view can pick up data produced by a background sync (e.g. on foreground).
 @Observable
 @MainActor
 public final class TVListingsViewModel {
 
     public typealias ViewSnapshot = TVListingsViewSnapshot
 
-    /// The kind of failure surfaced by a manual ``sync()``.
-    public enum ErrorKind: Equatable, Sendable {
-        case network
-        case local
-        case unknown
-    }
-
     private static let logger = Logger.tvListings
 
     public private(set) var viewState: ViewState<ViewSnapshot>
-    public private(set) var isSyncing: Bool
-    public private(set) var lastSyncErrorKind: ErrorKind?
 
-    /// Drives `.task(id:)` reruns. ``reload()`` bumps it to retry after an error.
+    /// Drives `.task(id:)` reruns. ``reload()`` bumps it to retry after an error
+    /// or to pick up freshly-synced data on foreground.
     public private(set) var reloadID = 0
 
     private let dependencies: TVListingsDependencies
 
     /// Monotonic id for in-flight ``fetch()`` calls. Only the most recently
-    /// started fetch may commit its result, so a slow initial fetch can't
-    /// overwrite fresher listings produced by a concurrent ``sync()`` →
-    /// ``fetch()``.
+    /// started fetch may commit its result, so a slow fetch can't overwrite
+    /// fresher listings produced by a concurrent ``refresh()``.
     private var fetchGeneration = 0
 
     public init(
         dependencies: TVListingsDependencies,
-        viewState: ViewState<ViewSnapshot> = .initial,
-        isSyncing: Bool = false,
-        lastSyncErrorKind: ErrorKind? = nil
+        viewState: ViewState<ViewSnapshot> = .initial
     ) {
         self.dependencies = dependencies
         self.viewState = viewState
-        self.isSyncing = isSyncing
-        self.lastSyncErrorKind = lastSyncErrorKind
     }
 
     // MARK: - Lifecycle
@@ -103,42 +89,16 @@ public final class TVListingsViewModel {
         await fetch()
     }
 
-    /// Retries loading after an error by changing ``reloadID``, which reruns the
-    /// view's `.task(id:)`.
+    /// Re-reads the cached listings without changing `reloadID`. Use for
+    /// pull-to-refresh and to pick up data produced by a background sync.
+    public func refresh() async {
+        await fetch()
+    }
+
+    /// Reruns the view's `.task(id:)` by changing ``reloadID`` — used to retry
+    /// after an error and to refresh when the app returns to the foreground.
     public func reload() {
         reloadID += 1
-    }
-
-    public func dismissSyncError() {
-        lastSyncErrorKind = nil
-    }
-
-    // MARK: - Sync
-
-    /// Refreshes the local cache from the remote EPG feed, then reloads the
-    /// listings. A no-op while a sync is already in flight.
-    public func sync() async {
-        guard !isSyncing else {
-            return
-        }
-
-        isSyncing = true
-        lastSyncErrorKind = nil
-
-        Self.logger.info("Starting TV listings sync")
-        do {
-            try await dependencies.sync()
-            isSyncing = false
-            lastSyncErrorKind = nil
-            Self.logger.info("TV listings sync finished")
-            await fetch()
-        } catch {
-            Self.logger.error(
-                "TV listings sync failed: \(error.localizedDescription, privacy: .public)"
-            )
-            isSyncing = false
-            lastSyncErrorKind = ErrorKind(error)
-        }
     }
 
     // MARK: - Loading
@@ -156,8 +116,8 @@ public final class TVListingsViewModel {
             async let programmesTask = dependencies.fetchNowPlayingProgrammes()
             let (channels, programmes) = try await (channelsTask, programmesTask)
 
-            // A newer fetch (e.g. one started by `sync()`) superseded this one —
-            // drop the stale result so it can't clobber fresher listings.
+            // A newer fetch superseded this one — drop the stale result so it
+            // can't clobber fresher listings.
             guard generation == fetchGeneration else {
                 return
             }
@@ -199,47 +159,15 @@ public final class TVListingsViewModel {
 
 }
 
-extension TVListingsViewModel.ErrorKind {
-
-    init(_ error: any Error) {
-        if let syncError = error as? SyncTVListingsError {
-            self.init(syncError)
-        } else {
-            self = .unknown
-        }
-    }
-
-    init(_ error: SyncTVListingsError) {
-        switch error {
-        case .remote:
-            self = .network
-
-        case .local:
-            self = .local
-
-        case .unknown:
-            self = .unknown
-        }
-    }
-
-}
-
 #if DEBUG
     public extension TVListingsViewModel {
 
         /// A view model pinned to a fixed view state with no-op dependencies, for
         /// previews and snapshot tests.
         static func preview(
-            viewState: ViewState<ViewSnapshot> = .initial,
-            isSyncing: Bool = false,
-            lastSyncErrorKind: ErrorKind? = nil
+            viewState: ViewState<ViewSnapshot> = .initial
         ) -> TVListingsViewModel {
-            TVListingsViewModel(
-                dependencies: .preview,
-                viewState: viewState,
-                isSyncing: isSyncing,
-                lastSyncErrorKind: lastSyncErrorKind
-            )
+            TVListingsViewModel(dependencies: .preview, viewState: viewState)
         }
 
     }

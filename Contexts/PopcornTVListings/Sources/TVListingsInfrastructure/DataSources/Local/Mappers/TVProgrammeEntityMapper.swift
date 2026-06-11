@@ -23,7 +23,14 @@ struct TVProgrammeEntityMapper {
             seasonNumber: entity.seasonNumber,
             imageURL: entity.imageURL,
             tmdbTVSeriesID: entity.tmdbTVSeriesID,
-            tmdbMovieID: entity.tmdbMovieID
+            tmdbMovieID: entity.tmdbMovieID,
+            genres: entity.genres,
+            certification: entity.certification,
+            voteAverage: entity.voteAverage,
+            voteCount: entity.voteCount,
+            isPremiere: entity.isPremiere,
+            keywords: entity.keywords,
+            watchProviders: entity.watchProviders
         )
     }
 
@@ -40,7 +47,14 @@ struct TVProgrammeEntityMapper {
             seasonNumber: programme.seasonNumber,
             imageURL: programme.imageURL,
             tmdbTVSeriesID: programme.tmdbTVSeriesID,
-            tmdbMovieID: programme.tmdbMovieID
+            tmdbMovieID: programme.tmdbMovieID,
+            genres: programme.genres,
+            certification: programme.certification,
+            voteAverage: programme.voteAverage,
+            voteCount: programme.voteCount,
+            isPremiere: programme.isPremiere,
+            keywords: programme.keywords,
+            watchProviders: programme.watchProviders
         )
     }
 

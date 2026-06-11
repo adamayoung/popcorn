@@ -53,6 +53,10 @@ public final class PopcornTVListingsFactory: Sendable {
         applicationFactory.makeSyncTVListingsUseCase()
     }
 
+    public func makeSyncTVListingsIfNeededUseCase() -> SyncTVListingsIfNeededUseCase {
+        applicationFactory.makeSyncTVListingsIfNeededUseCase()
+    }
+
     public func makeFetchTVChannelsUseCase() -> FetchTVChannelsUseCase {
         applicationFactory.makeFetchTVChannelsUseCase()
     }

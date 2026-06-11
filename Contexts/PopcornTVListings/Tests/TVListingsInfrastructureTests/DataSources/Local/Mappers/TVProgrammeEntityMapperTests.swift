@@ -85,6 +85,43 @@ struct TVProgrammeEntityMapperTests {
         #expect(entity.tmdbMovieID == 123)
     }
 
+    @Test("roundtrip preserves enrichment fields in both directions")
+    func roundtripPreservesEnrichmentFields() {
+        let start = Date(timeIntervalSince1970: 1_776_463_200)
+        let original = TVProgramme(
+            id: "SKY:1776463200",
+            channelID: "SKY",
+            title: "The White Lotus",
+            description: "",
+            startTime: start,
+            endTime: start.addingTimeInterval(3900),
+            duration: 3900,
+            episodeNumber: 7,
+            seasonNumber: 3,
+            imageURL: nil,
+            tmdbTVSeriesID: 111_803,
+            tmdbMovieID: nil,
+            genres: ["Comedy", "Drama", "Mystery"],
+            certification: "15",
+            voteAverage: 7.604,
+            voteCount: 1424,
+            isPremiere: true,
+            keywords: ["hotel", "whodunit"],
+            watchProviders: ["Sky Go", "Now TV"]
+        )
+
+        let entity = mapper.map(original)
+        #expect(entity.genres == ["Comedy", "Drama", "Mystery"])
+        #expect(entity.certification == "15")
+        #expect(entity.voteAverage == 7.604)
+        #expect(entity.voteCount == 1424)
+        #expect(entity.isPremiere == true)
+        #expect(entity.keywords == ["hotel", "whodunit"])
+        #expect(entity.watchProviders == ["Sky Go", "Now TV"])
+
+        #expect(mapper.map(entity) == original)
+    }
+
     @Test("roundtrip preserves values including nil optionals")
     func roundtripPreservesValuesIncludingNilOptionals() {
         let start = Date(timeIntervalSince1970: 1_776_463_200)

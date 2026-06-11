@@ -17,7 +17,7 @@ struct EPGProgrammeMapperTests {
 
     @Test("maps programme DTO to domain with composite id")
     func mapsProgrammeDTOToDomainWithCompositeID() {
-        let dto = EPGProgrammeDTO(
+        let dto = EPGProgrammeDTO.mock(
             title: "News",
             description: "Evening",
             startTime: 1_776_463_200,
@@ -25,8 +25,7 @@ struct EPGProgrammeMapperTests {
             episodeNumber: 12,
             seasonNumber: 2026,
             imageURL: URL(string: "https://example.com/img.png"),
-            tmdbTVSeriesID: 38086,
-            tmdbMovieID: nil
+            tmdbTVSeriesID: 38086
         )
 
         let programme = mapper.map(dto, channelID: "3858")
@@ -45,38 +44,48 @@ struct EPGProgrammeMapperTests {
         #expect(programme.tmdbMovieID == nil)
     }
 
-    @Test("maps missing description to empty string")
-    func mapsMissingDescriptionToEmptyString() {
-        let dto = EPGProgrammeDTO(
-            title: "Untitled",
-            description: nil,
-            startTime: 1000,
-            duration: 60,
-            episodeNumber: nil,
-            seasonNumber: nil,
-            imageURL: nil,
-            tmdbTVSeriesID: nil,
-            tmdbMovieID: nil
+    @Test("maps enrichment fields when present")
+    func mapsEnrichmentFieldsWhenPresent() {
+        let dto = EPGProgrammeDTO.mock(
+            genres: ["Comedy", "Drama"],
+            certification: "15",
+            voteAverage: 7.604,
+            voteCount: 1424,
+            isPremiere: true,
+            keywords: ["hotel", "whodunit"],
+            watchProviders: ["Sky Go", "Now TV"]
         )
+
+        let programme = mapper.map(dto, channelID: "SKY")
+
+        #expect(programme.genres == ["Comedy", "Drama"])
+        #expect(programme.certification == "15")
+        #expect(programme.voteAverage == 7.604)
+        #expect(programme.voteCount == 1424)
+        #expect(programme.isPremiere == true)
+        #expect(programme.keywords == ["hotel", "whodunit"])
+        #expect(programme.watchProviders == ["Sky Go", "Now TV"])
+    }
+
+    @Test("defaults omitted enrichment fields and description")
+    func defaultsOmittedEnrichmentFields() {
+        let dto = EPGProgrammeDTO.mock(description: nil)
 
         let programme = mapper.map(dto, channelID: "X")
 
         #expect(programme.description == "")
+        #expect(programme.genres.isEmpty)
+        #expect(programme.certification == nil)
+        #expect(programme.voteAverage == nil)
+        #expect(programme.voteCount == nil)
+        #expect(programme.isPremiere == false)
+        #expect(programme.keywords.isEmpty)
+        #expect(programme.watchProviders.isEmpty)
     }
 
-    @Test("preserves optional identifiers when present")
-    func preservesOptionalIdentifiersWhenPresent() {
-        let dto = EPGProgrammeDTO(
-            title: "Film",
-            description: nil,
-            startTime: 1000,
-            duration: 3600,
-            episodeNumber: nil,
-            seasonNumber: nil,
-            imageURL: nil,
-            tmdbTVSeriesID: nil,
-            tmdbMovieID: 763_285
-        )
+    @Test("preserves a movie identifier when present")
+    func preservesMovieIdentifierWhenPresent() {
+        let dto = EPGProgrammeDTO.mock(tmdbMovieID: 763_285)
 
         let programme = mapper.map(dto, channelID: "C4")
 

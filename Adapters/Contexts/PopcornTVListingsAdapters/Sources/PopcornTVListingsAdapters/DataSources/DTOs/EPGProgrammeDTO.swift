@@ -18,5 +18,12 @@ struct EPGProgrammeDTO: Decodable {
     let imageURL: URL?
     let tmdbTVSeriesID: Int?
     let tmdbMovieID: Int?
+    let genres: [String]?
+    let certification: String?
+    let voteAverage: Double?
+    let voteCount: Int?
+    let isPremiere: Bool?
+    let keywords: [String]?
+    let watchProviders: [String]?
 
 }

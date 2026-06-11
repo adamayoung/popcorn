@@ -57,6 +57,10 @@ final class AppRootViewModel {
 
     private var hasStarted = false
 
+    /// The in-flight automatic sync, reused by overlapping triggers (launch + foreground)
+    /// so the cold-launch double-fire coalesces onto a single run.
+    private var tvListingsSyncTask: Task<Void, Never>?
+
     private let dependencies: AppRootDependencies
 
     init(dependencies: AppRootDependencies) {
@@ -79,9 +83,30 @@ final class AppRootViewModel {
             try await dependencies.bootstrap()
             updateFeatureFlags()
             isReady = true
+            await syncTVListingsIfNeeded()
         } catch {
             self.error = error
         }
+    }
+
+    /// Triggers a throttled TV-listings sync, gated on the app being ready and the feature
+    /// enabled. Overlapping calls (launch + foreground `.active`) coalesce onto one task.
+    /// A scene activation that fires before bootstrap completes is an intentional no-op;
+    /// `start()` is the authoritative launch trigger.
+    func syncTVListingsIfNeeded() async {
+        guard isReady, isTVListingsEnabled else {
+            return
+        }
+
+        if let tvListingsSyncTask {
+            await tvListingsSyncTask.value
+            return
+        }
+
+        let task = Task { await dependencies.syncTVListingsIfNeeded() }
+        tvListingsSyncTask = task
+        await task.value
+        tvListingsSyncTask = nil
     }
 
     private func updateFeatureFlags() {

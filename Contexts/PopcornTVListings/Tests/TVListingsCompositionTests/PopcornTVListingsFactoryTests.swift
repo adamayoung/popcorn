@@ -24,14 +24,25 @@ struct PopcornTVListingsFactoryTests {
         )
 
         _ = factory.makeSyncTVListingsUseCase()
+        _ = factory.makeSyncTVListingsIfNeededUseCase()
         _ = factory.makeFetchTVChannelsUseCase()
         _ = factory.makeFetchTVChannelScheduleUseCase()
         _ = factory.makeFetchNowPlayingTVProgrammesUseCase()
     }
 
     private struct StubRemote: TVListingsRemoteDataSource {
-        func fetchListings() async throws(TVListingsRemoteDataSourceError) -> TVListingsSnapshot {
-            TVListingsSnapshot(channels: [], programmes: [])
+        func fetchManifest() async throws(TVListingsRemoteDataSourceError) -> EPGManifest {
+            EPGManifest(generatedAt: Date(timeIntervalSince1970: 0), dates: [], files: [])
+        }
+
+        func fetchChannels() async throws(TVListingsRemoteDataSourceError) -> [TVChannel] {
+            []
+        }
+
+        func fetchSchedule(
+            forDate date: String
+        ) async throws(TVListingsRemoteDataSourceError) -> [TVProgramme] {
+            []
         }
     }
 

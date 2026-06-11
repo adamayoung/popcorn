@@ -16,6 +16,7 @@ import WatchlistFeature
 
 struct AppRootView: View {
 
+    @Environment(\.scenePhase) private var scenePhase
     @State private var viewModel: AppRootViewModel
     let factory: ViewModelFactory
 
@@ -59,6 +60,12 @@ struct AppRootView: View {
         #endif
         .task {
                 await viewModel.start()
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                guard newPhase == .active else {
+                    return
+                }
+                Task { await viewModel.syncTVListingsIfNeeded() }
             }
     }
 

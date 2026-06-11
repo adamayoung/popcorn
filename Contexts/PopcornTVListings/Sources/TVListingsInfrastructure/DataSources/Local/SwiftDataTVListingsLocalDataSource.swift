@@ -12,11 +12,21 @@ import TVListingsDomain
 
 actor SwiftDataTVListingsLocalDataSource: TVListingsLocalDataSource, ModelActor {
 
-    private static let logger = Logger.tvListingsInfrastructure
+    static let logger = Logger.tvListingsInfrastructure
 
     nonisolated let modelContainer: ModelContainer
     let modelExecutor: any ModelExecutor
-    private let calendar: Calendar
+    let calendar: Calendar
+
+    /// Parses a `yyyyMMdd` schedule-file date in the UK time zone, so day buckets are stable
+    /// regardless of the device time zone.
+    static let dayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "Europe/London")
+        formatter.dateFormat = "yyyyMMdd"
+        return formatter
+    }()
 
     init(modelContainer: ModelContainer, calendar: Calendar = .ukGregorian) {
         let modelContext = ModelContext(modelContainer)
@@ -24,6 +34,8 @@ actor SwiftDataTVListingsLocalDataSource: TVListingsLocalDataSource, ModelActor 
         self.modelContainer = modelContainer
         self.calendar = calendar
     }
+
+    // MARK: - Reads
 
     func channels() async throws(TVListingsLocalDataSourceError) -> [TVChannel] {
         let channelDescriptor = FetchDescriptor<TVChannelEntity>(
@@ -98,49 +110,44 @@ actor SwiftDataTVListingsLocalDataSource: TVListingsLocalDataSource, ModelActor 
         return entities.map(mapper.map)
     }
 
-    ///
-    /// Replaces the cache with the given channels and programmes.
-    ///
-    /// Writes are committed in a single transaction so a `save()` failure rolls
-    /// back any staged inserts. The batch-delete of existing rows runs against
-    /// the persistent store directly; if the subsequent insert save fails, the
-    /// store may be left empty — never partially populated. A subsequent
-    /// successful sync will re-populate it.
-    ///
-    func replaceAll(
-        channels: [TVChannel],
-        programmes: [TVProgramme]
-    ) async throws(TVListingsLocalDataSourceError) {
+    // MARK: - Sync state reads
+
+    func fileStates() async throws(TVListingsLocalDataSourceError) -> [String: String] {
+        let entities: [EPGFileStateEntity]
         do {
-            try modelContext.delete(model: TVProgrammeEntity.self)
-            try modelContext.delete(model: TVChannelNumberEntity.self)
-            try modelContext.delete(model: TVChannelEntity.self)
-
-            let channelMapper = TVChannelEntityMapper()
-            for channel in channels {
-                modelContext.insert(channelMapper.map(channel))
-                for number in channelMapper.mapNumbers(for: channel) {
-                    modelContext.insert(number)
-                }
-            }
-
-            let programmeMapper = TVProgrammeEntityMapper()
-            for programme in programmes {
-                modelContext.insert(programmeMapper.map(programme))
-            }
-
-            try modelContext.save()
+            entities = try modelContext.fetch(FetchDescriptor<EPGFileStateEntity>())
         } catch let error {
-            // Batch-deletes above already wrote directly to the persistent store,
-            // so rollback() can't undo them. Staged inserts are abandoned with this throw.
+            throw .persistence(error)
+        }
+
+        return Dictionary(
+            entities.map { ($0.path, $0.contentHash) },
+            uniquingKeysWith: { _, latest in latest }
+        )
+    }
+
+    func lastSyncedAt() async throws(TVListingsLocalDataSourceError) -> Date? {
+        do {
+            return try modelContext.fetch(FetchDescriptor<EPGSyncStateEntity>()).first?.lastSyncedAt
+        } catch let error {
             throw .persistence(error)
         }
     }
 
-    private func dayRange(for date: Date) -> (start: Date, end: Date) {
+    // MARK: - Day ranges
+
+    func dayRange(for date: Date) -> (start: Date, end: Date) {
         let start = calendar.startOfDay(for: date)
         let end = calendar.date(byAdding: .day, value: 1, to: start) ?? start.addingTimeInterval(86400)
         return (start, end)
+    }
+
+    /// The `[start, end)` UK-day range for a `yyyyMMdd` string, or `nil` if it can't be parsed.
+    func dayRange(forDateString dateString: String) -> (start: Date, end: Date)? {
+        guard let day = Self.dayFormatter.date(from: dateString) else {
+            return nil
+        }
+        return dayRange(for: day)
     }
 
 }

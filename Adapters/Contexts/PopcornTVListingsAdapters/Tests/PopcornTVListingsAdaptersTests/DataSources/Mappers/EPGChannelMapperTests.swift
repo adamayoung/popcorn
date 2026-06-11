@@ -22,8 +22,7 @@ struct EPGChannelMapperTests {
             name: "SkySp+ HD",
             isHD: true,
             logoURL: URL(string: "https://example.com/logo.png"),
-            channelNumbers: [EPGChannelNumberDTO(channelNumber: "1081", subbouquetIDs: [1, 4])],
-            schedules: []
+            channelNumbers: [EPGChannelNumberDTO(channelNumber: "1081", subbouquetIDs: [1, 4])]
         )
 
         let channel = mapper.map(dto)
@@ -44,8 +43,7 @@ struct EPGChannelMapperTests {
             name: "Test",
             isHD: false,
             logoURL: nil,
-            channelNumbers: [],
-            schedules: []
+            channelNumbers: []
         )
 
         let channel = mapper.map(dto)
