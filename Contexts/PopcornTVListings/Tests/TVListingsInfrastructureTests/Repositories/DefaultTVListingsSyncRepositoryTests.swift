@@ -114,6 +114,31 @@ struct DefaultTVListingsSyncRepositoryTests {
         #expect(remote.fetchScheduleCalledWith == ["20260611"], "malformed date is never requested")
     }
 
+    @Test("sync stamps completion even when every file is already up to date")
+    func syncStampsCompletionWhenAllFilesCurrent() async throws {
+        let remote = MockTVListingsRemoteDataSource()
+        let local = MockTVListingsLocalDataSource()
+        remote.fetchManifestStub = .success(
+            .mock(dates: ["20260611"], channelsHash: "c1", scheduleHashes: ["20260611": "s1"])
+        )
+        await local.setFileStatesStub(.success([
+            "channels.json": "c1",
+            "schedules/20260611.json": "s1"
+        ]))
+
+        let repository = makeRepository(remote: remote, local: local)
+
+        try await repository.sync()
+
+        #expect(remote.fetchChannelsCallCount == 0, "channels unchanged → not fetched")
+        #expect(remote.fetchScheduleCalledWith.isEmpty, "no day changed → no schedule fetch")
+        let completes = await local.completeSyncCalls
+        let deletes = await local.deleteProgrammesCalls
+        #expect(completes.count == 1, "still stamps lastSyncedAt so the throttle advances")
+        #expect(completes.first?.lastSyncedAt == Date(timeIntervalSince1970: 1_000_000))
+        #expect(deletes == [["20260611"]])
+    }
+
     @Test("sync does not mutate the cache when the manifest fetch fails")
     func syncDoesNotMutateOnManifestFailure() async {
         let remote = MockTVListingsRemoteDataSource()
