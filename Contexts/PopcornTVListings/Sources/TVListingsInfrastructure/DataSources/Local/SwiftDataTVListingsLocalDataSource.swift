@@ -110,6 +110,34 @@ actor SwiftDataTVListingsLocalDataSource: TVListingsLocalDataSource, ModelActor 
         return entities.map(mapper.map)
     }
 
+    func programmes(
+        from start: Date,
+        to end: Date
+    ) async throws(TVListingsLocalDataSourceError) -> [TVProgramme] {
+        let lowerBound = start
+        let upperBound = end
+
+        let predicate = #Predicate<TVProgrammeEntity> { entity in
+            entity.endTime > lowerBound && entity.startTime < upperBound
+        }
+
+        var descriptor = FetchDescriptor<TVProgrammeEntity>(
+            predicate: predicate,
+            sortBy: [SortDescriptor(\.channelID), SortDescriptor(\.startTime)]
+        )
+        descriptor.relationshipKeyPathsForPrefetching = []
+
+        let entities: [TVProgrammeEntity]
+        do {
+            entities = try modelContext.fetch(descriptor)
+        } catch let error {
+            throw .persistence(error)
+        }
+
+        let mapper = TVProgrammeEntityMapper()
+        return entities.map(mapper.map)
+    }
+
     // MARK: - Sync state reads
 
     func fileStates() async throws(TVListingsLocalDataSourceError) -> [String: String] {

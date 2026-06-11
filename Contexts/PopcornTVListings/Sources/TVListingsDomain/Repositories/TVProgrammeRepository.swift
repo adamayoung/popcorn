@@ -21,4 +21,9 @@ public protocol TVProgrammeRepository: Sendable {
         at date: Date
     ) async throws(TVListingsRepositoryError) -> [TVProgramme]
 
+    func programmes(
+        from start: Date,
+        to end: Date
+    ) async throws(TVListingsRepositoryError) -> [TVProgramme]
+
 }

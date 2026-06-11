@@ -27,6 +27,7 @@ struct PopcornTVListingsFactoryTests {
         _ = factory.makeFetchTVChannelsUseCase()
         _ = factory.makeFetchTVChannelScheduleUseCase()
         _ = factory.makeFetchNowPlayingTVProgrammesUseCase()
+        _ = factory.makeFetchTVListingsUseCase()
     }
 
     private struct StubRemote: TVListingsRemoteDataSource {
