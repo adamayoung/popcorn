@@ -8,7 +8,10 @@
 import Foundation
 
 ///
-/// Refreshes the local TV-listings cache from the remote EPG feed.
+/// Unconditionally refreshes the local TV-listings cache from the remote EPG feed,
+/// bypassing the 12h throttle. Retained as the forced-sync primitive that
+/// ``SyncTVListingsIfNeededUseCase`` is the throttled counterpart to; automatic sync
+/// uses the throttled variant, so this currently has no production caller.
 ///
 public protocol SyncTVListingsUseCase: Sendable {
 

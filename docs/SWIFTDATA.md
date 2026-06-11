@@ -17,6 +17,7 @@ For comprehensive SwiftData guidance (models, attributes, querying, concurrency,
 | Movies (watchlist) | `popcorn-movies-cloudkit.sqlite` | `.private(...)` | Migration plan |
 | TVSeries (cache) | `popcorn-tvseries.sqlite` | `.none` | Delete and recreate |
 | Discover (cache) | `popcorn-discover.sqlite` | `.none` | Delete and recreate |
+| TV Listings (cache) | `popcorn-tvlistings.sqlite` | `.none` | Delete and recreate |
 | Search (history) | `popcorn-search-cloudkit.sqlite` | `.private(...)` | Migration plan |
 
 ### Non-CloudKit containers (cache data)

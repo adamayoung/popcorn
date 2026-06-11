@@ -77,8 +77,10 @@ extension SwiftDataTVListingsLocalDataSource {
 
     ///
     /// Deletes every programme whose start time falls outside the contiguous span of the given
-    /// `yyyyMMdd` days. Drops past days and any day no longer in the feed's rolling window. A
-    /// no-op when `dates` is empty, so a degenerate empty manifest never wipes the cache.
+    /// `yyyyMMdd` days. Drops past days and any day no longer in the feed's rolling window.
+    /// Assumes `dates` is a contiguous range (the feed is a contiguous rolling window): an
+    /// interior gap would be retained rather than pruned. A no-op when `dates` is empty, so a
+    /// degenerate empty manifest never wipes the cache.
     ///
     func deleteProgrammes(
         notInDates dates: [String]

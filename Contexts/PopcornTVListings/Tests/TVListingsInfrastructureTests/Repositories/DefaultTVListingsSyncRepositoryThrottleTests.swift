@@ -55,6 +55,26 @@ struct DefaultTVListingsSyncRepositoryThrottleTests {
         #expect(remote.fetchManifestCallCount == 1, "elapsed == throttle is not < throttle → runs")
     }
 
+    @Test("syncIfNeeded maps a lastSyncedAt read failure and makes no network call")
+    func syncIfNeededMapsLastSyncedAtFailure() async {
+        let remote = MockTVListingsRemoteDataSource()
+        let local = MockTVListingsLocalDataSource()
+        await local.setLastSyncedAtStub(.failure(.persistence(NSError(domain: "t", code: 1))))
+
+        let repository = makeRepository(remote: remote, local: local)
+
+        await #expect(
+            performing: { try await repository.syncIfNeeded() },
+            throws: { error in
+                guard let repoError = error as? TVListingsRepositoryError, case .local = repoError else {
+                    return false
+                }
+                return true
+            }
+        )
+        #expect(remote.fetchManifestCallCount == 0)
+    }
+
     @Test("overlapping syncs coalesce onto a single network sequence")
     func overlappingSyncsCoalesce() async throws {
         let remote = MockTVListingsRemoteDataSource()
