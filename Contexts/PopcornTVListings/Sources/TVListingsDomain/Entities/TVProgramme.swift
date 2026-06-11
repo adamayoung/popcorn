@@ -36,6 +36,20 @@ public struct TVProgramme: Identifiable, Equatable, Sendable {
 
     public let tmdbMovieID: Int?
 
+    public let genres: [String]
+
+    public let certification: String?
+
+    public let voteAverage: Double?
+
+    public let voteCount: Int?
+
+    public let isPremiere: Bool
+
+    public let keywords: [String]
+
+    public let watchProviders: [String]
+
     public init(
         id: String,
         channelID: String,
@@ -48,7 +62,14 @@ public struct TVProgramme: Identifiable, Equatable, Sendable {
         seasonNumber: Int?,
         imageURL: URL?,
         tmdbTVSeriesID: Int?,
-        tmdbMovieID: Int?
+        tmdbMovieID: Int?,
+        genres: [String] = [],
+        certification: String? = nil,
+        voteAverage: Double? = nil,
+        voteCount: Int? = nil,
+        isPremiere: Bool = false,
+        keywords: [String] = [],
+        watchProviders: [String] = []
     ) {
         self.id = id
         self.channelID = channelID
@@ -62,6 +83,13 @@ public struct TVProgramme: Identifiable, Equatable, Sendable {
         self.imageURL = imageURL
         self.tmdbTVSeriesID = tmdbTVSeriesID
         self.tmdbMovieID = tmdbMovieID
+        self.genres = genres
+        self.certification = certification
+        self.voteAverage = voteAverage
+        self.voteCount = voteCount
+        self.isPremiere = isPremiere
+        self.keywords = keywords
+        self.watchProviders = watchProviders
     }
 
 }

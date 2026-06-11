@@ -1,0 +1,22 @@
+{
+  "channels": [
+    {
+      "sid": "3858",
+      "name": "SkySp+ HD",
+      "isHD": false,
+      "logoURL": "https://epgstatic.sky.com/epgdata/1.0/newchanlogos/600/600/skychb3858.png",
+      "channelNumbers": [
+        { "channelNumber": "1081", "subbouquetIDs": [1, 4] }
+      ]
+    },
+    {
+      "sid": "4011",
+      "name": "SkySp PL HD",
+      "isHD": true,
+      "logoURL": "https://epgstatic.sky.com/epgdata/1.0/newchanlogos/600/600/skychb4011.png",
+      "channelNumbers": [
+        { "channelNumber": "1095", "subbouquetIDs": [1, 2] }
+      ]
+    }
+  ]
+}

@@ -20,11 +20,7 @@ struct PopcornApp: App {
     private let factory: ViewModelFactory
 
     init() {
-        let services = if let epgURL = AppConfig.TVListings.epgURL {
-            AppServices(tvListingsEPGURL: epgURL)
-        } else {
-            AppServices()
-        }
+        let services = AppServices()
 
         self.factory = ViewModelFactory(services: services)
         _viewModel = State(

@@ -18,7 +18,9 @@ package final class TVListingsInfrastructureFactory {
     private static let schema = Schema([
         TVChannelEntity.self,
         TVChannelNumberEntity.self,
-        TVProgrammeEntity.self
+        TVProgrammeEntity.self,
+        EPGFileStateEntity.self,
+        EPGSyncStateEntity.self
     ])
 
     ///
@@ -46,17 +48,23 @@ package final class TVListingsInfrastructureFactory {
 
     private let remoteDataSource: any TVListingsRemoteDataSource
     private let localDataSource: any TVListingsLocalDataSource
+    private let syncThrottle: TimeInterval
+    private let now: @Sendable () -> Date
 
     package init(
         remoteDataSource: some TVListingsRemoteDataSource,
         modelContainer: ModelContainer,
-        calendar: Calendar = .ukGregorian
+        calendar: Calendar = .ukGregorian,
+        syncThrottle: TimeInterval = 12 * 60 * 60,
+        now: @escaping @Sendable () -> Date = { .now }
     ) {
         self.remoteDataSource = remoteDataSource
         self.localDataSource = SwiftDataTVListingsLocalDataSource(
             modelContainer: modelContainer,
             calendar: calendar
         )
+        self.syncThrottle = syncThrottle
+        self.now = now
     }
 
     package func makeTVChannelRepository() -> some TVChannelRepository {
@@ -70,7 +78,9 @@ package final class TVListingsInfrastructureFactory {
     package func makeTVListingsSyncRepository() -> some TVListingsSyncRepository {
         DefaultTVListingsSyncRepository(
             remoteDataSource: remoteDataSource,
-            localDataSource: localDataSource
+            localDataSource: localDataSource,
+            syncThrottle: syncThrottle,
+            now: now
         )
     }
 

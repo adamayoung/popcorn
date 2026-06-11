@@ -40,7 +40,14 @@ extension TVProgramme {
         seasonNumber: Int? = nil,
         imageURL: URL? = nil,
         tmdbTVSeriesID: Int? = nil,
-        tmdbMovieID: Int? = nil
+        tmdbMovieID: Int? = nil,
+        genres: [String] = [],
+        certification: String? = nil,
+        voteAverage: Double? = nil,
+        voteCount: Int? = nil,
+        isPremiere: Bool = false,
+        keywords: [String] = [],
+        watchProviders: [String] = []
     ) -> TVProgramme {
         TVProgramme(
             id: TVProgramme.makeID(channelID: channelID, startTime: start),
@@ -54,7 +61,14 @@ extension TVProgramme {
             seasonNumber: seasonNumber,
             imageURL: imageURL,
             tmdbTVSeriesID: tmdbTVSeriesID,
-            tmdbMovieID: tmdbMovieID
+            tmdbMovieID: tmdbMovieID,
+            genres: genres,
+            certification: certification,
+            voteAverage: voteAverage,
+            voteCount: voteCount,
+            isPremiere: isPremiere,
+            keywords: keywords,
+            watchProviders: watchProviders
         )
     }
 

@@ -55,12 +55,30 @@ final class AppRootViewModel {
         var isPresentingDeveloper = false
     #endif
 
+    /// Bumped after each automatic TV-listings sync completes. ``AppRootView`` observes it
+    /// to refresh the listings view once the launch sync has populated the cache — otherwise
+    /// the view, shown the moment `isReady` flips, would keep displaying the pre-sync (empty)
+    /// cache until the next foreground.
+    private(set) var tvListingsRevision = 0
+
     private var hasStarted = false
+
+    /// The in-flight automatic sync, reused by overlapping triggers (launch + foreground)
+    /// so the cold-launch double-fire coalesces onto a single run.
+    private var tvListingsSyncTask: Task<Void, Never>?
 
     private let dependencies: AppRootDependencies
 
-    init(dependencies: AppRootDependencies) {
+    /// Optional observation point fired when a sync trigger coalesces onto an in-flight run.
+    /// `nil` in production; a test sets it to observe coalescing without relying on scheduler timing.
+    private let onTVListingsCoalesce: (@Sendable () -> Void)?
+
+    init(
+        dependencies: AppRootDependencies,
+        onTVListingsCoalesce: (@Sendable () -> Void)? = nil
+    ) {
         self.dependencies = dependencies
+        self.onTVListingsCoalesce = onTVListingsCoalesce
     }
 
     /// Runs the one-time startup sequence. A no-op after the first call.
@@ -79,9 +97,34 @@ final class AppRootViewModel {
             try await dependencies.bootstrap()
             updateFeatureFlags()
             isReady = true
+            await syncTVListingsIfNeeded()
         } catch {
             self.error = error
         }
+    }
+
+    /// Triggers a throttled TV-listings sync, gated on the app being ready and the feature
+    /// enabled. Overlapping calls (launch + foreground `.active`) coalesce onto one task.
+    /// A scene activation that fires before bootstrap completes is an intentional no-op;
+    /// `start()` is the authoritative launch trigger.
+    func syncTVListingsIfNeeded() async {
+        guard isReady, isTVListingsEnabled else {
+            return
+        }
+
+        if let tvListingsSyncTask {
+            onTVListingsCoalesce?()
+            await tvListingsSyncTask.value
+            return
+        }
+
+        let task = Task { await dependencies.syncTVListingsIfNeeded() }
+        tvListingsSyncTask = task
+        await task.value
+        tvListingsSyncTask = nil
+
+        // Signal completion so the listings view can pick up the freshly-synced cache.
+        tvListingsRevision += 1
     }
 
     private func updateFeatureFlags() {

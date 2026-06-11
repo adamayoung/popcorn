@@ -19,7 +19,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sync the latest listings to see what's on right now."
+            "value" : "Listings update automatically — check back soon to see what's on."
           }
         }
       }
@@ -64,72 +64,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Try Again"
-          }
-        }
-      }
-    },
-    "TV_LISTINGS_SYNC_BUTTON" : {
-      "comment" : "Title of the button that triggers a TV listings sync.",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sync Listings"
-          }
-        }
-      }
-    },
-    "TV_LISTINGS_SYNC_ERROR_LOCAL" : {
-      "comment" : "Error message shown when saving the synced TV listings fails.",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn’t save the TV listings. Please try again."
-          }
-        }
-      }
-    },
-    "TV_LISTINGS_SYNC_ERROR_DISMISS_HINT" : {
-      "comment" : "Accessibility hint instructing the user to tap to dismiss the sync error banner.",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Double tap to dismiss"
-          }
-        }
-      }
-    },
-    "TV_LISTINGS_SYNC_ERROR_NETWORK" : {
-      "comment" : "Error message shown when the TV listings feed can’t be reached.",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Couldn’t reach the TV listings service. Check your connection and try again."
-          }
-        }
-      }
-    },
-    "TV_LISTINGS_SYNC_ERROR_UNKNOWN" : {
-      "comment" : "Generic error message shown when the TV listings sync fails for an unknown reason.",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Something went wrong. Please try again."
-          }
-        }
-      }
-    },
-    "TV_LISTINGS_SYNCING" : {
-      "comment" : "Accessibility label shown while a TV listings sync is in progress.",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Syncing…"
           }
         }
       }

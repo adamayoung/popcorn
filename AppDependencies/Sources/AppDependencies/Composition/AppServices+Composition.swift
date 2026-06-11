@@ -50,7 +50,7 @@ extension AppServices {
     // MARK: - Graph construction
 
     /// Builds the acyclic graph in strict dependency order.
-    static func buildGraph(tvListingsEPGURL: URL, tmdbAPIKey: String?) -> Graph {
+    static func buildGraph(tmdbAPIKey: String?) -> Graph {
         let domain = buildDomain(tmdbAPIKey: tmdbAPIKey)
 
         // Platform services + the factories that depend on them.
@@ -73,9 +73,7 @@ extension AppServices {
             genres: domain.genres,
             observabilityService: observabilityService
         )
-        let tvListingsAdapters = PopcornTVListingsAdaptersFactory(
-            epgURL: tvListingsEPGURL
-        )
+        let tvListingsAdapters = PopcornTVListingsAdaptersFactory()
         let tvListingsFactory = PopcornTVListingsFactory(
             remoteDataSource: tvListingsAdapters.makeRemoteDataSource()
         )

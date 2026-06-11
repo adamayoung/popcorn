@@ -12,17 +12,24 @@ import TVListingsInfrastructure
 
 public final class HTTPTVListingsRemoteDataSource: TVListingsRemoteDataSource {
 
-    public static let defaultEPGURL = makeDefaultEPGURL()
+    /// The hard-coded base origin of the EPG feed. There is no production override.
+    public static let defaultEPGBaseURL = makeDefaultEPGBaseURL()
 
     ///
     /// Default session used when callers don't provide one. Bounded timeouts keep a stalled
-    /// download from hanging for the 7-day resource default on `URLSession.shared`.
+    /// download from hanging, and a `URLCache` lets the CDN's `ETag`/`Cache-Control` headers
+    /// serve unchanged files cheaply (the manifest is the only file fetched every sync).
     ///
     public static let defaultURLSession: URLSession = {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 30
         configuration.timeoutIntervalForResource = 120
         configuration.waitsForConnectivity = true
+        configuration.requestCachePolicy = .useProtocolCachePolicy
+        configuration.urlCache = URLCache(
+            memoryCapacity: 4 * 1024 * 1024,
+            diskCapacity: 32 * 1024 * 1024
+        )
         return URLSession(configuration: configuration)
     }()
 
@@ -32,62 +39,87 @@ public final class HTTPTVListingsRemoteDataSource: TVListingsRemoteDataSource {
     )
 
     private let session: URLSession
-    private let epgURL: URL
-    private let now: @Sendable () -> Date
-    private let mapper = EPGSnapshotMapper()
+    private let baseURL: URL
+    private let manifestMapper = EPGManifestMapper()
+    private let channelMapper = EPGChannelMapper()
+    private let scheduleMapper = EPGScheduleMapper()
 
     public init(
         session: URLSession = HTTPTVListingsRemoteDataSource.defaultURLSession,
-        epgURL: URL = HTTPTVListingsRemoteDataSource.defaultEPGURL,
-        now: @escaping @Sendable () -> Date = { .now }
+        baseURL: URL = HTTPTVListingsRemoteDataSource.defaultEPGBaseURL
     ) {
         self.session = session
-        self.epgURL = epgURL
-        self.now = now
+        self.baseURL = baseURL
     }
 
-    public func fetchListings() async throws(TVListingsRemoteDataSourceError) -> TVListingsSnapshot {
+    public func fetchManifest() async throws(TVListingsRemoteDataSourceError) -> EPGManifest {
+        let dto: EPGManifestDTO = try await fetch(path: "manifest.json")
+        return manifestMapper.map(dto)
+    }
+
+    public func fetchChannels() async throws(TVListingsRemoteDataSourceError) -> [TVChannel] {
+        let dto: EPGChannelsResponseDTO = try await fetch(path: "channels.json")
+        return dto.channels.map(channelMapper.map)
+    }
+
+    public func fetchSchedule(
+        forDate date: String
+    ) async throws(TVListingsRemoteDataSourceError) -> [TVProgramme] {
+        // Validate at the boundary too (defence in depth): only a bare yyyyMMdd is safe to
+        // interpolate into the request path, so a malformed value can't alter the URL.
+        guard date.count == 8, date.allSatisfy(\.isNumber) else {
+            Self.logger.error("Rejecting malformed schedule date: \(date, privacy: .public)")
+            throw .network(nil)
+        }
+        let dto: EPGScheduleResponseDTO = try await fetch(path: "schedules/\(date).json")
+        return scheduleMapper.map(dto)
+    }
+
+    private func fetch<Response: Decodable>(
+        path: String
+    ) async throws(TVListingsRemoteDataSourceError) -> Response {
+        let url = baseURL.appending(path: path)
+
         let data: Data
         let response: URLResponse
         do {
-            (data, response) = try await session.data(from: epgURL)
+            (data, response) = try await session.data(from: url)
         } catch let error {
             Self.logger.error(
-                "Failed to fetch EPG: \(error.localizedDescription, privacy: .public)"
+                "Failed to fetch \(path, privacy: .public): \(error.localizedDescription, privacy: .public)"
             )
             throw .network(error)
         }
 
-        if let httpResponse = response as? HTTPURLResponse {
-            guard (200 ..< 300).contains(httpResponse.statusCode) else {
-                Self.logger.error(
-                    "EPG fetch returned HTTP status \(httpResponse.statusCode, privacy: .public)"
-                )
-                throw .network(nil)
-            }
+        // The feed is always HTTPS, so a non-HTTP response is itself a network failure
+        // rather than something to forward to the decoder.
+        guard let httpResponse = response as? HTTPURLResponse else {
+            Self.logger.error("Fetch of \(path, privacy: .public) returned a non-HTTP response")
+            throw .network(nil)
+        }
+        guard (200 ..< 300).contains(httpResponse.statusCode) else {
+            Self.logger.error(
+                "Fetch of \(path, privacy: .public) returned HTTP \(httpResponse.statusCode, privacy: .public)"
+            )
+            throw .network(nil)
         }
 
-        let decoded: EPGResponseDTO
         do {
-            decoded = try JSONDecoder().decode(EPGResponseDTO.self, from: data)
+            return try JSONDecoder().decode(Response.self, from: data)
         } catch let error {
             Self.logger.error(
-                "Failed to decode EPG: \(error.localizedDescription, privacy: .public)"
+                "Failed to decode \(path, privacy: .public): \(error.localizedDescription, privacy: .public)"
             )
             throw .decoding(error)
         }
-
-        return mapper.map(decoded, referenceDate: now())
     }
 
 }
 
-private func makeDefaultEPGURL() -> URL {
-    // Pinned to a specific commit so the fallback is content-stable. Live data is opt-in
-    // by setting `TV_LISTINGS_EPG_URL` in `Configs/Secrets.xcconfig` (e.g. to `refs/heads/main`).
-    let urlString = "https://raw.githubusercontent.com/adamayoung/popcorn-epg/0f743f00777dfe5ac9b4689951434c034c7f2cfc/epg.json"
+private func makeDefaultEPGBaseURL() -> URL {
+    let urlString = "https://epg.adam-young.co.uk"
     if let url = URL(string: urlString) {
         return url
     }
-    preconditionFailure("Invalid default EPG URL literal: \(urlString)")
+    preconditionFailure("Invalid default EPG base URL literal: \(urlString)")
 }

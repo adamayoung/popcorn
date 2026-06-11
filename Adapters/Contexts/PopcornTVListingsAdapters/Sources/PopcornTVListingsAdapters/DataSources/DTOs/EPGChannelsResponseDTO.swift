@@ -1,5 +1,5 @@
 //
-//  EPGResponseDTO.swift
+//  EPGChannelsResponseDTO.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct EPGResponseDTO: Decodable {
+struct EPGChannelsResponseDTO: Decodable {
 
     let channels: [EPGChannelDTO]
 

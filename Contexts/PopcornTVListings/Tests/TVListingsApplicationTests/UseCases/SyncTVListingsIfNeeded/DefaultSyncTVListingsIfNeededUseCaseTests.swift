@@ -1,5 +1,5 @@
 //
-//  DefaultSyncTVListingsUseCaseTests.swift
+//  DefaultSyncTVListingsIfNeededUseCaseTests.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -10,37 +10,48 @@ import Testing
 @testable import TVListingsApplication
 import TVListingsDomain
 
-@Suite("DefaultSyncTVListingsUseCase")
-struct DefaultSyncTVListingsUseCaseTests {
+@Suite("DefaultSyncTVListingsIfNeededUseCase")
+struct DefaultSyncTVListingsIfNeededUseCaseTests {
 
     let mockSyncRepository = MockTVListingsSyncRepository()
 
-    @Test("execute calls sync repository once on success")
-    func executeCallsSyncRepositoryOnceOnSuccess() async throws {
-        mockSyncRepository.syncStub = .success(())
+    @Test("execute delegates to syncIfNeeded once on success")
+    func executeDelegatesToSyncIfNeededOnceOnSuccess() async throws {
+        mockSyncRepository.syncIfNeededStub = .success(())
 
         let useCase = makeUseCase()
 
         try await useCase.execute()
 
-        #expect(mockSyncRepository.syncCallCount == 1)
+        #expect(mockSyncRepository.syncIfNeededCallCount == 1)
     }
 
     @Test("execute throws remote when repository throws remote")
     func executeThrowsRemoteWhenRepositoryThrowsRemote() async {
         let underlying = NSError(domain: "test", code: 1)
-        mockSyncRepository.syncStub = .failure(.remote(underlying))
+        mockSyncRepository.syncIfNeededStub = .failure(.remote(underlying))
 
         let useCase = makeUseCase()
 
-        await #expect(throws: SyncTVListingsError.self) {
-            try await useCase.execute()
-        }
+        await #expect(
+            performing: {
+                try await useCase.execute()
+            },
+            throws: { error in
+                guard let syncError = error as? SyncTVListingsError else {
+                    return false
+                }
+                if case .remote = syncError {
+                    return true
+                }
+                return false
+            }
+        )
     }
 
     @Test("execute throws local when repository throws local")
     func executeThrowsLocalWhenRepositoryThrowsLocal() async {
-        mockSyncRepository.syncStub = .failure(.local(nil))
+        mockSyncRepository.syncIfNeededStub = .failure(.local(nil))
 
         let useCase = makeUseCase()
 
@@ -62,7 +73,7 @@ struct DefaultSyncTVListingsUseCaseTests {
 
     @Test("execute throws unknown when repository throws unknown")
     func executeThrowsUnknownWhenRepositoryThrowsUnknown() async {
-        mockSyncRepository.syncStub = .failure(.unknown(nil))
+        mockSyncRepository.syncIfNeededStub = .failure(.unknown(nil))
 
         let useCase = makeUseCase()
 
@@ -82,8 +93,8 @@ struct DefaultSyncTVListingsUseCaseTests {
         )
     }
 
-    private func makeUseCase() -> DefaultSyncTVListingsUseCase {
-        DefaultSyncTVListingsUseCase(tvListingsSyncRepository: mockSyncRepository)
+    private func makeUseCase() -> DefaultSyncTVListingsIfNeededUseCase {
+        DefaultSyncTVListingsIfNeededUseCase(tvListingsSyncRepository: mockSyncRepository)
     }
 
 }

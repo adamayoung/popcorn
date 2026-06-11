@@ -18,7 +18,6 @@ import MoviesComposition
 import Observability
 import PeopleComposition
 import PlotRemixGameComposition
-import PopcornTVListingsAdapters
 import SearchComposition
 import ThemeColorProvider
 import TMDb
@@ -88,16 +87,11 @@ public final class AppServices: Sendable {
     /// Builds the shared service and factory graph in dependency order.
     ///
     /// - Parameters:
-    ///   - tvListingsEPGURL: The EPG feed URL passed to the TV listings adapters factory.
-    ///     Defaults to the pinned production URL.
     ///   - tmdbAPIKey: The TMDb API key passed to the `TMDbClient`. Defaults to the key
     ///     resolved from the app's configuration.
     ///
-    public init(
-        tvListingsEPGURL: URL = HTTPTVListingsRemoteDataSource.defaultEPGURL,
-        tmdbAPIKey: String? = nil
-    ) {
-        let graph = Self.buildGraph(tvListingsEPGURL: tvListingsEPGURL, tmdbAPIKey: tmdbAPIKey)
+    public init(tmdbAPIKey: String? = nil) {
+        let graph = Self.buildGraph(tmdbAPIKey: tmdbAPIKey)
         self.tmdbClient = graph.tmdbClient
         self.fetchAppConfiguration = graph.fetchAppConfiguration
         self.themeColorProvider = graph.themeColorProvider
@@ -123,7 +117,7 @@ public final class AppServices: Sendable {
     }
 
     /// The fully constructed service and factory graph, built once in dependency order
-    /// by `buildGraph(tvListingsEPGURL:tmdbAPIKey:)`.
+    /// by `buildGraph(tmdbAPIKey:)`.
     struct Graph {
         let tmdbClient: TMDbClient
         let fetchAppConfiguration: any FetchAppConfigurationUseCase

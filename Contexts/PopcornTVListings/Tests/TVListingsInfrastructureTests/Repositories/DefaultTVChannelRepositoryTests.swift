@@ -91,8 +91,4 @@ extension MockTVListingsLocalDataSource {
         nowPlayingStub = value
     }
 
-    func setReplaceAllStub(_ value: Result<Void, TVListingsLocalDataSourceError>) {
-        replaceAllStub = value
-    }
-
 }

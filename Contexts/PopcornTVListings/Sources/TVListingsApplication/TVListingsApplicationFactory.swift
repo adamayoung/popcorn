@@ -24,8 +24,8 @@ package final class TVListingsApplicationFactory: Sendable {
         self.tvListingsSyncRepository = tvListingsSyncRepository
     }
 
-    package func makeSyncTVListingsUseCase() -> some SyncTVListingsUseCase {
-        DefaultSyncTVListingsUseCase(tvListingsSyncRepository: tvListingsSyncRepository)
+    package func makeSyncTVListingsIfNeededUseCase() -> some SyncTVListingsIfNeededUseCase {
+        DefaultSyncTVListingsIfNeededUseCase(tvListingsSyncRepository: tvListingsSyncRepository)
     }
 
     package func makeFetchTVChannelsUseCase() -> some FetchTVChannelsUseCase {

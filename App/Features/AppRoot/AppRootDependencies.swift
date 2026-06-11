@@ -8,6 +8,8 @@
 import AppDependencies
 import FeatureAccess
 import Foundation
+import TVListingsApplication
+import TVListingsComposition
 
 /// The dependencies required by ``AppRootViewModel``.
 ///
@@ -25,6 +27,10 @@ struct AppRootDependencies {
     var isGamesEnabled: @Sendable () -> Bool
     var isSearchEnabled: @Sendable () -> Bool
     var isTVListingsEnabled: @Sendable () -> Bool
+
+    /// Runs a throttled TV-listings sync (a no-op within the 12h window). Errors are
+    /// swallowed — an automatic background sync must never surface an app-level error.
+    var syncTVListingsIfNeeded: @Sendable () async -> Void
 
 }
 
@@ -45,7 +51,11 @@ extension AppRootDependencies {
             isWatchlistEnabled: { featureFlags.isEnabled(.watchlist) },
             isGamesEnabled: { featureFlags.isEnabled(.games) },
             isSearchEnabled: { featureFlags.isEnabled(.mediaSearch) },
-            isTVListingsEnabled: { featureFlags.isEnabled(.tvListings) }
+            isTVListingsEnabled: { featureFlags.isEnabled(.tvListings) },
+            syncTVListingsIfNeeded: {
+                let useCase = services.tvListingsFactory.makeSyncTVListingsIfNeededUseCase()
+                try? await useCase.execute()
+            }
         )
     }
 
@@ -62,7 +72,8 @@ extension AppRootDependencies {
                 isWatchlistEnabled: { true },
                 isGamesEnabled: { true },
                 isSearchEnabled: { true },
-                isTVListingsEnabled: { true }
+                isTVListingsEnabled: { true },
+                syncTVListingsIfNeeded: {}
             )
         }
 

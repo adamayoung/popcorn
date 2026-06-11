@@ -8,24 +8,22 @@
 import Foundation
 import TVListingsDomain
 
+///
+/// Fetches the partitioned, content-addressed EPG feed. The implementation is a set of
+/// dumb fetchers; hash comparison and orchestration live in the sync repository.
+///
 public protocol TVListingsRemoteDataSource: Sendable {
 
-    func fetchListings() async throws(TVListingsRemoteDataSourceError) -> TVListingsSnapshot
+    /// The manifest: the list of available dates and the content hash of every file.
+    func fetchManifest() async throws(TVListingsRemoteDataSourceError) -> EPGManifest
 
-}
+    /// The channel directory (`channels.json`).
+    func fetchChannels() async throws(TVListingsRemoteDataSourceError) -> [TVChannel]
 
-///
-/// A full snapshot of channels and programmes fetched from the remote EPG feed.
-///
-public struct TVListingsSnapshot: Sendable {
-
-    public let channels: [TVChannel]
-    public let programmes: [TVProgramme]
-
-    public init(channels: [TVChannel], programmes: [TVProgramme]) {
-        self.channels = channels
-        self.programmes = programmes
-    }
+    /// The programmes for a single day (`schedules/<yyyyMMdd>.json`).
+    func fetchSchedule(
+        forDate date: String
+    ) async throws(TVListingsRemoteDataSourceError) -> [TVProgramme]
 
 }
 

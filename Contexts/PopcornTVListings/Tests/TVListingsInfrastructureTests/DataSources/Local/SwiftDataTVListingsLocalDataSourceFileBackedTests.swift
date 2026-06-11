@@ -21,37 +21,28 @@ import TVListingsDomain
 @Suite("SwiftDataTVListingsLocalDataSource (file-backed)")
 struct SwiftDataTVListingsLocalDataSourceFileBackedTests {
 
-    @Test("replaceAll wipes previously inserted channel numbers without tripping SQLite batch-delete triggers")
-    func replaceAllWipesPreviouslyInsertedChannelNumbersOnDisk() async throws {
+    @Test("upsertChannels wipes previous channel numbers without tripping SQLite batch-delete triggers")
+    func upsertChannelsWipesPreviousNumbersOnDisk() async throws {
         let (container, storeURL) = try makeFileBackedContainer()
         defer { ModelContainerFactory.removeSQLiteFiles(at: storeURL) }
 
         let dataSource = SwiftDataTVListingsLocalDataSource(modelContainer: container)
 
-        try await dataSource.replaceAll(
-            channels: [
-                TVChannel.mock(
-                    id: "OLD",
-                    name: "Old",
-                    channelNumbers: [
-                        TVChannelNumber(channelNumber: "101", subbouquetIDs: [1, 2])
-                    ]
-                )
-            ],
-            programmes: []
+        try await dataSource.upsertChannels(
+            [TVChannel.mock(
+                id: "OLD",
+                name: "Old",
+                channelNumbers: [TVChannelNumber(channelNumber: "101", subbouquetIDs: [1, 2])]
+            )],
+            hash: "c1"
         )
-
-        try await dataSource.replaceAll(
-            channels: [
-                TVChannel.mock(
-                    id: "NEW",
-                    name: "New",
-                    channelNumbers: [
-                        TVChannelNumber(channelNumber: "202", subbouquetIDs: [3])
-                    ]
-                )
-            ],
-            programmes: []
+        try await dataSource.upsertChannels(
+            [TVChannel.mock(
+                id: "NEW",
+                name: "New",
+                channelNumbers: [TVChannelNumber(channelNumber: "202", subbouquetIDs: [3])]
+            )],
+            hash: "c2"
         )
 
         let channels = try await dataSource.channels()
@@ -60,54 +51,18 @@ struct SwiftDataTVListingsLocalDataSourceFileBackedTests {
         #expect(channels.first?.channelNumbers.map(\.channelNumber) == ["202"])
     }
 
-    @Test("replaceAll wipes channel numbers even when the replacement carries no numbers")
-    func replaceAllWipesChannelNumbersWhenReplacementCarriesNone() async throws {
+    @Test("replaceProgrammes persists a day's programmes across a real store")
+    func replaceProgrammesPersistsOnDisk() async throws {
         let (container, storeURL) = try makeFileBackedContainer()
         defer { ModelContainerFactory.removeSQLiteFiles(at: storeURL) }
 
         let dataSource = SwiftDataTVListingsLocalDataSource(modelContainer: container)
+        let now = ukDate(year: 2026, month: 6, day: 11, hour: 12)
 
-        try await dataSource.replaceAll(
-            channels: [
-                TVChannel.mock(
-                    id: "BBC",
-                    name: "BBC",
-                    channelNumbers: [
-                        TVChannelNumber(channelNumber: "101", subbouquetIDs: [1])
-                    ]
-                )
-            ],
-            programmes: []
-        )
-
-        try await dataSource.replaceAll(
-            channels: [TVChannel.mock(id: "BBC", name: "BBC", channelNumbers: [])],
-            programmes: []
-        )
-
-        let channels = try await dataSource.channels()
-        #expect(channels.count == 1)
-        #expect(channels.first?.channelNumbers.isEmpty == true)
-    }
-
-    @Test("replaceAll persists programmes across a full wipe-and-replace on disk")
-    func replaceAllPersistsProgrammesOnDisk() async throws {
-        let (container, storeURL) = try makeFileBackedContainer()
-        defer { ModelContainerFactory.removeSQLiteFiles(at: storeURL) }
-
-        let dataSource = SwiftDataTVListingsLocalDataSource(modelContainer: container)
-        let now = Date(timeIntervalSince1970: 1_776_463_200)
-
-        try await dataSource.replaceAll(
-            channels: [TVChannel.mock(id: "BBC", name: "BBC", channelNumbers: [])],
-            programmes: [
-                TVProgramme.mock(
-                    channelID: "BBC",
-                    start: now.addingTimeInterval(-60),
-                    duration: 600,
-                    title: "on-now"
-                )
-            ]
+        try await dataSource.replaceProgrammes(
+            [TVProgramme.mock(channelID: "BBC", start: now.addingTimeInterval(-60), duration: 600, title: "on-now")],
+            forDate: "20260611",
+            hash: "s1"
         )
 
         let result = try await dataSource.nowPlayingProgrammes(at: now)
@@ -120,7 +75,9 @@ struct SwiftDataTVListingsLocalDataSourceFileBackedTests {
         let schema = Schema([
             TVChannelEntity.self,
             TVChannelNumberEntity.self,
-            TVProgrammeEntity.self
+            TVProgrammeEntity.self,
+            EPGFileStateEntity.self,
+            EPGSyncStateEntity.self
         ])
         let storeURL = FileManager.default
             .temporaryDirectory

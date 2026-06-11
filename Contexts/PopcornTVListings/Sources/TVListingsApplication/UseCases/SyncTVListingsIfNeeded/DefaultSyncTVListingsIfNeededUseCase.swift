@@ -1,5 +1,5 @@
 //
-//  DefaultSyncTVListingsUseCase.swift
+//  DefaultSyncTVListingsIfNeededUseCase.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -8,7 +8,7 @@
 import Foundation
 import TVListingsDomain
 
-final class DefaultSyncTVListingsUseCase: SyncTVListingsUseCase {
+final class DefaultSyncTVListingsIfNeededUseCase: SyncTVListingsIfNeededUseCase {
 
     private let tvListingsSyncRepository: any TVListingsSyncRepository
 
@@ -18,7 +18,7 @@ final class DefaultSyncTVListingsUseCase: SyncTVListingsUseCase {
 
     func execute() async throws(SyncTVListingsError) {
         do {
-            try await tvListingsSyncRepository.sync()
+            try await tvListingsSyncRepository.syncIfNeeded()
         } catch let error {
             throw SyncTVListingsError(error)
         }

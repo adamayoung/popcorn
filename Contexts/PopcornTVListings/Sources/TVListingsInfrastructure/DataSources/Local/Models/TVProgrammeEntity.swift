@@ -25,6 +25,15 @@ final class TVProgrammeEntity: Equatable {
     var imageURL: URL?
     var tmdbTVSeriesID: Int?
     var tmdbMovieID: Int?
+    // Enrichment fields. Defaults let SwiftData lightweight-migrate an existing store
+    // (added on first launch after upgrade) without a destructive wipe.
+    var genres: [String] = []
+    var certification: String?
+    var voteAverage: Double?
+    var voteCount: Int?
+    var isPremiere: Bool = false
+    var keywords: [String] = []
+    var watchProviders: [String] = []
 
     init(
         programmeID: String,
@@ -38,7 +47,14 @@ final class TVProgrammeEntity: Equatable {
         seasonNumber: Int?,
         imageURL: URL?,
         tmdbTVSeriesID: Int?,
-        tmdbMovieID: Int?
+        tmdbMovieID: Int?,
+        genres: [String] = [],
+        certification: String? = nil,
+        voteAverage: Double? = nil,
+        voteCount: Int? = nil,
+        isPremiere: Bool = false,
+        keywords: [String] = [],
+        watchProviders: [String] = []
     ) {
         self.programmeID = programmeID
         self.channelID = channelID
@@ -52,6 +68,13 @@ final class TVProgrammeEntity: Equatable {
         self.imageURL = imageURL
         self.tmdbTVSeriesID = tmdbTVSeriesID
         self.tmdbMovieID = tmdbMovieID
+        self.genres = genres
+        self.certification = certification
+        self.voteAverage = voteAverage
+        self.voteCount = voteCount
+        self.isPremiere = isPremiere
+        self.keywords = keywords
+        self.watchProviders = watchProviders
     }
 
 }

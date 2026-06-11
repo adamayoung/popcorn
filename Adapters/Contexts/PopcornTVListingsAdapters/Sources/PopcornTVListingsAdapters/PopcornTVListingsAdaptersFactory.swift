@@ -11,21 +11,18 @@ import TVListingsInfrastructure
 public final class PopcornTVListingsAdaptersFactory: Sendable {
 
     private let session: URLSession
-    private let epgURL: URL
-    private let now: @Sendable () -> Date
+    private let baseURL: URL
 
     public init(
         session: URLSession = HTTPTVListingsRemoteDataSource.defaultURLSession,
-        epgURL: URL = HTTPTVListingsRemoteDataSource.defaultEPGURL,
-        now: @escaping @Sendable () -> Date = { .now }
+        baseURL: URL = HTTPTVListingsRemoteDataSource.defaultEPGBaseURL
     ) {
         self.session = session
-        self.epgURL = epgURL
-        self.now = now
+        self.baseURL = baseURL
     }
 
     public func makeRemoteDataSource() -> some TVListingsRemoteDataSource {
-        HTTPTVListingsRemoteDataSource(session: session, epgURL: epgURL, now: now)
+        HTTPTVListingsRemoteDataSource(session: session, baseURL: baseURL)
     }
 
 }

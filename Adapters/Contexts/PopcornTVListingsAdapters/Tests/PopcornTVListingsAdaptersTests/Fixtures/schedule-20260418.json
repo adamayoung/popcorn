@@ -1,0 +1,45 @@
+{
+  "date": "20260418",
+  "channels": [
+    {
+      "sid": "3858",
+      "programmes": [
+        {
+          "title": "Back Pages Tonight",
+          "description": "A look at the big stories dominating the news headlines.",
+          "startTime": 1776461400,
+          "duration": 1800,
+          "episodeNumber": 186,
+          "imageURL": "https://images.metadata.sky.com/pd-image/c9c81649/cover",
+          "isPremiere": true,
+          "genres": ["Sport", "News"],
+          "certification": "U",
+          "voteAverage": 7.604,
+          "voteCount": 1424,
+          "keywords": ["football", "headlines"],
+          "watchProviders": ["Sky Go", "Now TV"]
+        },
+        {
+          "title": "Sky Sports News",
+          "description": "Round-up of the sports news.",
+          "startTime": 1776463200,
+          "duration": 3600,
+          "episodeNumber": 80,
+          "tmdbTVSeriesID": 38086
+        }
+      ]
+    },
+    {
+      "sid": "4011",
+      "programmes": [
+        {
+          "title": "PL Stories: Tijjani Reijnders",
+          "startTime": 1776461400,
+          "duration": 1800,
+          "episodeNumber": 46,
+          "seasonNumber": 5
+        }
+      ]
+    }
+  ]
+}

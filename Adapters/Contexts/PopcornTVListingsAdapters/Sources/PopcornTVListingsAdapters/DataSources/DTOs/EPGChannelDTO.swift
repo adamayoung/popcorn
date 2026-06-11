@@ -14,6 +14,5 @@ struct EPGChannelDTO: Decodable {
     let isHD: Bool
     let logoURL: URL?
     let channelNumbers: [EPGChannelNumberDTO]
-    let schedules: [EPGScheduleDTO]
 
 }
