@@ -40,4 +40,8 @@ package final class TVListingsApplicationFactory: Sendable {
         DefaultFetchNowPlayingTVProgrammesUseCase(tvProgrammeRepository: tvProgrammeRepository)
     }
 
+    package func makeFetchTVListingsUseCase() -> some FetchTVListingsUseCase {
+        DefaultFetchTVListingsUseCase(tvProgrammeRepository: tvProgrammeRepository)
+    }
+
 }

@@ -18,14 +18,14 @@ import TVListingsDomain
 public struct TVListingsDependencies: Sendable {
 
     public var fetchChannels: @Sendable () async throws -> [TVChannel]
-    public var fetchNowPlayingProgrammes: @Sendable () async throws -> [TVProgramme]
+    public var fetchListings: @Sendable () async throws -> [TVProgramme]
 
     public init(
         fetchChannels: @escaping @Sendable () async throws -> [TVChannel],
-        fetchNowPlayingProgrammes: @escaping @Sendable () async throws -> [TVProgramme]
+        fetchListings: @escaping @Sendable () async throws -> [TVProgramme]
     ) {
         self.fetchChannels = fetchChannels
-        self.fetchNowPlayingProgrammes = fetchNowPlayingProgrammes
+        self.fetchListings = fetchListings
     }
 
 }
@@ -36,14 +36,14 @@ public extension TVListingsDependencies {
     /// Syncing is handled app-level (see `AppRootViewModel`); this feature only reads.
     static func live(services: AppServices) -> TVListingsDependencies {
         let fetchTVChannels = services.tvListingsFactory.makeFetchTVChannelsUseCase()
-        let fetchNowPlayingTVProgrammes = services.tvListingsFactory.makeFetchNowPlayingTVProgrammesUseCase()
+        let fetchTVListings = services.tvListingsFactory.makeFetchTVListingsUseCase()
 
         return TVListingsDependencies(
             fetchChannels: {
                 try await fetchTVChannels.execute()
             },
-            fetchNowPlayingProgrammes: {
-                try await fetchNowPlayingTVProgrammes.execute()
+            fetchListings: {
+                try await fetchTVListings.execute()
             }
         )
     }
@@ -57,7 +57,7 @@ public extension TVListingsDependencies {
         static var preview: TVListingsDependencies {
             TVListingsDependencies(
                 fetchChannels: { [] },
-                fetchNowPlayingProgrammes: { [] }
+                fetchListings: { [] }
             )
         }
 

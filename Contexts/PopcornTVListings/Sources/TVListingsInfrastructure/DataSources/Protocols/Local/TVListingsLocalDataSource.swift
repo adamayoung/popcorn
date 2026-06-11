@@ -23,6 +23,11 @@ public protocol TVListingsLocalDataSource: Actor {
         at date: Date
     ) async throws(TVListingsLocalDataSourceError) -> [TVProgramme]
 
+    func programmes(
+        from: Date,
+        to: Date
+    ) async throws(TVListingsLocalDataSourceError) -> [TVProgramme]
+
     // MARK: - Sync state
 
     /// The locally-stored content hash of every known EPG file, keyed by path.

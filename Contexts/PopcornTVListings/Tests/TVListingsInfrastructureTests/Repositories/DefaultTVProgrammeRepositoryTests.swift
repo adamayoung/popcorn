@@ -85,4 +85,40 @@ struct DefaultTVProgrammeRepositoryTests {
         )
     }
 
+    @Test("programmes(from:to:) returns local data source result")
+    func programmesFromToReturnsLocalDataSourceResult() async throws {
+        let mockLocal = MockTVListingsLocalDataSource()
+        let expected = [TVProgramme.mock(channelID: "BBC")]
+        await mockLocal.setProgrammesFromToStub(.success(expected))
+
+        let repository = DefaultTVProgrammeRepository(localDataSource: mockLocal)
+
+        let result = try await repository.programmes(from: .now, to: .now.addingTimeInterval(3600))
+
+        #expect(result == expected)
+    }
+
+    @Test("programmes(from:to:) translates persistence error to local")
+    func programmesFromToTranslatesPersistenceErrorToLocal() async {
+        let mockLocal = MockTVListingsLocalDataSource()
+        await mockLocal.setProgrammesFromToStub(.failure(.persistence(NSError(domain: "t", code: 1))))
+
+        let repository = DefaultTVProgrammeRepository(localDataSource: mockLocal)
+
+        await #expect(
+            performing: {
+                _ = try await repository.programmes(from: .now, to: .now.addingTimeInterval(3600))
+            },
+            throws: { error in
+                guard let repoError = error as? TVListingsRepositoryError else {
+                    return false
+                }
+                if case .local = repoError {
+                    return true
+                }
+                return false
+            }
+        )
+    }
+
 }

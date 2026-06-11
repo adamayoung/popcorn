@@ -37,4 +37,15 @@ final class DefaultTVProgrammeRepository: TVProgrammeRepository {
         }
     }
 
+    func programmes(
+        from: Date,
+        to: Date
+    ) async throws(TVListingsRepositoryError) -> [TVProgramme] {
+        do {
+            return try await localDataSource.programmes(from: from, to: to)
+        } catch let error {
+            throw TVListingsRepositoryError(error)
+        }
+    }
+
 }

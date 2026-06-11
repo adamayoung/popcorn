@@ -40,6 +40,7 @@ identifier_name:
     - 'ok'
     - 'id'
     - 'up'
+    - 'to'
 
 line_length:
   ignores_urls: true

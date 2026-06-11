@@ -16,6 +16,7 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
     var channelsStub: Result<[TVChannel], TVListingsLocalDataSourceError> = .success([])
     var programmesStub: Result<[TVProgramme], TVListingsLocalDataSourceError> = .success([])
     var nowPlayingStub: Result<[TVProgramme], TVListingsLocalDataSourceError> = .success([])
+    var programmesFromToStub: Result<[TVProgramme], TVListingsLocalDataSourceError> = .success([])
     var fileStatesStub: Result<[String: String], TVListingsLocalDataSourceError> = .success([:])
     var lastSyncedAtStub: Result<Date?, TVListingsLocalDataSourceError> = .success(nil)
 
@@ -30,6 +31,7 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
 
     var fileStatesCallCount = 0
     var lastSyncedAtCallCount = 0
+    var programmesFromToCalledWith: [(from: Date, to: Date)] = []
     var upsertChannelsCalls: [(channels: [TVChannel], hash: String)] = []
     var replaceProgrammesCalls: [(programmes: [TVProgramme], date: String, hash: String)] = []
     var deleteProgrammesCalls: [[String]] = []
@@ -59,6 +61,10 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
         upsertChannelsStub = stub
     }
 
+    func setProgrammesFromToStub(_ stub: Result<[TVProgramme], TVListingsLocalDataSourceError>) {
+        programmesFromToStub = stub
+    }
+
     // MARK: - Reads
 
     func channels() async throws(TVListingsLocalDataSourceError) -> [TVChannel] {
@@ -82,6 +88,17 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
         at date: Date
     ) async throws(TVListingsLocalDataSourceError) -> [TVProgramme] {
         switch nowPlayingStub {
+        case .success(let value): return value
+        case .failure(let error): throw error
+        }
+    }
+
+    func programmes(
+        from: Date,
+        to: Date
+    ) async throws(TVListingsLocalDataSourceError) -> [TVProgramme] {
+        programmesFromToCalledWith.append((from, to))
+        switch programmesFromToStub {
         case .success(let value): return value
         case .failure(let error): throw error
         }
