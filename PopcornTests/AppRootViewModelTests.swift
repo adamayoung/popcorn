@@ -105,6 +105,19 @@ struct AppRootViewModelTests {
         #expect(await recorder.recordCount == 1)
     }
 
+    @Test("a completed sync bumps tvListingsRevision so the view can refresh")
+    func completedSyncBumpsRevision() async {
+        let viewModel = AppRootViewModel(
+            dependencies: .stub(isTVListingsEnabled: true, syncTVListingsIfNeeded: {})
+        )
+
+        await viewModel.start()
+        #expect(viewModel.tvListingsRevision == 1)
+
+        await viewModel.syncTVListingsIfNeeded()
+        #expect(viewModel.tvListingsRevision == 2)
+    }
+
     @Test("start does not trigger a sync when the feature is disabled")
     func startDoesNotTriggerSyncWhenDisabled() async {
         let recorder = SyncRecorder()

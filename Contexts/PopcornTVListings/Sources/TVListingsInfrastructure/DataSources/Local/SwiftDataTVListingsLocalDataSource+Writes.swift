@@ -51,7 +51,13 @@ extension SwiftDataTVListingsLocalDataSource {
         hash: String
     ) async throws(TVListingsLocalDataSourceError) {
         guard let range = dayRange(forDateString: date) else {
-            throw .unknown(nil)
+            throw .unknown(
+                NSError(
+                    domain: "TVListingsLocalDataSource",
+                    code: 0,
+                    userInfo: [NSLocalizedDescriptionKey: "Invalid schedule date string: \(date)"]
+                )
+            )
         }
 
         let dayStart = range.start

@@ -55,6 +55,12 @@ final class AppRootViewModel {
         var isPresentingDeveloper = false
     #endif
 
+    /// Bumped after each automatic TV-listings sync completes. ``AppRootView`` observes it
+    /// to refresh the listings view once the launch sync has populated the cache — otherwise
+    /// the view, shown the moment `isReady` flips, would keep displaying the pre-sync (empty)
+    /// cache until the next foreground.
+    private(set) var tvListingsRevision = 0
+
     private var hasStarted = false
 
     /// The in-flight automatic sync, reused by overlapping triggers (launch + foreground)
@@ -107,6 +113,9 @@ final class AppRootViewModel {
         tvListingsSyncTask = task
         await task.value
         tvListingsSyncTask = nil
+
+        // Signal completion so the listings view can pick up the freshly-synced cache.
+        tvListingsRevision += 1
     }
 
     private func updateFeatureFlags() {

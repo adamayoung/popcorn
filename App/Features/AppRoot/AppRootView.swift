@@ -67,6 +67,11 @@ struct AppRootView: View {
                 }
                 Task { await viewModel.syncTVListingsIfNeeded() }
             }
+            .onChange(of: viewModel.tvListingsRevision) { _, _ in
+                // The launch/foreground sync finished — refresh the listings from the
+                // now-populated cache so a first-launch empty view doesn't persist.
+                tvListingsViewModel.reload()
+            }
     }
 
     private var content: some View {
