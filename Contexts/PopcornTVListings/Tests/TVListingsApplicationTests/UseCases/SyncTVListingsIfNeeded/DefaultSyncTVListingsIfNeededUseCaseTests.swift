@@ -24,7 +24,6 @@ struct DefaultSyncTVListingsIfNeededUseCaseTests {
         try await useCase.execute()
 
         #expect(mockSyncRepository.syncIfNeededCallCount == 1)
-        #expect(mockSyncRepository.syncCallCount == 0)
     }
 
     @Test("execute throws remote when repository throws remote")

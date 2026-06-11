@@ -13,14 +13,10 @@ import Foundation
 public protocol TVListingsSyncRepository: Sendable {
 
     ///
-    /// Performs a full incremental sync: fetches the manifest, downloads only the
-    /// files whose content hash has changed, and purges days no longer in the feed.
-    ///
-    func sync() async throws(TVListingsRepositoryError)
-
-    ///
     /// Performs a sync only if the configured throttle interval has elapsed since the
     /// last successful sync. A no-op (no network) when called within the throttle window.
+    /// This is the only entry point used by the app; the unconditional sync is an
+    /// implementation detail of the concrete repository.
     ///
     func syncIfNeeded() async throws(TVListingsRepositoryError)
 

@@ -100,11 +100,14 @@ struct SwiftDataTVListingsLocalDataSourceWriteTests {
         let start = ukDate(year: 2026, month: 6, day: 11, hour: 23, minute: 30)
         let programme = TVProgramme.mock(channelID: "BBC", start: start, duration: 5400, title: "shared")
 
-        // Same programme listed in both the 11th and 12th schedule files.
+        // The programme starts 23:30 on the 11th, so the second write (for the 12th) does NOT
+        // delete it (its start time is outside the 12th's `[start, end)` range). Re-inserting
+        // the same `programmeID` therefore relies on SwiftData's `@Attribute(.unique)` upsert
+        // (INSERT-OR-REPLACE) to reconcile to one row rather than throwing or duplicating.
         try await dataSource.replaceProgrammes([programme], forDate: "20260611", hash: "s1")
         try await dataSource.replaceProgrammes([programme], forDate: "20260612", hash: "s2")
 
-        #expect(programmeEntityCount(id: programme.id) == 1)
+        #expect(programmeEntityCount(id: programme.id) == 1, "unique-constraint upsert keeps one row")
     }
 
     // MARK: - deleteProgrammes(notInDates:)

@@ -79,21 +79,28 @@ struct DefaultTVListingsSyncRepositoryThrottleTests {
     func overlappingSyncsCoalesce() async throws {
         let remote = MockTVListingsRemoteDataSource()
         let local = MockTVListingsLocalDataSource()
-        let manifestEntered = TestSignal()
+        let firstEntered = TestSignal()
         let releaseManifest = TestSignal()
+        let secondCoalesced = TestSignal()
         remote.onFetchManifest = {
-            await manifestEntered.signal()
+            await firstEntered.signal()
             await releaseManifest.wait()
         }
 
-        let repository = makeRepository(remote: remote, local: local)
+        // The repository fires `onCoalesce` exactly when the second caller takes the
+        // coalescing branch, giving a deterministic signal with no reliance on Task.yield.
+        let repository = DefaultTVListingsSyncRepository(
+            remoteDataSource: remote,
+            localDataSource: local,
+            syncThrottle: throttle,
+            now: { nowDate },
+            onCoalesce: { Task { await secondCoalesced.signal() } }
+        )
 
         let first = Task { try await repository.sync() }
-        // Wait until the first sync is inside fetchManifest — by then `inFlight` is set.
-        await manifestEntered.wait()
+        await firstEntered.wait() // first sync is inside fetchManifest; inFlight is set
         let second = Task { try await repository.sync() }
-        // Let the second task reach the coalescing check before releasing the gate.
-        await Task.yield()
+        await secondCoalesced.wait() // second caller has provably coalesced
         await releaseManifest.signal()
 
         try await first.value

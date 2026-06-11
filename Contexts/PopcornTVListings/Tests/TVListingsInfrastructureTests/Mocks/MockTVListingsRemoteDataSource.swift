@@ -56,8 +56,13 @@ final class MockTVListingsRemoteDataSource: TVListingsRemoteDataSource, @uncheck
     func fetchSchedule(
         forDate date: String
     ) async throws(TVListingsRemoteDataSourceError) -> [TVProgramme] {
-        scheduleLock.withLock { recordedScheduleDates.append(date) }
-        switch fetchScheduleStubs[date] ?? fetchScheduleDefaultStub {
+        // Schedule fetches can run concurrently (the repository fans them out), so read the
+        // stubs and record the call under one lock.
+        let result = scheduleLock.withLock {
+            recordedScheduleDates.append(date)
+            return fetchScheduleStubs[date] ?? fetchScheduleDefaultStub
+        }
+        switch result {
         case .success(let programmes): return programmes
         case .failure(let error): throw error
         }

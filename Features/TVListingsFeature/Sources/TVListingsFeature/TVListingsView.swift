@@ -16,7 +16,6 @@ import TVListingsDomain
 /// behaves correctly regardless of how a host retains it.
 public struct TVListingsView: View {
 
-    @Environment(\.scenePhase) private var scenePhase
     @State private var viewModel: TVListingsViewModel
 
     public init(viewModel: TVListingsViewModel) {
@@ -24,6 +23,10 @@ public struct TVListingsView: View {
     }
 
     public var body: some View {
+        // Foreground refresh is driven by the host (AppRoot reloads this view when the
+        // app-level sync completes), so the view itself doesn't observe `scenePhase` —
+        // that avoided a double reload per foreground. Initial load is via `.task`, and
+        // pull-to-refresh re-reads the cache on demand.
         content
             .overlay {
                 if viewModel.viewState.isLoading {
@@ -35,13 +38,6 @@ public struct TVListingsView: View {
             .accessibilityIdentifier("tvListings.view")
             .task(id: viewModel.reloadID) {
                 await viewModel.load()
-            }
-            .onChange(of: scenePhase) { _, newPhase in
-                // Refresh on foreground so the view picks up data produced by the
-                // app-level background sync.
-                if newPhase == .active {
-                    viewModel.reload()
-                }
             }
     }
 
