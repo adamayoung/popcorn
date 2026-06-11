@@ -19,7 +19,7 @@ struct TimeHeader: View {
     var body: some View {
         ZStack(alignment: .topLeading) {
             ForEach(boundaries, id: \.self) { boundary in
-                Text(Self.label(for: boundary, timeZone: geometry.timeZone))
+                Text(EPGLayout.timeLabel(for: boundary, timeZone: geometry.timeZone))
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .frame(width: slotWidth, alignment: .leading)
@@ -32,15 +32,6 @@ struct TimeHeader: View {
 
     private var slotWidth: CGFloat {
         CGFloat(geometry.slotMinutes) * geometry.pixelsPerMinute
-    }
-
-    /// `HH:mm` in the geometry's time zone (Europe/London).
-    static func label(for date: Date, timeZone: TimeZone) -> String {
-        date.formatted(
-            Date.FormatStyle(date: .omitted, time: .shortened, timeZone: timeZone)
-                .hour(.twoDigits(amPM: .omitted))
-                .minute(.twoDigits)
-        )
     }
 
 }

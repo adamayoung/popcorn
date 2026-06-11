@@ -138,4 +138,65 @@ struct EPGLayoutTests {
         #expect(result.isEmpty)
     }
 
+    // MARK: - timelineEnd
+
+    private static func row(channelID: String, items: [TVListingsProgrammeItem]) -> TVListingsChannelRow {
+        let channel = TVChannel(id: channelID, name: channelID, isHD: false, logoURL: nil, channelNumbers: [])
+        return TVListingsChannelRow(channel: channel, programmes: items)
+    }
+
+    @Test
+    func timelineEndReturnsLatestProgrammeEndAcrossRows() {
+        let now = Date(timeIntervalSince1970: 0)
+        let rows = [
+            Self.row(channelID: "a", items: [Self.item(start: 0, end: 100, id: "a1")]),
+            Self.row(channelID: "b", items: [
+                Self.item(start: 50, end: 300, id: "b1"),
+                Self.item(start: 0, end: 120, id: "b2")
+            ])
+        ]
+        #expect(EPGLayout.timelineEnd(rows: rows, now: now) == Date(timeIntervalSince1970: 300))
+    }
+
+    @Test
+    func timelineEndFallsBackToNowForEmptyGrid() {
+        let now = Date(timeIntervalSince1970: 999)
+        #expect(EPGLayout.timelineEnd(rows: [], now: now) == now)
+    }
+
+    @Test
+    func timelineEndFallsBackToNowWhenChannelsHaveNoProgrammes() {
+        let now = Date(timeIntervalSince1970: 999)
+        let rows = [Self.row(channelID: "a", items: [])]
+        #expect(EPGLayout.timelineEnd(rows: rows, now: now) == now)
+    }
+
+    // MARK: - autoScrollTargetX
+
+    @Test
+    func autoScrollTargetCentresNowOneThirdFromLeading() {
+        #expect(EPGLayout.autoScrollTargetX(nowX: 900, viewportWidth: 300) == 800)
+    }
+
+    @Test
+    func autoScrollTargetClampsToZeroWhenNowIsNearTheStart() {
+        #expect(EPGLayout.autoScrollTargetX(nowX: 50, viewportWidth: 300) == 0)
+    }
+
+    // MARK: - timeLabel
+
+    @Test
+    func timeLabelFormatsAsTwoDigitHourMinuteInLondon() throws {
+        let london = try #require(TimeZone(identifier: "Europe/London"))
+        // Morning times read the same in 12h and 24h locales, so the assertion
+        // is host-locale independent (it still proves time-zone + two-digit padding).
+        // 2026-01-15T09:05:00Z == 09:05 GMT (winter, UTC+0).
+        let winter = Date(timeIntervalSince1970: 1_768_467_900)
+        #expect(EPGLayout.timeLabel(for: winter, timeZone: london) == "09:05")
+
+        // 2026-06-11T10:00:00Z == 11:00 BST (summer, UTC+1) — proves the tz shift.
+        let summerMorning = Date(timeIntervalSince1970: 1_781_172_000)
+        #expect(EPGLayout.timeLabel(for: summerMorning, timeZone: london) == "11:00")
+    }
+
 }

@@ -46,11 +46,7 @@ struct EPGGrid: View {
         self.snapshot = snapshot
         self.disableAutoScroll = disableAutoScroll
 
-        let latestEnd = snapshot.rows
-            .flatMap(\.programmes)
-            .map(\.programme.endTime)
-            .max()
-        let end = latestEnd ?? snapshot.now
+        let end = EPGLayout.timelineEnd(rows: snapshot.rows, now: snapshot.now)
         self.timelineEnd = end
         self.contentWidth = snapshot.geometry.totalWidth(end: end)
         self.boundaries = snapshot.geometry.slotBoundaries(until: end)
@@ -167,7 +163,7 @@ struct EPGGrid: View {
         didAutoScroll = true
 
         let nowX = geometry.nowX(at: snapshot.now)
-        let targetX = max(0, nowX - viewportWidth / 3)
+        let targetX = EPGLayout.autoScrollTargetX(nowX: nowX, viewportWidth: viewportWidth)
         scrollPosition.scrollTo(point: CGPoint(x: targetX, y: scrollState.contentOffset.y))
     }
 

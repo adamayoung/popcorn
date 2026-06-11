@@ -22,6 +22,33 @@ enum EPGLayout {
         width < threshold
     }
 
+    /// The far edge of the timeline: the latest programme end across all rows,
+    /// falling back to `now` for an entirely empty grid (so the timeline is
+    /// never zero-width).
+    static func timelineEnd(rows: [TVListingsChannelRow], now: Date) -> Date {
+        let latestEnd = rows
+            .flatMap(\.programmes)
+            .map(\.programme.endTime)
+            .max()
+        return latestEnd ?? now
+    }
+
+    /// The content x-offset to scroll to so "now" sits one-third in from the
+    /// leading edge, clamped to the content origin so it never scrolls negative.
+    static func autoScrollTargetX(nowX: CGFloat, viewportWidth: CGFloat) -> CGFloat {
+        max(0, nowX - viewportWidth / 3)
+    }
+
+    /// A `HH:mm` clock label for `date` in `timeZone` (Europe/London), used by
+    /// the time-header ruler and programme blocks.
+    static func timeLabel(for date: Date, timeZone: TimeZone) -> String {
+        date.formatted(
+            Date.FormatStyle(date: .omitted, time: .shortened, timeZone: timeZone)
+                .hour(.twoDigits(amPM: .omitted))
+                .minute(.twoDigits)
+        )
+    }
+
     /// The 1–3 uppercase initials for `name`: the first letter of each of the
     /// first three words (split on spaces/hyphens), falling back to the first
     /// two characters when the name has no letters to take initials from.

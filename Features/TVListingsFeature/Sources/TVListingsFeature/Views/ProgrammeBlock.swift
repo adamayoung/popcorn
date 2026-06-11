@@ -24,7 +24,7 @@ struct ProgrammeBlock: View {
     }
 
     private var startTimeLabel: String {
-        TimeHeader.label(for: item.programme.startTime, timeZone: geometry.timeZone)
+        EPGLayout.timeLabel(for: item.programme.startTime, timeZone: geometry.timeZone)
     }
 
     var body: some View {
@@ -80,7 +80,7 @@ struct ProgrammeBlock: View {
     }
 
     private var accessibilityLabel: Text {
-        let endTimeLabel = TimeHeader.label(for: item.programme.endTime, timeZone: geometry.timeZone)
+        let endTimeLabel = EPGLayout.timeLabel(for: item.programme.endTime, timeZone: geometry.timeZone)
         // A real localization key with positional values, not the formatted
         // times themselves (which would change the key every minute).
         let timeRange = String(
