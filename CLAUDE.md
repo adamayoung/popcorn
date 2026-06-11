@@ -82,6 +82,10 @@ This applies to all build, test, lint, and format commands — both `make` targe
 
 **Always use `git push`** (not `gh` CLI) when pushing to remote branches. The `gh` CLI bypasses GitHub webhooks and workflow triggers.
 
+### Git Worktrees
+
+**Always create git worktrees under `.claude/worktrees/`** (e.g. `git worktree add .claude/worktrees/<branch-name> -b <branch> <base>`), never in a sibling directory like `../popcorn-<name>`. This keeps worktrees scoped to the project and grouped in one predictable, git-ignored location.
+
 ### Pre-PR Checklist
 
 Before creating a pull request, **always** verify:
