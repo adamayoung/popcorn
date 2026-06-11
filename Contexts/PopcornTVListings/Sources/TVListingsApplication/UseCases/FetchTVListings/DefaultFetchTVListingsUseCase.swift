@@ -25,10 +25,10 @@ final class DefaultFetchTVListingsUseCase: FetchTVListingsUseCase {
     }
 
     func execute() async throws(FetchTVListingsError) -> [TVProgramme] {
-        let from = now()
-        let to = from.addingTimeInterval(Double(daysAhead) * 86400)
+        let start = now()
+        let end = start.addingTimeInterval(Double(daysAhead) * 86400)
         do {
-            return try await tvProgrammeRepository.programmes(from: from, to: to)
+            return try await tvProgrammeRepository.programmes(from: start, to: end)
         } catch let error {
             throw FetchTVListingsError(error)
         }

@@ -64,8 +64,13 @@ struct EPGRow: View {
                 .frame(width: max(contentWidth, 1), height: EPGMetrics.rowHeight)
 
             ForEach(laidOutProgrammes) { laid in
-                ProgrammeBlock(item: laid.item, geometry: geometry, width: laid.width)
-                    .offset(x: laid.startX)
+                ProgrammeBlock(
+                    item: laid.item,
+                    channelName: row.channel.name,
+                    geometry: geometry,
+                    width: laid.width
+                )
+                .offset(x: laid.startX)
             }
         }
         .frame(width: max(contentWidth, 1), height: EPGMetrics.rowHeight, alignment: .topLeading)

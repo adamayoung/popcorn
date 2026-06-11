@@ -15,6 +15,7 @@ import TVListingsDomain
 struct ProgrammeBlock: View {
 
     let item: TVListingsProgrammeItem
+    let channelName: String
     let geometry: TimelineGeometry
     let width: CGFloat
 
@@ -33,6 +34,7 @@ struct ProgrammeBlock: View {
                 .foregroundStyle(.primary)
                 .lineLimit(isNarrow ? 1 : 2)
                 .truncationMode(.tail)
+                .minimumScaleFactor(0.8)
 
             if !isNarrow {
                 HStack(spacing: .spacing4) {
@@ -79,16 +81,22 @@ struct ProgrammeBlock: View {
 
     private var accessibilityLabel: Text {
         let endTimeLabel = TimeHeader.label(for: item.programme.endTime, timeZone: geometry.timeZone)
+        // A real localization key with positional values, not the formatted
+        // times themselves (which would change the key every minute).
         let timeRange = String(
-            localized: "\(startTimeLabel) – \(endTimeLabel)",
+            localized: "PROGRAMME_TIME_RANGE",
+            defaultValue: "\(startTimeLabel) to \(endTimeLabel)",
             bundle: .module
         )
         if item.isAiringNow {
-            return Text(
-                "\(item.programme.title), \(timeRange), \(String(localized: "PROGRAMME_NOW_PLAYING", defaultValue: "Now playing", bundle: .module))"
+            let nowPlaying = String(
+                localized: "PROGRAMME_NOW_PLAYING",
+                defaultValue: "Now playing",
+                bundle: .module
             )
+            return Text("\(channelName), \(item.programme.title), \(timeRange), \(nowPlaying)")
         }
-        return Text("\(item.programme.title), \(timeRange)")
+        return Text("\(channelName), \(item.programme.title), \(timeRange)")
     }
 
 }

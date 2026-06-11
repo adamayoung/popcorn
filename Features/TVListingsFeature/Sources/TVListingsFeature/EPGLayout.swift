@@ -22,6 +22,20 @@ enum EPGLayout {
         width < threshold
     }
 
+    /// The 1–3 uppercase initials for `name`: the first letter of each of the
+    /// first three words (split on spaces/hyphens), falling back to the first
+    /// two characters when the name has no letters to take initials from.
+    static func channelInitials(for name: String) -> String {
+        let words = name
+            .split(whereSeparator: { $0 == " " || $0 == "-" })
+            .prefix(3)
+        let letters = words.compactMap(\.first)
+        if letters.isEmpty {
+            return String(name.prefix(2)).uppercased()
+        }
+        return String(letters).uppercased()
+    }
+
     /// The rendered width of a block, clamped so it never overruns the next
     /// programme's start.
     ///

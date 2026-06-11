@@ -46,6 +46,17 @@
         }
       }
     },
+    "PROGRAMME_TIME_RANGE" : {
+      "comment" : "Accessibility label fragment for a programme's start and end time, e.g. \"20:00 to 20:45\".",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ to %2$@"
+          }
+        }
+      }
+    },
     "TV_LISTINGS_EMPTY_DESCRIPTION" : {
       "comment" : "Description shown when no TV listings are available.",
       "localizations" : {

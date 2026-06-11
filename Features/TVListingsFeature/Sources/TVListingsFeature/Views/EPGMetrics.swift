@@ -36,6 +36,7 @@ enum EPGMetrics {
 /// animation) and read by the mirrors via `.offset(...)`. `@Observable` so only
 /// the offset-dependent views re-render.
 @Observable
+@MainActor
 final class EPGScrollState {
 
     /// The body's content offset. Positive when scrolled down/right.

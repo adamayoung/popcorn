@@ -173,6 +173,33 @@ struct TimelineGeometryTests {
         #expect(geometry.origin == expectedOrigin)
     }
 
+    @Test("flooring and slot spacing are stable across the spring-forward DST transition")
+    func flooringIsStableAcrossSpringForwardDST() throws {
+        // 2026-03-29 the UK clocks jump 01:00 GMT → 02:00 BST. Floor a `now`
+        // just after the transition and confirm the origin still lands on a
+        // wall-clock :00/:30 mark and that slot boundaries stay exactly 30 min
+        // apart in absolute time (the invariant the geometry doc claims).
+        let london = try #require(TimeZone(identifier: "Europe/London"))
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = london
+        let now = try #require(
+            calendar.date(from: DateComponents(year: 2026, month: 3, day: 29, hour: 2, minute: 45))
+        )
+
+        let geometry = TimelineGeometry.flooringNow(now)
+
+        #expect(geometry.origin <= now)
+        #expect(now.timeIntervalSince(geometry.origin) < 30 * 60)
+        #expect(calendar.component(.second, from: geometry.origin) == 0)
+        let originMinute = calendar.component(.minute, from: geometry.origin)
+        #expect(originMinute == 0 || originMinute == 30)
+
+        let boundaries = geometry.slotBoundaries(until: now.addingTimeInterval(3 * 60 * 60))
+        for (earlier, later) in zip(boundaries, boundaries.dropFirst()) {
+            #expect(later.timeIntervalSince(earlier) == 30 * 60)
+        }
+    }
+
     // MARK: - slotBoundaries(until:)
 
     @Test("slotBoundaries returns origin and successive slot starts up to until")

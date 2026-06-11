@@ -94,10 +94,10 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
     }
 
     func programmes(
-        from: Date,
-        to: Date
+        from start: Date,
+        to end: Date
     ) async throws(TVListingsLocalDataSourceError) -> [TVProgramme] {
-        programmesFromToCalledWith.append((from, to))
+        programmesFromToCalledWith.append((start, end))
         switch programmesFromToStub {
         case .success(let value): return value
         case .failure(let error): throw error

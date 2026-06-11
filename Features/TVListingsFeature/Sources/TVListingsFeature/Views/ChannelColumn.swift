@@ -82,22 +82,11 @@ struct ChannelInitials: View {
 
     let name: String
 
-    private var initials: String {
-        let words = name
-            .split(whereSeparator: { $0 == " " || $0 == "-" })
-            .prefix(3)
-        let letters = words.compactMap(\.first)
-        if letters.isEmpty {
-            return String(name.prefix(2)).uppercased()
-        }
-        return String(letters).uppercased()
-    }
-
     var body: some View {
         RoundedRectangle(cornerRadius: .spacing6)
             .fill(Color.secondary.opacity(0.15))
             .overlay {
-                Text(initials)
+                Text(EPGLayout.channelInitials(for: name))
                     .font(.caption2.weight(.semibold))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)

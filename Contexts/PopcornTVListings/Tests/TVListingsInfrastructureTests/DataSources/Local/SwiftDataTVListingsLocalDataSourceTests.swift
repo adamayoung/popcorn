@@ -196,7 +196,7 @@ struct SwiftDataTVListingsLocalDataSourceTests {
     func programmesFromToReturnsOverlappingProgrammes() async throws {
         let dataSource = SwiftDataTVListingsLocalDataSource(modelContainer: modelContainer)
         let from = ukDate(year: 2026, month: 4, day: 18, hour: 12)
-        let to = ukDate(year: 2026, month: 4, day: 18, hour: 14)
+        let end = ukDate(year: 2026, month: 4, day: 18, hour: 14)
 
         try await dataSource.replaceProgrammes(
             [TVProgramme.mock(
@@ -209,7 +209,7 @@ struct SwiftDataTVListingsLocalDataSourceTests {
             hash: "s1"
         )
 
-        let result = try await dataSource.programmes(from: from, to: to)
+        let result = try await dataSource.programmes(from: from, to: end)
 
         #expect(result.map(\.title) == ["in-window"])
     }
@@ -218,7 +218,7 @@ struct SwiftDataTVListingsLocalDataSourceTests {
     func programmesFromToSortedByChannelIDThenStartTime() async throws {
         let dataSource = SwiftDataTVListingsLocalDataSource(modelContainer: modelContainer)
         let from = ukDate(year: 2026, month: 4, day: 18, hour: 12)
-        let to = ukDate(year: 2026, month: 4, day: 18, hour: 14)
+        let end = ukDate(year: 2026, month: 4, day: 18, hour: 14)
         let base = ukDate(year: 2026, month: 4, day: 18, hour: 12, minute: 30)
 
         try await dataSource.replaceProgrammes(
@@ -236,7 +236,7 @@ struct SwiftDataTVListingsLocalDataSourceTests {
             hash: "s1"
         )
 
-        let result = try await dataSource.programmes(from: from, to: to)
+        let result = try await dataSource.programmes(from: from, to: end)
 
         #expect(result.map(\.title) == ["bbc-earlier", "bbc-later", "itv"])
     }
@@ -245,7 +245,7 @@ struct SwiftDataTVListingsLocalDataSourceTests {
     func programmesFromToExcludesOutOfWindow() async throws {
         let dataSource = SwiftDataTVListingsLocalDataSource(modelContainer: modelContainer)
         let from = ukDate(year: 2026, month: 4, day: 18, hour: 12)
-        let to = ukDate(year: 2026, month: 4, day: 18, hour: 14)
+        let end = ukDate(year: 2026, month: 4, day: 18, hour: 14)
 
         try await dataSource.replaceProgrammes(
             [
@@ -272,7 +272,7 @@ struct SwiftDataTVListingsLocalDataSourceTests {
             hash: "s1"
         )
 
-        let result = try await dataSource.programmes(from: from, to: to)
+        let result = try await dataSource.programmes(from: from, to: end)
 
         #expect(result.map(\.title) == ["in-window"])
     }
@@ -281,7 +281,7 @@ struct SwiftDataTVListingsLocalDataSourceTests {
     func programmesFromToIncludesInProgress() async throws {
         let dataSource = SwiftDataTVListingsLocalDataSource(modelContainer: modelContainer)
         let from = ukDate(year: 2026, month: 4, day: 18, hour: 12)
-        let to = ukDate(year: 2026, month: 4, day: 18, hour: 14)
+        let end = ukDate(year: 2026, month: 4, day: 18, hour: 14)
 
         try await dataSource.replaceProgrammes(
             [TVProgramme.mock(
@@ -294,7 +294,7 @@ struct SwiftDataTVListingsLocalDataSourceTests {
             hash: "s1"
         )
 
-        let result = try await dataSource.programmes(from: from, to: to)
+        let result = try await dataSource.programmes(from: from, to: end)
 
         #expect(result.map(\.title) == ["in-progress"])
     }
@@ -303,7 +303,7 @@ struct SwiftDataTVListingsLocalDataSourceTests {
     func programmesFromToExcludesTouchingBoundaries() async throws {
         let dataSource = SwiftDataTVListingsLocalDataSource(modelContainer: modelContainer)
         let from = ukDate(year: 2026, month: 4, day: 18, hour: 12)
-        let to = ukDate(year: 2026, month: 4, day: 18, hour: 14)
+        let end = ukDate(year: 2026, month: 4, day: 18, hour: 14)
 
         try await dataSource.replaceProgrammes(
             [
@@ -326,7 +326,7 @@ struct SwiftDataTVListingsLocalDataSourceTests {
             hash: "s1"
         )
 
-        let result = try await dataSource.programmes(from: from, to: to)
+        let result = try await dataSource.programmes(from: from, to: end)
 
         #expect(result.isEmpty)
     }
@@ -335,9 +335,9 @@ struct SwiftDataTVListingsLocalDataSourceTests {
     func programmesFromToReturnsEmptyWhenNothingInRange() async throws {
         let dataSource = SwiftDataTVListingsLocalDataSource(modelContainer: modelContainer)
         let from = ukDate(year: 2026, month: 4, day: 18, hour: 12)
-        let to = ukDate(year: 2026, month: 4, day: 18, hour: 14)
+        let end = ukDate(year: 2026, month: 4, day: 18, hour: 14)
 
-        let result = try await dataSource.programmes(from: from, to: to)
+        let result = try await dataSource.programmes(from: from, to: end)
 
         #expect(result.isEmpty)
     }

@@ -24,8 +24,8 @@ public protocol TVListingsLocalDataSource: Actor {
     ) async throws(TVListingsLocalDataSourceError) -> [TVProgramme]
 
     func programmes(
-        from: Date,
-        to: Date
+        from start: Date,
+        to end: Date
     ) async throws(TVListingsLocalDataSourceError) -> [TVProgramme]
 
     // MARK: - Sync state

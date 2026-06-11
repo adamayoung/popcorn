@@ -111,11 +111,11 @@ actor SwiftDataTVListingsLocalDataSource: TVListingsLocalDataSource, ModelActor 
     }
 
     func programmes(
-        from: Date,
-        to: Date
+        from start: Date,
+        to end: Date
     ) async throws(TVListingsLocalDataSourceError) -> [TVProgramme] {
-        let lowerBound = from
-        let upperBound = to
+        let lowerBound = start
+        let upperBound = end
 
         let predicate = #Predicate<TVProgrammeEntity> { entity in
             entity.endTime > lowerBound && entity.startTime < upperBound

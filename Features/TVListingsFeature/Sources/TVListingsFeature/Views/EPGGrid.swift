@@ -29,31 +29,35 @@ struct EPGGrid: View {
     let snapshot: TVListingsGridSnapshot
     var disableAutoScroll = false
 
+    /// The far edge of the timeline (latest programme end, falling back to `now`
+    /// for an empty grid), the total content width, and the slot boundaries.
+    /// Derived once per snapshot here rather than in `body` so the O(programmes)
+    /// scan doesn't run on every scroll tick.
+    private let timelineEnd: Date
+    private let contentWidth: CGFloat
+    private let boundaries: [Date]
+
     @State private var scrollState = EPGScrollState()
     @State private var scrollPosition = ScrollPosition()
     @State private var viewportWidth: CGFloat = 0
     @State private var didAutoScroll = false
 
-    private var geometry: TimelineGeometry {
-        snapshot.geometry
-    }
+    init(snapshot: TVListingsGridSnapshot, disableAutoScroll: Bool = false) {
+        self.snapshot = snapshot
+        self.disableAutoScroll = disableAutoScroll
 
-    /// The far edge of the timeline: the latest programme end (falling back to
-    /// `now` for an entirely empty grid).
-    private var timelineEnd: Date {
         let latestEnd = snapshot.rows
             .flatMap(\.programmes)
             .map(\.programme.endTime)
             .max()
-        return latestEnd ?? snapshot.now
+        let end = latestEnd ?? snapshot.now
+        self.timelineEnd = end
+        self.contentWidth = snapshot.geometry.totalWidth(end: end)
+        self.boundaries = snapshot.geometry.slotBoundaries(until: end)
     }
 
-    private var contentWidth: CGFloat {
-        geometry.totalWidth(end: timelineEnd)
-    }
-
-    private var boundaries: [Date] {
-        geometry.slotBoundaries(until: timelineEnd)
+    private var geometry: TimelineGeometry {
+        snapshot.geometry
     }
 
     /// The absolute-time range currently visible, used to window each row.
@@ -154,14 +158,16 @@ struct EPGGrid: View {
     // MARK: - Auto-scroll
 
     private func autoScrollIfNeeded(contentWidth: CGFloat) {
-        guard !disableAutoScroll, !didAutoScroll, contentWidth > 0 else {
+        // Wait for a real viewport width too: firing with viewportWidth == 0
+        // would compute the centering offset against the full content width and
+        // land "now" off-screen — and the once-only guard would make it stick.
+        guard !disableAutoScroll, !didAutoScroll, contentWidth > 0, viewportWidth > 0 else {
             return
         }
         didAutoScroll = true
 
         let nowX = geometry.nowX(at: snapshot.now)
-        let viewport = viewportWidth > 0 ? viewportWidth : contentWidth
-        let targetX = max(0, nowX - viewport / 3)
+        let targetX = max(0, nowX - viewportWidth / 3)
         scrollPosition.scrollTo(point: CGPoint(x: targetX, y: scrollState.contentOffset.y))
     }
 

@@ -52,11 +52,11 @@ final class MockTVProgrammeRepository: TVProgrammeRepository, @unchecked Sendabl
     }
 
     func programmes(
-        from: Date,
-        to: Date
+        from start: Date,
+        to end: Date
     ) async throws(TVListingsRepositoryError) -> [TVProgramme] {
         programmesFromToCallCount += 1
-        programmesFromToCalledWith.append((from, to))
+        programmesFromToCalledWith.append((start, end))
 
         switch programmesFromToStub {
         case .success(let programmes):

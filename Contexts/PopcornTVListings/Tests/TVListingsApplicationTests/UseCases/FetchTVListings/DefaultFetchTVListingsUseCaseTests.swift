@@ -87,6 +87,28 @@ struct DefaultFetchTVListingsUseCaseTests {
         )
     }
 
+    @Test("execute maps a repository remote error to unknown")
+    func executeMapsRemoteErrorToUnknown() async {
+        mockRepository.programmesFromToStub = .failure(.remote(nil))
+
+        let useCase = makeUseCase(now: { .now })
+
+        await #expect(
+            performing: {
+                _ = try await useCase.execute()
+            },
+            throws: { error in
+                guard let fetchError = error as? FetchTVListingsError else {
+                    return false
+                }
+                if case .unknown = fetchError {
+                    return true
+                }
+                return false
+            }
+        )
+    }
+
     private func makeUseCase(now: @escaping @Sendable () -> Date) -> DefaultFetchTVListingsUseCase {
         DefaultFetchTVListingsUseCase(tvProgrammeRepository: mockRepository, now: now)
     }
