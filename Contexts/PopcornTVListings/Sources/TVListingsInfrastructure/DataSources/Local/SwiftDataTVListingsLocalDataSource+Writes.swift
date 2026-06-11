@@ -16,6 +16,11 @@ extension SwiftDataTVListingsLocalDataSource {
     /// transaction. Channels are small and only rewritten when their file hash changes, so a
     /// wholesale replace is simplest and leaves no orphaned channel-number rows.
     ///
+    /// The `delete(model:)` calls write directly to the persistent store, so if the subsequent
+    /// `save()` of the inserts/hash fails, the deletes can't be rolled back — the channel table
+    /// may be left empty and the `channels.json` hash unchanged. That's safe: the next sync sees
+    /// the unchanged hash, re-fetches `channels.json`, and re-populates it.
+    ///
     func upsertChannels(
         _ channels: [TVChannel],
         hash: String
@@ -44,6 +49,9 @@ extension SwiftDataTVListingsLocalDataSource {
     /// transaction. The delete is scoped to programmes whose **start time** falls in the day
     /// (matching how the feed buckets programmes into a date file), so a programme that spills
     /// past midnight into the next day's range is never removed when an adjacent day is rewritten.
+    ///
+    /// As with `upsertChannels`, the batch delete writes directly to the store; a failed `save()`
+    /// can leave the day empty with its hash unchanged, and the next sync re-fetches that day.
     ///
     func replaceProgrammes(
         _ programmes: [TVProgramme],

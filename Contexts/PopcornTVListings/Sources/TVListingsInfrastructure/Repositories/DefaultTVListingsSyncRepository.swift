@@ -24,42 +24,24 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
     /// The currently-running sync, if any. Reused by overlapping callers so they coalesce.
     private var inFlight: Task<Void, any Error>?
 
-    #if DEBUG
-        /// Fired (in DEBUG builds only) when a caller takes the coalescing branch, so a test
-        /// can observe coalescing deterministically rather than relying on scheduler timing.
-        private let onCoalesce: (@Sendable () -> Void)?
-    #endif
+    /// Optional observation point fired when a caller takes the coalescing branch. `nil` in
+    /// production; a test sets it to observe coalescing deterministically without relying on
+    /// scheduler timing.
+    private let onCoalesce: (@Sendable () -> Void)?
 
     init(
         remoteDataSource: some TVListingsRemoteDataSource,
         localDataSource: some TVListingsLocalDataSource,
         syncThrottle: TimeInterval = 12 * 60 * 60,
-        now: @escaping @Sendable () -> Date = { .now }
+        now: @escaping @Sendable () -> Date = { .now },
+        onCoalesce: (@Sendable () -> Void)? = nil
     ) {
         self.remoteDataSource = remoteDataSource
         self.localDataSource = localDataSource
         self.syncThrottle = syncThrottle
         self.now = now
-        #if DEBUG
-            self.onCoalesce = nil
-        #endif
+        self.onCoalesce = onCoalesce
     }
-
-    #if DEBUG
-        init(
-            remoteDataSource: some TVListingsRemoteDataSource,
-            localDataSource: some TVListingsLocalDataSource,
-            syncThrottle: TimeInterval = 12 * 60 * 60,
-            now: @escaping @Sendable () -> Date = { .now },
-            onCoalesce: @escaping @Sendable () -> Void
-        ) {
-            self.remoteDataSource = remoteDataSource
-            self.localDataSource = localDataSource
-            self.syncThrottle = syncThrottle
-            self.now = now
-            self.onCoalesce = onCoalesce
-        }
-    #endif
 
     func sync() async throws(TVListingsRepositoryError) {
         do {
@@ -90,9 +72,7 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
 
     private func coalescedSync() async throws {
         if let inFlight {
-            #if DEBUG
-                onCoalesce?()
-            #endif
+            onCoalesce?()
             try await inFlight.value
             return
         }
