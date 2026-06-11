@@ -106,9 +106,7 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
 
         try await syncChannelsIfChanged(manifest: manifest, stored: stored)
 
-        for date in manifest.dates {
-            try await syncScheduleIfChanged(date: date, manifest: manifest, stored: stored)
-        }
+        try await syncChangedSchedules(manifest: manifest, stored: stored)
 
         // Purge whole past days and any day no longer in the rolling window. Today is retained
         // in full. Runs only after the day loop, so a partial sync leaves more data, never less.
@@ -151,27 +149,47 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
         }
     }
 
-    private func syncScheduleIfChanged(
-        date: String,
+    ///
+    /// Fetches and persists every changed day's schedule concurrently. Unchanged days are
+    /// skipped entirely (no fetch, no write) — the hash-skip is the performance win, and the
+    /// fan-out cuts a cold-launch (up to 7 changed days) to roughly one round-trip's latency.
+    /// Fetches run in parallel; the per-day writes serialise on the local data-source actor and
+    /// each commits its day + hash atomically. A failure cancels the rest and propagates, so the
+    /// later purge/`completeSync` never runs — leaving the cache with more data, never less.
+    ///
+    private func syncChangedSchedules(
         manifest: EPGManifest,
         stored: [String: String]
     ) async throws(TVListingsRepositoryError) {
-        // Skip unchanged days entirely — no fetch, no write. This is the performance win.
-        guard let file = manifest.scheduleFile(forDate: date), stored[file.path] != file.hash else {
+        let changedDays: [(date: String, hash: String)] = manifest.dates.compactMap { date in
+            guard let file = manifest.scheduleFile(forDate: date), stored[file.path] != file.hash else {
+                return nil
+            }
+            return (date, file.hash)
+        }
+
+        guard !changedDays.isEmpty else {
             return
         }
 
-        let programmes: [TVProgramme]
+        let remote = remoteDataSource
+        let local = localDataSource
         do {
-            programmes = try await remoteDataSource.fetchSchedule(forDate: date)
-        } catch let error {
+            try await withThrowingTaskGroup(of: Void.self) { group in
+                for day in changedDays {
+                    group.addTask {
+                        let programmes = try await remote.fetchSchedule(forDate: day.date)
+                        try await local.replaceProgrammes(programmes, forDate: day.date, hash: day.hash)
+                    }
+                }
+                try await group.waitForAll()
+            }
+        } catch let error as TVListingsRemoteDataSourceError {
             throw TVListingsRepositoryError(error)
-        }
-
-        do {
-            try await localDataSource.replaceProgrammes(programmes, forDate: date, hash: file.hash)
-        } catch let error {
+        } catch let error as TVListingsLocalDataSourceError {
             throw TVListingsRepositoryError(error)
+        } catch {
+            throw .unknown(error)
         }
     }
 

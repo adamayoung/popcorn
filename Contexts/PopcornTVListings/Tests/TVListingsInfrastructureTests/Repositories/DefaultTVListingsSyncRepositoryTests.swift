@@ -69,6 +69,31 @@ struct DefaultTVListingsSyncRepositoryTests {
         #expect(replaces.map(\.date) == ["20260612"])
     }
 
+    @Test("sync fetches and persists every changed day (fanned out in parallel)")
+    func syncFetchesEveryChangedDay() async throws {
+        let remote = MockTVListingsRemoteDataSource()
+        let local = MockTVListingsLocalDataSource()
+        let dates = ["20260611", "20260612", "20260613"]
+        remote.fetchManifestStub = .success(
+            .mock(
+                dates: dates,
+                channelsHash: nil,
+                scheduleHashes: ["20260611": "s1", "20260612": "s2", "20260613": "s3"]
+            )
+        )
+        for date in dates {
+            remote.fetchScheduleStubs[date] = .success([TVProgramme.mock(channelID: "BBC", title: date)])
+        }
+
+        let repository = makeRepository(remote: remote, local: local)
+
+        try await repository.sync()
+
+        #expect(Set(remote.fetchScheduleCalledWith) == Set(dates))
+        let replacedDates = await Set(local.replaceProgrammesCalls.map(\.date))
+        #expect(replacedDates == Set(dates))
+    }
+
     @Test("sync does not mutate the cache when the manifest fetch fails")
     func syncDoesNotMutateOnManifestFailure() async {
         let remote = MockTVListingsRemoteDataSource()

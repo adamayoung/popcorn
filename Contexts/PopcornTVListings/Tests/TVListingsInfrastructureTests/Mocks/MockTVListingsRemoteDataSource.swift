@@ -21,7 +21,14 @@ final class MockTVListingsRemoteDataSource: TVListingsRemoteDataSource, @uncheck
     /// Per-date schedule stubs; falls back to `fetchScheduleDefaultStub` when a date is absent.
     var fetchScheduleStubs: [String: Result<[TVProgramme], TVListingsRemoteDataSourceError>] = [:]
     var fetchScheduleDefaultStub: Result<[TVProgramme], TVListingsRemoteDataSourceError> = .success([])
-    var fetchScheduleCalledWith: [String] = []
+
+    /// Schedule fetches can run concurrently (the repository fans them out), so guard the
+    /// recording with a lock. The order is not deterministic — assert membership, not sequence.
+    private let scheduleLock = NSLock()
+    private var recordedScheduleDates: [String] = []
+    var fetchScheduleCalledWith: [String] {
+        scheduleLock.withLock { recordedScheduleDates }
+    }
 
     /// Optional hook awaited inside `fetchManifest` — lets a test gate the manifest fetch to
     /// exercise overlapping/coalesced syncs deterministically.
@@ -49,7 +56,7 @@ final class MockTVListingsRemoteDataSource: TVListingsRemoteDataSource, @uncheck
     func fetchSchedule(
         forDate date: String
     ) async throws(TVListingsRemoteDataSourceError) -> [TVProgramme] {
-        fetchScheduleCalledWith.append(date)
+        scheduleLock.withLock { recordedScheduleDates.append(date) }
         switch fetchScheduleStubs[date] ?? fetchScheduleDefaultStub {
         case .success(let programmes): return programmes
         case .failure(let error): throw error
