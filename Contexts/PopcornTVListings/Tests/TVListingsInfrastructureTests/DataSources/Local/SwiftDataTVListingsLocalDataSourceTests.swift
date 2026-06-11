@@ -168,4 +168,26 @@ struct SwiftDataTVListingsLocalDataSourceTests {
         #expect(result.map(\.title) == ["on-now"])
     }
 
+    @Test("nowPlaying excludes a programme whose endTime equals now")
+    func nowPlayingExcludesProgrammesEndingAtNow() async throws {
+        let dataSource = SwiftDataTVListingsLocalDataSource(modelContainer: modelContainer)
+        let now = ukDate(year: 2026, month: 4, day: 18, hour: 12)
+
+        // Ends exactly at `now`; the predicate is `endTime > now`, so it must be excluded.
+        try await dataSource.replaceProgrammes(
+            [TVProgramme.mock(
+                channelID: "BBC",
+                start: now.addingTimeInterval(-1800),
+                duration: 1800,
+                title: "just-ended"
+            )],
+            forDate: "20260418",
+            hash: "s1"
+        )
+
+        let result = try await dataSource.nowPlayingProgrammes(at: now)
+
+        #expect(result.isEmpty)
+    }
+
 }
