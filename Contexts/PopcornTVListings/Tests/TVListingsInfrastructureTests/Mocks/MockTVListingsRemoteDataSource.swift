@@ -13,29 +13,39 @@ final class MockTVListingsRemoteDataSource: TVListingsRemoteDataSource, @uncheck
 
     var fetchManifestStub: Result<EPGManifest, TVListingsRemoteDataSourceError> =
         .success(EPGManifest(generatedAt: Date(timeIntervalSince1970: 0), dates: [], files: []))
-    var fetchManifestCallCount = 0
 
     var fetchChannelsStub: Result<[TVChannel], TVListingsRemoteDataSourceError> = .success([])
-    var fetchChannelsCallCount = 0
 
     /// Per-date schedule stubs; falls back to `fetchScheduleDefaultStub` when a date is absent.
     var fetchScheduleStubs: [String: Result<[TVProgramme], TVListingsRemoteDataSourceError>] = [:]
     var fetchScheduleDefaultStub: Result<[TVProgramme], TVListingsRemoteDataSourceError> = .success([])
 
-    /// Schedule fetches can run concurrently (the repository fans them out), so guard the
-    /// recording with a lock. The order is not deterministic — assert membership, not sequence.
-    private let scheduleLock = NSLock()
-    private var recordedScheduleDates: [String] = []
-    var fetchScheduleCalledWith: [String] {
-        scheduleLock.withLock { recordedScheduleDates }
-    }
-
     /// Optional hook awaited inside `fetchManifest` — lets a test gate the manifest fetch to
     /// exercise overlapping/coalesced syncs deterministically.
     var onFetchManifest: (@Sendable () async -> Void)?
 
+    // Schedule fetches (and, via coalescing, other calls) can run concurrently when the
+    // repository fans them out, so all recorded counters/dates are guarded by one lock.
+    // Schedule order is not deterministic — assert membership, not sequence.
+    private let lock = NSLock()
+    private var manifestCalls = 0
+    private var channelsCalls = 0
+    private var recordedScheduleDates: [String] = []
+
+    var fetchManifestCallCount: Int {
+        lock.withLock { manifestCalls }
+    }
+
+    var fetchChannelsCallCount: Int {
+        lock.withLock { channelsCalls }
+    }
+
+    var fetchScheduleCalledWith: [String] {
+        lock.withLock { recordedScheduleDates }
+    }
+
     func fetchManifest() async throws(TVListingsRemoteDataSourceError) -> EPGManifest {
-        fetchManifestCallCount += 1
+        lock.withLock { manifestCalls += 1 }
         if let onFetchManifest {
             await onFetchManifest()
         }
@@ -46,7 +56,7 @@ final class MockTVListingsRemoteDataSource: TVListingsRemoteDataSource, @uncheck
     }
 
     func fetchChannels() async throws(TVListingsRemoteDataSourceError) -> [TVChannel] {
-        fetchChannelsCallCount += 1
+        lock.withLock { channelsCalls += 1 }
         switch fetchChannelsStub {
         case .success(let channels): return channels
         case .failure(let error): throw error
@@ -56,9 +66,7 @@ final class MockTVListingsRemoteDataSource: TVListingsRemoteDataSource, @uncheck
     func fetchSchedule(
         forDate date: String
     ) async throws(TVListingsRemoteDataSourceError) -> [TVProgramme] {
-        // Schedule fetches can run concurrently (the repository fans them out), so read the
-        // stubs and record the call under one lock.
-        let result = scheduleLock.withLock {
+        let result = lock.withLock {
             recordedScheduleDates.append(date)
             return fetchScheduleStubs[date] ?? fetchScheduleDefaultStub
         }

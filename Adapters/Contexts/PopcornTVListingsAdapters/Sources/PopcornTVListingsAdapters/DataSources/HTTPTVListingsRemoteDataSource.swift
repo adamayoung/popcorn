@@ -85,13 +85,17 @@ public final class HTTPTVListingsRemoteDataSource: TVListingsRemoteDataSource {
             throw .network(error)
         }
 
-        if let httpResponse = response as? HTTPURLResponse {
-            guard (200 ..< 300).contains(httpResponse.statusCode) else {
-                Self.logger.error(
-                    "Fetch of \(path, privacy: .public) returned HTTP \(httpResponse.statusCode, privacy: .public)"
-                )
-                throw .network(nil)
-            }
+        // The feed is always HTTPS, so a non-HTTP response is itself a network failure
+        // rather than something to forward to the decoder.
+        guard let httpResponse = response as? HTTPURLResponse else {
+            Self.logger.error("Fetch of \(path, privacy: .public) returned a non-HTTP response")
+            throw .network(nil)
+        }
+        guard (200 ..< 300).contains(httpResponse.statusCode) else {
+            Self.logger.error(
+                "Fetch of \(path, privacy: .public) returned HTTP \(httpResponse.statusCode, privacy: .public)"
+            )
+            throw .network(nil)
         }
 
         do {

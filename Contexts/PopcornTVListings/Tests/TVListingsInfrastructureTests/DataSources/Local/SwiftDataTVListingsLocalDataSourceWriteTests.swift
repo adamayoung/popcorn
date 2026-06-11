@@ -182,11 +182,28 @@ struct SwiftDataTVListingsLocalDataSourceWriteTests {
         #expect(result == nil)
     }
 
+    @Test("completeSync keeps a single sync-state row across repeated calls")
+    func completeSyncKeepsSingleSyncStateRow() async throws {
+        let dataSource = SwiftDataTVListingsLocalDataSource(modelContainer: modelContainer)
+
+        try await dataSource.completeSync(lastSyncedAt: Date(timeIntervalSince1970: 1), keepingFileStatePaths: [])
+        try await dataSource.completeSync(lastSyncedAt: Date(timeIntervalSince1970: 2), keepingFileStatePaths: [])
+
+        #expect(syncStateEntityCount() == 1, "the singleton is updated in place, not duplicated")
+        let lastSyncedAt = try await dataSource.lastSyncedAt()
+        #expect(lastSyncedAt == Date(timeIntervalSince1970: 2))
+    }
+
     // MARK: - Helpers
 
     private func numberEntityCount() -> Int {
         let context = ModelContext(modelContainer)
         return (try? context.fetchCount(FetchDescriptor<TVChannelNumberEntity>())) ?? -1
+    }
+
+    private func syncStateEntityCount() -> Int {
+        let context = ModelContext(modelContainer)
+        return (try? context.fetchCount(FetchDescriptor<EPGSyncStateEntity>())) ?? -1
     }
 
     private func programmeEntityCount(id: String) -> Int {

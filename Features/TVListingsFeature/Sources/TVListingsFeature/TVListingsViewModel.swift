@@ -149,7 +149,8 @@ public final class TVListingsViewModel {
     ) -> [TVListingsNowPlayingItem] {
         let programmesByChannelID = Dictionary(grouping: programmes, by: \.channelID)
 
-        // Client channel order is preserved; programmes with no matching channel are dropped.
+        // The order of the `channels` array from the dependency is preserved as-is; programmes
+        // with no matching channel are dropped.
         return channels.flatMap { channel in
             (programmesByChannelID[channel.id] ?? []).map { programme in
                 TVListingsNowPlayingItem(channel: channel, programme: programme)

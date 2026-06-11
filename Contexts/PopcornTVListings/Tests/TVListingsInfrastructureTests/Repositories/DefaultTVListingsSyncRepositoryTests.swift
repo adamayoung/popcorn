@@ -179,6 +179,11 @@ struct DefaultTVListingsSyncRepositoryTests {
                 return true
             }
         )
+
+        // A failed sync must not stamp `lastSyncedAt`, so the next `syncIfNeeded` retries
+        // rather than treating the partial result as a completed sync.
+        let completes = await local.completeSyncCalls
+        #expect(completes.isEmpty)
     }
 
     @Test("sync maps a local write failure to a repository error")
