@@ -94,6 +94,26 @@ struct DefaultTVListingsSyncRepositoryTests {
         #expect(replacedDates == Set(dates))
     }
 
+    @Test("sync skips malformed manifest dates instead of requesting them")
+    func syncSkipsMalformedDates() async throws {
+        let remote = MockTVListingsRemoteDataSource()
+        let local = MockTVListingsLocalDataSource()
+        remote.fetchManifestStub = .success(
+            .mock(
+                dates: ["20260611", "../../evil"],
+                channelsHash: nil,
+                scheduleHashes: ["20260611": "s1", "../../evil": "hax"]
+            )
+        )
+        remote.fetchScheduleDefaultStub = .success([])
+
+        let repository = makeRepository(remote: remote, local: local)
+
+        try await repository.sync()
+
+        #expect(remote.fetchScheduleCalledWith == ["20260611"], "malformed date is never requested")
+    }
+
     @Test("sync does not mutate the cache when the manifest fetch fails")
     func syncDoesNotMutateOnManifestFailure() async {
         let remote = MockTVListingsRemoteDataSource()

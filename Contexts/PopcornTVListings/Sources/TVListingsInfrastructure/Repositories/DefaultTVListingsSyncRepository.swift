@@ -162,7 +162,12 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
         stored: [String: String]
     ) async throws(TVListingsRepositoryError) {
         let changedDays: [(date: String, hash: String)] = manifest.dates.compactMap { date in
-            guard let file = manifest.scheduleFile(forDate: date), stored[file.path] != file.hash else {
+            // Validate the manifest-supplied date before it reaches a URL path. Skips any
+            // malformed entry so a bad feed value can't produce a traversal/odd request.
+            guard Self.isValidDateString(date),
+                  let file = manifest.scheduleFile(forDate: date),
+                  stored[file.path] != file.hash
+            else {
                 return nil
             }
             return (date, file.hash)
@@ -191,6 +196,12 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
         } catch {
             throw .unknown(error)
         }
+    }
+
+    /// `true` when the string is a bare `yyyyMMdd` (8 digits) — the only shape the feed
+    /// produces and the only shape safe to interpolate into a request path.
+    private static func isValidDateString(_ date: String) -> Bool {
+        date.count == 8 && date.allSatisfy(\.isNumber)
     }
 
 }
