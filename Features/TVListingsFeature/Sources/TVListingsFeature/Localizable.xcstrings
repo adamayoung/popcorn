@@ -57,6 +57,17 @@
         }
       }
     },
+    "TV_LISTINGS_REGION" : {
+      "comment" : "Label for the toolbar button that filters the listings by region.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Region"
+          }
+        }
+      }
+    },
     "TV_LISTINGS_RETRY" : {
       "comment" : "Title of the retry button shown when loading the listings failed.",
       "localizations" : {

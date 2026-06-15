@@ -42,6 +42,23 @@ public struct TVListingsViewSnapshot: Equatable, Sendable {
 
 }
 
+/// A nation grouping of selectable regions, for the region-filter menu.
+public struct TVListingsRegionSection: Identifiable, Equatable, Sendable {
+
+    public let nation: String
+    public let regions: [TVRegionGroup]
+
+    public var id: String {
+        nation
+    }
+
+    public init(nation: String, regions: [TVRegionGroup]) {
+        self.nation = nation
+        self.regions = regions
+    }
+
+}
+
 /// Drives ``TVListingsView``.
 ///
 /// Loading is driven by the view through ``load()`` from a `.task`, so SwiftUI
@@ -52,9 +69,9 @@ public struct TVListingsViewSnapshot: Equatable, Sendable {
 ///
 /// Syncing is fully automatic and app-level (see `AppRootViewModel`); this view
 /// model only reads the cached listings. It fetches the next day's worth of
-/// listings via ``TVListingsDependencies/fetchListings`` and selects the
-/// programme airing now on each channel. ``refresh()`` re-reads the cache so the
-/// view can pick up data produced by a background sync (e.g. on foreground).
+/// listings, the channel directory, and the region directory, then shows the
+/// programme airing now on each channel **in the selected region**. Changing the
+/// region re-filters the already-fetched data in memory (no refetch).
 @Observable
 @MainActor
 public final class TVListingsViewModel {
@@ -63,7 +80,16 @@ public final class TVListingsViewModel {
 
     private static let logger = Logger.tvListings
 
+    /// Nation order for the region menu; unknown nations fall back to alphabetical, after these.
+    private static let nationOrder = ["England", "Scotland", "Wales", "Northern Ireland", "Ireland", "Channel Islands"]
+
     public private(set) var viewState: ViewState<ViewSnapshot>
+
+    /// The selectable regions (areas that have channels), grouped by nation, for the filter menu.
+    public private(set) var regionsByNation: [TVListingsRegionSection] = []
+
+    /// The region currently filtering the listings, or `nil` when no region data is available.
+    public private(set) var selectedRegion: TVRegionGroup?
 
     /// Drives `.task(id:)` reruns. ``reload()`` bumps it to retry after an error
     /// or to pick up freshly-synced data on foreground.
@@ -71,6 +97,10 @@ public final class TVListingsViewModel {
 
     private let dependencies: TVListingsDependencies
     private let now: @Sendable () -> Date
+
+    /// Raw fetched data, cached so a region change can re-filter without a refetch.
+    private var cachedChannels: [Channel] = []
+    private var cachedProgrammes: [TVProgramme] = []
 
     /// Monotonic id for in-flight ``fetch()`` calls. Only the most recently
     /// started fetch may commit its result, so a slow fetch can't overwrite
@@ -109,6 +139,16 @@ public final class TVListingsViewModel {
         reloadID += 1
     }
 
+    // MARK: - Region selection
+
+    /// Filters the listings to `group`, persists the choice, and rebuilds the snapshot from the
+    /// already-fetched data. Synchronous and never refetches.
+    public func selectRegion(_ group: TVRegionGroup) {
+        selectedRegion = group
+        dependencies.saveSelectedRegionID(group.id)
+        rebuildSnapshot()
+    }
+
     // MARK: - Loading
 
     func fetch() async {
@@ -121,8 +161,9 @@ public final class TVListingsViewModel {
 
         do {
             async let channelsTask = dependencies.fetchChannels()
+            async let regionsTask = dependencies.fetchRegions()
             async let listingsTask = dependencies.fetchListings()
-            let (channels, programmes) = try await (channelsTask, listingsTask)
+            let (channels, regions, programmes) = try await (channelsTask, regionsTask, listingsTask)
 
             // A newer fetch superseded this one — drop the stale result so it
             // can't clobber fresher listings.
@@ -130,10 +171,19 @@ public final class TVListingsViewModel {
                 return
             }
 
-            let snapshot = ViewSnapshot(
-                items: Self.buildNowPlayingItems(channels: channels, programmes: programmes, now: now())
+            cachedChannels = channels
+            cachedProgrammes = programmes
+
+            let available = TVRegionFiltering.groups(from: regions)
+                .filter { !TVRegionFiltering.channels(channels, in: $0).isEmpty }
+            regionsByNation = Self.sectioned(available)
+            selectedRegion = Self.resolveSelection(
+                available: available,
+                current: selectedRegion,
+                persistedID: dependencies.loadSelectedRegionID()
             )
-            viewState = .ready(snapshot)
+
+            rebuildSnapshot()
         } catch {
             // Superseded by a newer fetch, or cancelled because the view
             // disappeared: leave the state for the winner / the next `.task` run
@@ -151,6 +201,62 @@ public final class TVListingsViewModel {
                 viewState = .error(ViewStateError(error))
             }
         }
+    }
+
+    /// Rebuilds the ready snapshot from cached data, filtered to ``selectedRegion``. When no
+    /// region is selected (no region data synced yet) all channels are shown, so the screen
+    /// is never empty just because regions are missing.
+    private func rebuildSnapshot() {
+        let channels = selectedRegion
+            .map { TVRegionFiltering.channels(cachedChannels, in: $0) }
+            ?? cachedChannels
+        let snapshot = ViewSnapshot(
+            items: Self.buildNowPlayingItems(channels: channels, programmes: cachedProgrammes, now: now())
+        )
+        viewState = .ready(snapshot)
+    }
+
+    /// Resolves the region to filter by: keep the current one if still available, else the
+    /// persisted one, else default to London, else the first England area, else the first
+    /// available — or `nil` when there are no regions with channels.
+    private static func resolveSelection(
+        available: [TVRegionGroup],
+        current: TVRegionGroup?,
+        persistedID: String?
+    ) -> TVRegionGroup? {
+        guard !available.isEmpty else {
+            return nil
+        }
+        if let current, let match = available.first(where: { $0.id == current.id }) {
+            return match
+        }
+        if let persistedID, let match = available.first(where: { $0.id == persistedID }) {
+            return match
+        }
+        if let london = available.first(where: { $0.name.caseInsensitiveCompare("London") == .orderedSame }) {
+            return london
+        }
+        if let england = available.first(where: { $0.nation == "England" }) {
+            return england
+        }
+        return available.first
+    }
+
+    private static func sectioned(_ groups: [TVRegionGroup]) -> [TVListingsRegionSection] {
+        let byNation = Dictionary(grouping: groups, by: \.nation)
+        let nations = byNation.keys.sorted { lhs, rhs in
+            switch (nationOrder.firstIndex(of: lhs), nationOrder.firstIndex(of: rhs)) {
+            case (let lhsIndex?, let rhsIndex?):
+                lhsIndex < rhsIndex
+            case (_?, nil):
+                true
+            case (nil, _?):
+                false
+            default:
+                lhs.localizedCaseInsensitiveCompare(rhs) == .orderedAscending
+            }
+        }
+        return nations.map { TVListingsRegionSection(nation: $0, regions: byNation[$0] ?? []) }
     }
 
     /// Selects the programme airing at `now` on each channel from the next day's

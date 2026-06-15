@@ -72,6 +72,10 @@ package final class TVListingsInfrastructureFactory {
         DefaultChannelRepository(localDataSource: localDataSource)
     }
 
+    package func makeTVRegionRepository() -> some TVRegionRepository {
+        DefaultTVRegionRepository(localDataSource: localDataSource)
+    }
+
     package func makeTVProgrammeRepository() -> some TVProgrammeRepository {
         DefaultTVProgrammeRepository(localDataSource: localDataSource)
     }

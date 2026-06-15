@@ -25,6 +25,7 @@ struct PopcornTVListingsFactoryTests {
 
         _ = factory.makeSyncTVListingsIfNeededUseCase()
         _ = factory.makeFetchChannelsUseCase()
+        _ = factory.makeFetchTVRegionsUseCase()
         _ = factory.makeFetchChannelScheduleUseCase()
         _ = factory.makeFetchNowPlayingTVProgrammesUseCase()
         _ = factory.makeFetchTVListingsUseCase()

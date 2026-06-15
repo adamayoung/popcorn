@@ -282,11 +282,17 @@ extension TVListingsViewModelTests {
 
     static func stubDependencies(
         fetchChannels: @escaping @Sendable () async throws -> [Channel] = { [] },
-        fetchListings: @escaping @Sendable () async throws -> [TVProgramme] = { [] }
+        fetchRegions: @escaping @Sendable () async throws -> [TVRegion] = { [] },
+        fetchListings: @escaping @Sendable () async throws -> [TVProgramme] = { [] },
+        loadSelectedRegionID: @escaping @Sendable () -> String? = { nil },
+        saveSelectedRegionID: @escaping @Sendable (String) -> Void = { _ in }
     ) -> TVListingsDependencies {
         TVListingsDependencies(
             fetchChannels: fetchChannels,
-            fetchListings: fetchListings
+            fetchRegions: fetchRegions,
+            fetchListings: fetchListings,
+            loadSelectedRegionID: loadSelectedRegionID,
+            saveSelectedRegionID: saveSelectedRegionID
         )
     }
 

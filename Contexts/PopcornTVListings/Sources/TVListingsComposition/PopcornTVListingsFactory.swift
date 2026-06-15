@@ -44,6 +44,7 @@ public final class PopcornTVListingsFactory: Sendable {
         )
         self.applicationFactory = TVListingsApplicationFactory(
             channelRepository: infrastructureFactory.makeChannelRepository(),
+            tvRegionRepository: infrastructureFactory.makeTVRegionRepository(),
             tvProgrammeRepository: infrastructureFactory.makeTVProgrammeRepository(),
             tvListingsSyncRepository: infrastructureFactory.makeTVListingsSyncRepository()
         )
@@ -55,6 +56,10 @@ public final class PopcornTVListingsFactory: Sendable {
 
     public func makeFetchChannelsUseCase() -> FetchChannelsUseCase {
         applicationFactory.makeFetchChannelsUseCase()
+    }
+
+    public func makeFetchTVRegionsUseCase() -> FetchTVRegionsUseCase {
+        applicationFactory.makeFetchTVRegionsUseCase()
     }
 
     public func makeFetchChannelScheduleUseCase() -> FetchChannelScheduleUseCase {

@@ -36,9 +36,51 @@ public struct TVListingsView: View {
             }
             .navigationTitle(Text("TV_LISTINGS_TITLE", bundle: .module))
             .accessibilityIdentifier("tvListings.view")
+            .toolbar {
+                if !viewModel.regionsByNation.isEmpty {
+                    ToolbarItem(placement: toolbarTrailingPlacement) {
+                        regionMenu
+                    }
+                }
+            }
             .task(id: viewModel.reloadID) {
                 await viewModel.load()
             }
+    }
+
+    private var regionMenu: some View {
+        Menu {
+            ForEach(viewModel.regionsByNation) { section in
+                Menu(section.nation) {
+                    ForEach(section.regions) { region in
+                        Button {
+                            viewModel.selectRegion(region)
+                        } label: {
+                            if region.id == viewModel.selectedRegion?.id {
+                                Label(region.name, systemImage: "checkmark")
+                            } else {
+                                Text(region.name)
+                            }
+                        }
+                    }
+                }
+            }
+        } label: {
+            Label {
+                Text("TV_LISTINGS_REGION", bundle: .module)
+            } icon: {
+                Image(systemName: "line.3.horizontal.decrease.circle")
+            }
+        }
+        .accessibilityIdentifier("tvListings.region-filter")
+    }
+
+    private var toolbarTrailingPlacement: ToolbarItemPlacement {
+        #if os(macOS)
+            .automatic
+        #else
+            .primaryAction
+        #endif
     }
 
     @ViewBuilder
