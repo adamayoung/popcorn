@@ -27,11 +27,23 @@ struct SwiftDataTVListingsLocalDataSourceWriteTests {
         let dataSource = SwiftDataTVListingsLocalDataSource(modelContainer: modelContainer)
 
         try await dataSource.upsertChannels(
-            [TVChannel.mock(id: "OLD", channelNumbers: [TVChannelNumber(channelNumber: "101", subbouquetIDs: [1])])],
+            [TVChannel.mock(
+                id: "OLD",
+                channelNumbers: [TVChannelNumber(
+                    channelNumber: "101",
+                    regions: [TVChannelRegion(bouquet: 4101, subBouquet: 1)]
+                )]
+            )],
             hash: "c1"
         )
         try await dataSource.upsertChannels(
-            [TVChannel.mock(id: "NEW", channelNumbers: [TVChannelNumber(channelNumber: "202", subbouquetIDs: [3])])],
+            [TVChannel.mock(
+                id: "NEW",
+                channelNumbers: [TVChannelNumber(
+                    channelNumber: "202",
+                    regions: [TVChannelRegion(bouquet: 4101, subBouquet: 3)]
+                )]
+            )],
             hash: "c2"
         )
 
@@ -41,6 +53,31 @@ struct SwiftDataTVListingsLocalDataSourceWriteTests {
         #expect(numberEntityCount() == 1, "old channel's number rows must not orphan")
         let states = try await dataSource.fileStates()
         #expect(states["channels.json"] == "c2")
+    }
+
+    // MARK: - upsertRegions
+
+    @Test("upsertRegions replaces the region directory and records the hash")
+    func upsertRegionsReplacesAndRecordsHash() async throws {
+        let dataSource = SwiftDataTVListingsLocalDataSource(modelContainer: modelContainer)
+
+        try await dataSource.upsertRegions(
+            [TVRegion(bouquet: 4097, subBouquet: 9, name: "Old", nation: "England", isHD: false)],
+            hash: "r1"
+        )
+        try await dataSource.upsertRegions(
+            [
+                TVRegion(bouquet: 4101, subBouquet: 1, name: "London", nation: "England", isHD: true),
+                TVRegion(bouquet: 4097, subBouquet: 1, name: "London", nation: "England", isHD: false)
+            ],
+            hash: "r2"
+        )
+
+        let regions = try await dataSource.regions()
+        #expect(regions.map(\.id) == ["4097-1", "4101-1"], "old region replaced; sorted by bouquet then subBouquet")
+        #expect(regions.contains { $0.name == "London" && $0.isHD })
+        let states = try await dataSource.fileStates()
+        #expect(states["regions.json"] == "r2")
     }
 
     // MARK: - replaceProgrammes

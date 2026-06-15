@@ -45,6 +45,30 @@ extension SwiftDataTVListingsLocalDataSource {
     }
 
     ///
+    /// Replaces the whole region directory and records the `regions.json` hash in one
+    /// transaction, mirroring ``upsertChannels(_:hash:)``. Regions rarely change and are
+    /// only rewritten when the file hash changes, so a wholesale replace is simplest.
+    ///
+    func upsertRegions(
+        _ regions: [TVRegion],
+        hash: String
+    ) async throws(TVListingsLocalDataSourceError) {
+        do {
+            try modelContext.delete(model: TVRegionEntity.self)
+
+            let mapper = TVRegionEntityMapper()
+            for region in regions {
+                modelContext.insert(mapper.map(region))
+            }
+
+            try upsertFileState(path: "regions.json", hash: hash)
+            try modelContext.save()
+        } catch let error {
+            throw .persistence(error)
+        }
+    }
+
+    ///
     /// Replaces a single UK day's programmes and records that day's schedule-file hash in one
     /// transaction. The delete is scoped to programmes whose **start time** falls in the day
     /// (matching how the feed buckets programmes into a date file), so a programme that spills

@@ -37,7 +37,10 @@ struct SwiftDataTVListingsLocalDataSourceTests {
         let channel = TVChannel.mock(
             id: "BBC",
             name: "BBC",
-            channelNumbers: [TVChannelNumber(channelNumber: "101", subbouquetIDs: [1, 4])]
+            channelNumbers: [TVChannelNumber(
+                channelNumber: "101",
+                regions: [TVChannelRegion(bouquet: 4101, subBouquet: 1), TVChannelRegion(bouquet: 4097, subBouquet: 1)]
+            )]
         )
 
         try await dataSource.upsertChannels([channel], hash: "c1")
@@ -45,7 +48,10 @@ struct SwiftDataTVListingsLocalDataSourceTests {
 
         #expect(result.count == 1)
         #expect(result.first?.channelNumbers.first?.channelNumber == "101")
-        #expect(result.first?.channelNumbers.first?.subbouquetIDs == [1, 4])
+        #expect(result.first?.channelNumbers.first?.regions == [
+            TVChannelRegion(bouquet: 4101, subBouquet: 1),
+            TVChannelRegion(bouquet: 4097, subBouquet: 1)
+        ])
     }
 
     // MARK: - programmes(forChannelID:onDate:)

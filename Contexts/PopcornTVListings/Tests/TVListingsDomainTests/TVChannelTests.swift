@@ -14,7 +14,7 @@ struct TVChannelTests {
 
     @Test("init assigns all properties")
     func initAssignsAllProperties() {
-        let numbers = [TVChannelNumber(channelNumber: "101", subbouquetIDs: [1, 4])]
+        let numbers = [TVChannelNumber(channelNumber: "101", regions: [TVChannelRegion(bouquet: 4101, subBouquet: 1)])]
 
         let channel = TVChannel(
             id: "BBC One HD",

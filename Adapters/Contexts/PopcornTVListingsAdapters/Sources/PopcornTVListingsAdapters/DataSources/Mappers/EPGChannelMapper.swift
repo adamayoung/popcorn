@@ -19,7 +19,9 @@ struct EPGChannelMapper {
             channelNumbers: dto.channelNumbers.map { number in
                 TVChannelNumber(
                     channelNumber: number.channelNumber,
-                    subbouquetIDs: number.subbouquetIDs
+                    regions: number.regions.map { region in
+                        TVChannelRegion(bouquet: region.bouquet, subBouquet: region.subBouquet)
+                    }
                 )
             }
         )

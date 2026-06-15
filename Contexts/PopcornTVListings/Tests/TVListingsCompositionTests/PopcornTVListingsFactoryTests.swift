@@ -39,6 +39,10 @@ struct PopcornTVListingsFactoryTests {
             []
         }
 
+        func fetchRegions() async throws(TVListingsRemoteDataSourceError) -> [TVRegion] {
+            []
+        }
+
         func fetchSchedule(
             forDate date: String
         ) async throws(TVListingsRemoteDataSourceError) -> [TVProgramme] {

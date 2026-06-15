@@ -34,13 +34,13 @@ struct TVChannelEntityMapper {
             TVChannelNumberEntity(
                 channelID: channel.id,
                 channelNumber: number.channelNumber,
-                subbouquetIDs: number.subbouquetIDs
+                regions: number.regions
             )
         }
     }
 
     private func mapNumber(_ entity: TVChannelNumberEntity) -> TVChannelNumber {
-        TVChannelNumber(channelNumber: entity.channelNumber, subbouquetIDs: entity.subbouquetIDs)
+        TVChannelNumber(channelNumber: entity.channelNumber, regions: entity.regions)
     }
 
 }

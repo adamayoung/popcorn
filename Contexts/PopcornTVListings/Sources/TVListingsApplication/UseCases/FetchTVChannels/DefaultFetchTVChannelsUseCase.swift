@@ -25,7 +25,7 @@ final class DefaultFetchTVChannelsUseCase: FetchTVChannelsUseCase {
         }
 
         // Order by channel number (nil sorts last), then tie-break by name then id for a deterministic order.
-        return channels
+        return Self.preferringHDVariants(channels)
             .map { (channel: $0, sortKey: Self.sortKey(for: $0)) }
             .sorted { lhs, rhs in
                 switch (lhs.sortKey, rhs.sortKey) {
@@ -52,6 +52,38 @@ final class DefaultFetchTVChannelsUseCase: FetchTVChannelsUseCase {
         channel.channelNumbers
             .compactMap { Int($0.channelNumber) }
             .min()
+    }
+
+    /// Collapses SD/HD duplicates. When the same channel is published in both a
+    /// standard-definition and a high-definition variant — matched by name,
+    /// ignoring a trailing "HD" designation — only the HD variant (``TVChannel/isHD``)
+    /// is kept. Channels published in a single variant are returned unchanged.
+    private static func preferringHDVariants(_ channels: [TVChannel]) -> [TVChannel] {
+        let groups = Dictionary(grouping: channels) { baseName(for: $0) }
+        let sdIDsToDrop = groups.values.reduce(into: Set<String>()) { result, group in
+            // Only drop SD variants when an HD counterpart of the same channel exists.
+            guard group.contains(where: \.isHD) else {
+                return
+            }
+            for channel in group where !channel.isHD {
+                result.insert(channel.id)
+            }
+        }
+
+        guard !sdIDsToDrop.isEmpty else {
+            return channels
+        }
+        return channels.filter { !sdIDsToDrop.contains($0.id) }
+    }
+
+    /// The channel name lowercased with a trailing "HD" designation removed, so
+    /// "BBC One" and "BBC One HD" resolve to the same base name.
+    private static func baseName(for channel: TVChannel) -> String {
+        var tokens = channel.name.lowercased().split(separator: " ")
+        if tokens.last == "hd" {
+            tokens.removeLast()
+        }
+        return tokens.joined(separator: " ")
     }
 
 }

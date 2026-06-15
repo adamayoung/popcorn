@@ -42,6 +42,7 @@ public final class HTTPTVListingsRemoteDataSource: TVListingsRemoteDataSource {
     private let baseURL: URL
     private let manifestMapper = EPGManifestMapper()
     private let channelMapper = EPGChannelMapper()
+    private let regionMapper = EPGRegionMapper()
     private let scheduleMapper = EPGScheduleMapper()
 
     public init(
@@ -53,13 +54,21 @@ public final class HTTPTVListingsRemoteDataSource: TVListingsRemoteDataSource {
     }
 
     public func fetchManifest() async throws(TVListingsRemoteDataSourceError) -> EPGManifest {
-        let dto: EPGManifestDTO = try await fetch(path: "manifest.json")
+        // The manifest is the index the whole sync pivots on and — unlike the content-addressed
+        // files it points at — is not itself hashed, so it must never be served stale. Bypass the
+        // local URL cache and defeat any CDN edge cache with a unique cache-busting query item.
+        let dto: EPGManifestDTO = try await fetch(path: "manifest.json", cacheBusting: true)
         return manifestMapper.map(dto)
     }
 
     public func fetchChannels() async throws(TVListingsRemoteDataSourceError) -> [TVChannel] {
         let dto: EPGChannelsResponseDTO = try await fetch(path: "channels.json")
         return dto.channels.map(channelMapper.map)
+    }
+
+    public func fetchRegions() async throws(TVListingsRemoteDataSourceError) -> [TVRegion] {
+        let dto: EPGRegionsResponseDTO = try await fetch(path: "regions.json")
+        return dto.regions.map(regionMapper.map)
     }
 
     public func fetchSchedule(
@@ -76,14 +85,24 @@ public final class HTTPTVListingsRemoteDataSource: TVListingsRemoteDataSource {
     }
 
     private func fetch<Response: Decodable>(
-        path: String
+        path: String,
+        cacheBusting: Bool = false
     ) async throws(TVListingsRemoteDataSourceError) -> Response {
-        let url = baseURL.appending(path: path)
+        var url = baseURL.appending(path: path)
+        if cacheBusting {
+            url = Self.cacheBustedURL(url)
+        }
+
+        var request = URLRequest(url: url)
+        if cacheBusting {
+            request.cachePolicy = .reloadIgnoringLocalCacheData
+            request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
+        }
 
         let data: Data
         let response: URLResponse
         do {
-            (data, response) = try await session.data(from: url)
+            (data, response) = try await session.data(for: request)
         } catch let error {
             Self.logger.error(
                 "Failed to fetch \(path, privacy: .public): \(error.localizedDescription, privacy: .public)"
@@ -112,6 +131,18 @@ public final class HTTPTVListingsRemoteDataSource: TVListingsRemoteDataSource {
             )
             throw .decoding(error)
         }
+    }
+
+    /// Appends a unique `cb` query item so each request has a distinct URL the CDN edge cache
+    /// can't satisfy from a previously-cached response.
+    private static func cacheBustedURL(_ url: URL) -> URL {
+        guard var components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            return url
+        }
+        var queryItems = components.queryItems ?? []
+        queryItems.append(URLQueryItem(name: "cb", value: UUID().uuidString))
+        components.queryItems = queryItems
+        return components.url ?? url
     }
 
 }

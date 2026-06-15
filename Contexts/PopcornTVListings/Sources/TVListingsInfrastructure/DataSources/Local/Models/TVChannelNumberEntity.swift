@@ -7,18 +7,21 @@
 
 import Foundation
 import SwiftData
+import TVListingsDomain
 
 @Model
 final class TVChannelNumberEntity: Equatable {
 
     var channelID: String
     var channelNumber: String
-    var subbouquetIDs: [Int]
+    /// `TVChannelRegion` is a `Codable` value type, so SwiftData persists the array inline
+    /// (the same strategy the previous `[Int]` storage used).
+    var regions: [TVChannelRegion]
 
-    init(channelID: String, channelNumber: String, subbouquetIDs: [Int]) {
+    init(channelID: String, channelNumber: String, regions: [TVChannelRegion]) {
         self.channelID = channelID
         self.channelNumber = channelNumber
-        self.subbouquetIDs = subbouquetIDs
+        self.regions = regions
     }
 
 }

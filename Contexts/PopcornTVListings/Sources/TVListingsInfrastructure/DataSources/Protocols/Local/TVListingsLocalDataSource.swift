@@ -14,6 +14,8 @@ public protocol TVListingsLocalDataSource: Actor {
 
     func channels() async throws(TVListingsLocalDataSourceError) -> [TVChannel]
 
+    func regions() async throws(TVListingsLocalDataSourceError) -> [TVRegion]
+
     func programmes(
         forChannelID channelID: String,
         onDate date: Date
@@ -42,6 +44,13 @@ public protocol TVListingsLocalDataSource: Actor {
     /// same transaction.
     func upsertChannels(
         _ channels: [TVChannel],
+        hash: String
+    ) async throws(TVListingsLocalDataSourceError)
+
+    /// Replaces the region directory and records the `regions.json` content hash in the
+    /// same transaction.
+    func upsertRegions(
+        _ regions: [TVRegion],
         hash: String
     ) async throws(TVListingsLocalDataSourceError)
 

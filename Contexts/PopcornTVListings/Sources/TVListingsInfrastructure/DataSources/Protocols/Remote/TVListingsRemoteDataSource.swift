@@ -20,6 +20,9 @@ public protocol TVListingsRemoteDataSource: Sendable {
     /// The channel directory (`channels.json`).
     func fetchChannels() async throws(TVListingsRemoteDataSourceError) -> [TVChannel]
 
+    /// The region directory (`regions.json`).
+    func fetchRegions() async throws(TVListingsRemoteDataSourceError) -> [TVRegion]
+
     /// The programmes for a single day (`schedules/<yyyyMMdd>.json`).
     func fetchSchedule(
         forDate date: String

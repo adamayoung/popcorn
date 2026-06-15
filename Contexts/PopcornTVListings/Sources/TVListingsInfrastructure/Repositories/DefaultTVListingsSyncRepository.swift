@@ -114,6 +114,8 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
 
         try await syncChannelsIfChanged(manifest: manifest, stored: stored)
 
+        try await syncRegionsIfChanged(manifest: manifest, stored: stored)
+
         try await syncChangedSchedules(manifest: manifest, stored: stored)
 
         // Purge whole past days and any day no longer in the rolling window. Today is retained
@@ -152,6 +154,28 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
 
         do {
             try await localDataSource.upsertChannels(channels, hash: file.hash)
+        } catch let error {
+            throw TVListingsRepositoryError(error)
+        }
+    }
+
+    private func syncRegionsIfChanged(
+        manifest: EPGManifest,
+        stored: [String: String]
+    ) async throws(TVListingsRepositoryError) {
+        guard let file = manifest.regionsFile, stored[file.path] != file.hash else {
+            return
+        }
+
+        let regions: [TVRegion]
+        do {
+            regions = try await remoteDataSource.fetchRegions()
+        } catch let error {
+            throw TVListingsRepositoryError(error)
+        }
+
+        do {
+            try await localDataSource.upsertRegions(regions, hash: file.hash)
         } catch let error {
             throw TVListingsRepositoryError(error)
         }

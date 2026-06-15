@@ -14,6 +14,7 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
     // MARK: - Read stubs
 
     var channelsStub: Result<[TVChannel], TVListingsLocalDataSourceError> = .success([])
+    var regionsStub: Result<[TVRegion], TVListingsLocalDataSourceError> = .success([])
     var programmesStub: Result<[TVProgramme], TVListingsLocalDataSourceError> = .success([])
     var nowPlayingStub: Result<[TVProgramme], TVListingsLocalDataSourceError> = .success([])
     var programmesFromToStub: Result<[TVProgramme], TVListingsLocalDataSourceError> = .success([])
@@ -23,6 +24,7 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
     // MARK: - Write stubs
 
     var upsertChannelsStub: Result<Void, TVListingsLocalDataSourceError> = .success(())
+    var upsertRegionsStub: Result<Void, TVListingsLocalDataSourceError> = .success(())
     var replaceProgrammesStub: Result<Void, TVListingsLocalDataSourceError> = .success(())
     var deleteProgrammesStub: Result<Void, TVListingsLocalDataSourceError> = .success(())
     var completeSyncStub: Result<Void, TVListingsLocalDataSourceError> = .success(())
@@ -33,13 +35,14 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
     var lastSyncedAtCallCount = 0
     var programmesFromToCalledWith: [(from: Date, to: Date)] = []
     var upsertChannelsCalls: [(channels: [TVChannel], hash: String)] = []
+    var upsertRegionsCalls: [(regions: [TVRegion], hash: String)] = []
     var replaceProgrammesCalls: [(programmes: [TVProgramme], date: String, hash: String)] = []
     var deleteProgrammesCalls: [[String]] = []
     var completeSyncCalls: [(lastSyncedAt: Date, paths: Set<String>)] = []
 
     /// Total number of mutating calls — used to assert "no local mutation on failure".
     var mutationCount: Int {
-        upsertChannelsCalls.count + replaceProgrammesCalls.count
+        upsertChannelsCalls.count + upsertRegionsCalls.count + replaceProgrammesCalls.count
             + deleteProgrammesCalls.count + completeSyncCalls.count
     }
 
@@ -69,6 +72,13 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
 
     func channels() async throws(TVListingsLocalDataSourceError) -> [TVChannel] {
         switch channelsStub {
+        case .success(let value): return value
+        case .failure(let error): throw error
+        }
+    }
+
+    func regions() async throws(TVListingsLocalDataSourceError) -> [TVRegion] {
+        switch regionsStub {
         case .success(let value): return value
         case .failure(let error): throw error
         }
@@ -128,6 +138,17 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
     ) async throws(TVListingsLocalDataSourceError) {
         upsertChannelsCalls.append((channels, hash))
         switch upsertChannelsStub {
+        case .success: return
+        case .failure(let error): throw error
+        }
+    }
+
+    func upsertRegions(
+        _ regions: [TVRegion],
+        hash: String
+    ) async throws(TVListingsLocalDataSourceError) {
+        upsertRegionsCalls.append((regions, hash))
+        switch upsertRegionsStub {
         case .success: return
         case .failure(let error): throw error
         }

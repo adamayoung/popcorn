@@ -18,6 +18,7 @@ package final class TVListingsInfrastructureFactory {
     private static let schema = Schema([
         TVChannelEntity.self,
         TVChannelNumberEntity.self,
+        TVRegionEntity.self,
         TVProgrammeEntity.self,
         EPGFileStateEntity.self,
         EPGSyncStateEntity.self

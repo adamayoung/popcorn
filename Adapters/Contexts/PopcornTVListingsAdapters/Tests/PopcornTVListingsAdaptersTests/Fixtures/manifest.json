@@ -3,6 +3,7 @@
   "dates": ["20260418", "20260419"],
   "files": [
     { "path": "channels.json", "hash": "channels-hash-1", "bytes": 18234 },
+    { "path": "regions.json", "hash": "regions-hash-1", "bytes": 4096 },
     { "path": "schedules/20260418.json", "hash": "schedule-418-hash", "bytes": 40221 },
     { "path": "schedules/20260419.json", "hash": "schedule-419-hash", "bytes": 39880 }
   ]

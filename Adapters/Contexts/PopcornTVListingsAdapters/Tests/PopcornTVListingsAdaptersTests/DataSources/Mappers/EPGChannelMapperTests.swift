@@ -22,7 +22,15 @@ struct EPGChannelMapperTests {
             name: "SkySp+ HD",
             isHD: true,
             logoURL: URL(string: "https://example.com/logo.png"),
-            channelNumbers: [EPGChannelNumberDTO(channelNumber: "1081", subbouquetIDs: [1, 4])]
+            channelNumbers: [
+                EPGChannelNumberDTO(
+                    channelNumber: "1081",
+                    regions: [
+                        EPGChannelRegionDTO(bouquet: 4101, subBouquet: 1),
+                        EPGChannelRegionDTO(bouquet: 4097, subBouquet: 1)
+                    ]
+                )
+            ]
         )
 
         let channel = mapper.map(dto)
@@ -33,7 +41,10 @@ struct EPGChannelMapperTests {
         #expect(channel.logoURL == URL(string: "https://example.com/logo.png"))
         #expect(channel.channelNumbers.count == 1)
         #expect(channel.channelNumbers.first?.channelNumber == "1081")
-        #expect(channel.channelNumbers.first?.subbouquetIDs == [1, 4])
+        #expect(channel.channelNumbers.first?.regions == [
+            TVChannelRegion(bouquet: 4101, subBouquet: 1),
+            TVChannelRegion(bouquet: 4097, subBouquet: 1)
+        ])
     }
 
     @Test("handles empty channel numbers")

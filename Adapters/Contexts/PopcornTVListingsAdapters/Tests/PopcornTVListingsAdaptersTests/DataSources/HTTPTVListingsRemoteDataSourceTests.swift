@@ -37,6 +37,42 @@ struct HTTPTVListingsRemoteDataSourceTests {
         #expect(manifest.scheduleFile(forDate: "20260418")?.hash == "schedule-418-hash")
     }
 
+    @Test("fetchManifest cache-busts the request so a stale manifest is never served")
+    func fetchManifestCacheBustsRequest() async throws {
+        let fixture = try FixtureLoader.data(named: "manifest")
+        let capturedRequest = LockedBox<URLRequest?>(nil)
+        URLProtocolStub.setHandler { request in
+            capturedRequest.value = request
+            return try (ok(request), fixture)
+        }
+
+        _ = try await makeDataSource().fetchManifest()
+
+        let request = try #require(capturedRequest.value)
+        let url = try #require(request.url)
+        let components = try #require(URLComponents(url: url, resolvingAgainstBaseURL: false))
+        let queryItems = try #require(components.queryItems)
+        #expect(queryItems.contains { $0.name == "cb" && !($0.value ?? "").isEmpty })
+        #expect(request.value(forHTTPHeaderField: "Cache-Control") == "no-cache")
+        #expect(request.cachePolicy == .reloadIgnoringLocalCacheData)
+    }
+
+    @Test("fetchChannels does not cache-bust so the content-addressed file stays cacheable")
+    func fetchChannelsIsNotCacheBusted() async throws {
+        let fixture = try FixtureLoader.data(named: "channels")
+        let capturedRequest = LockedBox<URLRequest?>(nil)
+        URLProtocolStub.setHandler { request in
+            capturedRequest.value = request
+            return try (ok(request), fixture)
+        }
+
+        _ = try await makeDataSource().fetchChannels()
+
+        let request = try #require(capturedRequest.value)
+        #expect(request.url?.query == nil)
+        #expect(request.cachePolicy == .useProtocolCachePolicy)
+    }
+
     @Test("fetchChannels requests channels.json and maps channels")
     func fetchChannelsMapsResponse() async throws {
         let fixture = try FixtureLoader.data(named: "channels")
@@ -51,6 +87,24 @@ struct HTTPTVListingsRemoteDataSourceTests {
         #expect(requestedPath.value == "/channels.json")
         #expect(channels.map(\.id) == ["3858", "4011"])
         #expect(channels.first?.channelNumbers.first?.channelNumber == "1081")
+    }
+
+    @Test("fetchRegions requests regions.json and maps regions")
+    func fetchRegionsMapsResponse() async throws {
+        let fixture = try FixtureLoader.data(named: "regions")
+        let requestedPath = LockedBox<String?>(nil)
+        URLProtocolStub.setHandler { request in
+            requestedPath.value = request.url?.path
+            return try (ok(request), fixture)
+        }
+
+        let regions = try await makeDataSource().fetchRegions()
+
+        #expect(requestedPath.value == "/regions.json")
+        #expect(regions.count == 3)
+        #expect(regions.first?.name == "London")
+        #expect(regions.first?.isHD == true)
+        #expect(regions.first?.id == "4101-1")
     }
 
     @Test("fetchSchedule requests the dated path and maps enriched programmes")

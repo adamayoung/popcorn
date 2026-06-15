@@ -14,24 +14,26 @@ struct TVChannelNumberTests {
 
     @Test("init assigns all properties")
     func initAssignsAllProperties() {
-        let number = TVChannelNumber(channelNumber: "101", subbouquetIDs: [1, 4])
+        let regions = [TVChannelRegion(bouquet: 4101, subBouquet: 1)]
+        let number = TVChannelNumber(channelNumber: "101", regions: regions)
 
         #expect(number.channelNumber == "101")
-        #expect(number.subbouquetIDs == [1, 4])
+        #expect(number.regions == regions)
     }
 
-    @Test("equality compares channel number and bouquets")
-    func equalityComparesChannelNumberAndBouquets() {
-        let lhs = TVChannelNumber(channelNumber: "101", subbouquetIDs: [1, 4])
-        let rhs = TVChannelNumber(channelNumber: "101", subbouquetIDs: [1, 4])
+    @Test("equality compares channel number and regions")
+    func equalityComparesChannelNumberAndRegions() {
+        let regions = [TVChannelRegion(bouquet: 4101, subBouquet: 1)]
+        let lhs = TVChannelNumber(channelNumber: "101", regions: regions)
+        let rhs = TVChannelNumber(channelNumber: "101", regions: regions)
 
         #expect(lhs == rhs)
     }
 
-    @Test("different bouquets are not equal")
-    func differentBouquetsAreNotEqual() {
-        let lhs = TVChannelNumber(channelNumber: "101", subbouquetIDs: [1])
-        let rhs = TVChannelNumber(channelNumber: "101", subbouquetIDs: [1, 4])
+    @Test("different regions are not equal")
+    func differentRegionsAreNotEqual() {
+        let lhs = TVChannelNumber(channelNumber: "101", regions: [TVChannelRegion(bouquet: 4101, subBouquet: 1)])
+        let rhs = TVChannelNumber(channelNumber: "101", regions: [TVChannelRegion(bouquet: 4097, subBouquet: 1)])
 
         #expect(lhs != rhs)
     }

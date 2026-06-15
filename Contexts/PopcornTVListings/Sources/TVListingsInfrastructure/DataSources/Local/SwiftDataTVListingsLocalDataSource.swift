@@ -58,6 +58,22 @@ actor SwiftDataTVListingsLocalDataSource: TVListingsLocalDataSource, ModelActor 
         }
     }
 
+    func regions() async throws(TVListingsLocalDataSourceError) -> [TVRegion] {
+        let descriptor = FetchDescriptor<TVRegionEntity>(
+            sortBy: [SortDescriptor(\.bouquet), SortDescriptor(\.subBouquet)]
+        )
+
+        let entities: [TVRegionEntity]
+        do {
+            entities = try modelContext.fetch(descriptor)
+        } catch let error {
+            throw .persistence(error)
+        }
+
+        let mapper = TVRegionEntityMapper()
+        return entities.map(mapper.map)
+    }
+
     func programmes(
         forChannelID channelID: String,
         onDate date: Date
