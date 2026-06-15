@@ -1,5 +1,5 @@
 //
-//  DefaultTVChannelRepository.swift
+//  DefaultChannelRepository.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -8,7 +8,7 @@
 import Foundation
 import TVListingsDomain
 
-final class DefaultTVChannelRepository: TVChannelRepository {
+final class DefaultChannelRepository: ChannelRepository {
 
     private let localDataSource: any TVListingsLocalDataSource
 
@@ -16,7 +16,7 @@ final class DefaultTVChannelRepository: TVChannelRepository {
         self.localDataSource = localDataSource
     }
 
-    func channels() async throws(TVListingsRepositoryError) -> [TVChannel] {
+    func channels() async throws(TVListingsRepositoryError) -> [Channel] {
         do {
             return try await localDataSource.channels()
         } catch let error {

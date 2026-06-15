@@ -1,5 +1,5 @@
 //
-//  TVChannelEntityMapperTests.swift
+//  ChannelEntityMapperTests.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -11,24 +11,24 @@ import Testing
 import TVListingsDomain
 @testable import TVListingsInfrastructure
 
-@Suite("TVChannelEntityMapper")
-struct TVChannelEntityMapperTests {
+@Suite("ChannelEntityMapper")
+struct ChannelEntityMapperTests {
 
-    let mapper = TVChannelEntityMapper()
+    let mapper = ChannelEntityMapper()
 
     @Test("maps entity to domain")
     func mapsEntityToDomain() {
-        let entity = TVChannelEntity(
+        let entity = ChannelEntity(
             channelID: "BBC",
             name: "BBC One HD",
             type: "tv",
             isHD: true,
             logoURL: URL(string: "https://example.com/logo.png")
         )
-        let numbers = [TVChannelNumberEntity(
+        let numbers = [ChannelNumberEntity(
             channelID: "BBC",
             channelNumber: "101",
-            regions: [TVChannelRegion(bouquet: 4101, subBouquet: 1), TVChannelRegion(bouquet: 4097, subBouquet: 1)]
+            regions: [ChannelRegion(bouquet: 4101, subBouquet: 1), ChannelRegion(bouquet: 4097, subBouquet: 1)]
         )]
 
         let channel = mapper.map(entity, numbers: numbers)
@@ -41,22 +41,22 @@ struct TVChannelEntityMapperTests {
         #expect(channel.channelNumbers.count == 1)
         #expect(channel.channelNumbers.first?.channelNumber == "101")
         #expect(channel.channelNumbers.first?.regions == [
-            TVChannelRegion(bouquet: 4101, subBouquet: 1),
-            TVChannelRegion(bouquet: 4097, subBouquet: 1)
+            ChannelRegion(bouquet: 4101, subBouquet: 1),
+            ChannelRegion(bouquet: 4097, subBouquet: 1)
         ])
     }
 
     @Test("maps domain to entity without channel numbers")
     func mapsDomainToEntityWithoutChannelNumbers() {
-        let channel = TVChannel(
+        let channel = Channel(
             id: "ITV",
             name: "ITV1 HD",
             type: .television,
             isHD: true,
             logoURL: URL(string: "https://example.com/itv.png"),
-            channelNumbers: [TVChannelNumber(
+            channelNumbers: [ChannelNumber(
                 channelNumber: "103",
-                regions: [TVChannelRegion(bouquet: 4101, subBouquet: 1)]
+                regions: [ChannelRegion(bouquet: 4101, subBouquet: 1)]
             )]
         )
 
@@ -71,15 +71,15 @@ struct TVChannelEntityMapperTests {
 
     @Test("mapNumbers produces entities carrying the channel id foreign key")
     func mapNumbersProducesEntitiesWithChannelIDForeignKey() {
-        let channel = TVChannel(
+        let channel = Channel(
             id: "ITV",
             name: "ITV",
             type: .television,
             isHD: false,
             logoURL: nil,
             channelNumbers: [
-                TVChannelNumber(channelNumber: "103", regions: [TVChannelRegion(bouquet: 4101, subBouquet: 1)]),
-                TVChannelNumber(channelNumber: "3", regions: [TVChannelRegion(bouquet: 4097, subBouquet: 2)])
+                ChannelNumber(channelNumber: "103", regions: [ChannelRegion(bouquet: 4101, subBouquet: 1)]),
+                ChannelNumber(channelNumber: "3", regions: [ChannelRegion(bouquet: 4097, subBouquet: 2)])
             ]
         )
 
@@ -92,15 +92,15 @@ struct TVChannelEntityMapperTests {
 
     @Test("roundtrip preserves values when numbers are supplied separately")
     func roundtripPreservesValuesWhenNumbersSuppliedSeparately() {
-        let original = TVChannel(
+        let original = Channel(
             id: "C4",
             name: "Channel 4 HD",
             type: .television,
             isHD: true,
             logoURL: nil,
-            channelNumbers: [TVChannelNumber(
+            channelNumbers: [ChannelNumber(
                 channelNumber: "104",
-                regions: [TVChannelRegion(bouquet: 4101, subBouquet: 1), TVChannelRegion(bouquet: 4101, subBouquet: 2)]
+                regions: [ChannelRegion(bouquet: 4101, subBouquet: 1), ChannelRegion(bouquet: 4101, subBouquet: 2)]
             )]
         )
 

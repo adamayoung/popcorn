@@ -1,5 +1,5 @@
 //
-//  TVChannelRegion.swift
+//  ChannelRegion.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -12,7 +12,7 @@ import Foundation
 /// applies to. Join to ``TVRegion`` on the same pair to resolve the region's name,
 /// nation, and resolution (HD/SD).
 ///
-public struct TVChannelRegion: Codable, Equatable, Sendable {
+public struct ChannelRegion: Codable, Equatable, Sendable {
 
     public let bouquet: Int
 

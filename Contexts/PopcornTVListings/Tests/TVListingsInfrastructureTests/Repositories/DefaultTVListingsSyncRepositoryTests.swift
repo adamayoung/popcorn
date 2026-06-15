@@ -20,7 +20,7 @@ struct DefaultTVListingsSyncRepositoryTests {
         remote.fetchManifestStub = .success(
             .mock(dates: ["20260611"], channelsHash: "c1", scheduleHashes: ["20260611": "s1"])
         )
-        remote.fetchChannelsStub = .success([TVChannel.mock(id: "BBC")])
+        remote.fetchChannelsStub = .success([Channel.mock(id: "BBC")])
         remote.fetchScheduleStubs["20260611"] = .success([TVProgramme.mock(channelID: "BBC")])
 
         let repository = makeRepository(remote: remote, local: local)
@@ -263,7 +263,7 @@ struct DefaultTVListingsSyncRepositoryTests {
         remote.fetchManifestStub = .success(
             .mock(dates: ["20260611"], channelsHash: "c1", scheduleHashes: ["20260611": "s1"])
         )
-        remote.fetchChannelsStub = .success([TVChannel.mock(id: "BBC")])
+        remote.fetchChannelsStub = .success([Channel.mock(id: "BBC")])
         remote.fetchScheduleStubs["20260611"] = .success([TVProgramme.mock(channelID: "BBC")])
 
         let repository = makeRepository(remote: remote, local: local)

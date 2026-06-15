@@ -1,5 +1,5 @@
 //
-//  TVChannelEntityMapper.swift
+//  ChannelEntityMapper.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -8,21 +8,21 @@
 import Foundation
 import TVListingsDomain
 
-struct TVChannelEntityMapper {
+struct ChannelEntityMapper {
 
-    func map(_ entity: TVChannelEntity, numbers: [TVChannelNumberEntity]) -> TVChannel {
-        TVChannel(
+    func map(_ entity: ChannelEntity, numbers: [ChannelNumberEntity]) -> Channel {
+        Channel(
             id: entity.channelID,
             name: entity.name,
-            type: TVChannelType(rawValue: entity.type) ?? .television,
+            type: ChannelType(rawValue: entity.type) ?? .television,
             isHD: entity.isHD,
             logoURL: entity.logoURL,
             channelNumbers: numbers.map(mapNumber)
         )
     }
 
-    func map(_ channel: TVChannel) -> TVChannelEntity {
-        TVChannelEntity(
+    func map(_ channel: Channel) -> ChannelEntity {
+        ChannelEntity(
             channelID: channel.id,
             name: channel.name,
             type: channel.type.rawValue,
@@ -31,9 +31,9 @@ struct TVChannelEntityMapper {
         )
     }
 
-    func mapNumbers(for channel: TVChannel) -> [TVChannelNumberEntity] {
+    func mapNumbers(for channel: Channel) -> [ChannelNumberEntity] {
         channel.channelNumbers.map { number in
-            TVChannelNumberEntity(
+            ChannelNumberEntity(
                 channelID: channel.id,
                 channelNumber: number.channelNumber,
                 regions: number.regions
@@ -41,8 +41,8 @@ struct TVChannelEntityMapper {
         }
     }
 
-    private func mapNumber(_ entity: TVChannelNumberEntity) -> TVChannelNumber {
-        TVChannelNumber(channelNumber: entity.channelNumber, regions: entity.regions)
+    private func mapNumber(_ entity: ChannelNumberEntity) -> ChannelNumber {
+        ChannelNumber(channelNumber: entity.channelNumber, regions: entity.regions)
     }
 
 }

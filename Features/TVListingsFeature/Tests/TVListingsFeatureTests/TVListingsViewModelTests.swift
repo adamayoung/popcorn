@@ -281,7 +281,7 @@ extension TVListingsViewModelTests {
     }
 
     static func stubDependencies(
-        fetchChannels: @escaping @Sendable () async throws -> [TVChannel] = { [] },
+        fetchChannels: @escaping @Sendable () async throws -> [Channel] = { [] },
         fetchListings: @escaping @Sendable () async throws -> [TVProgramme] = { [] }
     ) -> TVListingsDependencies {
         TVListingsDependencies(
@@ -296,8 +296,8 @@ extension TVListingsViewModelTests {
 
 extension TVListingsViewModelTests {
 
-    static func makeChannel(id: String, name: String) -> TVChannel {
-        TVChannel(id: id, name: name, type: .television, isHD: false, logoURL: nil, channelNumbers: [])
+    static func makeChannel(id: String, name: String) -> Channel {
+        Channel(id: id, name: name, type: .television, isHD: false, logoURL: nil, channelNumbers: [])
     }
 
     static func makeProgramme(

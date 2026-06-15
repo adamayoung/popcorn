@@ -10,18 +10,18 @@ import TVListingsDomain
 
 struct EPGChannelMapper {
 
-    func map(_ dto: EPGChannelDTO) -> TVChannel {
-        TVChannel(
+    func map(_ dto: EPGChannelDTO) -> Channel {
+        Channel(
             id: dto.sid,
             name: dto.name,
-            type: TVChannelType(rawValue: dto.type) ?? .television,
+            type: ChannelType(rawValue: dto.type) ?? .television,
             isHD: dto.isHD,
             logoURL: dto.logoURL,
             channelNumbers: dto.channelNumbers.map { number in
-                TVChannelNumber(
+                ChannelNumber(
                     channelNumber: number.channelNumber,
                     regions: number.regions.map { region in
-                        TVChannelRegion(bouquet: region.bouquet, subBouquet: region.subBouquet)
+                        ChannelRegion(bouquet: region.bouquet, subBouquet: region.subBouquet)
                     }
                 )
             }

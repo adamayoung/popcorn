@@ -1,5 +1,5 @@
 //
-//  DefaultTVChannelRepositoryTests.swift
+//  DefaultChannelRepositoryTests.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -10,16 +10,16 @@ import Testing
 import TVListingsDomain
 @testable import TVListingsInfrastructure
 
-@Suite("DefaultTVChannelRepository")
-struct DefaultTVChannelRepositoryTests {
+@Suite("DefaultChannelRepository")
+struct DefaultChannelRepositoryTests {
 
     @Test("channels returns local data source result")
     func channelsReturnsLocalDataSourceResult() async throws {
         let mockLocal = MockTVListingsLocalDataSource()
-        let expected = [TVChannel.mock(id: "BBC"), TVChannel.mock(id: "ITV")]
+        let expected = [Channel.mock(id: "BBC"), Channel.mock(id: "ITV")]
         await mockLocal.setChannelsStub(.success(expected))
 
-        let repository = DefaultTVChannelRepository(localDataSource: mockLocal)
+        let repository = DefaultChannelRepository(localDataSource: mockLocal)
 
         let result = try await repository.channels()
 
@@ -32,7 +32,7 @@ struct DefaultTVChannelRepositoryTests {
         let underlying = NSError(domain: "test", code: 1)
         await mockLocal.setChannelsStub(.failure(.persistence(underlying)))
 
-        let repository = DefaultTVChannelRepository(localDataSource: mockLocal)
+        let repository = DefaultChannelRepository(localDataSource: mockLocal)
 
         await #expect(
             performing: {
@@ -55,7 +55,7 @@ struct DefaultTVChannelRepositoryTests {
         let mockLocal = MockTVListingsLocalDataSource()
         await mockLocal.setChannelsStub(.failure(.unknown(nil)))
 
-        let repository = DefaultTVChannelRepository(localDataSource: mockLocal)
+        let repository = DefaultChannelRepository(localDataSource: mockLocal)
 
         await #expect(
             performing: {
@@ -79,7 +79,7 @@ struct DefaultTVChannelRepositoryTests {
 
 extension MockTVListingsLocalDataSource {
 
-    func setChannelsStub(_ value: Result<[TVChannel], TVListingsLocalDataSourceError>) {
+    func setChannelsStub(_ value: Result<[Channel], TVListingsLocalDataSourceError>) {
         channelsStub = value
     }
 

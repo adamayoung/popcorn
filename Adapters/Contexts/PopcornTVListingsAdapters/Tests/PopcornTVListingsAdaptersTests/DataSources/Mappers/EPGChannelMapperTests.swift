@@ -44,8 +44,8 @@ struct EPGChannelMapperTests {
         #expect(channel.channelNumbers.count == 1)
         #expect(channel.channelNumbers.first?.channelNumber == "1081")
         #expect(channel.channelNumbers.first?.regions == [
-            TVChannelRegion(bouquet: 4101, subBouquet: 1),
-            TVChannelRegion(bouquet: 4097, subBouquet: 1)
+            ChannelRegion(bouquet: 4101, subBouquet: 1),
+            ChannelRegion(bouquet: 4097, subBouquet: 1)
         ])
     }
 
@@ -68,7 +68,7 @@ struct EPGChannelMapperTests {
 
     @Test("maps radio type and falls back to television for an unknown type")
     func mapsChannelType() {
-        func channel(type: String) -> TVChannel {
+        func channel(type: String) -> Channel {
             mapper.map(EPGChannelDTO(sid: "1", name: "X", type: type, isHD: false, logoURL: nil, channelNumbers: []))
         }
 

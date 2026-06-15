@@ -22,14 +22,14 @@ extension SwiftDataTVListingsLocalDataSource {
     /// the unchanged hash, re-fetches `channels.json`, and re-populates it.
     ///
     func upsertChannels(
-        _ channels: [TVChannel],
+        _ channels: [Channel],
         hash: String
     ) async throws(TVListingsLocalDataSourceError) {
         do {
-            try modelContext.delete(model: TVChannelNumberEntity.self)
-            try modelContext.delete(model: TVChannelEntity.self)
+            try modelContext.delete(model: ChannelNumberEntity.self)
+            try modelContext.delete(model: ChannelEntity.self)
 
-            let mapper = TVChannelEntityMapper()
+            let mapper = ChannelEntityMapper()
             for channel in channels {
                 modelContext.insert(mapper.map(channel))
                 for number in mapper.mapNumbers(for: channel) {

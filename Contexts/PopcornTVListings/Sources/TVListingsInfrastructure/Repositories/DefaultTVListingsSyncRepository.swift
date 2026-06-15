@@ -145,7 +145,7 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
             return
         }
 
-        let channels: [TVChannel]
+        let channels: [Channel]
         do {
             channels = try await remoteDataSource.fetchChannels()
         } catch let error {

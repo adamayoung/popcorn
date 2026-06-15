@@ -1,5 +1,5 @@
 //
-//  DefaultFetchTVChannelsUseCase.swift
+//  DefaultFetchChannelsUseCase.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -8,20 +8,20 @@
 import Foundation
 import TVListingsDomain
 
-final class DefaultFetchTVChannelsUseCase: FetchTVChannelsUseCase {
+final class DefaultFetchChannelsUseCase: FetchChannelsUseCase {
 
-    private let tvChannelRepository: any TVChannelRepository
+    private let channelRepository: any ChannelRepository
 
-    init(tvChannelRepository: some TVChannelRepository) {
-        self.tvChannelRepository = tvChannelRepository
+    init(channelRepository: some ChannelRepository) {
+        self.channelRepository = channelRepository
     }
 
-    func execute() async throws(FetchTVChannelsError) -> [TVChannel] {
-        let channels: [TVChannel]
+    func execute() async throws(FetchChannelsError) -> [Channel] {
+        let channels: [Channel]
         do {
-            channels = try await tvChannelRepository.channels()
+            channels = try await channelRepository.channels()
         } catch let error {
-            throw FetchTVChannelsError(error)
+            throw FetchChannelsError(error)
         }
 
         // Order by channel number (nil sorts last), then tie-break by name then id for a deterministic order.
@@ -48,12 +48,12 @@ final class DefaultFetchTVChannelsUseCase: FetchTVChannelsUseCase {
     }
 
     /// Drops radio stations so the TV listings show only TV channels, using the feed's
-    /// channel ``TVChannel/type``.
-    private static func excludingRadioStations(_ channels: [TVChannel]) -> [TVChannel] {
+    /// channel ``Channel/type``.
+    private static func excludingRadioStations(_ channels: [Channel]) -> [Channel] {
         channels.filter { $0.type != .radio }
     }
 
-    private static func sortKey(for channel: TVChannel) -> Int? {
+    private static func sortKey(for channel: Channel) -> Int? {
         // Non-parseable numbers (e.g. "HD") are excluded; nil = no usable number, sorts last.
         channel.channelNumbers
             .compactMap { Int($0.channelNumber) }
@@ -62,9 +62,9 @@ final class DefaultFetchTVChannelsUseCase: FetchTVChannelsUseCase {
 
     /// Collapses SD/HD duplicates. When the same channel is published in both a
     /// standard-definition and a high-definition variant — matched by name,
-    /// ignoring a trailing "HD" designation — only the HD variant (``TVChannel/isHD``)
+    /// ignoring a trailing "HD" designation — only the HD variant (``Channel/isHD``)
     /// is kept. Channels published in a single variant are returned unchanged.
-    private static func preferringHDVariants(_ channels: [TVChannel]) -> [TVChannel] {
+    private static func preferringHDVariants(_ channels: [Channel]) -> [Channel] {
         let groups = Dictionary(grouping: channels) { baseName(for: $0) }
         let sdIDsToDrop = groups.values.reduce(into: Set<String>()) { result, group in
             // Only drop SD variants when an HD counterpart of the same channel exists.
@@ -84,7 +84,7 @@ final class DefaultFetchTVChannelsUseCase: FetchTVChannelsUseCase {
 
     /// The channel name lowercased with a trailing "HD" designation removed, so
     /// "BBC One" and "BBC One HD" resolve to the same base name.
-    private static func baseName(for channel: TVChannel) -> String {
+    private static func baseName(for channel: Channel) -> String {
         var tokens = channel.name.lowercased().split(separator: " ")
         if tokens.last == "hd" {
             tokens.removeLast()

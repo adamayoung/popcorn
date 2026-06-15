@@ -15,7 +15,7 @@ import TVListingsDomain
 /// it, plus the programme scheduled to air next (if known).
 public struct TVListingsNowPlayingItem: Identifiable, Equatable, Sendable {
 
-    public let channel: TVChannel
+    public let channel: Channel
     public let programme: TVProgramme
     public let nextProgramme: TVProgramme?
 
@@ -23,7 +23,7 @@ public struct TVListingsNowPlayingItem: Identifiable, Equatable, Sendable {
         programme.id
     }
 
-    public init(channel: TVChannel, programme: TVProgramme, nextProgramme: TVProgramme? = nil) {
+    public init(channel: Channel, programme: TVProgramme, nextProgramme: TVProgramme? = nil) {
         self.channel = channel
         self.programme = programme
         self.nextProgramme = nextProgramme
@@ -157,7 +157,7 @@ public final class TVListingsViewModel {
     /// listings, preserving the channel order provided by the dependency.
     /// Channels with nothing airing now are omitted.
     private static func buildNowPlayingItems(
-        channels: [TVChannel],
+        channels: [Channel],
         programmes: [TVProgramme],
         now: Date
     ) -> [TVListingsNowPlayingItem] {

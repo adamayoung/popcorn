@@ -1,5 +1,5 @@
 //
-//  MockTVChannelRepository.swift
+//  MockChannelRepository.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -8,12 +8,12 @@
 import Foundation
 import TVListingsDomain
 
-final class MockTVChannelRepository: TVChannelRepository, @unchecked Sendable {
+final class MockChannelRepository: ChannelRepository, @unchecked Sendable {
 
     var channelsCallCount = 0
-    var channelsStub: Result<[TVChannel], TVListingsRepositoryError> = .success([])
+    var channelsStub: Result<[Channel], TVListingsRepositoryError> = .success([])
 
-    func channels() async throws(TVListingsRepositoryError) -> [TVChannel] {
+    func channels() async throws(TVListingsRepositoryError) -> [Channel] {
         channelsCallCount += 1
 
         switch channelsStub {

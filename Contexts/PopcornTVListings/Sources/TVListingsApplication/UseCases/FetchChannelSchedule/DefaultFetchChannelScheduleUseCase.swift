@@ -1,5 +1,5 @@
 //
-//  DefaultFetchTVChannelScheduleUseCase.swift
+//  DefaultFetchChannelScheduleUseCase.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -8,7 +8,7 @@
 import Foundation
 import TVListingsDomain
 
-final class DefaultFetchTVChannelScheduleUseCase: FetchTVChannelScheduleUseCase {
+final class DefaultFetchChannelScheduleUseCase: FetchChannelScheduleUseCase {
 
     private let tvProgrammeRepository: any TVProgrammeRepository
 
@@ -19,11 +19,11 @@ final class DefaultFetchTVChannelScheduleUseCase: FetchTVChannelScheduleUseCase 
     func execute(
         channelID: String,
         date: Date
-    ) async throws(FetchTVChannelScheduleError) -> [TVProgramme] {
+    ) async throws(FetchChannelScheduleError) -> [TVProgramme] {
         do {
             return try await tvProgrammeRepository.programmes(forChannelID: channelID, onDate: date)
         } catch let error {
-            throw FetchTVChannelScheduleError(error)
+            throw FetchChannelScheduleError(error)
         }
     }
 

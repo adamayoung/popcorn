@@ -1,5 +1,5 @@
 //
-//  FetchTVChannelsUseCase.swift
+//  FetchChannelsUseCase.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -11,8 +11,8 @@ import TVListingsDomain
 ///
 /// Returns the cached list of TV channels.
 ///
-public protocol FetchTVChannelsUseCase: Sendable {
+public protocol FetchChannelsUseCase: Sendable {
 
-    func execute() async throws(FetchTVChannelsError) -> [TVChannel]
+    func execute() async throws(FetchChannelsError) -> [Channel]
 
 }

@@ -1,5 +1,5 @@
 //
-//  TVChannel.swift
+//  Channel.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -10,27 +10,27 @@ import Foundation
 ///
 /// Represents a TV channel in the domain model.
 ///
-public struct TVChannel: Identifiable, Equatable, Sendable {
+public struct Channel: Identifiable, Equatable, Sendable {
 
     public let id: String
 
     public let name: String
 
-    public let type: TVChannelType
+    public let type: ChannelType
 
     public let isHD: Bool
 
     public let logoURL: URL?
 
-    public let channelNumbers: [TVChannelNumber]
+    public let channelNumbers: [ChannelNumber]
 
     public init(
         id: String,
         name: String,
-        type: TVChannelType,
+        type: ChannelType,
         isHD: Bool,
         logoURL: URL?,
-        channelNumbers: [TVChannelNumber]
+        channelNumbers: [ChannelNumber]
     ) {
         self.id = id
         self.name = name

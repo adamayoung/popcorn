@@ -37,22 +37,22 @@ actor SwiftDataTVListingsLocalDataSource: TVListingsLocalDataSource, ModelActor 
 
     // MARK: - Reads
 
-    func channels() async throws(TVListingsLocalDataSourceError) -> [TVChannel] {
-        let channelDescriptor = FetchDescriptor<TVChannelEntity>(
+    func channels() async throws(TVListingsLocalDataSourceError) -> [Channel] {
+        let channelDescriptor = FetchDescriptor<ChannelEntity>(
             sortBy: [SortDescriptor(\.name)]
         )
 
-        let channelEntities: [TVChannelEntity]
-        let numberEntities: [TVChannelNumberEntity]
+        let channelEntities: [ChannelEntity]
+        let numberEntities: [ChannelNumberEntity]
         do {
             channelEntities = try modelContext.fetch(channelDescriptor)
-            numberEntities = try modelContext.fetch(FetchDescriptor<TVChannelNumberEntity>())
+            numberEntities = try modelContext.fetch(FetchDescriptor<ChannelNumberEntity>())
         } catch let error {
             throw .persistence(error)
         }
 
         let numbersByChannel = Dictionary(grouping: numberEntities, by: \.channelID)
-        let mapper = TVChannelEntityMapper()
+        let mapper = ChannelEntityMapper()
         return channelEntities.map { channel in
             mapper.map(channel, numbers: numbersByChannel[channel.channelID] ?? [])
         }

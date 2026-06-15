@@ -13,7 +13,7 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
 
     // MARK: - Read stubs
 
-    var channelsStub: Result<[TVChannel], TVListingsLocalDataSourceError> = .success([])
+    var channelsStub: Result<[Channel], TVListingsLocalDataSourceError> = .success([])
     var regionsStub: Result<[TVRegion], TVListingsLocalDataSourceError> = .success([])
     var programmesStub: Result<[TVProgramme], TVListingsLocalDataSourceError> = .success([])
     var nowPlayingStub: Result<[TVProgramme], TVListingsLocalDataSourceError> = .success([])
@@ -34,7 +34,7 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
     var fileStatesCallCount = 0
     var lastSyncedAtCallCount = 0
     var programmesFromToCalledWith: [(from: Date, to: Date)] = []
-    var upsertChannelsCalls: [(channels: [TVChannel], hash: String)] = []
+    var upsertChannelsCalls: [(channels: [Channel], hash: String)] = []
     var upsertRegionsCalls: [(regions: [TVRegion], hash: String)] = []
     var replaceProgrammesCalls: [(programmes: [TVProgramme], date: String, hash: String)] = []
     var deleteProgrammesCalls: [[String]] = []
@@ -70,7 +70,7 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
 
     // MARK: - Reads
 
-    func channels() async throws(TVListingsLocalDataSourceError) -> [TVChannel] {
+    func channels() async throws(TVListingsLocalDataSourceError) -> [Channel] {
         switch channelsStub {
         case .success(let value): return value
         case .failure(let error): throw error
@@ -133,7 +133,7 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
     // MARK: - Writes
 
     func upsertChannels(
-        _ channels: [TVChannel],
+        _ channels: [Channel],
         hash: String
     ) async throws(TVListingsLocalDataSourceError) {
         upsertChannelsCalls.append((channels, hash))

@@ -14,7 +14,7 @@ final class MockTVListingsRemoteDataSource: TVListingsRemoteDataSource, @uncheck
     var fetchManifestStub: Result<EPGManifest, TVListingsRemoteDataSourceError> =
         .success(EPGManifest(generatedAt: Date(timeIntervalSince1970: 0), dates: [], files: []))
 
-    var fetchChannelsStub: Result<[TVChannel], TVListingsRemoteDataSourceError> = .success([])
+    var fetchChannelsStub: Result<[Channel], TVListingsRemoteDataSourceError> = .success([])
 
     var fetchRegionsStub: Result<[TVRegion], TVListingsRemoteDataSourceError> = .success([])
 
@@ -62,7 +62,7 @@ final class MockTVListingsRemoteDataSource: TVListingsRemoteDataSource, @uncheck
         }
     }
 
-    func fetchChannels() async throws(TVListingsRemoteDataSourceError) -> [TVChannel] {
+    func fetchChannels() async throws(TVListingsRemoteDataSourceError) -> [Channel] {
         lock.withLock { channelsCalls += 1 }
         switch fetchChannelsStub {
         case .success(let channels): return channels

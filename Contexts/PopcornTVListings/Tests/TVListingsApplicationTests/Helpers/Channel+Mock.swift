@@ -1,5 +1,5 @@
 //
-//  TVChannel+Mock.swift
+//  Channel+Mock.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -8,17 +8,17 @@
 import Foundation
 import TVListingsDomain
 
-extension TVChannel {
+extension Channel {
 
     static func mock(
         id: String = "BBC",
         name: String = "BBC",
-        type: TVChannelType = .television,
+        type: ChannelType = .television,
         isHD: Bool = false,
         logoURL: URL? = nil,
-        channelNumbers: [TVChannelNumber] = []
-    ) -> TVChannel {
-        TVChannel(
+        channelNumbers: [ChannelNumber] = []
+    ) -> Channel {
+        Channel(
             id: id,
             name: name,
             type: type,

@@ -24,8 +24,8 @@ struct PopcornTVListingsFactoryTests {
         )
 
         _ = factory.makeSyncTVListingsIfNeededUseCase()
-        _ = factory.makeFetchTVChannelsUseCase()
-        _ = factory.makeFetchTVChannelScheduleUseCase()
+        _ = factory.makeFetchChannelsUseCase()
+        _ = factory.makeFetchChannelScheduleUseCase()
         _ = factory.makeFetchNowPlayingTVProgrammesUseCase()
         _ = factory.makeFetchTVListingsUseCase()
     }
@@ -35,7 +35,7 @@ struct PopcornTVListingsFactoryTests {
             EPGManifest(generatedAt: Date(timeIntervalSince1970: 0), dates: [], files: [])
         }
 
-        func fetchChannels() async throws(TVListingsRemoteDataSourceError) -> [TVChannel] {
+        func fetchChannels() async throws(TVListingsRemoteDataSourceError) -> [Channel] {
             []
         }
 

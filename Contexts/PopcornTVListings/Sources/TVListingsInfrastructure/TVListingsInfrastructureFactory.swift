@@ -16,8 +16,8 @@ package final class TVListingsInfrastructureFactory {
     private static let logger = Logger.tvListingsInfrastructure
 
     private static let schema = Schema([
-        TVChannelEntity.self,
-        TVChannelNumberEntity.self,
+        ChannelEntity.self,
+        ChannelNumberEntity.self,
         TVRegionEntity.self,
         TVProgrammeEntity.self,
         EPGFileStateEntity.self,
@@ -68,8 +68,8 @@ package final class TVListingsInfrastructureFactory {
         self.now = now
     }
 
-    package func makeTVChannelRepository() -> some TVChannelRepository {
-        DefaultTVChannelRepository(localDataSource: localDataSource)
+    package func makeChannelRepository() -> some ChannelRepository {
+        DefaultChannelRepository(localDataSource: localDataSource)
     }
 
     package func makeTVProgrammeRepository() -> some TVProgrammeRepository {

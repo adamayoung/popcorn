@@ -1,5 +1,5 @@
 //
-//  DefaultFetchTVChannelScheduleUseCaseTests.swift
+//  DefaultFetchChannelScheduleUseCaseTests.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -10,8 +10,8 @@ import Testing
 @testable import TVListingsApplication
 import TVListingsDomain
 
-@Suite("DefaultFetchTVChannelScheduleUseCase")
-struct DefaultFetchTVChannelScheduleUseCaseTests {
+@Suite("DefaultFetchChannelScheduleUseCase")
+struct DefaultFetchChannelScheduleUseCaseTests {
 
     let mockRepository = MockTVProgrammeRepository()
 
@@ -45,7 +45,7 @@ struct DefaultFetchTVChannelScheduleUseCaseTests {
                 _ = try await useCase.execute(channelID: "BBC", date: .now)
             },
             throws: { error in
-                guard let fetchError = error as? FetchTVChannelScheduleError else {
+                guard let fetchError = error as? FetchChannelScheduleError else {
                     return false
                 }
                 if case .local = fetchError {
@@ -56,8 +56,8 @@ struct DefaultFetchTVChannelScheduleUseCaseTests {
         )
     }
 
-    private func makeUseCase() -> DefaultFetchTVChannelScheduleUseCase {
-        DefaultFetchTVChannelScheduleUseCase(tvProgrammeRepository: mockRepository)
+    private func makeUseCase() -> DefaultFetchChannelScheduleUseCase {
+        DefaultFetchChannelScheduleUseCase(tvProgrammeRepository: mockRepository)
     }
 
 }

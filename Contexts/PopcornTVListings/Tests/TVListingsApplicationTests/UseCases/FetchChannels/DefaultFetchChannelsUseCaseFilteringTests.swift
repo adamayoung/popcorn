@@ -1,5 +1,5 @@
 //
-//  DefaultFetchTVChannelsUseCaseFilteringTests.swift
+//  DefaultFetchChannelsUseCaseFilteringTests.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -10,26 +10,26 @@ import Testing
 @testable import TVListingsApplication
 import TVListingsDomain
 
-@Suite("DefaultFetchTVChannelsUseCase - SD/HD and Radio Filtering")
-struct DefaultFetchTVChannelsUseCaseFilteringTests {
+@Suite("DefaultFetchChannelsUseCase - SD/HD and Radio Filtering")
+struct DefaultFetchChannelsUseCaseFilteringTests {
 
-    let mockRepository = MockTVChannelRepository()
+    let mockRepository = MockChannelRepository()
 
     // MARK: - SD/HD de-duplication
 
     @Test("execute keeps only the HD variant when a channel has both an SD and HD version")
     func executeKeepsOnlyHDVariantWhenBothExist() async throws {
-        let bbcOneSD = TVChannel.mock(
+        let bbcOneSD = Channel.mock(
             id: "BBC_ONE",
             name: "BBC One",
             isHD: false,
-            channelNumbers: [TVChannelNumber(channelNumber: "1", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "1", regions: [])]
         )
-        let bbcOneHD = TVChannel.mock(
+        let bbcOneHD = Channel.mock(
             id: "BBC_ONE_HD",
             name: "BBC One HD",
             isHD: true,
-            channelNumbers: [TVChannelNumber(channelNumber: "101", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "101", regions: [])]
         )
         mockRepository.channelsStub = .success([bbcOneSD, bbcOneHD])
 
@@ -42,17 +42,17 @@ struct DefaultFetchTVChannelsUseCaseFilteringTests {
 
     @Test("execute keeps an SD channel that has no HD counterpart")
     func executeKeepsSDChannelWithoutHDCounterpart() async throws {
-        let bbcOne = TVChannel.mock(
+        let bbcOne = Channel.mock(
             id: "BBC_ONE",
             name: "BBC One",
             isHD: false,
-            channelNumbers: [TVChannelNumber(channelNumber: "1", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "1", regions: [])]
         )
-        let itvHD = TVChannel.mock(
+        let itvHD = Channel.mock(
             id: "ITV_HD",
             name: "ITV HD",
             isHD: true,
-            channelNumbers: [TVChannelNumber(channelNumber: "3", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "3", regions: [])]
         )
         mockRepository.channelsStub = .success([bbcOne, itvHD])
 
@@ -67,13 +67,13 @@ struct DefaultFetchTVChannelsUseCaseFilteringTests {
 
     @Test("execute filters out radio channels by type")
     func executeFiltersOutRadioStations() async throws {
-        let classicFM = TVChannel.mock(id: "CLASSIC_FM", name: "Classic FM", type: .radio)
-        let talkSport = TVChannel.mock(id: "TALKSPORT", name: "talkSPORT", type: .radio)
-        let bbcOne = TVChannel.mock(
+        let classicFM = Channel.mock(id: "CLASSIC_FM", name: "Classic FM", type: .radio)
+        let talkSport = Channel.mock(id: "TALKSPORT", name: "talkSPORT", type: .radio)
+        let bbcOne = Channel.mock(
             id: "BBC_ONE",
             name: "BBC One",
             type: .television,
-            channelNumbers: [TVChannelNumber(channelNumber: "101", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "101", regions: [])]
         )
         mockRepository.channelsStub = .success([classicFM, talkSport, bbcOne])
 
@@ -85,9 +85,9 @@ struct DefaultFetchTVChannelsUseCaseFilteringTests {
     }
 
     @Test("execute keeps TV channels")
-    func executeKeepsTVChannels() async throws {
-        let tvChannel = TVChannel.mock(id: "TV", name: "A TV Channel", type: .television, channelNumbers: [])
-        mockRepository.channelsStub = .success([tvChannel])
+    func executeKeepsChannels() async throws {
+        let channel = Channel.mock(id: "TV", name: "A TV Channel", type: .television, channelNumbers: [])
+        mockRepository.channelsStub = .success([channel])
 
         let useCase = makeUseCase()
 
@@ -96,8 +96,8 @@ struct DefaultFetchTVChannelsUseCaseFilteringTests {
         #expect(result.map(\.id) == ["TV"])
     }
 
-    private func makeUseCase() -> DefaultFetchTVChannelsUseCase {
-        DefaultFetchTVChannelsUseCase(tvChannelRepository: mockRepository)
+    private func makeUseCase() -> DefaultFetchChannelsUseCase {
+        DefaultFetchChannelsUseCase(channelRepository: mockRepository)
     }
 
 }

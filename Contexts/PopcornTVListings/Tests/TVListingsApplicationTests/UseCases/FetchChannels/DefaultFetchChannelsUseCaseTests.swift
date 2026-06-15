@@ -1,5 +1,5 @@
 //
-//  DefaultFetchTVChannelsUseCaseTests.swift
+//  DefaultFetchChannelsUseCaseTests.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -10,20 +10,20 @@ import Testing
 @testable import TVListingsApplication
 import TVListingsDomain
 
-@Suite("DefaultFetchTVChannelsUseCase")
-struct DefaultFetchTVChannelsUseCaseTests {
+@Suite("DefaultFetchChannelsUseCase")
+struct DefaultFetchChannelsUseCaseTests {
 
-    let mockRepository = MockTVChannelRepository()
+    let mockRepository = MockChannelRepository()
 
     @Test("execute returns channels on success")
     func executeReturnsChannelsOnSuccess() async throws {
-        let bbc = TVChannel.mock(
+        let bbc = Channel.mock(
             id: "BBC",
-            channelNumbers: [TVChannelNumber(channelNumber: "1", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "1", regions: [])]
         )
-        let itv = TVChannel.mock(
+        let itv = Channel.mock(
             id: "ITV",
-            channelNumbers: [TVChannelNumber(channelNumber: "2", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "2", regions: [])]
         )
         let channels = [bbc, itv]
         mockRepository.channelsStub = .success(channels)
@@ -38,17 +38,17 @@ struct DefaultFetchTVChannelsUseCaseTests {
 
     @Test("execute returns channels sorted by ascending channel number")
     func executeReturnsChannelsSortedByChannelNumber() async throws {
-        let itv = TVChannel.mock(
+        let itv = Channel.mock(
             id: "ITV",
-            channelNumbers: [TVChannelNumber(channelNumber: "3", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "3", regions: [])]
         )
-        let bbcOne = TVChannel.mock(
+        let bbcOne = Channel.mock(
             id: "BBC_ONE",
-            channelNumbers: [TVChannelNumber(channelNumber: "1", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "1", regions: [])]
         )
-        let bbcTwo = TVChannel.mock(
+        let bbcTwo = Channel.mock(
             id: "BBC_TWO",
-            channelNumbers: [TVChannelNumber(channelNumber: "2", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "2", regions: [])]
         )
         mockRepository.channelsStub = .success([itv, bbcTwo, bbcOne])
 
@@ -61,16 +61,16 @@ struct DefaultFetchTVChannelsUseCaseTests {
 
     @Test("execute sorts channels with multiple channel numbers by their lowest number")
     func executeSortsByLowestChannelNumberWhenMultiplePresent() async throws {
-        let channelA = TVChannel.mock(
+        let channelA = Channel.mock(
             id: "A",
             channelNumbers: [
-                TVChannelNumber(channelNumber: "105", regions: []),
-                TVChannelNumber(channelNumber: "5", regions: [])
+                ChannelNumber(channelNumber: "105", regions: []),
+                ChannelNumber(channelNumber: "5", regions: [])
             ]
         )
-        let channelB = TVChannel.mock(
+        let channelB = Channel.mock(
             id: "B",
-            channelNumbers: [TVChannelNumber(channelNumber: "10", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "10", regions: [])]
         )
         mockRepository.channelsStub = .success([channelB, channelA])
 
@@ -83,13 +83,13 @@ struct DefaultFetchTVChannelsUseCaseTests {
 
     @Test("execute sorts channel numbers numerically, not lexicographically")
     func executeSortsChannelNumbersNumerically() async throws {
-        let channel9 = TVChannel.mock(
+        let channel9 = Channel.mock(
             id: "NINE",
-            channelNumbers: [TVChannelNumber(channelNumber: "9", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "9", regions: [])]
         )
-        let channel100 = TVChannel.mock(
+        let channel100 = Channel.mock(
             id: "ONE_HUNDRED",
-            channelNumbers: [TVChannelNumber(channelNumber: "100", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "100", regions: [])]
         )
         mockRepository.channelsStub = .success([channel100, channel9])
 
@@ -102,10 +102,10 @@ struct DefaultFetchTVChannelsUseCaseTests {
 
     @Test("execute places channels with no channel numbers last")
     func executePlacesChannelsWithoutChannelNumbersLast() async throws {
-        let unnumbered = TVChannel.mock(id: "UNNUMBERED", channelNumbers: [])
-        let numbered = TVChannel.mock(
+        let unnumbered = Channel.mock(id: "UNNUMBERED", channelNumbers: [])
+        let numbered = Channel.mock(
             id: "NUMBERED",
-            channelNumbers: [TVChannelNumber(channelNumber: "50", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "50", regions: [])]
         )
         mockRepository.channelsStub = .success([unnumbered, numbered])
 
@@ -118,13 +118,13 @@ struct DefaultFetchTVChannelsUseCaseTests {
 
     @Test("execute sorts channels whose numbers are all non-parseable last")
     func executeSortsChannelsWithNonParseableNumbersLast() async throws {
-        let nonParseable = TVChannel.mock(
+        let nonParseable = Channel.mock(
             id: "NON_PARSEABLE",
-            channelNumbers: [TVChannelNumber(channelNumber: "HD", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "HD", regions: [])]
         )
-        let numbered = TVChannel.mock(
+        let numbered = Channel.mock(
             id: "NUMBERED",
-            channelNumbers: [TVChannelNumber(channelNumber: "50", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "50", regions: [])]
         )
         mockRepository.channelsStub = .success([nonParseable, numbered])
 
@@ -137,16 +137,16 @@ struct DefaultFetchTVChannelsUseCaseTests {
 
     @Test("execute uses the parseable minimum from mixed channel numbers")
     func executeUsesParseableMinimumFromMixedChannelNumbers() async throws {
-        let mixed = TVChannel.mock(
+        let mixed = Channel.mock(
             id: "MIXED",
             channelNumbers: [
-                TVChannelNumber(channelNumber: "HD", regions: []),
-                TVChannelNumber(channelNumber: "5", regions: [])
+                ChannelNumber(channelNumber: "HD", regions: []),
+                ChannelNumber(channelNumber: "5", regions: [])
             ]
         )
-        let numbered = TVChannel.mock(
+        let numbered = Channel.mock(
             id: "NUMBERED",
-            channelNumbers: [TVChannelNumber(channelNumber: "10", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "10", regions: [])]
         )
         mockRepository.channelsStub = .success([numbered, mixed])
 
@@ -159,15 +159,15 @@ struct DefaultFetchTVChannelsUseCaseTests {
 
     @Test("execute breaks ties on equal channel numbers by name then id")
     func executeBreaksTiesByNameThenID() async throws {
-        let zeta = TVChannel.mock(
+        let zeta = Channel.mock(
             id: "ZETA",
             name: "Zeta",
-            channelNumbers: [TVChannelNumber(channelNumber: "5", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "5", regions: [])]
         )
-        let alpha = TVChannel.mock(
+        let alpha = Channel.mock(
             id: "ALPHA",
             name: "Alpha",
-            channelNumbers: [TVChannelNumber(channelNumber: "5", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "5", regions: [])]
         )
         mockRepository.channelsStub = .success([zeta, alpha])
 
@@ -180,15 +180,15 @@ struct DefaultFetchTVChannelsUseCaseTests {
 
     @Test("execute breaks ties on equal channel number and equal name by id")
     func executeBreaksTiesByIDWhenNumberAndNameMatch() async throws {
-        let channelB = TVChannel.mock(
+        let channelB = Channel.mock(
             id: "B",
             name: "Same",
-            channelNumbers: [TVChannelNumber(channelNumber: "5", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "5", regions: [])]
         )
-        let channelA = TVChannel.mock(
+        let channelA = Channel.mock(
             id: "A",
             name: "Same",
-            channelNumbers: [TVChannelNumber(channelNumber: "5", regions: [])]
+            channelNumbers: [ChannelNumber(channelNumber: "5", regions: [])]
         )
         mockRepository.channelsStub = .success([channelB, channelA])
 
@@ -201,8 +201,8 @@ struct DefaultFetchTVChannelsUseCaseTests {
 
     @Test("execute breaks ties between two unnumbered channels by name then id")
     func executeBreaksTiesBetweenUnnumberedChannelsByNameThenID() async throws {
-        let zeta = TVChannel.mock(id: "ZETA", name: "Zeta", channelNumbers: [])
-        let alpha = TVChannel.mock(id: "ALPHA", name: "Alpha", channelNumbers: [])
+        let zeta = Channel.mock(id: "ZETA", name: "Zeta", channelNumbers: [])
+        let alpha = Channel.mock(id: "ALPHA", name: "Alpha", channelNumbers: [])
         mockRepository.channelsStub = .success([zeta, alpha])
 
         let useCase = makeUseCase()
@@ -223,7 +223,7 @@ struct DefaultFetchTVChannelsUseCaseTests {
                 _ = try await useCase.execute()
             },
             throws: { error in
-                guard let fetchError = error as? FetchTVChannelsError else {
+                guard let fetchError = error as? FetchChannelsError else {
                     return false
                 }
                 if case .local = fetchError {
@@ -245,7 +245,7 @@ struct DefaultFetchTVChannelsUseCaseTests {
                 _ = try await useCase.execute()
             },
             throws: { error in
-                guard let fetchError = error as? FetchTVChannelsError else {
+                guard let fetchError = error as? FetchChannelsError else {
                     return false
                 }
                 if case .unknown = fetchError {
@@ -256,8 +256,8 @@ struct DefaultFetchTVChannelsUseCaseTests {
         )
     }
 
-    private func makeUseCase() -> DefaultFetchTVChannelsUseCase {
-        DefaultFetchTVChannelsUseCase(tvChannelRepository: mockRepository)
+    private func makeUseCase() -> DefaultFetchChannelsUseCase {
+        DefaultFetchChannelsUseCase(channelRepository: mockRepository)
     }
 
 }

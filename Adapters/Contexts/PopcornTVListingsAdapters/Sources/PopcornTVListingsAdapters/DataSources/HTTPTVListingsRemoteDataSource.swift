@@ -61,7 +61,7 @@ public final class HTTPTVListingsRemoteDataSource: TVListingsRemoteDataSource {
         return manifestMapper.map(dto)
     }
 
-    public func fetchChannels() async throws(TVListingsRemoteDataSourceError) -> [TVChannel] {
+    public func fetchChannels() async throws(TVListingsRemoteDataSourceError) -> [Channel] {
         let dto: EPGChannelsResponseDTO = try await fetch(path: "channels.json")
         return dto.channels.map(channelMapper.map)
     }

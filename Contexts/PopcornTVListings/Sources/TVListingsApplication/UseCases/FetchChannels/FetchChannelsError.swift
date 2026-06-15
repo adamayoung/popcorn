@@ -1,5 +1,5 @@
 //
-//  FetchTVChannelScheduleError.swift
+//  FetchChannelsError.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -8,14 +8,14 @@
 import Foundation
 import TVListingsDomain
 
-public enum FetchTVChannelScheduleError: Error {
+public enum FetchChannelsError: Error {
 
     case local(Error?)
     case unknown(Error?)
 
 }
 
-extension FetchTVChannelScheduleError {
+extension FetchChannelsError {
 
     init(_ error: TVListingsRepositoryError) {
         switch error {

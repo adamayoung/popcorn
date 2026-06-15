@@ -1,5 +1,5 @@
 //
-//  FetchTVChannelScheduleUseCase.swift
+//  FetchChannelScheduleUseCase.swift
 //  Popcorn
 //
 //  Copyright © 2026 Adam Young.
@@ -11,11 +11,11 @@ import TVListingsDomain
 ///
 /// Returns the programmes scheduled on a given channel for a given UK-local calendar day.
 ///
-public protocol FetchTVChannelScheduleUseCase: Sendable {
+public protocol FetchChannelScheduleUseCase: Sendable {
 
     func execute(
         channelID: String,
         date: Date
-    ) async throws(FetchTVChannelScheduleError) -> [TVProgramme]
+    ) async throws(FetchChannelScheduleError) -> [TVProgramme]
 
 }

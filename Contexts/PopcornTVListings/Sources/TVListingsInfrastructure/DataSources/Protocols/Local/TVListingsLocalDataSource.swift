@@ -12,7 +12,7 @@ public protocol TVListingsLocalDataSource: Actor {
 
     // MARK: - Reads
 
-    func channels() async throws(TVListingsLocalDataSourceError) -> [TVChannel]
+    func channels() async throws(TVListingsLocalDataSourceError) -> [Channel]
 
     func regions() async throws(TVListingsLocalDataSourceError) -> [TVRegion]
 
@@ -43,7 +43,7 @@ public protocol TVListingsLocalDataSource: Actor {
     /// Replaces the channel directory and records the `channels.json` content hash in the
     /// same transaction.
     func upsertChannels(
-        _ channels: [TVChannel],
+        _ channels: [Channel],
         hash: String
     ) async throws(TVListingsLocalDataSourceError)
 

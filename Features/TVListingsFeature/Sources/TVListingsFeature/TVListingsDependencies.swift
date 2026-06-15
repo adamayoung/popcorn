@@ -17,11 +17,11 @@ import TVListingsDomain
 /// ``live(services:)``.
 public struct TVListingsDependencies: Sendable {
 
-    public var fetchChannels: @Sendable () async throws -> [TVChannel]
+    public var fetchChannels: @Sendable () async throws -> [Channel]
     public var fetchListings: @Sendable () async throws -> [TVProgramme]
 
     public init(
-        fetchChannels: @escaping @Sendable () async throws -> [TVChannel],
+        fetchChannels: @escaping @Sendable () async throws -> [Channel],
         fetchListings: @escaping @Sendable () async throws -> [TVProgramme]
     ) {
         self.fetchChannels = fetchChannels
@@ -35,12 +35,12 @@ public extension TVListingsDependencies {
     /// Builds the production dependencies from the app's shared services.
     /// Syncing is handled app-level (see `AppRootViewModel`); this feature only reads.
     static func live(services: AppServices) -> TVListingsDependencies {
-        let fetchTVChannels = services.tvListingsFactory.makeFetchTVChannelsUseCase()
+        let fetchChannels = services.tvListingsFactory.makeFetchChannelsUseCase()
         let fetchTVListings = services.tvListingsFactory.makeFetchTVListingsUseCase()
 
         return TVListingsDependencies(
             fetchChannels: {
-                try await fetchTVChannels.execute()
+                try await fetchChannels.execute()
             },
             fetchListings: {
                 try await fetchTVListings.execute()

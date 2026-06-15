@@ -161,7 +161,7 @@ private struct NowPlayingRow: View {
                     viewState: .ready(
                         TVListingsViewSnapshot(items: [
                             TVListingsNowPlayingItem(
-                                channel: TVChannel(
+                                channel: Channel(
                                     id: "BBC_ONE",
                                     name: "BBC One",
                                     type: .television,

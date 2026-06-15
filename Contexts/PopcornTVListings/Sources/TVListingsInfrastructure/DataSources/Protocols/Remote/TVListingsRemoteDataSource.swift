@@ -18,7 +18,7 @@ public protocol TVListingsRemoteDataSource: Sendable {
     func fetchManifest() async throws(TVListingsRemoteDataSourceError) -> EPGManifest
 
     /// The channel directory (`channels.json`).
-    func fetchChannels() async throws(TVListingsRemoteDataSourceError) -> [TVChannel]
+    func fetchChannels() async throws(TVListingsRemoteDataSourceError) -> [Channel]
 
     /// The region directory (`regions.json`).
     func fetchRegions() async throws(TVListingsRemoteDataSourceError) -> [TVRegion]

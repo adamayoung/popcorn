@@ -34,12 +34,12 @@ struct SwiftDataTVListingsLocalDataSourceTests {
     @Test("channels returns inserted channels with their numbers")
     func channelsReturnsInsertedChannelsWithNumbers() async throws {
         let dataSource = SwiftDataTVListingsLocalDataSource(modelContainer: modelContainer)
-        let channel = TVChannel.mock(
+        let channel = Channel.mock(
             id: "BBC",
             name: "BBC",
-            channelNumbers: [TVChannelNumber(
+            channelNumbers: [ChannelNumber(
                 channelNumber: "101",
-                regions: [TVChannelRegion(bouquet: 4101, subBouquet: 1), TVChannelRegion(bouquet: 4097, subBouquet: 1)]
+                regions: [ChannelRegion(bouquet: 4101, subBouquet: 1), ChannelRegion(bouquet: 4097, subBouquet: 1)]
             )]
         )
 
@@ -49,8 +49,8 @@ struct SwiftDataTVListingsLocalDataSourceTests {
         #expect(result.count == 1)
         #expect(result.first?.channelNumbers.first?.channelNumber == "101")
         #expect(result.first?.channelNumbers.first?.regions == [
-            TVChannelRegion(bouquet: 4101, subBouquet: 1),
-            TVChannelRegion(bouquet: 4097, subBouquet: 1)
+            ChannelRegion(bouquet: 4101, subBouquet: 1),
+            ChannelRegion(bouquet: 4097, subBouquet: 1)
         ])
     }
 
