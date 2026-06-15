@@ -13,6 +13,7 @@ extension TVChannel {
     static func mock(
         id: String = "BBC",
         name: String = "BBC",
+        type: TVChannelType = .television,
         isHD: Bool = false,
         logoURL: URL? = nil,
         channelNumbers: [TVChannelNumber] = []
@@ -20,6 +21,7 @@ extension TVChannel {
         TVChannel(
             id: id,
             name: name,
+            type: type,
             isHD: isHD,
             logoURL: logoURL,
             channelNumbers: channelNumbers

@@ -3,6 +3,7 @@
     {
       "sid": "3858",
       "name": "SkySp+ HD",
+      "type": "tv",
       "isHD": false,
       "logoURL": "https://epgstatic.sky.com/epgdata/1.0/newchanlogos/600/600/skychb3858.png",
       "channelNumbers": [
@@ -18,6 +19,7 @@
     {
       "sid": "4011",
       "name": "SkySp PL HD",
+      "type": "radio",
       "isHD": true,
       "logoURL": "https://epgstatic.sky.com/epgdata/1.0/newchanlogos/600/600/skychb4011.png",
       "channelNumbers": [

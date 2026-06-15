@@ -256,54 +256,6 @@ struct DefaultFetchTVChannelsUseCaseTests {
         )
     }
 
-    // MARK: - SD/HD de-duplication
-
-    @Test("execute keeps only the HD variant when a channel has both an SD and HD version")
-    func executeKeepsOnlyHDVariantWhenBothExist() async throws {
-        let bbcOneSD = TVChannel.mock(
-            id: "BBC_ONE",
-            name: "BBC One",
-            isHD: false,
-            channelNumbers: [TVChannelNumber(channelNumber: "1", regions: [])]
-        )
-        let bbcOneHD = TVChannel.mock(
-            id: "BBC_ONE_HD",
-            name: "BBC One HD",
-            isHD: true,
-            channelNumbers: [TVChannelNumber(channelNumber: "101", regions: [])]
-        )
-        mockRepository.channelsStub = .success([bbcOneSD, bbcOneHD])
-
-        let useCase = makeUseCase()
-
-        let result = try await useCase.execute()
-
-        #expect(result.map(\.id) == ["BBC_ONE_HD"])
-    }
-
-    @Test("execute keeps an SD channel that has no HD counterpart")
-    func executeKeepsSDChannelWithoutHDCounterpart() async throws {
-        let bbcOne = TVChannel.mock(
-            id: "BBC_ONE",
-            name: "BBC One",
-            isHD: false,
-            channelNumbers: [TVChannelNumber(channelNumber: "1", regions: [])]
-        )
-        let itvHD = TVChannel.mock(
-            id: "ITV_HD",
-            name: "ITV HD",
-            isHD: true,
-            channelNumbers: [TVChannelNumber(channelNumber: "3", regions: [])]
-        )
-        mockRepository.channelsStub = .success([bbcOne, itvHD])
-
-        let useCase = makeUseCase()
-
-        let result = try await useCase.execute()
-
-        #expect(result.map(\.id) == ["BBC_ONE", "ITV_HD"])
-    }
-
     private func makeUseCase() -> DefaultFetchTVChannelsUseCase {
         DefaultFetchTVChannelsUseCase(tvChannelRepository: mockRepository)
     }

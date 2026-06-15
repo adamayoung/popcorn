@@ -164,6 +164,7 @@ private struct NowPlayingRow: View {
                                 channel: TVChannel(
                                     id: "BBC_ONE",
                                     name: "BBC One",
+                                    type: .television,
                                     isHD: true,
                                     logoURL: nil,
                                     channelNumbers: []

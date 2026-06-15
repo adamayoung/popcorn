@@ -25,7 +25,7 @@ final class DefaultFetchTVChannelsUseCase: FetchTVChannelsUseCase {
         }
 
         // Order by channel number (nil sorts last), then tie-break by name then id for a deterministic order.
-        return Self.preferringHDVariants(channels)
+        return Self.preferringHDVariants(Self.excludingRadioStations(channels))
             .map { (channel: $0, sortKey: Self.sortKey(for: $0)) }
             .sorted { lhs, rhs in
                 switch (lhs.sortKey, rhs.sortKey) {
@@ -45,6 +45,12 @@ final class DefaultFetchTVChannelsUseCase: FetchTVChannelsUseCase {
                 return lhs.channel.id < rhs.channel.id
             }
             .map(\.channel)
+    }
+
+    /// Drops radio stations so the TV listings show only TV channels, using the feed's
+    /// channel ``TVChannel/type``.
+    private static func excludingRadioStations(_ channels: [TVChannel]) -> [TVChannel] {
+        channels.filter { $0.type != .radio }
     }
 
     private static func sortKey(for channel: TVChannel) -> Int? {

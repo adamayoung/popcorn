@@ -20,6 +20,7 @@ struct EPGChannelMapperTests {
         let dto = EPGChannelDTO(
             sid: "3858",
             name: "SkySp+ HD",
+            type: "tv",
             isHD: true,
             logoURL: URL(string: "https://example.com/logo.png"),
             channelNumbers: [
@@ -37,6 +38,7 @@ struct EPGChannelMapperTests {
 
         #expect(channel.id == "3858")
         #expect(channel.name == "SkySp+ HD")
+        #expect(channel.type == .television)
         #expect(channel.isHD == true)
         #expect(channel.logoURL == URL(string: "https://example.com/logo.png"))
         #expect(channel.channelNumbers.count == 1)
@@ -52,6 +54,7 @@ struct EPGChannelMapperTests {
         let dto = EPGChannelDTO(
             sid: "1",
             name: "Test",
+            type: "tv",
             isHD: false,
             logoURL: nil,
             channelNumbers: []
@@ -61,6 +64,17 @@ struct EPGChannelMapperTests {
 
         #expect(channel.channelNumbers.isEmpty)
         #expect(channel.logoURL == nil)
+    }
+
+    @Test("maps radio type and falls back to television for an unknown type")
+    func mapsChannelType() {
+        func channel(type: String) -> TVChannel {
+            mapper.map(EPGChannelDTO(sid: "1", name: "X", type: type, isHD: false, logoURL: nil, channelNumbers: []))
+        }
+
+        #expect(channel(type: "radio").type == .radio)
+        #expect(channel(type: "tv").type == .television)
+        #expect(channel(type: "something-new").type == .television)
     }
 
 }

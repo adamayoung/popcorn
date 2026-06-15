@@ -33,6 +33,8 @@ struct EPGDTODecodingTests {
 
         #expect(dto.channels.count == 2)
         #expect(dto.channels.first?.sid == "3858")
+        #expect(dto.channels.first?.type == "tv")
+        #expect(dto.channels.last?.type == "radio")
         #expect(dto.channels.last?.isHD == true)
         let firstRegion = dto.channels.first?.channelNumbers.first?.regions.first
         #expect(firstRegion?.bouquet == 4101)

@@ -21,6 +21,7 @@ struct TVChannelEntityMapperTests {
         let entity = TVChannelEntity(
             channelID: "BBC",
             name: "BBC One HD",
+            type: "tv",
             isHD: true,
             logoURL: URL(string: "https://example.com/logo.png")
         )
@@ -34,6 +35,7 @@ struct TVChannelEntityMapperTests {
 
         #expect(channel.id == "BBC")
         #expect(channel.name == "BBC One HD")
+        #expect(channel.type == .television)
         #expect(channel.isHD == true)
         #expect(channel.logoURL == URL(string: "https://example.com/logo.png"))
         #expect(channel.channelNumbers.count == 1)
@@ -49,6 +51,7 @@ struct TVChannelEntityMapperTests {
         let channel = TVChannel(
             id: "ITV",
             name: "ITV1 HD",
+            type: .television,
             isHD: true,
             logoURL: URL(string: "https://example.com/itv.png"),
             channelNumbers: [TVChannelNumber(
@@ -61,6 +64,7 @@ struct TVChannelEntityMapperTests {
 
         #expect(entity.channelID == "ITV")
         #expect(entity.name == "ITV1 HD")
+        #expect(entity.type == "tv")
         #expect(entity.isHD == true)
         #expect(entity.logoURL == URL(string: "https://example.com/itv.png"))
     }
@@ -70,6 +74,7 @@ struct TVChannelEntityMapperTests {
         let channel = TVChannel(
             id: "ITV",
             name: "ITV",
+            type: .television,
             isHD: false,
             logoURL: nil,
             channelNumbers: [
@@ -90,6 +95,7 @@ struct TVChannelEntityMapperTests {
         let original = TVChannel(
             id: "C4",
             name: "Channel 4 HD",
+            type: .television,
             isHD: true,
             logoURL: nil,
             channelNumbers: [TVChannelNumber(

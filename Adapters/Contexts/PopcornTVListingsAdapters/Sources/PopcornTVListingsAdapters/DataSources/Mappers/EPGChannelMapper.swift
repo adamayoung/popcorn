@@ -14,6 +14,7 @@ struct EPGChannelMapper {
         TVChannel(
             id: dto.sid,
             name: dto.name,
+            type: TVChannelType(rawValue: dto.type) ?? .television,
             isHD: dto.isHD,
             logoURL: dto.logoURL,
             channelNumbers: dto.channelNumbers.map { number in

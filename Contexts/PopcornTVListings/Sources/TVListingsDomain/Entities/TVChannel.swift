@@ -16,6 +16,8 @@ public struct TVChannel: Identifiable, Equatable, Sendable {
 
     public let name: String
 
+    public let type: TVChannelType
+
     public let isHD: Bool
 
     public let logoURL: URL?
@@ -25,12 +27,14 @@ public struct TVChannel: Identifiable, Equatable, Sendable {
     public init(
         id: String,
         name: String,
+        type: TVChannelType,
         isHD: Bool,
         logoURL: URL?,
         channelNumbers: [TVChannelNumber]
     ) {
         self.id = id
         self.name = name
+        self.type = type
         self.isHD = isHD
         self.logoURL = logoURL
         self.channelNumbers = channelNumbers

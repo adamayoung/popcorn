@@ -19,6 +19,7 @@ struct TVChannelTests {
         let channel = TVChannel(
             id: "BBC One HD",
             name: "BBC One HD",
+            type: .television,
             isHD: true,
             logoURL: URL(string: "https://example.com/logo.png"),
             channelNumbers: numbers
@@ -26,6 +27,7 @@ struct TVChannelTests {
 
         #expect(channel.id == "BBC One HD")
         #expect(channel.name == "BBC One HD")
+        #expect(channel.type == .television)
         #expect(channel.isHD == true)
         #expect(channel.logoURL == URL(string: "https://example.com/logo.png"))
         #expect(channel.channelNumbers == numbers)
@@ -33,16 +35,16 @@ struct TVChannelTests {
 
     @Test("two channels with identical values are equal")
     func identicalChannelsAreEqual() {
-        let lhs = TVChannel(id: "BBC", name: "BBC", isHD: false, logoURL: nil, channelNumbers: [])
-        let rhs = TVChannel(id: "BBC", name: "BBC", isHD: false, logoURL: nil, channelNumbers: [])
+        let lhs = TVChannel(id: "BBC", name: "BBC", type: .television, isHD: false, logoURL: nil, channelNumbers: [])
+        let rhs = TVChannel(id: "BBC", name: "BBC", type: .television, isHD: false, logoURL: nil, channelNumbers: [])
 
         #expect(lhs == rhs)
     }
 
     @Test("channels with different ids are not equal")
     func channelsWithDifferentIDsAreNotEqual() {
-        let lhs = TVChannel(id: "BBC", name: "BBC", isHD: false, logoURL: nil, channelNumbers: [])
-        let rhs = TVChannel(id: "ITV", name: "BBC", isHD: false, logoURL: nil, channelNumbers: [])
+        let lhs = TVChannel(id: "BBC", name: "BBC", type: .television, isHD: false, logoURL: nil, channelNumbers: [])
+        let rhs = TVChannel(id: "ITV", name: "BBC", type: .television, isHD: false, logoURL: nil, channelNumbers: [])
 
         #expect(lhs != rhs)
     }

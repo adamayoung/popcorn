@@ -14,6 +14,7 @@ struct TVChannelEntityMapper {
         TVChannel(
             id: entity.channelID,
             name: entity.name,
+            type: TVChannelType(rawValue: entity.type) ?? .television,
             isHD: entity.isHD,
             logoURL: entity.logoURL,
             channelNumbers: numbers.map(mapNumber)
@@ -24,6 +25,7 @@ struct TVChannelEntityMapper {
         TVChannelEntity(
             channelID: channel.id,
             name: channel.name,
+            type: channel.type.rawValue,
             isHD: channel.isHD,
             logoURL: channel.logoURL
         )

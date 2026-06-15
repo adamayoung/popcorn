@@ -297,7 +297,7 @@ extension TVListingsViewModelTests {
 extension TVListingsViewModelTests {
 
     static func makeChannel(id: String, name: String) -> TVChannel {
-        TVChannel(id: id, name: name, isHD: false, logoURL: nil, channelNumbers: [])
+        TVChannel(id: id, name: name, type: .television, isHD: false, logoURL: nil, channelNumbers: [])
     }
 
     static func makeProgramme(
