@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import DesignSystem
 import Presentation
 import SwiftUI
 import TVListingsDomain
@@ -17,13 +18,8 @@ public struct TVListingsView: View {
 
     @State private var viewModel: TVListingsViewModel
 
-    /// Disables the one-shot auto-scroll to "now" so snapshot tests render the
-    /// deterministic unscrolled frame.
-    private let disableAutoScroll: Bool
-
-    public init(viewModel: TVListingsViewModel, disableAutoScroll: Bool = false) {
+    public init(viewModel: TVListingsViewModel) {
         _viewModel = State(initialValue: viewModel)
-        self.disableAutoScroll = disableAutoScroll
     }
 
     public var body: some View {
@@ -49,13 +45,16 @@ public struct TVListingsView: View {
     private var content: some View {
         switch viewModel.viewState {
         case .ready(let snapshot):
-            if snapshot.rows.isEmpty {
+            if snapshot.items.isEmpty {
                 emptyBody
             } else {
-                EPGGrid(snapshot: snapshot, disableAutoScroll: disableAutoScroll)
-                    .refreshable {
-                        await viewModel.refresh()
-                    }
+                List(snapshot.items) { item in
+                    NowPlayingRow(item: item)
+                }
+                .listStyle(.plain)
+                .refreshable {
+                    await viewModel.refresh()
+                }
             }
 
         case .error(let error):
@@ -99,52 +98,106 @@ public struct TVListingsView: View {
 
 }
 
+private struct NowPlayingRow: View {
+
+    private static let timeFormatStyle = Date.FormatStyle.dateTime.hour().minute()
+    /// Square logo size that satisfies the iOS 44pt minimum tap target.
+    private static let logoSize: CGFloat = 44
+
+    let item: TVListingsNowPlayingItem
+
+    var body: some View {
+        HStack(spacing: .spacing12) {
+            LogoImage(url: item.channel.logoURL)
+                .frame(width: Self.logoSize, height: Self.logoSize)
+
+            VStack(alignment: .leading, spacing: .spacing4) {
+                Text(item.channel.name)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Text(item.programme.title)
+                    .font(.body)
+                    .fontWeight(.semibold)
+
+                Text(Self.timeRange(for: item.programme))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                if let nextProgramme = item.nextProgramme {
+                    VStack(alignment: .leading, spacing: .spacing2) {
+                        Text(nextProgramme.title)
+                            // Smaller than the current programme's title but still bold.
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+
+                        Text(Self.timeRange(for: nextProgramme))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.top, .spacing4)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .padding(.vertical, .spacing4)
+        .accessibilityElement(children: .combine)
+    }
+
+    private static func timeRange(for programme: TVProgramme) -> String {
+        String(
+            localized: "\(programme.startTime.formatted(timeFormatStyle)) – \(programme.endTime.formatted(timeFormatStyle))",
+            bundle: .module
+        )
+    }
+
+}
+
 #if DEBUG
     #Preview("Ready") {
-        let channel = TVChannel(
-            id: "BBC_ONE",
-            name: "BBC One",
-            isHD: true,
-            logoURL: nil,
-            channelNumbers: []
-        )
-        let programme = TVProgramme(
-            id: "BBC_ONE:1",
-            channelID: "BBC_ONE",
-            title: "News at Ten",
-            description: "The latest headlines.",
-            startTime: Date(timeIntervalSince1970: 1000),
-            endTime: Date(timeIntervalSince1970: 1900),
-            duration: 900,
-            episodeNumber: nil,
-            seasonNumber: nil,
-            imageURL: nil,
-            tmdbTVSeriesID: nil,
-            tmdbMovieID: nil
-        )
-        let now = Date(timeIntervalSince1970: 1500)
-
-        return NavigationStack {
+        NavigationStack {
             TVListingsView(
                 viewModel: .preview(
                     viewState: .ready(
-                        TVListingsGridSnapshot(
-                            rows: [
-                                TVListingsChannelRow(
-                                    channel: channel,
-                                    programmes: [
-                                        TVListingsProgrammeItem(
-                                            programme: programme,
-                                            isAiringNow: true,
-                                            genre: nil,
-                                            progress: 0.5
-                                        )
-                                    ]
+                        TVListingsViewSnapshot(items: [
+                            TVListingsNowPlayingItem(
+                                channel: TVChannel(
+                                    id: "BBC_ONE",
+                                    name: "BBC One",
+                                    isHD: true,
+                                    logoURL: nil,
+                                    channelNumbers: []
+                                ),
+                                programme: TVProgramme(
+                                    id: "BBC_ONE:1",
+                                    channelID: "BBC_ONE",
+                                    title: "News at Ten",
+                                    description: "The latest headlines.",
+                                    startTime: Date(timeIntervalSince1970: 1000),
+                                    endTime: Date(timeIntervalSince1970: 1900),
+                                    duration: 900,
+                                    episodeNumber: nil,
+                                    seasonNumber: nil,
+                                    imageURL: nil,
+                                    tmdbTVSeriesID: nil,
+                                    tmdbMovieID: nil
+                                ),
+                                nextProgramme: TVProgramme(
+                                    id: "BBC_ONE:2",
+                                    channelID: "BBC_ONE",
+                                    title: "The Weather",
+                                    description: "The forecast for the week ahead.",
+                                    startTime: Date(timeIntervalSince1970: 1900),
+                                    endTime: Date(timeIntervalSince1970: 2200),
+                                    duration: 300,
+                                    episodeNumber: nil,
+                                    seasonNumber: nil,
+                                    imageURL: nil,
+                                    tmdbTVSeriesID: nil,
+                                    tmdbMovieID: nil
                                 )
-                            ],
-                            geometry: .flooringNow(now),
-                            now: now
-                        )
+                            )
+                        ])
                     )
                 )
             )
@@ -152,15 +205,8 @@ public struct TVListingsView: View {
     }
 
     #Preview("Empty") {
-        let now = Date(timeIntervalSince1970: 1500)
-        return NavigationStack {
-            TVListingsView(
-                viewModel: .preview(
-                    viewState: .ready(
-                        TVListingsGridSnapshot(rows: [], geometry: .flooringNow(now), now: now)
-                    )
-                )
-            )
+        NavigationStack {
+            TVListingsView(viewModel: .preview(viewState: .ready(TVListingsViewSnapshot())))
         }
     }
 

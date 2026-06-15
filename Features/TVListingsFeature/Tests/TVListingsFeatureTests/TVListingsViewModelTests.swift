@@ -17,9 +17,9 @@ struct TVListingsViewModelTests {
 
     // MARK: - load
 
-    @Test("load success builds a ready snapshot with a row per channel")
+    @Test("load success builds a ready snapshot joining programmes to channels")
     @MainActor
-    func loadSuccessBuildsRowPerChannel() async {
+    func loadSuccessBuildsReadySnapshot() async {
         let bbc = Self.makeChannel(id: "BBC", name: "BBC")
         let itv = Self.makeChannel(id: "ITV", name: "ITV")
         let programme = Self.makeProgramme(id: "BBC:1000", channelID: "BBC", title: "News")
@@ -32,9 +32,11 @@ struct TVListingsViewModelTests {
 
         await viewModel.load()
 
-        let rows = Self.readyRows(viewModel)
-        #expect(rows.map(\.id) == ["BBC", "ITV"])
-        #expect(rows.first?.programmes.map(\.id) == ["BBC:1000"])
+        #expect(viewModel.viewState == .ready(
+            TVListingsViewSnapshot(items: [
+                TVListingsNowPlayingItem(channel: bbc, programme: programme)
+            ])
+        ))
     }
 
     @Test("load preserves the channel order provided by the dependency")
@@ -53,166 +55,57 @@ struct TVListingsViewModelTests {
 
         await viewModel.load()
 
-        #expect(Self.readyRows(viewModel).map(\.id) == ["BBC_ONE", "ITV"])
+        #expect(viewModel.viewState == .ready(
+            TVListingsViewSnapshot(items: [
+                TVListingsNowPlayingItem(channel: bbcOne, programme: bbcOneProgramme),
+                TVListingsNowPlayingItem(channel: itv, programme: itvProgramme)
+            ])
+        ))
     }
 
-    @Test("empty channels list yields a ready snapshot with no rows")
+    @Test("load includes the programme airing next after the current one on each channel")
     @MainActor
-    func emptyChannelsYieldsNoRows() async {
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchChannels: { [] },
-                fetchListings: { [Self.makeProgramme(id: "X:1", channelID: "X", title: "Orphan")] }
-            )
-        )
-
-        await viewModel.load()
-
-        #expect(Self.readyRows(viewModel).isEmpty)
-    }
-
-    @Test("a channel with no programmes still yields a row with empty programmes")
-    @MainActor
-    func channelWithoutProgrammesStillYieldsRow() async {
+    func loadIncludesNextProgramme() async {
         let bbc = Self.makeChannel(id: "BBC", name: "BBC")
-        let itv = Self.makeChannel(id: "ITV", name: "ITV")
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchChannels: { [bbc, itv] },
-                fetchListings: { [Self.makeProgramme(id: "BBC:1", channelID: "BBC", title: "News")] }
-            )
-        )
-
-        await viewModel.load()
-
-        let rows = Self.readyRows(viewModel)
-        #expect(rows.map(\.id) == ["BBC", "ITV"])
-        #expect(rows.last?.programmes.isEmpty == true)
-    }
-
-    @Test("a programme with no matching channel is dropped as an orphan")
-    @MainActor
-    func orphanProgrammeIsDropped() async {
-        let bbc = Self.makeChannel(id: "BBC", name: "BBC")
-        let bbcProgramme = Self.makeProgramme(id: "BBC:1", channelID: "BBC", title: "News")
-        let orphan = Self.makeProgramme(id: "GONE:1", channelID: "GONE", title: "Ghost")
+        let current = Self.makeProgramme(id: "BBC:1", channelID: "BBC", title: "News", start: 1000, end: 1900)
+        let next = Self.makeProgramme(id: "BBC:2", channelID: "BBC", title: "Weather", start: 1900, end: 2200)
+        let later = Self.makeProgramme(id: "BBC:3", channelID: "BBC", title: "Film", start: 2200, end: 5000)
         let viewModel = Self.makeViewModel(
             dependencies: Self.stubDependencies(
                 fetchChannels: { [bbc] },
-                fetchListings: { [bbcProgramme, orphan] }
+                // Deliberately unsorted: the view model must sort by start time.
+                fetchListings: { [later, current, next] }
             )
         )
 
         await viewModel.load()
 
-        let rows = Self.readyRows(viewModel)
-        #expect(rows.count == 1)
-        #expect(rows.first?.programmes.map(\.id) == ["BBC:1"])
+        #expect(viewModel.viewState == .ready(
+            TVListingsViewSnapshot(items: [
+                TVListingsNowPlayingItem(channel: bbc, programme: current, nextProgramme: next)
+            ])
+        ))
     }
 
-    @Test("programmes within a channel are ordered by start time")
+    @Test("load leaves nextProgramme nil when nothing is scheduled after the current programme")
     @MainActor
-    func programmesOrderedByStartTime() async {
+    func loadHasNoNextProgrammeWhenNoneFollows() async {
         let bbc = Self.makeChannel(id: "BBC", name: "BBC")
-        let later = Self.makeProgramme(id: "BBC:2", channelID: "BBC", title: "Late", start: 2000, end: 3000)
-        let earlier = Self.makeProgramme(id: "BBC:1", channelID: "BBC", title: "Early", start: 1000, end: 2000)
+        let current = Self.makeProgramme(id: "BBC:1", channelID: "BBC", title: "News", start: 1000, end: 1900)
         let viewModel = Self.makeViewModel(
             dependencies: Self.stubDependencies(
                 fetchChannels: { [bbc] },
-                fetchListings: { [later, earlier] }
+                fetchListings: { [current] }
             )
         )
 
         await viewModel.load()
 
-        #expect(Self.readyRows(viewModel).first?.programmes.map(\.id) == ["BBC:1", "BBC:2"])
-    }
-
-    @Test("an airing-now programme reports isAiringNow with progress in 0...1")
-    @MainActor
-    func airingNowProgrammeComputesProgress() async {
-        let bbc = Self.makeChannel(id: "BBC", name: "BBC")
-        // start 1000, end 2000, duration 1000; now 1250 → 25% elapsed.
-        let programme = Self.makeProgramme(
-            id: "BBC:1", channelID: "BBC", title: "Live", start: 1000, end: 2000, duration: 1000
-        )
-        let now = Date(timeIntervalSince1970: 1250)
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchChannels: { [bbc] },
-                fetchListings: { [programme] }
-            ),
-            now: { now }
-        )
-
-        await viewModel.load()
-
-        let item = Self.readyRows(viewModel).first?.programmes.first
-        #expect(item?.isAiringNow == true)
-        #expect(item?.progress == 0.25)
-    }
-
-    @Test("a future programme is not airing and reports zero progress")
-    @MainActor
-    func futureProgrammeIsNotAiring() async {
-        let bbc = Self.makeChannel(id: "BBC", name: "BBC")
-        let programme = Self.makeProgramme(
-            id: "BBC:1", channelID: "BBC", title: "Later", start: 5000, end: 6000, duration: 1000
-        )
-        let now = Date(timeIntervalSince1970: 1000)
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchChannels: { [bbc] },
-                fetchListings: { [programme] }
-            ),
-            now: { now }
-        )
-
-        await viewModel.load()
-
-        let item = Self.readyRows(viewModel).first?.programmes.first
-        #expect(item?.isAiringNow == false)
-        #expect(item?.progress == 0)
-    }
-
-    @Test("the first genre is surfaced on the programme item")
-    @MainActor
-    func firstGenreIsSurfaced() async {
-        let bbc = Self.makeChannel(id: "BBC", name: "BBC")
-        let programme = Self.makeProgramme(
-            id: "BBC:1", channelID: "BBC", title: "Film", genres: ["Drama", "Thriller"]
-        )
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchChannels: { [bbc] },
-                fetchListings: { [programme] }
-            )
-        )
-
-        await viewModel.load()
-
-        #expect(Self.readyRows(viewModel).first?.programmes.first?.genre == "Drama")
-    }
-
-    @Test("duplicate channel and programme ids are handled without crashing")
-    @MainActor
-    func duplicateIDsHandledWithoutCrash() async {
-        let bbc = Self.makeChannel(id: "BBC", name: "BBC")
-        let bbcDuplicate = Self.makeChannel(id: "BBC", name: "BBC (dup)")
-        let programme = Self.makeProgramme(id: "BBC:1", channelID: "BBC", title: "News")
-        let duplicateProgramme = Self.makeProgramme(id: "BBC:1", channelID: "BBC", title: "News (dup)")
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchChannels: { [bbc, bbcDuplicate] },
-                fetchListings: { [programme, duplicateProgramme] }
-            )
-        )
-
-        await viewModel.load()
-
-        // Two channel rows (the duplicate is preserved as its own row), each
-        // receiving both programmes grouped by channelID.
-        #expect(Self.readyRows(viewModel).count == 2)
+        #expect(viewModel.viewState == .ready(
+            TVListingsViewSnapshot(items: [
+                TVListingsNowPlayingItem(channel: bbc, programme: current, nextProgramme: nil)
+            ])
+        ))
     }
 
     @Test("load failure sets viewState to error")
@@ -253,6 +146,9 @@ struct TVListingsViewModelTests {
                 fetchListings: { [staleProgramme, freshProgramme] }
             )
         )
+        let expected = TVListingsViewSnapshot(items: [
+            TVListingsNowPlayingItem(channel: freshChannel, programme: freshProgramme)
+        ])
 
         // Start the slow first fetch; it blocks inside fetchChannels.
         async let firstFetch: Void = viewModel.load()
@@ -260,12 +156,12 @@ struct TVListingsViewModelTests {
 
         // A second fetch (as `refresh()` would trigger) completes with fresh data.
         await viewModel.refresh()
-        #expect(Self.readyRows(viewModel).map(\.id) == ["FRESH"])
+        #expect(viewModel.viewState == .ready(expected))
 
         // Release the stale fetch; its result must be dropped, not clobber fresh.
         gate.open()
         await firstFetch
-        #expect(Self.readyRows(viewModel).map(\.id) == ["FRESH"])
+        #expect(viewModel.viewState == .ready(expected))
     }
 
     @Test("cancelled load does not surface a spurious error")
@@ -300,7 +196,7 @@ struct TVListingsViewModelTests {
         channels.withLock { $0 = [] }
         await viewModel.refresh()
 
-        #expect(Self.readyRows(viewModel).isEmpty)
+        #expect(viewModel.viewState == .ready(TVListingsViewSnapshot(items: [])))
     }
 
     @Test("reload bumps reloadID")
@@ -311,6 +207,120 @@ struct TVListingsViewModelTests {
         viewModel.reload()
 
         #expect(viewModel.reloadID == 1)
+    }
+
+}
+
+// MARK: - Async Gate
+
+/// A one-shot gate used to hold a stubbed async closure mid-flight so a test can
+/// observe in-flight state, then release it.
+private final class AsyncGate: Sendable {
+
+    private let state = Mutex(State())
+
+    private struct State {
+        var isOpen = false
+        var isWaiting = false
+        var resume: (@Sendable () -> Void)?
+    }
+
+    /// Suspends until ``open()`` is called. Records that a caller is waiting so a
+    /// test can synchronise on it via ``waitUntilWaiting()``.
+    func wait() async {
+        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+            let shouldResumeImmediately = state.withLock { state -> Bool in
+                if state.isOpen {
+                    return true
+                }
+                state.isWaiting = true
+                state.resume = { continuation.resume() }
+                return false
+            }
+            if shouldResumeImmediately {
+                continuation.resume()
+            }
+        }
+    }
+
+    /// Releases the suspended ``wait()``.
+    func open() {
+        let resume = state.withLock { state -> (@Sendable () -> Void)? in
+            state.isOpen = true
+            let resume = state.resume
+            state.resume = nil
+            return resume
+        }
+        resume?()
+    }
+
+    /// Polls until a caller is suspended inside ``wait()``.
+    func waitUntilWaiting() async {
+        while !state.withLock(\.isWaiting) {
+            await Task.yield()
+        }
+    }
+
+}
+
+// MARK: - Factories
+
+extension TVListingsViewModelTests {
+
+    /// Fixed "now" used by the view model under test. Sits inside the airing
+    /// window of every programme built by ``makeProgramme`` (1000–1900), so the
+    /// next-day listings always resolve to a now-playing programme.
+    static let referenceNow = Date(timeIntervalSince1970: 1500)
+
+    @MainActor
+    static func makeViewModel(
+        dependencies: TVListingsDependencies = stubDependencies(),
+        viewState: ViewState<TVListingsViewSnapshot> = .initial
+    ) -> TVListingsViewModel {
+        TVListingsViewModel(dependencies: dependencies, now: { referenceNow }, viewState: viewState)
+    }
+
+    static func stubDependencies(
+        fetchChannels: @escaping @Sendable () async throws -> [TVChannel] = { [] },
+        fetchListings: @escaping @Sendable () async throws -> [TVProgramme] = { [] }
+    ) -> TVListingsDependencies {
+        TVListingsDependencies(
+            fetchChannels: fetchChannels,
+            fetchListings: fetchListings
+        )
+    }
+
+}
+
+// MARK: - Test Data
+
+extension TVListingsViewModelTests {
+
+    static func makeChannel(id: String, name: String) -> TVChannel {
+        TVChannel(id: id, name: name, isHD: false, logoURL: nil, channelNumbers: [])
+    }
+
+    static func makeProgramme(
+        id: String,
+        channelID: String,
+        title: String,
+        start: TimeInterval = 1000,
+        end: TimeInterval = 1900
+    ) -> TVProgramme {
+        TVProgramme(
+            id: id,
+            channelID: channelID,
+            title: title,
+            description: "",
+            startTime: Date(timeIntervalSince1970: start),
+            endTime: Date(timeIntervalSince1970: end),
+            duration: end - start,
+            episodeNumber: nil,
+            seasonNumber: nil,
+            imageURL: nil,
+            tmdbTVSeriesID: nil,
+            tmdbMovieID: nil
+        )
     }
 
 }

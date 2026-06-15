@@ -21,7 +21,6 @@ let package = Package(
         .package(path: "../../AppDependencies"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Core/Presentation"),
-        .package(path: "../../Core/SnapshotTestHelpers"),
         .package(path: "../../Contexts/PopcornTVListings")
     ],
 
@@ -41,14 +40,6 @@ let package = Package(
             name: "TVListingsFeatureTests",
             dependencies: [
                 "TVListingsFeature",
-                .product(name: "TVListingsDomain", package: "PopcornTVListings")
-            ]
-        ),
-        .testTarget(
-            name: "TVListingsFeatureSnapshotTests",
-            dependencies: [
-                "TVListingsFeature",
-                "SnapshotTestHelpers",
                 .product(name: "TVListingsDomain", package: "PopcornTVListings")
             ]
         )

@@ -11,71 +11,33 @@ import OSLog
 import Presentation
 import TVListingsDomain
 
-/// A single programme block in the EPG grid, decorated with the derived state the
-/// grid UI needs (airing status, genre, and airing progress).
-public struct TVListingsProgrammeItem: Identifiable, Equatable, Sendable {
+/// A now-playing entry pairing a channel with the programme currently airing on
+/// it, plus the programme scheduled to air next (if known).
+public struct TVListingsNowPlayingItem: Identifiable, Equatable, Sendable {
 
+    public let channel: TVChannel
     public let programme: TVProgramme
-
-    /// `true` when the programme is currently on air (`start <= now < end`).
-    public let isAiringNow: Bool
-
-    /// The programme's first genre, or `nil` when it has none.
-    public let genre: String?
-
-    /// Fraction of the programme already elapsed, clamped to `0...1`. `0` when the
-    /// programme is not currently airing.
-    public let progress: Double
+    public let nextProgramme: TVProgramme?
 
     public var id: String {
         programme.id
     }
 
-    public init(programme: TVProgramme, isAiringNow: Bool, genre: String?, progress: Double) {
-        self.programme = programme
-        self.isAiringNow = isAiringNow
-        self.genre = genre
-        self.progress = progress
-    }
-
-}
-
-/// A single channel row in the EPG grid, pairing a channel with its ordered
-/// programmes. `programmes` may be empty when the channel has no listings.
-public struct TVListingsChannelRow: Identifiable, Equatable, Sendable {
-
-    public let channel: TVChannel
-
-    /// The channel's programmes, ordered by `startTime`. May be empty.
-    public let programmes: [TVListingsProgrammeItem]
-
-    public var id: String {
-        channel.id
-    }
-
-    public init(channel: TVChannel, programmes: [TVListingsProgrammeItem]) {
+    public init(channel: TVChannel, programme: TVProgramme, nextProgramme: TVProgramme? = nil) {
         self.channel = channel
-        self.programmes = programmes
+        self.programme = programme
+        self.nextProgramme = nextProgramme
     }
 
 }
 
-/// The EPG grid data shown by ``TVListingsView`` once loaded.
-public struct TVListingsGridSnapshot: Equatable, Sendable {
+/// The data shown by ``TVListingsView`` once loaded.
+public struct TVListingsViewSnapshot: Equatable, Sendable {
 
-    public let rows: [TVListingsChannelRow]
+    public let items: [TVListingsNowPlayingItem]
 
-    /// The timeline geometry mapping programme times onto the horizontal axis.
-    public let geometry: TimelineGeometry
-
-    /// The reference time the snapshot was built for (used for the "now" indicator
-    /// and airing/progress calculations).
-    public let now: Date
-
-    public init(rows: [TVListingsChannelRow], geometry: TimelineGeometry, now: Date) {
-        self.rows = rows
-        self.geometry = geometry
-        self.now = now
+    public init(items: [TVListingsNowPlayingItem] = []) {
+        self.items = items
     }
 
 }
@@ -89,13 +51,15 @@ public struct TVListingsGridSnapshot: Equatable, Sendable {
 /// view's lifetime with no manual cancellation.
 ///
 /// Syncing is fully automatic and app-level (see `AppRootViewModel`); this view
-/// model only reads the cached listings. ``refresh()`` re-reads the cache so the
+/// model only reads the cached listings. It fetches the next day's worth of
+/// listings via ``TVListingsDependencies/fetchListings`` and selects the
+/// programme airing now on each channel. ``refresh()`` re-reads the cache so the
 /// view can pick up data produced by a background sync (e.g. on foreground).
 @Observable
 @MainActor
 public final class TVListingsViewModel {
 
-    public typealias ViewSnapshot = TVListingsGridSnapshot
+    public typealias ViewSnapshot = TVListingsViewSnapshot
 
     private static let logger = Logger.tvListings
 
@@ -106,9 +70,6 @@ public final class TVListingsViewModel {
     public private(set) var reloadID = 0
 
     private let dependencies: TVListingsDependencies
-
-    /// Supplies the reference time used to stamp the snapshot. Injectable so tests
-    /// can pin airing/progress calculations to a fixed instant.
     private let now: @Sendable () -> Date
 
     /// Monotonic id for in-flight ``fetch()`` calls. Only the most recently
@@ -160,8 +121,8 @@ public final class TVListingsViewModel {
 
         do {
             async let channelsTask = dependencies.fetchChannels()
-            async let programmesTask = dependencies.fetchListings()
-            let (channels, programmes) = try await (channelsTask, programmesTask)
+            async let listingsTask = dependencies.fetchListings()
+            let (channels, programmes) = try await (channelsTask, listingsTask)
 
             // A newer fetch superseded this one — drop the stale result so it
             // can't clobber fresher listings.
@@ -169,7 +130,9 @@ public final class TVListingsViewModel {
                 return
             }
 
-            let snapshot = Self.buildSnapshot(channels: channels, programmes: programmes, now: now())
+            let snapshot = ViewSnapshot(
+                items: Self.buildNowPlayingItems(channels: channels, programmes: programmes, now: now())
+            )
             viewState = .ready(snapshot)
         } catch {
             // Superseded by a newer fetch, or cancelled because the view
@@ -190,46 +153,31 @@ public final class TVListingsViewModel {
         }
     }
 
-    static func buildSnapshot(
+    /// Selects the programme airing at `now` on each channel from the next day's
+    /// listings, preserving the channel order provided by the dependency.
+    /// Channels with nothing airing now are omitted.
+    private static func buildNowPlayingItems(
         channels: [TVChannel],
         programmes: [TVProgramme],
         now: Date
-    ) -> ViewSnapshot {
+    ) -> [TVListingsNowPlayingItem] {
         let programmesByChannelID = Dictionary(grouping: programmes, by: \.channelID)
 
-        // One row per channel, in channel order. Channels with no programmes still
-        // yield a row (empty `programmes`); programmes with no matching channel are
-        // dropped as orphans.
-        let rows = channels.map { channel -> TVListingsChannelRow in
-            let items = (programmesByChannelID[channel.id] ?? [])
+        return channels.compactMap { channel in
+            let programmes = (programmesByChannelID[channel.id] ?? [])
                 .sorted { $0.startTime < $1.startTime }
-                .map { Self.makeItem(programme: $0, now: now) }
-            return TVListingsChannelRow(channel: channel, programmes: items)
-        }
-
-        return ViewSnapshot(
-            rows: rows,
-            geometry: TimelineGeometry.flooringNow(now),
-            now: now
-        )
-    }
-
-    private static func makeItem(programme: TVProgramme, now: Date) -> TVListingsProgrammeItem {
-        let isAiringNow = programme.startTime <= now && now < programme.endTime
-        let progress: Double = {
-            guard isAiringNow, programme.duration > 0 else {
-                return 0
+            guard let nowPlaying = programmes.first(where: { $0.startTime <= now && now < $0.endTime }) else {
+                return nil
             }
-            let elapsed = now.timeIntervalSince(programme.startTime)
-            return min(1, max(0, elapsed / programme.duration))
-        }()
-
-        return TVListingsProgrammeItem(
-            programme: programme,
-            isAiringNow: isAiringNow,
-            genre: programme.genres.first,
-            progress: progress
-        )
+            // The next programme is the soonest one starting at or after the
+            // current one ends; nil when the fetched window has nothing after it.
+            let nextProgramme = programmes.first { $0.startTime >= nowPlaying.endTime }
+            return TVListingsNowPlayingItem(
+                channel: channel,
+                programme: nowPlaying,
+                nextProgramme: nextProgramme
+            )
+        }
     }
 
 }

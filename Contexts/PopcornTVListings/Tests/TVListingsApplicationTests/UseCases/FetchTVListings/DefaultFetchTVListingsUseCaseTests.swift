@@ -28,8 +28,8 @@ struct DefaultFetchTVListingsUseCaseTests {
         #expect(mockRepository.programmesFromToCallCount == 1)
     }
 
-    @Test("execute requests a window of from == now and to == now + 3 days")
-    func executeRequestsThreeDayWindowFromNow() async throws {
+    @Test("execute requests a window of from == now and to == now + 24 hours")
+    func executeRequestsTwentyFourHourWindowFromNow() async throws {
         mockRepository.programmesFromToStub = .success([])
         let fixedNow = Date(timeIntervalSince1970: 1_776_463_200)
 
@@ -39,7 +39,7 @@ struct DefaultFetchTVListingsUseCaseTests {
 
         let recorded = try #require(mockRepository.programmesFromToCalledWith.first)
         #expect(recorded.from == fixedNow)
-        #expect(recorded.to == fixedNow.addingTimeInterval(3 * 86400))
+        #expect(recorded.to == fixedNow.addingTimeInterval(24 * 60 * 60))
         #expect(recorded.to > recorded.from)
     }
 

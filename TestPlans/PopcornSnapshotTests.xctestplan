@@ -141,13 +141,6 @@
         "identifier" : "PlotRemixGameFeatureSnapshotTests",
         "name" : "PlotRemixGameFeatureSnapshotTests"
       }
-    },
-    {
-      "target" : {
-        "containerPath" : "container:Features\/TVListingsFeature",
-        "identifier" : "TVListingsFeatureSnapshotTests",
-        "name" : "TVListingsFeatureSnapshotTests"
-      }
     }
   ],
   "version" : 1
