@@ -101,14 +101,40 @@ struct TVRegionFilteringTests {
         #expect(TVRegionFiltering.channels([noRegions], in: london).isEmpty)
     }
 
+    @Test("channels are ordered by their channel number within the selected region")
+    func channelsSortedByRegionNumber() {
+        let london = TVRegionGroup(
+            nation: "England",
+            name: "London",
+            subBouquet: 1,
+            pairs: [ChannelRegion(bouquet: 4101, subBouquet: 1)]
+        )
+        // The region-local BBC One: number 101 serves London.
+        let lon = Self.channel(id: "LON", numbers: [("101", [ChannelRegion(bouquet: 4101, subBouquet: 1)])])
+        // Another region's BBC One: its 101 serves a DIFFERENT area; only its 960 serves London,
+        // so within London it must sort at 960 (the end) — not at its global-lowest 101.
+        let wst = Self.channel(id: "WST", numbers: [
+            ("101", [ChannelRegion(bouquet: 4101, subBouquet: 4)]),
+            ("960", [ChannelRegion(bouquet: 4101, subBouquet: 1)])
+        ])
+
+        let result = TVRegionFiltering.channels([wst, lon], in: london)
+
+        #expect(result.map(\.id) == ["LON", "WST"])
+    }
+
     private static func channel(id: String, regions: [ChannelRegion]) -> Channel {
+        channel(id: id, numbers: [("1", regions)])
+    }
+
+    private static func channel(id: String, numbers: [(String, [ChannelRegion])]) -> Channel {
         Channel(
             id: id,
             name: id,
             type: .television,
             isHD: false,
             logoURL: nil,
-            channelNumbers: [ChannelNumber(channelNumber: "1", regions: regions)]
+            channelNumbers: numbers.map { ChannelNumber(channelNumber: $0.0, regions: $0.1) }
         )
     }
 

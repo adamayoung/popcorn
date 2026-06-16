@@ -42,15 +42,43 @@ public enum TVRegionFiltering {
     }
 
     ///
-    /// The channels available in `group` — those whose any channel-number region matches one
-    /// of the group's `(bouquet, subBouquet)` pairs.
+    /// The channels available in `group` — those with a channel number whose regions match one
+    /// of the group's `(bouquet, subBouquet)` pairs — **ordered by their channel number within
+    /// that region**. A channel is positioned by the lowest of *its numbers that serve this
+    /// region*, not its global-lowest number: so another region's variant (e.g. "BBC One West",
+    /// whose `101` serves the West but only its `960` serves London) sorts at `960`, leaving the
+    /// region-local channel at `101` — matching how a Sky box orders the guide.
     ///
     public static func channels(_ channels: [Channel], in group: TVRegionGroup) -> [Channel] {
-        channels.filter { channel in
-            channel.channelNumbers.contains { number in
-                number.regions.contains { group.pairs.contains($0) }
+        channels
+            .compactMap { channel -> (channel: Channel, number: Int?)? in
+                let regionNumbers = channel.channelNumbers.filter { number in
+                    number.regions.contains { group.pairs.contains($0) }
+                }
+                guard !regionNumbers.isEmpty else {
+                    return nil
+                }
+                // Lowest parseable number that serves this region; nil (sorts last) if none parse.
+                return (channel, regionNumbers.compactMap { Int($0.channelNumber) }.min())
             }
-        }
+            .sorted { lhs, rhs in
+                switch (lhs.number, rhs.number) {
+                case (let lhsNumber?, let rhsNumber?) where lhsNumber != rhsNumber:
+                    return lhsNumber < rhsNumber
+                case (_?, nil):
+                    return true
+                case (nil, _?):
+                    return false
+                default:
+                    break
+                }
+                let nameOrder = lhs.channel.name.localizedCaseInsensitiveCompare(rhs.channel.name)
+                if nameOrder != .orderedSame {
+                    return nameOrder == .orderedAscending
+                }
+                return lhs.channel.id < rhs.channel.id
+            }
+            .map(\.channel)
     }
 
     private struct GroupKey: Hashable {
