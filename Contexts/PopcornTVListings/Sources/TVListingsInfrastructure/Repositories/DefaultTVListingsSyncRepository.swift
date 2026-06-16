@@ -62,7 +62,19 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
         }
 
         if let lastSyncedAt, now().timeIntervalSince(lastSyncedAt) < syncThrottle {
-            return
+            // Within the throttle window — but only skip when the cache actually holds data.
+            // A SwiftData lightweight migration can recreate the (renamed) channel table empty
+            // while preserving `lastSyncedAt`; without this check the throttle would suppress
+            // the re-sync and the listings screen would stay empty until the window expired.
+            let channels: [Channel]
+            do {
+                channels = try await localDataSource.channels()
+            } catch let error {
+                throw TVListingsRepositoryError(error)
+            }
+            if !channels.isEmpty {
+                return
+            }
         }
 
         try await sync()

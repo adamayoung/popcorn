@@ -34,12 +34,31 @@ struct DefaultTVListingsSyncRepositoryThrottleTests {
         let remote = MockTVListingsRemoteDataSource()
         let local = MockTVListingsLocalDataSource()
         await local.setLastSyncedAtStub(.success(nowDate.addingTimeInterval(-(throttle - 1))))
+        // The throttle only applies when the cache actually holds data.
+        await local.setChannelsStub(.success([Channel.mock(id: "BBC")]))
 
         let repository = makeRepository(remote: remote, local: local)
 
         try await repository.syncIfNeeded()
 
         #expect(remote.fetchManifestCallCount == 0)
+    }
+
+    @Test("syncIfNeeded re-syncs within the throttle window when the channel cache is empty")
+    func syncIfNeededRunsWithinThrottleWhenCacheEmpty() async throws {
+        let remote = MockTVListingsRemoteDataSource()
+        let local = MockTVListingsLocalDataSource()
+        await local.setLastSyncedAtStub(.success(nowDate.addingTimeInterval(-(throttle - 1))))
+        // Recently "synced" but no channels cached — e.g. a SwiftData lightweight migration
+        // emptied the channel table while preserving `lastSyncedAt`. The throttle must not
+        // suppress the re-sync, or the screen stays empty until the throttle expires.
+        await local.setChannelsStub(.success([]))
+
+        let repository = makeRepository(remote: remote, local: local)
+
+        try await repository.syncIfNeeded()
+
+        #expect(remote.fetchManifestCallCount == 1)
     }
 
     @Test("syncIfNeeded runs exactly at the throttle boundary")
