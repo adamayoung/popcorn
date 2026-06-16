@@ -37,10 +37,11 @@ public struct TVListingsView: View {
             .navigationTitle(Text("TV_LISTINGS_TITLE", bundle: .module))
             .accessibilityIdentifier("tvListings.view")
             .toolbar {
-                if !viewModel.regionsByNation.isEmpty {
-                    ToolbarItem(placement: toolbarTrailingPlacement) {
-                        regionMenu
-                    }
+                // Always declared (disabled until regions load) so the button doesn't pop in
+                // and shift the layout on first launch.
+                ToolbarItem(placement: toolbarTrailingPlacement) {
+                    regionMenu
+                        .disabled(viewModel.regionsByNation.isEmpty)
                 }
             }
             .task(id: viewModel.reloadID) {

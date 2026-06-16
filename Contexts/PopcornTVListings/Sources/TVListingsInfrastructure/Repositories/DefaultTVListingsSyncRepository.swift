@@ -61,23 +61,26 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
             throw TVListingsRepositoryError(error)
         }
 
-        if let lastSyncedAt, now().timeIntervalSince(lastSyncedAt) < syncThrottle {
-            // Within the throttle window — but only skip when the cache actually holds data.
-            // A SwiftData lightweight migration can recreate the (renamed) channel table empty
-            // while preserving `lastSyncedAt`; without this check the throttle would suppress
-            // the re-sync and the listings screen would stay empty until the window expired.
-            let channels: [Channel]
-            do {
-                channels = try await localDataSource.channels()
-            } catch let error {
-                throw TVListingsRepositoryError(error)
-            }
-            if !channels.isEmpty {
-                return
-            }
+        if let lastSyncedAt, now().timeIntervalSince(lastSyncedAt) < syncThrottle, try await isCachePopulated() {
+            return
         }
 
         try await sync()
+    }
+
+    /// Whether the cache actually holds the data a completed sync should have produced. A
+    /// SwiftData lightweight migration can recreate a renamed/added table empty while
+    /// preserving `lastSyncedAt`; treating that as "synced" would let the throttle suppress
+    /// the re-sync and leave the screen empty (channels) or the region filter inert (regions)
+    /// until the window expired.
+    private func isCachePopulated() async throws(TVListingsRepositoryError) -> Bool {
+        do {
+            let channelsEmpty = try await localDataSource.channels().isEmpty
+            let regionsEmpty = try await localDataSource.regions().isEmpty
+            return !channelsEmpty && !regionsEmpty
+        } catch let error {
+            throw TVListingsRepositoryError(error)
+        }
     }
 
     // MARK: - Coalescing

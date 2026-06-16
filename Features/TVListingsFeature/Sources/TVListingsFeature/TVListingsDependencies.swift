@@ -52,10 +52,6 @@ public extension TVListingsDependencies {
         let fetchChannels = services.tvListingsFactory.makeFetchChannelsUseCase()
         let fetchTVRegions = services.tvListingsFactory.makeFetchTVRegionsUseCase()
         let fetchTVListings = services.tvListingsFactory.makeFetchTVListingsUseCase()
-        // `UserDefaults` is thread-safe for these reads/writes; the closures are only invoked
-        // from the @MainActor view model. `nonisolated(unsafe)` just lets it be captured.
-        nonisolated(unsafe) let defaults = UserDefaults.standard
-        let key = selectedRegionDefaultsKey
 
         return TVListingsDependencies(
             fetchChannels: {
@@ -67,11 +63,13 @@ public extension TVListingsDependencies {
             fetchListings: {
                 try await fetchTVListings.execute()
             },
+            // `UserDefaults.standard` is a thread-safe shared instance; referencing it directly
+            // keeps these `@Sendable` closures clean (no captured non-Sendable state).
             loadSelectedRegionID: {
-                defaults.string(forKey: key)
+                UserDefaults.standard.string(forKey: Self.selectedRegionDefaultsKey)
             },
             saveSelectedRegionID: { id in
-                defaults.set(id, forKey: key)
+                UserDefaults.standard.set(id, forKey: Self.selectedRegionDefaultsKey)
             }
         )
     }

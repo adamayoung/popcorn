@@ -22,12 +22,16 @@ public enum TVRegionFiltering {
     public static func groups(from regions: [TVRegion]) -> [TVRegionGroup] {
         let grouped = Dictionary(grouping: regions) { GroupKey(nation: $0.nation, subBouquet: $0.subBouquet) }
 
-        return grouped.map { key, rows in
-            TVRegionGroup(
+        return grouped.compactMap { key, rows -> TVRegionGroup? in
+            // An area's HD and SD rows share a name; pick deterministically (lowest bouquet)
+            // rather than relying on the unspecified `Dictionary(grouping:)` order. `rows` is
+            // never empty (it's a grouping value), so the guard just makes that invariant explicit.
+            guard let name = rows.min(by: { $0.bouquet < $1.bouquet })?.name else {
+                return nil
+            }
+            return TVRegionGroup(
                 nation: key.nation,
-                // An area's HD and SD rows share a name; pick deterministically (lowest
-                // bouquet) rather than relying on the unspecified `Dictionary(grouping:)` order.
-                name: rows.min { $0.bouquet < $1.bouquet }?.name ?? "",
+                name: name,
                 subBouquet: key.subBouquet,
                 pairs: rows.map { ChannelRegion(bouquet: $0.bouquet, subBouquet: $0.subBouquet) }
             )

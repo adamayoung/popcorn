@@ -34,8 +34,15 @@ struct DefaultTVListingsSyncRepositoryThrottleTests {
         let remote = MockTVListingsRemoteDataSource()
         let local = MockTVListingsLocalDataSource()
         await local.setLastSyncedAtStub(.success(nowDate.addingTimeInterval(-(throttle - 1))))
-        // The throttle only applies when the cache actually holds data.
+        // The throttle only applies when the cache actually holds data (channels AND regions).
         await local.setChannelsStub(.success([Channel.mock(id: "BBC")]))
+        await local.setRegionsStub(.success([TVRegion(
+            bouquet: 4101,
+            subBouquet: 1,
+            name: "London",
+            nation: "England",
+            isHD: true
+        )]))
 
         let repository = makeRepository(remote: remote, local: local)
 
@@ -53,6 +60,23 @@ struct DefaultTVListingsSyncRepositoryThrottleTests {
         // emptied the channel table while preserving `lastSyncedAt`. The throttle must not
         // suppress the re-sync, or the screen stays empty until the throttle expires.
         await local.setChannelsStub(.success([]))
+
+        let repository = makeRepository(remote: remote, local: local)
+
+        try await repository.syncIfNeeded()
+
+        #expect(remote.fetchManifestCallCount == 1)
+    }
+
+    @Test("syncIfNeeded re-syncs within the throttle window when regions are empty")
+    func syncIfNeededRunsWithinThrottleWhenRegionsEmpty() async throws {
+        let remote = MockTVListingsRemoteDataSource()
+        let local = MockTVListingsLocalDataSource()
+        await local.setLastSyncedAtStub(.success(nowDate.addingTimeInterval(-(throttle - 1))))
+        // Channels present but regions empty — e.g. regions.json was newly added to the
+        // manifest after a prior sync. The region filter would be inert until re-synced.
+        await local.setChannelsStub(.success([Channel.mock(id: "BBC")]))
+        await local.setRegionsStub(.success([]))
 
         let repository = makeRepository(remote: remote, local: local)
 
