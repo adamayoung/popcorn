@@ -19,8 +19,9 @@ public struct TVListingsNowPlayingItem: Identifiable, Equatable, Sendable {
     public let programme: TVProgramme
     public let nextProgramme: TVProgramme?
 
+    /// Channel-scoped so a simulcast of the same programme on two channels yields distinct ids.
     public var id: String {
-        programme.id
+        "\(channel.id)-\(programme.id)"
     }
 
     public init(channel: Channel, programme: TVProgramme, nextProgramme: TVProgramme? = nil) {

@@ -61,7 +61,7 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
             throw TVListingsRepositoryError(error)
         }
 
-        if let lastSyncedAt, now().timeIntervalSince(lastSyncedAt) < syncThrottle, try await isCachePopulated() {
+        if let lastSyncedAt, now().timeIntervalSince(lastSyncedAt) < syncThrottle, await isCachePopulated() {
             return
         }
 
@@ -72,14 +72,22 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
     /// SwiftData lightweight migration can recreate a renamed/added table empty while
     /// preserving `lastSyncedAt`; treating that as "synced" would let the throttle suppress
     /// the re-sync and leave the screen empty (channels) or the region filter inert (regions)
-    /// until the window expired.
-    private func isCachePopulated() async throws(TVListingsRepositoryError) -> Bool {
+    /// until the window expired. A read failure here is treated as "not populated" so we
+    /// re-sync rather than abort the throttle decision.
+    private func isCachePopulated() async -> Bool {
         do {
-            let channelsEmpty = try await localDataSource.channels().isEmpty
-            let regionsEmpty = try await localDataSource.regions().isEmpty
-            return !channelsEmpty && !regionsEmpty
-        } catch let error {
-            throw TVListingsRepositoryError(error)
+            guard try await !localDataSource.channels().isEmpty else {
+                return false
+            }
+            // Regions are only "expected" once `regions.json` has been synced before, so a feed
+            // that never delivers it doesn't force a sync on every launch.
+            let regionsExpected = try await localDataSource.fileStates().keys.contains("regions.json")
+            if regionsExpected, try await localDataSource.regions().isEmpty {
+                return false
+            }
+            return true
+        } catch {
+            return false
         }
     }
 

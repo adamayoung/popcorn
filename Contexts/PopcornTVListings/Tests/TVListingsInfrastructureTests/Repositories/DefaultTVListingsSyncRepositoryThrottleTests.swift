@@ -73,10 +73,12 @@ struct DefaultTVListingsSyncRepositoryThrottleTests {
         let remote = MockTVListingsRemoteDataSource()
         let local = MockTVListingsLocalDataSource()
         await local.setLastSyncedAtStub(.success(nowDate.addingTimeInterval(-(throttle - 1))))
-        // Channels present but regions empty — e.g. regions.json was newly added to the
-        // manifest after a prior sync. The region filter would be inert until re-synced.
+        // Channels present and regions.json was synced before (so it's expected), but the
+        // regions table is now empty — e.g. wiped by a migration. The filter would be inert
+        // until re-synced, so the throttle must not skip.
         await local.setChannelsStub(.success([Channel.mock(id: "BBC")]))
         await local.setRegionsStub(.success([]))
+        await local.setFileStatesStub(.success(["regions.json": "r1"]))
 
         let repository = makeRepository(remote: remote, local: local)
 
