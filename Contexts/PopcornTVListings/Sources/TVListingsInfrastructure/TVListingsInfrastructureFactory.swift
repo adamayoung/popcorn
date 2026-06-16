@@ -15,6 +15,10 @@ package final class TVListingsInfrastructureFactory {
 
     private static let logger = Logger.tvListingsInfrastructure
 
+    /// This store is a pure cache, repopulated from the EPG feed on every sync. It uses no
+    /// CloudKit and no `SchemaMigrationPlan`: on an incompatible schema change (e.g. the
+    /// `@Model` renames or the added non-optional `type` column) `makeLocalModelContainer`
+    /// deletes and recreates the store, and the next sync refills it — so no migration is needed.
     private static let schema = Schema([
         ChannelEntity.self,
         ChannelNumberEntity.self,

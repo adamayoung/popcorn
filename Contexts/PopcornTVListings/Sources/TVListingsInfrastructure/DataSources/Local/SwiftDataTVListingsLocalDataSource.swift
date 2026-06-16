@@ -130,6 +130,8 @@ actor SwiftDataTVListingsLocalDataSource: TVListingsLocalDataSource, ModelActor 
         from start: Date,
         to end: Date
     ) async throws(TVListingsLocalDataSourceError) -> [TVProgramme] {
+        // `#Predicate` can't capture function parameters directly — it needs local `let`
+        // bindings as the captured values. Don't inline these back into the predicate.
         let lowerBound = start
         let upperBound = end
 

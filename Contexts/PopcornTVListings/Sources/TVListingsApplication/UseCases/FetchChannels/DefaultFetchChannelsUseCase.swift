@@ -64,6 +64,12 @@ final class DefaultFetchChannelsUseCase: FetchChannelsUseCase {
     /// standard-definition and a high-definition variant — matched by name,
     /// ignoring a trailing "HD" designation — only the HD variant (``Channel/isHD``)
     /// is kept. Channels published in a single variant are returned unchanged.
+    ///
+    /// - Note: This is an **interim** heuristic keyed on the channel-level ``Channel/isHD``,
+    ///   which the feed reports unreliably (it's `false` for every Sky channel today, making
+    ///   this a no-op on live data). HD-ness truly lives on the region/bouquet (`regions.json`);
+    ///   this should be reworked to resolve HD via ``ChannelNumber/regions`` joined to
+    ///   ``TVRegion/isHD``.
     private static func preferringHDVariants(_ channels: [Channel]) -> [Channel] {
         let groups = Dictionary(grouping: channels) { baseName(for: $0) }
         let sdIDsToDrop = groups.values.reduce(into: Set<String>()) { result, group in

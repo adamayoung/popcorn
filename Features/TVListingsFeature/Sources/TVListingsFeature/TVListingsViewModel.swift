@@ -83,6 +83,10 @@ public final class TVListingsViewModel {
     /// Nation order for the region menu; unknown nations fall back to alphabetical, after these.
     private static let nationOrder = ["England", "Scotland", "Wales", "Northern Ireland", "Ireland", "Channel Islands"]
 
+    /// Default region on first launch (coupled to the feed's exact area/nation names).
+    private static let defaultAreaName = "London"
+    private static let defaultNation = "England"
+
     public private(set) var viewState: ViewState<ViewSnapshot>
 
     /// The selectable regions (areas that have channels), grouped by nation, for the filter menu.
@@ -235,10 +239,10 @@ public final class TVListingsViewModel {
         if let persistedID, let match = available.first(where: { $0.id == persistedID }) {
             return match
         }
-        if let london = available.first(where: { $0.name.caseInsensitiveCompare("London") == .orderedSame }) {
+        if let london = available.first(where: { $0.name.caseInsensitiveCompare(defaultAreaName) == .orderedSame }) {
             return london
         }
-        if let england = available.first(where: { $0.nation == "England" }) {
+        if let england = available.first(where: { $0.nation == defaultNation }) {
             return england
         }
         return available.first
