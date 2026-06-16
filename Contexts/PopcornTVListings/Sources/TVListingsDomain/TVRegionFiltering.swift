@@ -25,7 +25,9 @@ public enum TVRegionFiltering {
         return grouped.map { key, rows in
             TVRegionGroup(
                 nation: key.nation,
-                name: rows.first?.name ?? "",
+                // An area's HD and SD rows share a name; pick deterministically (lowest
+                // bouquet) rather than relying on the unspecified `Dictionary(grouping:)` order.
+                name: rows.min { $0.bouquet < $1.bouquet }?.name ?? "",
                 subBouquet: key.subBouquet,
                 pairs: rows.map { ChannelRegion(bouquet: $0.bouquet, subBouquet: $0.subBouquet) }
             )

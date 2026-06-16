@@ -45,6 +45,11 @@ struct TVRegionFilteringTests {
         #expect(groups.map(\.id) == ["Scotland#1", "England#1"], "sorted by name: Borders before London")
     }
 
+    @Test("groups returns empty for no regions")
+    func groupsReturnsEmptyForNoRegions() {
+        #expect(TVRegionFiltering.groups(from: []).isEmpty)
+    }
+
     // MARK: - channels(in:)
 
     @Test("a channel matches an area when a channel-number region matches one of its pairs")

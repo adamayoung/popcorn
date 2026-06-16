@@ -166,8 +166,10 @@ public final class TVListingsViewModel {
             let (channels, regions, programmes) = try await (channelsTask, regionsTask, listingsTask)
 
             // A newer fetch superseded this one — drop the stale result so it
-            // can't clobber fresher listings.
-            guard generation == fetchGeneration else {
+            // can't clobber fresher listings. The first successful result is always
+            // allowed to commit (`!viewState.isReady`), so an overlapping refresh
+            // that fails can't hide good data behind an error screen.
+            guard generation == fetchGeneration || !viewState.isReady else {
                 return
             }
 

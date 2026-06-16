@@ -52,6 +52,8 @@ public extension TVListingsDependencies {
         let fetchChannels = services.tvListingsFactory.makeFetchChannelsUseCase()
         let fetchTVRegions = services.tvListingsFactory.makeFetchTVRegionsUseCase()
         let fetchTVListings = services.tvListingsFactory.makeFetchTVListingsUseCase()
+        // `UserDefaults` is thread-safe for these reads/writes; the closures are only invoked
+        // from the @MainActor view model. `nonisolated(unsafe)` just lets it be captured.
         nonisolated(unsafe) let defaults = UserDefaults.standard
         let key = selectedRegionDefaultsKey
 
