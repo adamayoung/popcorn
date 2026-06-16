@@ -100,6 +100,25 @@ public final class TVListingsViewModel {
     /// or to pick up freshly-synced data on foreground.
     public private(set) var reloadID = 0
 
+    /// Determinate progress of the app-level EPG sync (`0...1`), or `nil` when no sync is
+    /// reporting. Pushed in by the host via ``updateSyncProgress(_:)``.
+    public private(set) var syncProgress: Float?
+
+    /// Whether to show the determinate "Syncing TV Listings" bar: only while a sync is
+    /// reporting progress **and** there are no listings cached for today yet (first launch).
+    /// Once today's listings are cached the bar is suppressed, so a routine background refresh
+    /// never shows it.
+    public var shouldShowSyncProgress: Bool {
+        syncProgress != nil && !hasListingsForToday
+    }
+
+    /// Whether the cache already holds listings covering today. The fetch window starts at
+    /// `now()` (see `FetchTVListingsUseCase`), so any cached programme necessarily covers
+    /// today — a non-empty cache is exactly "listings available for the current day".
+    private var hasListingsForToday: Bool {
+        !cachedProgrammes.isEmpty
+    }
+
     private let dependencies: TVListingsDependencies
     private let now: @Sendable () -> Date
 
@@ -140,8 +159,22 @@ public final class TVListingsViewModel {
 
     /// Reruns the view's `.task(id:)` by changing ``reloadID`` — used to retry
     /// after an error and to refresh when the app returns to the foreground.
+    ///
+    /// When nothing is on screen yet (an empty `.ready` snapshot from a first-launch
+    /// empty cache), this first drops back to `.loading` so a post-sync reload shows the
+    /// loading indicator while it re-fetches, rather than briefly flashing the "nothing on"
+    /// empty state in the gap before the populated snapshot commits.
     public func reload() {
+        if case .ready(let snapshot) = viewState, snapshot.items.isEmpty {
+            viewState = .loading
+        }
         reloadID += 1
+    }
+
+    /// Updates the app-level sync progress driving the determinate progress bar. The host
+    /// (`AppRootView`) forwards the value as the EPG sync runs, and `nil` once it finishes.
+    public func updateSyncProgress(_ progress: Float?) {
+        syncProgress = progress
     }
 
     // MARK: - Region selection
@@ -299,11 +332,14 @@ public final class TVListingsViewModel {
     public extension TVListingsViewModel {
 
         /// A view model pinned to a fixed view state with no-op dependencies, for
-        /// previews and snapshot tests.
+        /// previews and snapshot tests. Pass `syncProgress` to render the syncing bar.
         static func preview(
-            viewState: ViewState<ViewSnapshot> = .initial
+            viewState: ViewState<ViewSnapshot> = .initial,
+            syncProgress: Float? = nil
         ) -> TVListingsViewModel {
-            TVListingsViewModel(dependencies: .preview, viewState: viewState)
+            let viewModel = TVListingsViewModel(dependencies: .preview, viewState: viewState)
+            viewModel.updateSyncProgress(syncProgress)
+            return viewModel
         }
 
     }

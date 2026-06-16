@@ -30,7 +30,8 @@ struct AppRootDependencies {
 
     /// Runs a throttled TV-listings sync (a no-op within the 12h window). Errors are
     /// swallowed — an automatic background sync must never surface an app-level error.
-    var syncTVListingsIfNeeded: @Sendable () async -> Void
+    /// `onProgress` reports completion as a fraction in `0...1` (not called for a no-op).
+    var syncTVListingsIfNeeded: @Sendable (_ onProgress: @Sendable @escaping (Float) -> Void) async -> Void
 
 }
 
@@ -52,9 +53,9 @@ extension AppRootDependencies {
             isGamesEnabled: { featureFlags.isEnabled(.games) },
             isSearchEnabled: { featureFlags.isEnabled(.mediaSearch) },
             isTVListingsEnabled: { featureFlags.isEnabled(.tvListings) },
-            syncTVListingsIfNeeded: {
+            syncTVListingsIfNeeded: { onProgress in
                 let useCase = services.tvListingsFactory.makeSyncTVListingsIfNeededUseCase()
-                try? await useCase.execute()
+                try? await useCase.execute(onProgress: onProgress)
             }
         )
     }
@@ -73,7 +74,7 @@ extension AppRootDependencies {
                 isGamesEnabled: { true },
                 isSearchEnabled: { true },
                 isTVListingsEnabled: { true },
-                syncTVListingsIfNeeded: {}
+                syncTVListingsIfNeeded: { _ in }
             )
         }
 

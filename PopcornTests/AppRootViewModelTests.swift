@@ -7,6 +7,7 @@
 
 import Foundation
 @testable import Popcorn
+import Synchronization
 import Testing
 
 @MainActor
@@ -96,7 +97,7 @@ struct AppRootViewModelTests {
         let viewModel = AppRootViewModel(
             dependencies: .stub(
                 isTVListingsEnabled: true,
-                syncTVListingsIfNeeded: { await recorder.record() }
+                syncTVListingsIfNeeded: { _ in await recorder.record() }
             )
         )
 
@@ -108,7 +109,7 @@ struct AppRootViewModelTests {
     @Test("a completed sync bumps tvListingsRevision so the view can refresh")
     func completedSyncBumpsRevision() async {
         let viewModel = AppRootViewModel(
-            dependencies: .stub(isTVListingsEnabled: true, syncTVListingsIfNeeded: {})
+            dependencies: .stub(isTVListingsEnabled: true, syncTVListingsIfNeeded: { _ in })
         )
 
         await viewModel.start()
@@ -124,7 +125,7 @@ struct AppRootViewModelTests {
         let viewModel = AppRootViewModel(
             dependencies: .stub(
                 isTVListingsEnabled: false,
-                syncTVListingsIfNeeded: { await recorder.record() }
+                syncTVListingsIfNeeded: { _ in await recorder.record() }
             )
         )
 
@@ -139,7 +140,7 @@ struct AppRootViewModelTests {
         let viewModel = AppRootViewModel(
             dependencies: .stub(
                 isTVListingsEnabled: true,
-                syncTVListingsIfNeeded: { await recorder.record() }
+                syncTVListingsIfNeeded: { _ in await recorder.record() }
             )
         )
 
@@ -157,7 +158,7 @@ struct AppRootViewModelTests {
         let viewModel = AppRootViewModel(
             dependencies: .stub(
                 isTVListingsEnabled: true,
-                syncTVListingsIfNeeded: {
+                syncTVListingsIfNeeded: { _ in
                     await entered.signal()
                     await release.wait()
                     await recorder.record()
@@ -181,6 +182,67 @@ struct AppRootViewModelTests {
         #expect(await recorder.recordCount == 1)
     }
 
+    // MARK: - TV-listings sync progress
+
+    @Test("tvListingsSyncProgress is nil before any sync")
+    func syncProgressNilInitially() {
+        let viewModel = AppRootViewModel(dependencies: .stub())
+
+        #expect(viewModel.tvListingsSyncProgress == nil)
+    }
+
+    @Test("sync progress is reflected while a sync is in flight, then cleared on completion")
+    func syncProgressReflectedWhileInFlight() async {
+        let release = TestSignal()
+        let viewModel = AppRootViewModel(
+            dependencies: .stub(
+                isTVListingsEnabled: true,
+                syncTVListingsIfNeeded: { onProgress in
+                    onProgress(0.5)
+                    await release.wait()
+                }
+            )
+        )
+
+        // `start()` awaits the gated sync, so run it in the background to observe mid-flight.
+        let startTask = Task { await viewModel.start() }
+        await waitUntil { viewModel.tvListingsSyncProgress == 0.5 }
+
+        #expect(viewModel.tvListingsSyncProgress == 0.5)
+
+        await release.signal()
+        await startTask.value
+
+        #expect(viewModel.tvListingsSyncProgress == nil, "progress is cleared once the sync finishes")
+        #expect(viewModel.tvListingsRevision == 1)
+    }
+
+    @Test("a progress value delivered after the sync finishes does not resurrect the bar")
+    func lateProgressDoesNotResurrect() async {
+        let storedCallback = Mutex<(@Sendable (Float) -> Void)?>(nil)
+        let viewModel = AppRootViewModel(
+            dependencies: .stub(
+                isTVListingsEnabled: true,
+                syncTVListingsIfNeeded: { onProgress in
+                    // Keep the callback to fire it *after* the sync has completed.
+                    storedCallback.withLock { $0 = onProgress }
+                }
+            )
+        )
+
+        await viewModel.start()
+        #expect(viewModel.tvListingsSyncProgress == nil)
+
+        // A straggler delivery from this run must be ignored by the generation guard. The
+        // callback enqueues its main-actor hop synchronously here; this barrier task is enqueued
+        // after it, so awaiting it guarantees the hop has run (and been dropped) — a
+        // deterministic negative assertion with no time-bounded polling.
+        storedCallback.withLock { $0 }?(0.9)
+        await Task { @MainActor in }.value
+
+        #expect(viewModel.tvListingsSyncProgress == nil)
+    }
+
     // MARK: - selectedTab
 
     @Test("selectedTab defaults to explore")
@@ -188,6 +250,19 @@ struct AppRootViewModelTests {
         let viewModel = AppRootViewModel(dependencies: .stub())
 
         #expect(viewModel.selectedTab == .explore)
+    }
+
+    // MARK: - Async helpers
+
+    /// Yields until `condition` holds, letting the progress callback's `@MainActor` hop run.
+    /// Both this suite and the hop are on the main actor, so a bounded yield loop drains it
+    /// deterministically without relying on wall-clock timing.
+    private func waitUntil(iterations: Int = 1000, _ condition: () -> Bool) async {
+        var remaining = iterations
+        while !condition(), remaining > 0 {
+            await Task.yield()
+            remaining -= 1
+        }
     }
 
 }
@@ -245,7 +320,7 @@ private extension AppRootDependencies {
         isSearchEnabled: Bool = false,
         isTVListingsEnabled: Bool = false,
         bootstrap: @escaping @Sendable () async throws -> Void = {},
-        syncTVListingsIfNeeded: @escaping @Sendable () async -> Void = {}
+        syncTVListingsIfNeeded: @escaping @Sendable (@escaping @Sendable (Float) -> Void) async -> Void = { _ in }
     ) -> AppRootDependencies {
         AppRootDependencies(
             bootstrap: bootstrap,

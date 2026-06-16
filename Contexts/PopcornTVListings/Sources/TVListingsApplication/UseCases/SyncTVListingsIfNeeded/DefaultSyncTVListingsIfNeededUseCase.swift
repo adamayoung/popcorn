@@ -16,9 +16,9 @@ final class DefaultSyncTVListingsIfNeededUseCase: SyncTVListingsIfNeededUseCase 
         self.tvListingsSyncRepository = tvListingsSyncRepository
     }
 
-    func execute() async throws(SyncTVListingsError) {
+    func execute(onProgress: @Sendable @escaping (Float) -> Void) async throws(SyncTVListingsError) {
         do {
-            try await tvListingsSyncRepository.syncIfNeeded()
+            try await tvListingsSyncRepository.syncIfNeeded(onProgress: onProgress)
         } catch let error {
             throw SyncTVListingsError(error)
         }
