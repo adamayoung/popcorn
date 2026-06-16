@@ -131,12 +131,15 @@ final class AppRootViewModel {
 
         syncProgressGeneration += 1
         let generation = syncProgressGeneration
+        // `self` is captured strongly throughout (matching the existing trigger), which is safe
+        // because the task is awaited below and then cleared — no lasting cycle. A mixed
+        // weak/strong capture across the nested closures isn't allowed.
         let task = Task {
-            await dependencies.syncTVListingsIfNeeded { [weak self] value in
+            await dependencies.syncTVListingsIfNeeded { value in
                 // Hop to the main actor and drop the value if a newer generation has begun
                 // (or this sync already finished), so a late delivery can't strand the bar.
                 Task { @MainActor in
-                    guard let self, self.syncProgressGeneration == generation else {
+                    guard self.syncProgressGeneration == generation else {
                         return
                     }
                     // Separately-spawned tasks have no ordering guarantee, so drop a value that

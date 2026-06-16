@@ -67,11 +67,12 @@ struct DefaultTVListingsSyncRepositoryProgressTests {
 
         try await repository.sync { recorder.append($0) }
 
-        // manifest, channels, regions, then each of the 2 days, then the explicit final 1.0.
-        // Day completion order is arbitrary, but each step advances the same shared counter,
-        // so the fraction sequence is deterministic regardless of which day finished first.
+        // manifest, channels, regions, then each of the 2 days. Day completion order is
+        // arbitrary, but each step advances the same shared counter, so the fraction sequence
+        // is deterministic; the last step already reaches exactly 1.0, so there is no extra
+        // terminal emit.
         let total: Float = 5
-        let expected: [Float] = [1, 2, 3, 4, 5].map { $0 / total } + [1.0]
+        let expected: [Float] = [1, 2, 3, 4, 5].map { $0 / total }
         #expect(recorder.values == expected)
     }
 

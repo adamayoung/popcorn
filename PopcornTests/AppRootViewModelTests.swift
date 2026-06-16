@@ -233,9 +233,12 @@ struct AppRootViewModelTests {
         await viewModel.start()
         #expect(viewModel.tvListingsSyncProgress == nil)
 
-        // A straggler delivery from this run must be ignored by the generation guard.
+        // A straggler delivery from this run must be ignored by the generation guard. The
+        // callback enqueues its main-actor hop synchronously here; this barrier task is enqueued
+        // after it, so awaiting it guarantees the hop has run (and been dropped) — a
+        // deterministic negative assertion with no time-bounded polling.
         storedCallback.withLock { $0 }?(0.9)
-        await yieldRepeatedly()
+        await Task { @MainActor in }.value
 
         #expect(viewModel.tvListingsSyncProgress == nil)
     }
@@ -259,13 +262,6 @@ struct AppRootViewModelTests {
         while !condition(), remaining > 0 {
             await Task.yield()
             remaining -= 1
-        }
-    }
-
-    /// Yields a handful of times to give any enqueued `@MainActor` work a chance to run.
-    private func yieldRepeatedly(times: Int = 50) async {
-        for _ in 0 ..< times {
-            await Task.yield()
         }
     }
 

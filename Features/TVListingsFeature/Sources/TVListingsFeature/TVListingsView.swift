@@ -116,17 +116,22 @@ public struct TVListingsView: View {
     /// The determinate EPG-sync progress bar shown on first launch, replacing the
     /// indeterminate loading spinner until today's listings are cached.
     ///
-    /// A labelled `ProgressView(value:)` renders the "Syncing TV Listings" label above the
-    /// linear bar and, unlike a separate `Text` + `.combine`, lets the bar announce its own
-    /// percentage value to VoiceOver ("Syncing TV Listings, N percent").
+    /// The visible `Text` is hidden from accessibility; the bar carries the label so VoiceOver
+    /// announces "Syncing TV Listings, N percent" (label + the determinate value) as one element.
     private func syncingView(progress: Float) -> some View {
-        ProgressView(value: Double(progress)) {
+        VStack(spacing: .spacing10) {
             Text("TV_LISTINGS_SYNCING", bundle: .module)
-                .font(.headline)
+                .multilineTextAlignment(.center)
+                .accessibilityHidden(true)
+
+            ProgressView(value: Double(progress))
+                .progressViewStyle(.linear)
+                .animation(.easeInOut(duration: 0.3), value: progress)
+                .accessibilityLabel(Text("TV_LISTINGS_SYNCING", bundle: .module))
         }
-        .progressViewStyle(.linear)
         .frame(maxWidth: Self.syncingBarMaxWidth)
         .padding()
+        .accessibilityElement(children: .contain)
         .accessibilityIdentifier("tvListings.sync-progress")
     }
 

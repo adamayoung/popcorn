@@ -191,7 +191,11 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
             throw TVListingsRepositoryError(error)
         }
 
-        onProgress(1)
+        // Every unit completing already emits `completed / total == 1.0`, so only emit the
+        // terminal value if something left the weighted sum short (defensive against drift).
+        if completed < total {
+            onProgress(1)
+        }
     }
 
     private func syncChannelsIfChanged(
