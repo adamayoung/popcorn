@@ -13,6 +13,17 @@ import Foundation
 ///
 public protocol SyncTVListingsIfNeededUseCase: Sendable {
 
-    func execute() async throws(SyncTVListingsError)
+    /// - Parameter onProgress: Reports sync completion as a fraction in `0...1`, weighted by
+    ///   the files to download. Not called for a throttled no-op.
+    func execute(onProgress: @Sendable @escaping (Float) -> Void) async throws(SyncTVListingsError)
+
+}
+
+public extension SyncTVListingsIfNeededUseCase {
+
+    /// Convenience that syncs without observing progress.
+    func execute() async throws(SyncTVListingsError) {
+        try await execute(onProgress: { _ in })
+    }
 
 }

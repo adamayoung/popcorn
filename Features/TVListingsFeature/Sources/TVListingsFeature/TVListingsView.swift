@@ -16,6 +16,9 @@ import TVListingsDomain
 /// behaves correctly regardless of how a host retains it.
 public struct TVListingsView: View {
 
+    /// Constrains the determinate sync bar so it doesn't stretch edge-to-edge on wide layouts.
+    private static let syncingBarMaxWidth: CGFloat = 280
+
     @State private var viewModel: TVListingsViewModel
 
     public init(viewModel: TVListingsViewModel) {
@@ -29,7 +32,9 @@ public struct TVListingsView: View {
         // pull-to-refresh re-reads the cache on demand.
         content
             .overlay {
-                if viewModel.viewState.isLoading {
+                if viewModel.shouldShowSyncProgress, let progress = viewModel.syncProgress {
+                    syncingView(progress: progress)
+                } else if viewModel.viewState.isLoading {
                     ProgressView()
                         .accessibilityLabel(Text("TV_LISTINGS_LOADING", bundle: .module))
                 }
@@ -106,6 +111,23 @@ public struct TVListingsView: View {
         default:
             Color.clear
         }
+    }
+
+    /// The determinate EPG-sync progress bar shown on first launch, replacing the
+    /// indeterminate loading spinner until today's listings are cached.
+    ///
+    /// A labelled `ProgressView(value:)` renders the "Syncing TV Listings" label above the
+    /// linear bar and, unlike a separate `Text` + `.combine`, lets the bar announce its own
+    /// percentage value to VoiceOver ("Syncing TV Listings, N percent").
+    private func syncingView(progress: Float) -> some View {
+        ProgressView(value: Double(progress)) {
+            Text("TV_LISTINGS_SYNCING", bundle: .module)
+                .font(.headline)
+        }
+        .progressViewStyle(.linear)
+        .frame(maxWidth: Self.syncingBarMaxWidth)
+        .padding()
+        .accessibilityIdentifier("tvListings.sync-progress")
     }
 
     private var emptyBody: some View {
@@ -263,6 +285,14 @@ private struct NowPlayingRow: View {
     #Preview("Error") {
         NavigationStack {
             TVListingsView(viewModel: .preview(viewState: .error(ViewStateError(message: "Something went wrong"))))
+        }
+    }
+
+    #Preview("Syncing") {
+        NavigationStack {
+            TVListingsView(
+                viewModel: .preview(viewState: .ready(TVListingsViewSnapshot()), syncProgress: 0.4)
+            )
         }
     }
 #endif

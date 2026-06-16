@@ -79,6 +79,17 @@
         }
       }
     },
+    "TV_LISTINGS_SYNCING" : {
+      "comment" : "Label shown above the progress bar while TV listings are syncing.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Syncing TV Listings"
+          }
+        }
+      }
+    },
     "TV_LISTINGS_TITLE" : {
       "comment" : "Navigation title of the TV Listings screen.",
       "localizations" : {

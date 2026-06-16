@@ -72,6 +72,12 @@ struct AppRootView: View {
                 // now-populated cache so a first-launch empty view doesn't persist.
                 tvListingsViewModel.reload()
             }
+            .onChange(of: viewModel.tvListingsSyncProgress) { _, newValue in
+                // Forward sync progress so the listings view can show a determinate progress
+                // bar on first launch (until today's listings are cached). Attached at body
+                // level, so it observes regardless of which tab is selected.
+                tvListingsViewModel.updateSyncProgress(newValue)
+            }
     }
 
     private var content: some View {

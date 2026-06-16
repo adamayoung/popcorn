@@ -61,6 +61,17 @@ final class AppRootViewModel {
     /// cache until the next foreground.
     private(set) var tvListingsRevision = 0
 
+    /// Determinate progress of the in-flight automatic TV-listings sync, as a fraction in
+    /// `0...1`, or `nil` when no sync is reporting progress. ``AppRootView`` forwards this to
+    /// the listings view, which shows a progress bar on first launch (before today's listings
+    /// are cached).
+    private(set) var tvListingsSyncProgress: Float?
+
+    /// Bumped each time a sync starts (and again when it finishes). The progress callback only
+    /// commits a value whose generation still matches, so a late delivery can't resurrect the
+    /// bar after the completion reset.
+    private var syncProgressGeneration = 0
+
     private var hasStarted = false
 
     /// The in-flight automatic sync, reused by overlapping triggers (launch + foreground)
@@ -118,13 +129,36 @@ final class AppRootViewModel {
             return
         }
 
-        let task = Task { await dependencies.syncTVListingsIfNeeded() }
+        syncProgressGeneration += 1
+        let generation = syncProgressGeneration
+        let task = Task {
+            await dependencies.syncTVListingsIfNeeded { [weak self] value in
+                // Hop to the main actor and drop the value if a newer generation has begun
+                // (or this sync already finished), so a late delivery can't strand the bar.
+                Task { @MainActor in
+                    guard let self, self.syncProgressGeneration == generation else {
+                        return
+                    }
+                    // Separately-spawned tasks have no ordering guarantee, so drop a value that
+                    // arrived out of order and would move the determinate bar backwards.
+                    if let current = self.tvListingsSyncProgress, value < current {
+                        return
+                    }
+                    self.tvListingsSyncProgress = value
+                }
+            }
+        }
         tvListingsSyncTask = task
         await task.value
         tvListingsSyncTask = nil
 
-        // Signal completion so the listings view can pick up the freshly-synced cache.
+        // Invalidate any in-flight progress callbacks from this run, then signal completion so
+        // the listings view picks up the freshly-synced cache, and finally clear the bar.
+        // Bumping the revision before clearing lets the view's re-fetch begin while the bar is
+        // still shown, so a successful first sync transitions straight to populated listings.
+        syncProgressGeneration += 1
         tvListingsRevision += 1
+        tvListingsSyncProgress = nil
     }
 
     private func updateFeatureFlags() {

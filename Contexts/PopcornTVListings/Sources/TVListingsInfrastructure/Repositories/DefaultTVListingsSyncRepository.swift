@@ -43,9 +43,14 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
         self.onCoalesce = onCoalesce
     }
 
+    /// Unconditional sync without progress observation.
     func sync() async throws(TVListingsRepositoryError) {
+        try await sync { _ in }
+    }
+
+    func sync(onProgress: @Sendable @escaping (Float) -> Void) async throws(TVListingsRepositoryError) {
         do {
-            try await coalescedSync()
+            try await coalescedSync(onProgress: onProgress)
         } catch let error as TVListingsRepositoryError {
             throw error
         } catch {
@@ -53,7 +58,7 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
         }
     }
 
-    func syncIfNeeded() async throws(TVListingsRepositoryError) {
+    func syncIfNeeded(onProgress: @Sendable @escaping (Float) -> Void) async throws(TVListingsRepositoryError) {
         let lastSyncedAt: Date?
         do {
             lastSyncedAt = try await localDataSource.lastSyncedAt()
@@ -65,7 +70,7 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
             return
         }
 
-        try await sync()
+        try await sync(onProgress: onProgress)
     }
 
     /// Whether the cache actually holds the data a completed sync should have produced. A
@@ -93,7 +98,7 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
 
     // MARK: - Coalescing
 
-    private func coalescedSync() async throws {
+    private func coalescedSync(onProgress: @Sendable @escaping (Float) -> Void) async throws {
         if let inFlight {
             onCoalesce?()
             try await inFlight.value
@@ -101,9 +106,11 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
         }
 
         // No `await` between the nil-check above and this assignment, so only one caller ever
-        // becomes the task starter; reentrant callers take the branch above and coalesce.
+        // becomes the task starter; reentrant callers take the branch above and coalesce. The
+        // starter's `onProgress` is baked into the in-flight task, so coalescing callers
+        // (which await `inFlight.value` above) never receive progress — only the starter does.
         let task = Task<Void, any Error> { [self] in
-            try await performSync()
+            try await performSync(onProgress: onProgress)
         }
         inFlight = task
 
@@ -118,7 +125,9 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
 
     // MARK: - Orchestration
 
-    private func performSync() async throws(TVListingsRepositoryError) {
+    private func performSync(
+        onProgress: @Sendable @escaping (Float) -> Void
+    ) async throws(TVListingsRepositoryError) {
         // A failed manifest fetch throws before any local mutation, so the cache is never
         // wiped on a network failure.
         let manifest: EPGManifest
@@ -135,11 +144,34 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
             throw TVListingsRepositoryError(error)
         }
 
+        // Progress is weighted by the files we will download. The manifest (already fetched)
+        // counts as one unit so the bar leaves 0% immediately rather than stalling there while
+        // the channel/region/day files come down. `total` is always >= 1, so no divide-by-zero.
+        let channelsChanged = manifest.channelsFile.map { stored[$0.path] != $0.hash } ?? false
+        let regionsChanged = manifest.regionsFile.map { stored[$0.path] != $0.hash } ?? false
+        let changedDays = Self.changedDays(manifest: manifest, stored: stored)
+        let total = 1 + (channelsChanged ? 1 : 0) + (regionsChanged ? 1 : 0) + changedDays.count
+        var completed = 1
+        onProgress(Float(completed) / Float(total))
+
         try await syncChannelsIfChanged(manifest: manifest, stored: stored)
+        if channelsChanged {
+            completed += 1
+            onProgress(Float(completed) / Float(total))
+        }
 
         try await syncRegionsIfChanged(manifest: manifest, stored: stored)
+        if regionsChanged {
+            completed += 1
+            onProgress(Float(completed) / Float(total))
+        }
 
-        try await syncChangedSchedules(manifest: manifest, stored: stored)
+        // The `for try await … in group` loop body runs on this actor's executor, so mutating
+        // `completed` and calling `onProgress` from it is race-free.
+        try await syncSchedules(changedDays) {
+            completed += 1
+            onProgress(Float(completed) / Float(total))
+        }
 
         // Purge whole past days and any day no longer in the rolling window. Today is retained
         // in full. Runs only after the day loop, so a partial sync leaves more data, never less.
@@ -158,6 +190,8 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
         } catch let error {
             throw TVListingsRepositoryError(error)
         }
+
+        onProgress(1)
     }
 
     private func syncChannelsIfChanged(
@@ -205,29 +239,19 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
     }
 
     ///
-    /// Fetches and persists every changed day's schedule concurrently. Unchanged days are
-    /// skipped entirely (no fetch, no write) — the hash-skip is the performance win, and the
-    /// fan-out cuts a cold-launch (up to 7 changed days) to roughly one round-trip's latency.
-    /// Fetches run in parallel; the per-day writes serialise on the local data-source actor and
-    /// each commits its day + hash atomically. A failure cancels the rest and propagates, so the
-    /// later purge/`completeSync` never runs — leaving the cache with more data, never less.
+    /// Fetches and persists the already-filtered `changedDays` concurrently (the changed-day
+    /// computation and date validation live in ``changedDays(manifest:stored:)``). The fan-out
+    /// cuts a cold-launch (up to 7 changed days) to roughly one round-trip's latency. Fetches
+    /// run in parallel; the per-day writes serialise on the local data-source actor and each
+    /// commits its day + hash atomically. `onDayComplete` is called on this actor as each day
+    /// finishes (arbitrary order), for progress reporting. A failure cancels the rest and
+    /// propagates, so the later purge/`completeSync` never runs — leaving the cache with more
+    /// data, never less.
     ///
-    private func syncChangedSchedules(
-        manifest: EPGManifest,
-        stored: [String: String]
+    private func syncSchedules(
+        _ changedDays: [(date: String, hash: String)],
+        onDayComplete: () -> Void
     ) async throws(TVListingsRepositoryError) {
-        let changedDays: [(date: String, hash: String)] = manifest.dates.compactMap { date in
-            // Validate the manifest-supplied date before it reaches a URL path. Skips any
-            // malformed entry so a bad feed value can't produce a traversal/odd request.
-            guard Self.isValidDateString(date),
-                  let file = manifest.scheduleFile(forDate: date),
-                  stored[file.path] != file.hash
-            else {
-                return nil
-            }
-            return (date, file.hash)
-        }
-
         guard !changedDays.isEmpty else {
             return
         }
@@ -242,7 +266,11 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
                         try await local.replaceProgrammes(programmes, forDate: day.date, hash: day.hash)
                     }
                 }
-                try await group.waitForAll()
+                // Drain as each day finishes (arbitrary order) so progress reflects files
+                // completed. The loop body runs on this actor, so `onDayComplete` is safe.
+                for try await _ in group {
+                    onDayComplete()
+                }
             }
         } catch let error as TVListingsRemoteDataSourceError {
             throw TVListingsRepositoryError(error)
@@ -250,6 +278,24 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
             throw TVListingsRepositoryError(error)
         } catch {
             throw .unknown(error)
+        }
+    }
+
+    /// The changed schedule days from `manifest` (hash differs from `stored`), with malformed
+    /// dates skipped so a bad feed value can't reach a URL path. Computed up front so the
+    /// caller knows the count for progress weighting.
+    private static func changedDays(
+        manifest: EPGManifest,
+        stored: [String: String]
+    ) -> [(date: String, hash: String)] {
+        manifest.dates.compactMap { date in
+            guard Self.isValidDateString(date),
+                  let file = manifest.scheduleFile(forDate: date),
+                  stored[file.path] != file.hash
+            else {
+                return nil
+            }
+            return (date, file.hash)
         }
     }
 

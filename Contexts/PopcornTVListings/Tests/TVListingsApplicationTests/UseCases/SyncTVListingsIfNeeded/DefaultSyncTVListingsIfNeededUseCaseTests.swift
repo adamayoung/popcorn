@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Synchronization
 import Testing
 @testable import TVListingsApplication
 import TVListingsDomain
@@ -24,6 +25,21 @@ struct DefaultSyncTVListingsIfNeededUseCaseTests {
         try await useCase.execute()
 
         #expect(mockSyncRepository.syncIfNeededCallCount == 1)
+    }
+
+    @Test("execute forwards every progress value emitted by the repository")
+    func executeForwardsProgress() async throws {
+        mockSyncRepository.syncIfNeededStub = .success(())
+        mockSyncRepository.progressToEmit = [0.25, 0.5, 1.0]
+
+        let useCase = makeUseCase()
+
+        let recorder = ProgressRecorder()
+        try await useCase.execute(onProgress: { value in
+            recorder.append(value)
+        })
+
+        #expect(recorder.values == [0.25, 0.5, 1.0])
     }
 
     @Test("execute throws remote when repository throws remote")
@@ -95,6 +111,21 @@ struct DefaultSyncTVListingsIfNeededUseCaseTests {
 
     private func makeUseCase() -> DefaultSyncTVListingsIfNeededUseCase {
         DefaultSyncTVListingsIfNeededUseCase(tvListingsSyncRepository: mockSyncRepository)
+    }
+
+}
+
+/// Thread-safe collector for the `@Sendable` progress callback.
+private final class ProgressRecorder: Sendable {
+
+    private let storage = Mutex<[Float]>([])
+
+    var values: [Float] {
+        storage.withLock { $0 }
+    }
+
+    func append(_ value: Float) {
+        storage.withLock { $0.append(value) }
     }
 
 }
