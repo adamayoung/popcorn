@@ -13,15 +13,18 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
 
     // MARK: - Read stubs
 
-    var channelsStub: Result<[TVChannel], TVListingsLocalDataSourceError> = .success([])
+    var channelsStub: Result<[Channel], TVListingsLocalDataSourceError> = .success([])
+    var regionsStub: Result<[TVRegion], TVListingsLocalDataSourceError> = .success([])
     var programmesStub: Result<[TVProgramme], TVListingsLocalDataSourceError> = .success([])
     var nowPlayingStub: Result<[TVProgramme], TVListingsLocalDataSourceError> = .success([])
+    var programmesFromToStub: Result<[TVProgramme], TVListingsLocalDataSourceError> = .success([])
     var fileStatesStub: Result<[String: String], TVListingsLocalDataSourceError> = .success([:])
     var lastSyncedAtStub: Result<Date?, TVListingsLocalDataSourceError> = .success(nil)
 
     // MARK: - Write stubs
 
     var upsertChannelsStub: Result<Void, TVListingsLocalDataSourceError> = .success(())
+    var upsertRegionsStub: Result<Void, TVListingsLocalDataSourceError> = .success(())
     var replaceProgrammesStub: Result<Void, TVListingsLocalDataSourceError> = .success(())
     var deleteProgrammesStub: Result<Void, TVListingsLocalDataSourceError> = .success(())
     var completeSyncStub: Result<Void, TVListingsLocalDataSourceError> = .success(())
@@ -30,14 +33,16 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
 
     var fileStatesCallCount = 0
     var lastSyncedAtCallCount = 0
-    var upsertChannelsCalls: [(channels: [TVChannel], hash: String)] = []
+    var programmesFromToCalledWith: [(from: Date, to: Date)] = []
+    var upsertChannelsCalls: [(channels: [Channel], hash: String)] = []
+    var upsertRegionsCalls: [(regions: [TVRegion], hash: String)] = []
     var replaceProgrammesCalls: [(programmes: [TVProgramme], date: String, hash: String)] = []
     var deleteProgrammesCalls: [[String]] = []
     var completeSyncCalls: [(lastSyncedAt: Date, paths: Set<String>)] = []
 
     /// Total number of mutating calls — used to assert "no local mutation on failure".
     var mutationCount: Int {
-        upsertChannelsCalls.count + replaceProgrammesCalls.count
+        upsertChannelsCalls.count + upsertRegionsCalls.count + replaceProgrammesCalls.count
             + deleteProgrammesCalls.count + completeSyncCalls.count
     }
 
@@ -59,10 +64,21 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
         upsertChannelsStub = stub
     }
 
+    func setProgrammesFromToStub(_ stub: Result<[TVProgramme], TVListingsLocalDataSourceError>) {
+        programmesFromToStub = stub
+    }
+
     // MARK: - Reads
 
-    func channels() async throws(TVListingsLocalDataSourceError) -> [TVChannel] {
+    func channels() async throws(TVListingsLocalDataSourceError) -> [Channel] {
         switch channelsStub {
+        case .success(let value): return value
+        case .failure(let error): throw error
+        }
+    }
+
+    func regions() async throws(TVListingsLocalDataSourceError) -> [TVRegion] {
+        switch regionsStub {
         case .success(let value): return value
         case .failure(let error): throw error
         }
@@ -87,6 +103,17 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
         }
     }
 
+    func programmes(
+        from start: Date,
+        to end: Date
+    ) async throws(TVListingsLocalDataSourceError) -> [TVProgramme] {
+        programmesFromToCalledWith.append((start, end))
+        switch programmesFromToStub {
+        case .success(let value): return value
+        case .failure(let error): throw error
+        }
+    }
+
     func fileStates() async throws(TVListingsLocalDataSourceError) -> [String: String] {
         fileStatesCallCount += 1
         switch fileStatesStub {
@@ -106,11 +133,22 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
     // MARK: - Writes
 
     func upsertChannels(
-        _ channels: [TVChannel],
+        _ channels: [Channel],
         hash: String
     ) async throws(TVListingsLocalDataSourceError) {
         upsertChannelsCalls.append((channels, hash))
         switch upsertChannelsStub {
+        case .success: return
+        case .failure(let error): throw error
+        }
+    }
+
+    func upsertRegions(
+        _ regions: [TVRegion],
+        hash: String
+    ) async throws(TVListingsLocalDataSourceError) {
+        upsertRegionsCalls.append((regions, hash))
+        switch upsertRegionsStub {
         case .success: return
         case .failure(let error): throw error
         }

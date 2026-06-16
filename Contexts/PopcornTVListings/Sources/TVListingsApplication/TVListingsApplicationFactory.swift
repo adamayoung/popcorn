@@ -10,16 +10,19 @@ import TVListingsDomain
 
 package final class TVListingsApplicationFactory: Sendable {
 
-    private let tvChannelRepository: any TVChannelRepository
+    private let channelRepository: any ChannelRepository
+    private let tvRegionRepository: any TVRegionRepository
     private let tvProgrammeRepository: any TVProgrammeRepository
     private let tvListingsSyncRepository: any TVListingsSyncRepository
 
     package init(
-        tvChannelRepository: some TVChannelRepository,
+        channelRepository: some ChannelRepository,
+        tvRegionRepository: some TVRegionRepository,
         tvProgrammeRepository: some TVProgrammeRepository,
         tvListingsSyncRepository: some TVListingsSyncRepository
     ) {
-        self.tvChannelRepository = tvChannelRepository
+        self.channelRepository = channelRepository
+        self.tvRegionRepository = tvRegionRepository
         self.tvProgrammeRepository = tvProgrammeRepository
         self.tvListingsSyncRepository = tvListingsSyncRepository
     }
@@ -28,16 +31,24 @@ package final class TVListingsApplicationFactory: Sendable {
         DefaultSyncTVListingsIfNeededUseCase(tvListingsSyncRepository: tvListingsSyncRepository)
     }
 
-    package func makeFetchTVChannelsUseCase() -> some FetchTVChannelsUseCase {
-        DefaultFetchTVChannelsUseCase(tvChannelRepository: tvChannelRepository)
+    package func makeFetchChannelsUseCase() -> some FetchChannelsUseCase {
+        DefaultFetchChannelsUseCase(channelRepository: channelRepository)
     }
 
-    package func makeFetchTVChannelScheduleUseCase() -> some FetchTVChannelScheduleUseCase {
-        DefaultFetchTVChannelScheduleUseCase(tvProgrammeRepository: tvProgrammeRepository)
+    package func makeFetchTVRegionsUseCase() -> some FetchTVRegionsUseCase {
+        DefaultFetchTVRegionsUseCase(tvRegionRepository: tvRegionRepository)
+    }
+
+    package func makeFetchChannelScheduleUseCase() -> some FetchChannelScheduleUseCase {
+        DefaultFetchChannelScheduleUseCase(tvProgrammeRepository: tvProgrammeRepository)
     }
 
     package func makeFetchNowPlayingTVProgrammesUseCase() -> some FetchNowPlayingTVProgrammesUseCase {
         DefaultFetchNowPlayingTVProgrammesUseCase(tvProgrammeRepository: tvProgrammeRepository)
+    }
+
+    package func makeFetchTVListingsUseCase() -> some FetchTVListingsUseCase {
+        DefaultFetchTVListingsUseCase(tvProgrammeRepository: tvProgrammeRepository)
     }
 
 }

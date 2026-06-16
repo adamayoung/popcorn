@@ -82,6 +82,10 @@ This applies to all build, test, lint, and format commands — both `make` targe
 
 **Always use `git push`** (not `gh` CLI) when pushing to remote branches. The `gh` CLI bypasses GitHub webhooks and workflow triggers.
 
+### Git Worktrees
+
+**Always create git worktrees under `.claude/worktrees/`** (e.g. `git worktree add .claude/worktrees/<branch-name> -b <branch> <base>`), never in a sibling directory like `../popcorn-<name>`. This keeps worktrees scoped to the project and grouped in one predictable, git-ignored location.
+
 ### Pre-PR Checklist
 
 Before creating a pull request, **always** verify:
@@ -130,6 +134,23 @@ Conventions worth knowing up front (detail in ARCHITECTURE.md):
 ## TMDb Domain Model Mapping
 
 See [docs/TMDB_MAPPING.md](docs/TMDB_MAPPING.md) for the complete TMDb type reference and mapping pipeline.
+
+## TV Listings EPG Data
+
+The `PopcornTVListings` context consumes a partitioned, content-addressed EPG feed
+produced by **[adamayoung/popcorn-epg](https://github.com/adamayoung/popcorn-epg)** (a
+separate Swift CLI maintained by the project owner; regenerated every 12 hours). It is
+the source of truth for the data format — consult its README before changing EPG DTOs,
+domain models, or sync logic.
+
+- **Base URL:** `https://epg.adam-young.co.uk` (hard-coded in `HTTPTVListingsRemoteDataSource`).
+- **Sync:** fetch `/manifest.json` first (per-file SHA-256 hashes + the published `dates`),
+  then download only the files whose hash changed: `/channels.json`, `/regions.json`, and
+  `/schedules/<yyyyMMdd>.json` (one per day). Drop cached days no longer in the manifest.
+- **Channels** reference regions via `channelNumbers[].regions` — `(bouquet, subBouquet)`
+  pairs. Resolution (**HD vs SD**) is a property of the **region/bouquet** (`regions.json`
+  has `isHD`), not the channel record (whose own `isHD` is unreliable). Join a channel's
+  region pairs to `regions.json` to determine HD-ness and to label/filter by region.
 
 ## External Dependencies
 

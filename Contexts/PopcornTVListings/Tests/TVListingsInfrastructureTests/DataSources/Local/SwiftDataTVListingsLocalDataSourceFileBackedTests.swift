@@ -29,18 +29,27 @@ struct SwiftDataTVListingsLocalDataSourceFileBackedTests {
         let dataSource = SwiftDataTVListingsLocalDataSource(modelContainer: container)
 
         try await dataSource.upsertChannels(
-            [TVChannel.mock(
+            [Channel.mock(
                 id: "OLD",
                 name: "Old",
-                channelNumbers: [TVChannelNumber(channelNumber: "101", subbouquetIDs: [1, 2])]
+                channelNumbers: [ChannelNumber(
+                    channelNumber: "101",
+                    regions: [
+                        ChannelRegion(bouquet: 4101, subBouquet: 1),
+                        ChannelRegion(bouquet: 4101, subBouquet: 2)
+                    ]
+                )]
             )],
             hash: "c1"
         )
         try await dataSource.upsertChannels(
-            [TVChannel.mock(
+            [Channel.mock(
                 id: "NEW",
                 name: "New",
-                channelNumbers: [TVChannelNumber(channelNumber: "202", subbouquetIDs: [3])]
+                channelNumbers: [ChannelNumber(
+                    channelNumber: "202",
+                    regions: [ChannelRegion(bouquet: 4101, subBouquet: 3)]
+                )]
             )],
             hash: "c2"
         )
@@ -49,6 +58,8 @@ struct SwiftDataTVListingsLocalDataSourceFileBackedTests {
         #expect(channels.count == 1)
         #expect(channels.first?.id == "NEW")
         #expect(channels.first?.channelNumbers.map(\.channelNumber) == ["202"])
+        // Round-trips the region pairs through the on-disk store (Codable-array attribute).
+        #expect(channels.first?.channelNumbers.first?.regions == [ChannelRegion(bouquet: 4101, subBouquet: 3)])
     }
 
     @Test("replaceProgrammes persists a day's programmes across a real store")
@@ -73,8 +84,9 @@ struct SwiftDataTVListingsLocalDataSourceFileBackedTests {
 
     private func makeFileBackedContainer() throws -> (ModelContainer, URL) {
         let schema = Schema([
-            TVChannelEntity.self,
-            TVChannelNumberEntity.self,
+            ChannelEntity.self,
+            ChannelNumberEntity.self,
+            TVRegionEntity.self,
             TVProgrammeEntity.self,
             EPGFileStateEntity.self,
             EPGSyncStateEntity.self

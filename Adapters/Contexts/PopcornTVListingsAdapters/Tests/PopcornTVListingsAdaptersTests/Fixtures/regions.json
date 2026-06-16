@@ -1,0 +1,7 @@
+{
+  "regions": [
+    { "bouquet": 4101, "subBouquet": 1, "name": "London", "nation": "England", "isHD": true },
+    { "bouquet": 4097, "subBouquet": 1, "name": "London", "nation": "England", "isHD": false },
+    { "bouquet": 4101, "subBouquet": 2, "name": "Essex", "nation": "England", "isHD": true }
+  ]
+}

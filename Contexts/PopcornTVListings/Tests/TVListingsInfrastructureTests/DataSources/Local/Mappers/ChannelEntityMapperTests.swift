@@ -1,0 +1,114 @@
+//
+//  ChannelEntityMapperTests.swift
+//  Popcorn
+//
+//  Copyright © 2026 Adam Young.
+//
+
+import Foundation
+import SwiftData
+import Testing
+import TVListingsDomain
+@testable import TVListingsInfrastructure
+
+@Suite("ChannelEntityMapper")
+struct ChannelEntityMapperTests {
+
+    let mapper = ChannelEntityMapper()
+
+    @Test("maps entity to domain")
+    func mapsEntityToDomain() {
+        let entity = ChannelEntity(
+            channelID: "BBC",
+            name: "BBC One HD",
+            type: "tv",
+            isHD: true,
+            logoURL: URL(string: "https://example.com/logo.png")
+        )
+        let numbers = [ChannelNumberEntity(
+            channelID: "BBC",
+            channelNumber: "101",
+            regions: [ChannelRegion(bouquet: 4101, subBouquet: 1), ChannelRegion(bouquet: 4097, subBouquet: 1)]
+        )]
+
+        let channel = mapper.map(entity, numbers: numbers)
+
+        #expect(channel.id == "BBC")
+        #expect(channel.name == "BBC One HD")
+        #expect(channel.type == .television)
+        #expect(channel.isHD == true)
+        #expect(channel.logoURL == URL(string: "https://example.com/logo.png"))
+        #expect(channel.channelNumbers.count == 1)
+        #expect(channel.channelNumbers.first?.channelNumber == "101")
+        #expect(channel.channelNumbers.first?.regions == [
+            ChannelRegion(bouquet: 4101, subBouquet: 1),
+            ChannelRegion(bouquet: 4097, subBouquet: 1)
+        ])
+    }
+
+    @Test("maps domain to entity without channel numbers")
+    func mapsDomainToEntityWithoutChannelNumbers() {
+        let channel = Channel(
+            id: "ITV",
+            name: "ITV1 HD",
+            type: .television,
+            isHD: true,
+            logoURL: URL(string: "https://example.com/itv.png"),
+            channelNumbers: [ChannelNumber(
+                channelNumber: "103",
+                regions: [ChannelRegion(bouquet: 4101, subBouquet: 1)]
+            )]
+        )
+
+        let entity = mapper.map(channel)
+
+        #expect(entity.channelID == "ITV")
+        #expect(entity.name == "ITV1 HD")
+        #expect(entity.type == "tv")
+        #expect(entity.isHD == true)
+        #expect(entity.logoURL == URL(string: "https://example.com/itv.png"))
+    }
+
+    @Test("mapNumbers produces entities carrying the channel id foreign key")
+    func mapNumbersProducesEntitiesWithChannelIDForeignKey() {
+        let channel = Channel(
+            id: "ITV",
+            name: "ITV",
+            type: .television,
+            isHD: false,
+            logoURL: nil,
+            channelNumbers: [
+                ChannelNumber(channelNumber: "103", regions: [ChannelRegion(bouquet: 4101, subBouquet: 1)]),
+                ChannelNumber(channelNumber: "3", regions: [ChannelRegion(bouquet: 4097, subBouquet: 2)])
+            ]
+        )
+
+        let numbers = mapper.mapNumbers(for: channel)
+
+        #expect(numbers.count == 2)
+        #expect(numbers.allSatisfy { $0.channelID == "ITV" })
+        #expect(numbers.map(\.channelNumber) == ["103", "3"])
+    }
+
+    @Test("roundtrip preserves values when numbers are supplied separately")
+    func roundtripPreservesValuesWhenNumbersSuppliedSeparately() {
+        let original = Channel(
+            id: "C4",
+            name: "Channel 4 HD",
+            type: .television,
+            isHD: true,
+            logoURL: nil,
+            channelNumbers: [ChannelNumber(
+                channelNumber: "104",
+                regions: [ChannelRegion(bouquet: 4101, subBouquet: 1), ChannelRegion(bouquet: 4101, subBouquet: 2)]
+            )]
+        )
+
+        let entity = mapper.map(original)
+        let numbers = mapper.mapNumbers(for: original)
+        let roundtripped = mapper.map(entity, numbers: numbers)
+
+        #expect(roundtripped == original)
+    }
+
+}

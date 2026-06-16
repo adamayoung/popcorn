@@ -34,12 +34,57 @@ struct DefaultTVListingsSyncRepositoryThrottleTests {
         let remote = MockTVListingsRemoteDataSource()
         let local = MockTVListingsLocalDataSource()
         await local.setLastSyncedAtStub(.success(nowDate.addingTimeInterval(-(throttle - 1))))
+        // The throttle only applies when the cache actually holds data (channels AND regions).
+        await local.setChannelsStub(.success([Channel.mock(id: "BBC")]))
+        await local.setRegionsStub(.success([TVRegion(
+            bouquet: 4101,
+            subBouquet: 1,
+            name: "London",
+            nation: "England",
+            isHD: true
+        )]))
 
         let repository = makeRepository(remote: remote, local: local)
 
         try await repository.syncIfNeeded()
 
         #expect(remote.fetchManifestCallCount == 0)
+    }
+
+    @Test("syncIfNeeded re-syncs within the throttle window when the channel cache is empty")
+    func syncIfNeededRunsWithinThrottleWhenCacheEmpty() async throws {
+        let remote = MockTVListingsRemoteDataSource()
+        let local = MockTVListingsLocalDataSource()
+        await local.setLastSyncedAtStub(.success(nowDate.addingTimeInterval(-(throttle - 1))))
+        // Recently "synced" but no channels cached — e.g. a SwiftData lightweight migration
+        // emptied the channel table while preserving `lastSyncedAt`. The throttle must not
+        // suppress the re-sync, or the screen stays empty until the throttle expires.
+        await local.setChannelsStub(.success([]))
+
+        let repository = makeRepository(remote: remote, local: local)
+
+        try await repository.syncIfNeeded()
+
+        #expect(remote.fetchManifestCallCount == 1)
+    }
+
+    @Test("syncIfNeeded re-syncs within the throttle window when regions are empty")
+    func syncIfNeededRunsWithinThrottleWhenRegionsEmpty() async throws {
+        let remote = MockTVListingsRemoteDataSource()
+        let local = MockTVListingsLocalDataSource()
+        await local.setLastSyncedAtStub(.success(nowDate.addingTimeInterval(-(throttle - 1))))
+        // Channels present and regions.json was synced before (so it's expected), but the
+        // regions table is now empty — e.g. wiped by a migration. The filter would be inert
+        // until re-synced, so the throttle must not skip.
+        await local.setChannelsStub(.success([Channel.mock(id: "BBC")]))
+        await local.setRegionsStub(.success([]))
+        await local.setFileStatesStub(.success(["regions.json": "r1"]))
+
+        let repository = makeRepository(remote: remote, local: local)
+
+        try await repository.syncIfNeeded()
+
+        #expect(remote.fetchManifestCallCount == 1)
     }
 
     @Test("syncIfNeeded runs exactly at the throttle boundary")

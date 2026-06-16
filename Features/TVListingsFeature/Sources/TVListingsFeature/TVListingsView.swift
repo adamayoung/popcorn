@@ -36,9 +36,52 @@ public struct TVListingsView: View {
             }
             .navigationTitle(Text("TV_LISTINGS_TITLE", bundle: .module))
             .accessibilityIdentifier("tvListings.view")
+            .toolbar {
+                // Always declared (disabled until regions load) so the button doesn't pop in
+                // and shift the layout on first launch.
+                ToolbarItem(placement: toolbarTrailingPlacement) {
+                    regionMenu
+                        .disabled(viewModel.regionsByNation.isEmpty)
+                }
+            }
             .task(id: viewModel.reloadID) {
                 await viewModel.load()
             }
+    }
+
+    private var regionMenu: some View {
+        Menu {
+            ForEach(viewModel.regionsByNation) { section in
+                Menu(section.nation) {
+                    ForEach(section.regions) { region in
+                        Button {
+                            viewModel.selectRegion(region)
+                        } label: {
+                            if region.id == viewModel.selectedRegion?.id {
+                                Label(region.name, systemImage: "checkmark")
+                            } else {
+                                Text(region.name)
+                            }
+                        }
+                    }
+                }
+            }
+        } label: {
+            Label {
+                Text("TV_LISTINGS_REGION", bundle: .module)
+            } icon: {
+                Image(systemName: "line.3.horizontal.decrease.circle")
+            }
+        }
+        .accessibilityIdentifier("tvListings.region-filter")
+    }
+
+    private var toolbarTrailingPlacement: ToolbarItemPlacement {
+        #if os(macOS)
+            .automatic
+        #else
+            .primaryAction
+        #endif
     }
 
     @ViewBuilder
@@ -120,19 +163,35 @@ private struct NowPlayingRow: View {
                     .font(.body)
                     .fontWeight(.semibold)
 
-                Text(
-                    String(
-                        localized: "\(item.programme.startTime.formatted(Self.timeFormatStyle)) – \(item.programme.endTime.formatted(Self.timeFormatStyle))",
-                        bundle: .module
-                    )
-                )
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                Text(Self.timeRange(for: item.programme))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                if let nextProgramme = item.nextProgramme {
+                    VStack(alignment: .leading, spacing: .spacing2) {
+                        Text(nextProgramme.title)
+                            // Smaller than the current programme's title but still bold.
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+
+                        Text(Self.timeRange(for: nextProgramme))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.top, .spacing4)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
         }
         .padding(.vertical, .spacing4)
         .accessibilityElement(children: .combine)
+    }
+
+    private static func timeRange(for programme: TVProgramme) -> String {
+        String(
+            localized: "\(programme.startTime.formatted(timeFormatStyle)) – \(programme.endTime.formatted(timeFormatStyle))",
+            bundle: .module
+        )
     }
 
 }
@@ -145,9 +204,10 @@ private struct NowPlayingRow: View {
                     viewState: .ready(
                         TVListingsViewSnapshot(items: [
                             TVListingsNowPlayingItem(
-                                channel: TVChannel(
+                                channel: Channel(
                                     id: "BBC_ONE",
                                     name: "BBC One",
+                                    type: .television,
                                     isHD: true,
                                     logoURL: nil,
                                     channelNumbers: []
@@ -160,6 +220,20 @@ private struct NowPlayingRow: View {
                                     startTime: Date(timeIntervalSince1970: 1000),
                                     endTime: Date(timeIntervalSince1970: 1900),
                                     duration: 900,
+                                    episodeNumber: nil,
+                                    seasonNumber: nil,
+                                    imageURL: nil,
+                                    tmdbTVSeriesID: nil,
+                                    tmdbMovieID: nil
+                                ),
+                                nextProgramme: TVProgramme(
+                                    id: "BBC_ONE:2",
+                                    channelID: "BBC_ONE",
+                                    title: "The Weather",
+                                    description: "The forecast for the week ahead.",
+                                    startTime: Date(timeIntervalSince1970: 1900),
+                                    endTime: Date(timeIntervalSince1970: 2200),
+                                    duration: 300,
                                     episodeNumber: nil,
                                     seasonNumber: nil,
                                     imageURL: nil,

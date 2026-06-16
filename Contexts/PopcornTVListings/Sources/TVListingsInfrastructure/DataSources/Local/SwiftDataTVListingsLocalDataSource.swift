@@ -37,25 +37,41 @@ actor SwiftDataTVListingsLocalDataSource: TVListingsLocalDataSource, ModelActor 
 
     // MARK: - Reads
 
-    func channels() async throws(TVListingsLocalDataSourceError) -> [TVChannel] {
-        let channelDescriptor = FetchDescriptor<TVChannelEntity>(
+    func channels() async throws(TVListingsLocalDataSourceError) -> [Channel] {
+        let channelDescriptor = FetchDescriptor<ChannelEntity>(
             sortBy: [SortDescriptor(\.name)]
         )
 
-        let channelEntities: [TVChannelEntity]
-        let numberEntities: [TVChannelNumberEntity]
+        let channelEntities: [ChannelEntity]
+        let numberEntities: [ChannelNumberEntity]
         do {
             channelEntities = try modelContext.fetch(channelDescriptor)
-            numberEntities = try modelContext.fetch(FetchDescriptor<TVChannelNumberEntity>())
+            numberEntities = try modelContext.fetch(FetchDescriptor<ChannelNumberEntity>())
         } catch let error {
             throw .persistence(error)
         }
 
         let numbersByChannel = Dictionary(grouping: numberEntities, by: \.channelID)
-        let mapper = TVChannelEntityMapper()
+        let mapper = ChannelEntityMapper()
         return channelEntities.map { channel in
             mapper.map(channel, numbers: numbersByChannel[channel.channelID] ?? [])
         }
+    }
+
+    func regions() async throws(TVListingsLocalDataSourceError) -> [TVRegion] {
+        let descriptor = FetchDescriptor<TVRegionEntity>(
+            sortBy: [SortDescriptor(\.bouquet), SortDescriptor(\.subBouquet)]
+        )
+
+        let entities: [TVRegionEntity]
+        do {
+            entities = try modelContext.fetch(descriptor)
+        } catch let error {
+            throw .persistence(error)
+        }
+
+        let mapper = TVRegionEntityMapper()
+        return entities.map(mapper.map)
     }
 
     func programmes(
@@ -97,6 +113,36 @@ actor SwiftDataTVListingsLocalDataSource: TVListingsLocalDataSource, ModelActor 
         }
 
         var descriptor = FetchDescriptor<TVProgrammeEntity>(predicate: predicate)
+        descriptor.relationshipKeyPathsForPrefetching = []
+
+        let entities: [TVProgrammeEntity]
+        do {
+            entities = try modelContext.fetch(descriptor)
+        } catch let error {
+            throw .persistence(error)
+        }
+
+        let mapper = TVProgrammeEntityMapper()
+        return entities.map(mapper.map)
+    }
+
+    func programmes(
+        from start: Date,
+        to end: Date
+    ) async throws(TVListingsLocalDataSourceError) -> [TVProgramme] {
+        // `#Predicate` can't capture function parameters directly — it needs local `let`
+        // bindings as the captured values. Don't inline these back into the predicate.
+        let lowerBound = start
+        let upperBound = end
+
+        let predicate = #Predicate<TVProgrammeEntity> { entity in
+            entity.endTime > lowerBound && entity.startTime < upperBound
+        }
+
+        var descriptor = FetchDescriptor<TVProgrammeEntity>(
+            predicate: predicate,
+            sortBy: [SortDescriptor(\.channelID), SortDescriptor(\.startTime)]
+        )
         descriptor.relationshipKeyPathsForPrefetching = []
 
         let entities: [TVProgrammeEntity]

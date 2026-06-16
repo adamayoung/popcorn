@@ -17,33 +17,59 @@ import TVListingsDomain
 /// ``live(services:)``.
 public struct TVListingsDependencies: Sendable {
 
-    public var fetchChannels: @Sendable () async throws -> [TVChannel]
-    public var fetchNowPlayingProgrammes: @Sendable () async throws -> [TVProgramme]
+    public var fetchChannels: @Sendable () async throws -> [Channel]
+    public var fetchRegions: @Sendable () async throws -> [TVRegion]
+    public var fetchListings: @Sendable () async throws -> [TVProgramme]
+    /// The persisted selected-region id, or `nil` if the user hasn't chosen one.
+    public var loadSelectedRegionID: @Sendable () -> String?
+    /// Persists the selected-region id.
+    public var saveSelectedRegionID: @Sendable (String) -> Void
 
     public init(
-        fetchChannels: @escaping @Sendable () async throws -> [TVChannel],
-        fetchNowPlayingProgrammes: @escaping @Sendable () async throws -> [TVProgramme]
+        fetchChannels: @escaping @Sendable () async throws -> [Channel],
+        fetchRegions: @escaping @Sendable () async throws -> [TVRegion],
+        fetchListings: @escaping @Sendable () async throws -> [TVProgramme],
+        loadSelectedRegionID: @escaping @Sendable () -> String?,
+        saveSelectedRegionID: @escaping @Sendable (String) -> Void
     ) {
         self.fetchChannels = fetchChannels
-        self.fetchNowPlayingProgrammes = fetchNowPlayingProgrammes
+        self.fetchRegions = fetchRegions
+        self.fetchListings = fetchListings
+        self.loadSelectedRegionID = loadSelectedRegionID
+        self.saveSelectedRegionID = saveSelectedRegionID
     }
 
 }
 
 public extension TVListingsDependencies {
 
+    /// UserDefaults key for the persisted selected-region id.
+    private static let selectedRegionDefaultsKey = "popcorn.tvlistings.selectedRegionID"
+
     /// Builds the production dependencies from the app's shared services.
     /// Syncing is handled app-level (see `AppRootViewModel`); this feature only reads.
     static func live(services: AppServices) -> TVListingsDependencies {
-        let fetchTVChannels = services.tvListingsFactory.makeFetchTVChannelsUseCase()
-        let fetchNowPlayingTVProgrammes = services.tvListingsFactory.makeFetchNowPlayingTVProgrammesUseCase()
+        let fetchChannels = services.tvListingsFactory.makeFetchChannelsUseCase()
+        let fetchTVRegions = services.tvListingsFactory.makeFetchTVRegionsUseCase()
+        let fetchTVListings = services.tvListingsFactory.makeFetchTVListingsUseCase()
 
         return TVListingsDependencies(
             fetchChannels: {
-                try await fetchTVChannels.execute()
+                try await fetchChannels.execute()
             },
-            fetchNowPlayingProgrammes: {
-                try await fetchNowPlayingTVProgrammes.execute()
+            fetchRegions: {
+                try await fetchTVRegions.execute()
+            },
+            fetchListings: {
+                try await fetchTVListings.execute()
+            },
+            // `UserDefaults.standard` is a thread-safe shared instance; referencing it directly
+            // keeps these `@Sendable` closures clean (no captured non-Sendable state).
+            loadSelectedRegionID: {
+                UserDefaults.standard.string(forKey: Self.selectedRegionDefaultsKey)
+            },
+            saveSelectedRegionID: { id in
+                UserDefaults.standard.set(id, forKey: Self.selectedRegionDefaultsKey)
             }
         )
     }
@@ -57,7 +83,10 @@ public extension TVListingsDependencies {
         static var preview: TVListingsDependencies {
             TVListingsDependencies(
                 fetchChannels: { [] },
-                fetchNowPlayingProgrammes: { [] }
+                fetchRegions: { [] },
+                fetchListings: { [] },
+                loadSelectedRegionID: { nil },
+                saveSelectedRegionID: { _ in }
             )
         }
 

@@ -26,7 +26,7 @@ struct TVListingsViewModelTests {
         let viewModel = Self.makeViewModel(
             dependencies: Self.stubDependencies(
                 fetchChannels: { [bbc, itv] },
-                fetchNowPlayingProgrammes: { [programme] }
+                fetchListings: { [programme] }
             )
         )
 
@@ -49,7 +49,7 @@ struct TVListingsViewModelTests {
         let viewModel = Self.makeViewModel(
             dependencies: Self.stubDependencies(
                 fetchChannels: { [bbcOne, itv] },
-                fetchNowPlayingProgrammes: { [itvProgramme, bbcOneProgramme] }
+                fetchListings: { [itvProgramme, bbcOneProgramme] }
             )
         )
 
@@ -59,6 +59,51 @@ struct TVListingsViewModelTests {
             TVListingsViewSnapshot(items: [
                 TVListingsNowPlayingItem(channel: bbcOne, programme: bbcOneProgramme),
                 TVListingsNowPlayingItem(channel: itv, programme: itvProgramme)
+            ])
+        ))
+    }
+
+    @Test("load includes the programme airing next after the current one on each channel")
+    @MainActor
+    func loadIncludesNextProgramme() async {
+        let bbc = Self.makeChannel(id: "BBC", name: "BBC")
+        let current = Self.makeProgramme(id: "BBC:1", channelID: "BBC", title: "News", start: 1000, end: 1900)
+        let next = Self.makeProgramme(id: "BBC:2", channelID: "BBC", title: "Weather", start: 1900, end: 2200)
+        let later = Self.makeProgramme(id: "BBC:3", channelID: "BBC", title: "Film", start: 2200, end: 5000)
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchChannels: { [bbc] },
+                // Deliberately unsorted: the view model must sort by start time.
+                fetchListings: { [later, current, next] }
+            )
+        )
+
+        await viewModel.load()
+
+        #expect(viewModel.viewState == .ready(
+            TVListingsViewSnapshot(items: [
+                TVListingsNowPlayingItem(channel: bbc, programme: current, nextProgramme: next)
+            ])
+        ))
+    }
+
+    @Test("load leaves nextProgramme nil when nothing is scheduled after the current programme")
+    @MainActor
+    func loadHasNoNextProgrammeWhenNoneFollows() async {
+        let bbc = Self.makeChannel(id: "BBC", name: "BBC")
+        let current = Self.makeProgramme(id: "BBC:1", channelID: "BBC", title: "News", start: 1000, end: 1900)
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchChannels: { [bbc] },
+                fetchListings: { [current] }
+            )
+        )
+
+        await viewModel.load()
+
+        #expect(viewModel.viewState == .ready(
+            TVListingsViewSnapshot(items: [
+                TVListingsNowPlayingItem(channel: bbc, programme: current, nextProgramme: nil)
             ])
         ))
     }
@@ -98,7 +143,7 @@ struct TVListingsViewModelTests {
                     }
                     return [freshChannel]
                 },
-                fetchNowPlayingProgrammes: { [staleProgramme, freshProgramme] }
+                fetchListings: { [staleProgramme, freshProgramme] }
             )
         )
         let expected = TVListingsViewSnapshot(items: [
@@ -142,7 +187,7 @@ struct TVListingsViewModelTests {
         let viewModel = Self.makeViewModel(
             dependencies: Self.stubDependencies(
                 fetchChannels: { channels.withLock { $0 } },
-                fetchNowPlayingProgrammes: { [Self.makeProgramme(id: "BBC:1000", channelID: "BBC", title: "News")] }
+                fetchListings: { [Self.makeProgramme(id: "BBC:1000", channelID: "BBC", title: "News")] }
             )
         )
 
@@ -222,21 +267,32 @@ private final class AsyncGate: Sendable {
 
 extension TVListingsViewModelTests {
 
+    /// Fixed "now" used by the view model under test. Sits inside the airing
+    /// window of every programme built by ``makeProgramme`` (1000–1900), so the
+    /// next-day listings always resolve to a now-playing programme.
+    static let referenceNow = Date(timeIntervalSince1970: 1500)
+
     @MainActor
     static func makeViewModel(
         dependencies: TVListingsDependencies = stubDependencies(),
         viewState: ViewState<TVListingsViewSnapshot> = .initial
     ) -> TVListingsViewModel {
-        TVListingsViewModel(dependencies: dependencies, viewState: viewState)
+        TVListingsViewModel(dependencies: dependencies, now: { referenceNow }, viewState: viewState)
     }
 
     static func stubDependencies(
-        fetchChannels: @escaping @Sendable () async throws -> [TVChannel] = { [] },
-        fetchNowPlayingProgrammes: @escaping @Sendable () async throws -> [TVProgramme] = { [] }
+        fetchChannels: @escaping @Sendable () async throws -> [Channel] = { [] },
+        fetchRegions: @escaping @Sendable () async throws -> [TVRegion] = { [] },
+        fetchListings: @escaping @Sendable () async throws -> [TVProgramme] = { [] },
+        loadSelectedRegionID: @escaping @Sendable () -> String? = { nil },
+        saveSelectedRegionID: @escaping @Sendable (String) -> Void = { _ in }
     ) -> TVListingsDependencies {
         TVListingsDependencies(
             fetchChannels: fetchChannels,
-            fetchNowPlayingProgrammes: fetchNowPlayingProgrammes
+            fetchRegions: fetchRegions,
+            fetchListings: fetchListings,
+            loadSelectedRegionID: loadSelectedRegionID,
+            saveSelectedRegionID: saveSelectedRegionID
         )
     }
 
@@ -246,19 +302,25 @@ extension TVListingsViewModelTests {
 
 extension TVListingsViewModelTests {
 
-    static func makeChannel(id: String, name: String) -> TVChannel {
-        TVChannel(id: id, name: name, isHD: false, logoURL: nil, channelNumbers: [])
+    static func makeChannel(id: String, name: String) -> Channel {
+        Channel(id: id, name: name, type: .television, isHD: false, logoURL: nil, channelNumbers: [])
     }
 
-    static func makeProgramme(id: String, channelID: String, title: String) -> TVProgramme {
+    static func makeProgramme(
+        id: String,
+        channelID: String,
+        title: String,
+        start: TimeInterval = 1000,
+        end: TimeInterval = 1900
+    ) -> TVProgramme {
         TVProgramme(
             id: id,
             channelID: channelID,
             title: title,
             description: "",
-            startTime: Date(timeIntervalSince1970: 1000),
-            endTime: Date(timeIntervalSince1970: 1900),
-            duration: 900,
+            startTime: Date(timeIntervalSince1970: start),
+            endTime: Date(timeIntervalSince1970: end),
+            duration: end - start,
             episodeNumber: nil,
             seasonNumber: nil,
             imageURL: nil,

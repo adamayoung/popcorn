@@ -17,6 +17,7 @@ extension EPGManifest {
     static func mock(
         dates: [String],
         channelsHash: String? = "channels-v1",
+        regionsHash: String? = nil,
         scheduleHashes: [String: String] = [:],
         generatedAt: Date = Date(timeIntervalSince1970: 0)
     ) -> EPGManifest {
@@ -24,6 +25,10 @@ extension EPGManifest {
 
         if let channelsHash {
             files.append(EPGManifest.File(path: "channels.json", hash: channelsHash, bytes: 10))
+        }
+
+        if let regionsHash {
+            files.append(EPGManifest.File(path: "regions.json", hash: regionsHash, bytes: 10))
         }
 
         for date in dates {

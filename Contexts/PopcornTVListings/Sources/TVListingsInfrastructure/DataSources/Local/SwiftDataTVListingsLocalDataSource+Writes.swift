@@ -22,14 +22,14 @@ extension SwiftDataTVListingsLocalDataSource {
     /// the unchanged hash, re-fetches `channels.json`, and re-populates it.
     ///
     func upsertChannels(
-        _ channels: [TVChannel],
+        _ channels: [Channel],
         hash: String
     ) async throws(TVListingsLocalDataSourceError) {
         do {
-            try modelContext.delete(model: TVChannelNumberEntity.self)
-            try modelContext.delete(model: TVChannelEntity.self)
+            try modelContext.delete(model: ChannelNumberEntity.self)
+            try modelContext.delete(model: ChannelEntity.self)
 
-            let mapper = TVChannelEntityMapper()
+            let mapper = ChannelEntityMapper()
             for channel in channels {
                 modelContext.insert(mapper.map(channel))
                 for number in mapper.mapNumbers(for: channel) {
@@ -38,6 +38,30 @@ extension SwiftDataTVListingsLocalDataSource {
             }
 
             try upsertFileState(path: "channels.json", hash: hash)
+            try modelContext.save()
+        } catch let error {
+            throw .persistence(error)
+        }
+    }
+
+    ///
+    /// Replaces the whole region directory and records the `regions.json` hash in one
+    /// transaction, mirroring ``upsertChannels(_:hash:)``. Regions rarely change and are
+    /// only rewritten when the file hash changes, so a wholesale replace is simplest.
+    ///
+    func upsertRegions(
+        _ regions: [TVRegion],
+        hash: String
+    ) async throws(TVListingsLocalDataSourceError) {
+        do {
+            try modelContext.delete(model: TVRegionEntity.self)
+
+            let mapper = TVRegionEntityMapper()
+            for region in regions {
+                modelContext.insert(mapper.map(region))
+            }
+
+            try upsertFileState(path: "regions.json", hash: hash)
             try modelContext.save()
         } catch let error {
             throw .persistence(error)

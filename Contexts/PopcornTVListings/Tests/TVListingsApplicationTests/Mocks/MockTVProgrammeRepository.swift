@@ -18,6 +18,10 @@ final class MockTVProgrammeRepository: TVProgrammeRepository, @unchecked Sendabl
     var nowPlayingCalledWith: [Date] = []
     var nowPlayingStub: Result<[TVProgramme], TVListingsRepositoryError> = .success([])
 
+    var programmesFromToCallCount = 0
+    var programmesFromToCalledWith: [(from: Date, to: Date)] = []
+    var programmesFromToStub: Result<[TVProgramme], TVListingsRepositoryError> = .success([])
+
     func programmes(
         forChannelID channelID: String,
         onDate date: Date
@@ -40,6 +44,21 @@ final class MockTVProgrammeRepository: TVProgrammeRepository, @unchecked Sendabl
         nowPlayingCalledWith.append(date)
 
         switch nowPlayingStub {
+        case .success(let programmes):
+            return programmes
+        case .failure(let error):
+            throw error
+        }
+    }
+
+    func programmes(
+        from start: Date,
+        to end: Date
+    ) async throws(TVListingsRepositoryError) -> [TVProgramme] {
+        programmesFromToCallCount += 1
+        programmesFromToCalledWith.append((start, end))
+
+        switch programmesFromToStub {
         case .success(let programmes):
             return programmes
         case .failure(let error):

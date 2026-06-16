@@ -45,6 +45,11 @@ public struct EPGManifest: Sendable, Equatable {
         files.first { $0.path == "channels.json" }
     }
 
+    /// The `regions.json` file entry, if present.
+    public var regionsFile: File? {
+        files.first { $0.path == "regions.json" }
+    }
+
     /// The `schedules/<date>.json` file entry for the given `yyyyMMdd` date, if present.
     public func scheduleFile(forDate date: String) -> File? {
         files.first { $0.path == "schedules/\(date).json" }

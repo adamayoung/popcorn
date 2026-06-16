@@ -14,7 +14,9 @@ final class MockTVListingsRemoteDataSource: TVListingsRemoteDataSource, @uncheck
     var fetchManifestStub: Result<EPGManifest, TVListingsRemoteDataSourceError> =
         .success(EPGManifest(generatedAt: Date(timeIntervalSince1970: 0), dates: [], files: []))
 
-    var fetchChannelsStub: Result<[TVChannel], TVListingsRemoteDataSourceError> = .success([])
+    var fetchChannelsStub: Result<[Channel], TVListingsRemoteDataSourceError> = .success([])
+
+    var fetchRegionsStub: Result<[TVRegion], TVListingsRemoteDataSourceError> = .success([])
 
     /// Per-date schedule stubs; falls back to `fetchScheduleDefaultStub` when a date is absent.
     var fetchScheduleStubs: [String: Result<[TVProgramme], TVListingsRemoteDataSourceError>] = [:]
@@ -30,6 +32,7 @@ final class MockTVListingsRemoteDataSource: TVListingsRemoteDataSource, @uncheck
     private let lock = NSLock()
     private var manifestCalls = 0
     private var channelsCalls = 0
+    private var regionsCalls = 0
     private var recordedScheduleDates: [String] = []
 
     var fetchManifestCallCount: Int {
@@ -38,6 +41,10 @@ final class MockTVListingsRemoteDataSource: TVListingsRemoteDataSource, @uncheck
 
     var fetchChannelsCallCount: Int {
         lock.withLock { channelsCalls }
+    }
+
+    var fetchRegionsCallCount: Int {
+        lock.withLock { regionsCalls }
     }
 
     var fetchScheduleCalledWith: [String] {
@@ -55,10 +62,18 @@ final class MockTVListingsRemoteDataSource: TVListingsRemoteDataSource, @uncheck
         }
     }
 
-    func fetchChannels() async throws(TVListingsRemoteDataSourceError) -> [TVChannel] {
+    func fetchChannels() async throws(TVListingsRemoteDataSourceError) -> [Channel] {
         lock.withLock { channelsCalls += 1 }
         switch fetchChannelsStub {
         case .success(let channels): return channels
+        case .failure(let error): throw error
+        }
+    }
+
+    func fetchRegions() async throws(TVListingsRemoteDataSourceError) -> [TVRegion] {
+        lock.withLock { regionsCalls += 1 }
+        switch fetchRegionsStub {
+        case .success(let regions): return regions
         case .failure(let error): throw error
         }
     }

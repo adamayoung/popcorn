@@ -3,19 +3,32 @@
     {
       "sid": "3858",
       "name": "SkySp+ HD",
+      "type": "tv",
       "isHD": false,
       "logoURL": "https://epgstatic.sky.com/epgdata/1.0/newchanlogos/600/600/skychb3858.png",
       "channelNumbers": [
-        { "channelNumber": "1081", "subbouquetIDs": [1, 4] }
+        {
+          "channelNumber": "1081",
+          "regions": [
+            { "bouquet": 4101, "subBouquet": 1 },
+            { "bouquet": 4097, "subBouquet": 1 }
+          ]
+        }
       ]
     },
     {
       "sid": "4011",
       "name": "SkySp PL HD",
+      "type": "radio",
       "isHD": true,
       "logoURL": "https://epgstatic.sky.com/epgdata/1.0/newchanlogos/600/600/skychb4011.png",
       "channelNumbers": [
-        { "channelNumber": "1095", "subbouquetIDs": [1, 2] }
+        {
+          "channelNumber": "1095",
+          "regions": [
+            { "bouquet": 4101, "subBouquet": 2 }
+          ]
+        }
       ]
     }
   ]

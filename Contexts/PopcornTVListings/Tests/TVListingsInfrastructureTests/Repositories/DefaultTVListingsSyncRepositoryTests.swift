@@ -20,7 +20,7 @@ struct DefaultTVListingsSyncRepositoryTests {
         remote.fetchManifestStub = .success(
             .mock(dates: ["20260611"], channelsHash: "c1", scheduleHashes: ["20260611": "s1"])
         )
-        remote.fetchChannelsStub = .success([TVChannel.mock(id: "BBC")])
+        remote.fetchChannelsStub = .success([Channel.mock(id: "BBC")])
         remote.fetchScheduleStubs["20260611"] = .success([TVProgramme.mock(channelID: "BBC")])
 
         let repository = makeRepository(remote: remote, local: local)
@@ -209,6 +209,70 @@ struct DefaultTVListingsSyncRepositoryTests {
                 return true
             }
         )
+    }
+
+    // MARK: - Regions
+
+    @Test("sync fetches changed regions and upserts them, retaining regions.json")
+    func syncFetchesChangedRegions() async throws {
+        let remote = MockTVListingsRemoteDataSource()
+        let local = MockTVListingsLocalDataSource()
+        remote.fetchManifestStub = .success(
+            .mock(dates: ["20260611"], channelsHash: "c1", regionsHash: "r1", scheduleHashes: ["20260611": "s1"])
+        )
+        remote.fetchRegionsStub = .success([
+            TVRegion(bouquet: 4101, subBouquet: 1, name: "London", nation: "England", isHD: true)
+        ])
+        remote.fetchScheduleStubs["20260611"] = .success([TVProgramme.mock(channelID: "BBC")])
+
+        let repository = makeRepository(remote: remote, local: local)
+
+        try await repository.sync()
+
+        #expect(remote.fetchRegionsCallCount == 1)
+        let upserts = await local.upsertRegionsCalls
+        #expect(upserts.count == 1)
+        #expect(upserts.first?.hash == "r1")
+        #expect(upserts.first?.regions.first?.name == "London")
+        let completes = await local.completeSyncCalls
+        #expect(completes.first?.paths.contains("regions.json") == true)
+    }
+
+    @Test("sync skips regions when the stored hash matches the manifest")
+    func syncSkipsUnchangedRegions() async throws {
+        let remote = MockTVListingsRemoteDataSource()
+        let local = MockTVListingsLocalDataSource()
+        remote.fetchManifestStub = .success(
+            .mock(dates: ["20260611"], channelsHash: nil, regionsHash: "r1", scheduleHashes: [:])
+        )
+        await local.setFileStatesStub(.success(["regions.json": "r1"]))
+
+        let repository = makeRepository(remote: remote, local: local)
+
+        try await repository.sync()
+
+        #expect(remote.fetchRegionsCallCount == 0, "regions unchanged → not fetched")
+        let upserts = await local.upsertRegionsCalls
+        #expect(upserts.isEmpty)
+    }
+
+    @Test("sync does not fetch regions when the manifest has no regions file")
+    func syncSkipsRegionsWhenAbsentFromManifest() async throws {
+        let remote = MockTVListingsRemoteDataSource()
+        let local = MockTVListingsLocalDataSource()
+        remote.fetchManifestStub = .success(
+            .mock(dates: ["20260611"], channelsHash: "c1", scheduleHashes: ["20260611": "s1"])
+        )
+        remote.fetchChannelsStub = .success([Channel.mock(id: "BBC")])
+        remote.fetchScheduleStubs["20260611"] = .success([TVProgramme.mock(channelID: "BBC")])
+
+        let repository = makeRepository(remote: remote, local: local)
+
+        try await repository.sync()
+
+        #expect(remote.fetchRegionsCallCount == 0)
+        let upserts = await local.upsertRegionsCalls
+        #expect(upserts.isEmpty)
     }
 
     private func makeRepository(

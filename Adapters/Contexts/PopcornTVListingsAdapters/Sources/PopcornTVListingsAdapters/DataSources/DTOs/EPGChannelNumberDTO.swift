@@ -10,6 +10,6 @@ import Foundation
 struct EPGChannelNumberDTO: Decodable {
 
     let channelNumber: String
-    let subbouquetIDs: [Int]
+    let regions: [EPGChannelRegionDTO]
 
 }

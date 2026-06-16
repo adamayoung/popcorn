@@ -11,6 +11,7 @@ struct EPGChannelDTO: Decodable {
 
     let sid: String
     let name: String
+    let type: String
     let isHD: Bool
     let logoURL: URL?
     let channelNumbers: [EPGChannelNumberDTO]

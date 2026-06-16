@@ -43,7 +43,8 @@ public final class PopcornTVListingsFactory: Sendable {
             modelContainer: modelContainer
         )
         self.applicationFactory = TVListingsApplicationFactory(
-            tvChannelRepository: infrastructureFactory.makeTVChannelRepository(),
+            channelRepository: infrastructureFactory.makeChannelRepository(),
+            tvRegionRepository: infrastructureFactory.makeTVRegionRepository(),
             tvProgrammeRepository: infrastructureFactory.makeTVProgrammeRepository(),
             tvListingsSyncRepository: infrastructureFactory.makeTVListingsSyncRepository()
         )
@@ -53,16 +54,24 @@ public final class PopcornTVListingsFactory: Sendable {
         applicationFactory.makeSyncTVListingsIfNeededUseCase()
     }
 
-    public func makeFetchTVChannelsUseCase() -> FetchTVChannelsUseCase {
-        applicationFactory.makeFetchTVChannelsUseCase()
+    public func makeFetchChannelsUseCase() -> FetchChannelsUseCase {
+        applicationFactory.makeFetchChannelsUseCase()
     }
 
-    public func makeFetchTVChannelScheduleUseCase() -> FetchTVChannelScheduleUseCase {
-        applicationFactory.makeFetchTVChannelScheduleUseCase()
+    public func makeFetchTVRegionsUseCase() -> FetchTVRegionsUseCase {
+        applicationFactory.makeFetchTVRegionsUseCase()
+    }
+
+    public func makeFetchChannelScheduleUseCase() -> FetchChannelScheduleUseCase {
+        applicationFactory.makeFetchChannelScheduleUseCase()
     }
 
     public func makeFetchNowPlayingTVProgrammesUseCase() -> FetchNowPlayingTVProgrammesUseCase {
         applicationFactory.makeFetchNowPlayingTVProgrammesUseCase()
+    }
+
+    public func makeFetchTVListingsUseCase() -> FetchTVListingsUseCase {
+        applicationFactory.makeFetchTVListingsUseCase()
     }
 
 }

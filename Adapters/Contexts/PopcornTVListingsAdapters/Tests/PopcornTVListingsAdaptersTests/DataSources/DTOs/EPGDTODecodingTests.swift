@@ -19,12 +19,13 @@ struct EPGDTODecodingTests {
         let dto = try JSONDecoder().decode(EPGManifestDTO.self, from: data)
 
         #expect(dto.dates == ["20260418", "20260419"])
-        #expect(dto.files.count == 3)
+        #expect(dto.files.count == 4)
         #expect(dto.files.first?.path == "channels.json")
         #expect(dto.files.first?.bytes == 18234)
+        #expect(dto.files.contains { $0.path == "regions.json" })
     }
 
-    @Test("decodes the channels fixture")
+    @Test("decodes the channels fixture with region pairs")
     func decodesChannelsFixture() throws {
         let data = try FixtureLoader.data(named: "channels")
 
@@ -32,7 +33,27 @@ struct EPGDTODecodingTests {
 
         #expect(dto.channels.count == 2)
         #expect(dto.channels.first?.sid == "3858")
+        #expect(dto.channels.first?.type == "tv")
+        #expect(dto.channels.last?.type == "radio")
         #expect(dto.channels.last?.isHD == true)
+        let firstRegion = dto.channels.first?.channelNumbers.first?.regions.first
+        #expect(firstRegion?.bouquet == 4101)
+        #expect(firstRegion?.subBouquet == 1)
+    }
+
+    @Test("decodes the regions fixture")
+    func decodesRegionsFixture() throws {
+        let data = try FixtureLoader.data(named: "regions")
+
+        let dto = try JSONDecoder().decode(EPGRegionsResponseDTO.self, from: data)
+
+        #expect(dto.regions.count == 3)
+        let london = dto.regions.first
+        #expect(london?.bouquet == 4101)
+        #expect(london?.subBouquet == 1)
+        #expect(london?.name == "London")
+        #expect(london?.nation == "England")
+        #expect(london?.isHD == true)
     }
 
     @Test("decodes the schedule fixture including enrichment fields")

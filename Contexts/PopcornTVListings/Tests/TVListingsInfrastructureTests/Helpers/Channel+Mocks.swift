@@ -1,0 +1,77 @@
+//
+//  Channel+Mocks.swift
+//  Popcorn
+//
+//  Copyright © 2026 Adam Young.
+//
+
+import Foundation
+import TVListingsDomain
+
+extension Channel {
+
+    static func mock(
+        id: String = "BBC",
+        name: String = "BBC",
+        type: ChannelType = .television,
+        isHD: Bool = false,
+        logoURL: URL? = nil,
+        channelNumbers: [ChannelNumber] = []
+    ) -> Channel {
+        Channel(
+            id: id,
+            name: name,
+            type: type,
+            isHD: isHD,
+            logoURL: logoURL,
+            channelNumbers: channelNumbers
+        )
+    }
+
+}
+
+extension TVProgramme {
+
+    static func mock(
+        channelID: String = "BBC",
+        start: Date = Date(timeIntervalSince1970: 1_776_463_200),
+        duration: TimeInterval = 1800,
+        title: String = "Programme",
+        description: String = "",
+        episodeNumber: Int? = nil,
+        seasonNumber: Int? = nil,
+        imageURL: URL? = nil,
+        tmdbTVSeriesID: Int? = nil,
+        tmdbMovieID: Int? = nil,
+        genres: [String] = [],
+        certification: String? = nil,
+        voteAverage: Double? = nil,
+        voteCount: Int? = nil,
+        isPremiere: Bool = false,
+        keywords: [String] = [],
+        watchProviders: [String] = []
+    ) -> TVProgramme {
+        TVProgramme(
+            id: TVProgramme.makeID(channelID: channelID, startTime: start),
+            channelID: channelID,
+            title: title,
+            description: description,
+            startTime: start,
+            endTime: start.addingTimeInterval(duration),
+            duration: duration,
+            episodeNumber: episodeNumber,
+            seasonNumber: seasonNumber,
+            imageURL: imageURL,
+            tmdbTVSeriesID: tmdbTVSeriesID,
+            tmdbMovieID: tmdbMovieID,
+            genres: genres,
+            certification: certification,
+            voteAverage: voteAverage,
+            voteCount: voteCount,
+            isPremiere: isPremiere,
+            keywords: keywords,
+            watchProviders: watchProviders
+        )
+    }
+
+}

@@ -12,7 +12,9 @@ public protocol TVListingsLocalDataSource: Actor {
 
     // MARK: - Reads
 
-    func channels() async throws(TVListingsLocalDataSourceError) -> [TVChannel]
+    func channels() async throws(TVListingsLocalDataSourceError) -> [Channel]
+
+    func regions() async throws(TVListingsLocalDataSourceError) -> [TVRegion]
 
     func programmes(
         forChannelID channelID: String,
@@ -21,6 +23,11 @@ public protocol TVListingsLocalDataSource: Actor {
 
     func nowPlayingProgrammes(
         at date: Date
+    ) async throws(TVListingsLocalDataSourceError) -> [TVProgramme]
+
+    func programmes(
+        from start: Date,
+        to end: Date
     ) async throws(TVListingsLocalDataSourceError) -> [TVProgramme]
 
     // MARK: - Sync state
@@ -36,7 +43,14 @@ public protocol TVListingsLocalDataSource: Actor {
     /// Replaces the channel directory and records the `channels.json` content hash in the
     /// same transaction.
     func upsertChannels(
-        _ channels: [TVChannel],
+        _ channels: [Channel],
+        hash: String
+    ) async throws(TVListingsLocalDataSourceError)
+
+    /// Replaces the region directory and records the `regions.json` content hash in the
+    /// same transaction.
+    func upsertRegions(
+        _ regions: [TVRegion],
         hash: String
     ) async throws(TVListingsLocalDataSourceError)
 

@@ -61,11 +61,34 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
             throw TVListingsRepositoryError(error)
         }
 
-        if let lastSyncedAt, now().timeIntervalSince(lastSyncedAt) < syncThrottle {
+        if let lastSyncedAt, now().timeIntervalSince(lastSyncedAt) < syncThrottle, await isCachePopulated() {
             return
         }
 
         try await sync()
+    }
+
+    /// Whether the cache actually holds the data a completed sync should have produced. A
+    /// SwiftData lightweight migration can recreate a renamed/added table empty while
+    /// preserving `lastSyncedAt`; treating that as "synced" would let the throttle suppress
+    /// the re-sync and leave the screen empty (channels) or the region filter inert (regions)
+    /// until the window expired. A read failure here is treated as "not populated" so we
+    /// re-sync rather than abort the throttle decision.
+    private func isCachePopulated() async -> Bool {
+        do {
+            guard try await !localDataSource.channels().isEmpty else {
+                return false
+            }
+            // Regions are only "expected" once `regions.json` has been synced before, so a feed
+            // that never delivers it doesn't force a sync on every launch.
+            let regionsExpected = try await localDataSource.fileStates().keys.contains("regions.json")
+            if regionsExpected, try await localDataSource.regions().isEmpty {
+                return false
+            }
+            return true
+        } catch {
+            return false
+        }
     }
 
     // MARK: - Coalescing
@@ -114,6 +137,8 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
 
         try await syncChannelsIfChanged(manifest: manifest, stored: stored)
 
+        try await syncRegionsIfChanged(manifest: manifest, stored: stored)
+
         try await syncChangedSchedules(manifest: manifest, stored: stored)
 
         // Purge whole past days and any day no longer in the rolling window. Today is retained
@@ -143,7 +168,7 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
             return
         }
 
-        let channels: [TVChannel]
+        let channels: [Channel]
         do {
             channels = try await remoteDataSource.fetchChannels()
         } catch let error {
@@ -152,6 +177,28 @@ actor DefaultTVListingsSyncRepository: TVListingsSyncRepository {
 
         do {
             try await localDataSource.upsertChannels(channels, hash: file.hash)
+        } catch let error {
+            throw TVListingsRepositoryError(error)
+        }
+    }
+
+    private func syncRegionsIfChanged(
+        manifest: EPGManifest,
+        stored: [String: String]
+    ) async throws(TVListingsRepositoryError) {
+        guard let file = manifest.regionsFile, stored[file.path] != file.hash else {
+            return
+        }
+
+        let regions: [TVRegion]
+        do {
+            regions = try await remoteDataSource.fetchRegions()
+        } catch let error {
+            throw TVListingsRepositoryError(error)
+        }
+
+        do {
+            try await localDataSource.upsertRegions(regions, hash: file.hash)
         } catch let error {
             throw TVListingsRepositoryError(error)
         }
