@@ -12,6 +12,9 @@ import Foundation
 /// applies to. Join to ``TVRegion`` on the same pair to resolve the region's name,
 /// nation, and resolution (HD/SD).
 ///
+/// `Codable` conformance exists so SwiftData can persist `ChannelNumberEntity.regions`
+/// as an inline value-type array; it isn't used by the domain itself.
+///
 public struct ChannelRegion: Codable, Equatable, Hashable, Sendable {
 
     public let bouquet: Int

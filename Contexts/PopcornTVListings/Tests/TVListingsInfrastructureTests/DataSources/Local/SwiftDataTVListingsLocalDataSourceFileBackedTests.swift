@@ -86,6 +86,7 @@ struct SwiftDataTVListingsLocalDataSourceFileBackedTests {
         let schema = Schema([
             ChannelEntity.self,
             ChannelNumberEntity.self,
+            TVRegionEntity.self,
             TVProgrammeEntity.self,
             EPGFileStateEntity.self,
             EPGSyncStateEntity.self
