@@ -169,7 +169,7 @@ the final gate. Prefer the Xcode MCP (`xcode`) when working inside Xcode. See
 **Popcorn-specific items the plan may add to the list:**
 
 - A new `FeatureFlag` → the matching **Statsig gate must be created** (development
-  environment only) via the Statsig MCP. See `CLAUDE.md` § "Statsig gate creation".
+  environment only) via the Statsig MCP. See `CLAUDE.md` § "Feature flag creation".
 - A new **unit**-test target → register it in
   `TestPlans/PopcornUnitTests.xctestplan` (snapshot targets go in
   `PopcornSnapshotTests.xctestplan`) or its tests won't run.

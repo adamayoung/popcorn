@@ -104,7 +104,7 @@ completion item, not an afterthought:
 - **New snapshot-test target** → register it in
   `TestPlans/PopcornSnapshotTests.xctestplan` instead.
 - **New `FeatureFlag`** → create the matching Statsig gate (see CLAUDE.md →
-  "Statsig gate creation").
+  "Feature flag creation").
 
 ## Finishing condition
 
