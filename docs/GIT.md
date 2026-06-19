@@ -32,7 +32,7 @@ Follow gitmoji conventions (see [gitmoji.dev](https://gitmoji.dev)):
 
 1. Create feature branch from main
 2. Make changes, commit often
-3. Run `/format` and `/lint` before creating PR
+3. Run the full Pre-PR Checklist (see CLAUDE.md): `make lint`, `/build-for-testing`, `/test`, `/test-snapshots` (formatting is applied automatically by the PostToolUse hook)
 4. Create PR with descriptive title and summary
 5. Link related issues
 

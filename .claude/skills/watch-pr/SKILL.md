@@ -54,14 +54,14 @@ For each thread where `isResolved` is `false` and whose `id` is not already in
 the ledger:
 
 1. Read the comment(s) and decide whether a code change is warranted. Many
-   threads come from the `claude-code-review` bot — weigh them on merit, not
+   threads come from the Claude review bot (the `claude-review` job) — weigh them on merit, not
    authority (see Loop Guard for its re-review behaviour).
-2. **Needs a fix** (clear and in scope): edit the code, then **run `/format` and
-   `/lint`** (there is no pre-commit hook in this repo, so do this yourself),
-   and verify with `/build-for-testing` and `/test` — plus `/test-snapshots` if
-   the change touches UI/snapshots. Those skills run via the Xcode MCP or a Haiku
-   subagent, so their output stays out of your context. Commit with a gitmoji
-   message + the `Co-Authored-By` footer, then `git push`. Note the commit SHA.
+2. **Needs a fix** (clear and in scope): edit the code (the PostToolUse hook formats
+   each Swift file on save), then **run `make lint`** as the clean-tree gate, and
+   verify with `/build-for-testing` and `/test` — plus `/test-snapshots` if the change
+   touches UI/snapshots. Those skills run via the Xcode MCP or a Haiku subagent, so
+   their output stays out of your context. Commit with a gitmoji message + the
+   `Co-Authored-By` footer, then `git push`. Note the commit SHA.
 3. **No fix warranted** (you disagree, out of scope, it's a question, or already
    done): make no code change — you'll explain in the reply.
 4. **Reply** on the thread: what you assessed and whether you fixed it (include
@@ -85,54 +85,38 @@ the ledger:
 
 ### 1b. Status checks
 
-```bash
-gh pr checks --json name,state,bucket,link
-```
+Delegate failing-check fixing to **`/fix-pr-checks`** — it lists the checks, routes
+each failing one to **`/diagnose-ci-failure`** (lint / build / unit-tests / snapshot /
+release-build) via a Haiku subagent so raw CI logs never enter your context, applies
+and verifies the fix locally, commits, pushes **once**, and returns a summary (fixed
+w/ SHAs, exhausted, skipped, pending, whether it pushed). It shares **this run's
+ledger**, so the 3-attempt cap per check is honoured across passes. Fold its summary
+into the ledger; if it pushed, the next pass re-checks.
 
-Classify by `bucket`: `fail` = failing, `pending` = in progress, `pass` /
-`skipping` = fine. The blocking checks are the CI workflows (`unit-tests`,
-`lint`, `snapshot`, `release-build`). **`claude-code-review` is a non-blocking
-neutral check** — its output is review threads (handled in §1a), so never treat
-it as a failing gate. While anything is pending, block efficiently with
-`gh pr checks --watch` rather than polling in a tight loop.
+The blocking checks are the CI workflows (`lint`, `unit-tests`, `snapshot`,
+`release-build`). **The Claude review (the `claude-review` job in the `Claude Code`
+workflow) is a non-blocking neutral check** — its output is review threads (handled in
+§1a), so `/fix-pr-checks` never treats it as a failing gate.
 
-For each **failing** check, delegate log retrieval to a **Haiku subagent** so raw
-CI logs never enter your context. Use the Agent tool with
-`subagent_type: general-purpose` and `model: haiku` and this prompt:
-
-```text
-Find why the `<CHECK NAME>` check failed on the Popcorn PR for branch `<branch>`
-and report concisely.
-
-1. Run `gh run list --branch <branch> --limit 5 --json databaseId,name,conclusion`
-   to find the failed run id.
-2. Run `gh run view <id> --log-failed`.
-
-Report back ONLY:
-- The failing job/step
-- The root cause
-- The offending `file:line` and message (if any)
-
-Do not paste raw logs.
-```
-
-Then fix the issue, run `/format` + `/lint`, verify with the matching skill
-(`/build-for-testing`, `/test`, `/test-snapshots`), commit (gitmoji +
-`Co-Authored-By`), and `git push` — the push re-triggers CI. Increment that
-check's attempt counter.
+**Waiting stays here** (orchestration, not the fix primitive): if checks are `pending`
+and nothing is failing, block efficiently with `gh pr checks --watch` rather than
+polling in a tight loop, then loop. If `/fix-pr-checks` reports a check **exhausted**,
+stop and report it per the Loop Guard.
 
 ## 2. Loop guard (do not get stuck)
 
 - Never reprocess a thread already in the ledger.
-- **`claude-code-review` re-reviews statelessly on every push, so its comments
+- **The Claude review re-reviews statelessly on every push, so its comments
   never converge on their own** — each push can spawn a fresh batch. Batch your
   fixes into as few pushes as possible. Handle substantive findings; once a round
   produces only low-severity / nitpick (L-level) comments, treat that as a **stop
   point** — reply/resolve them and stop rather than chasing an endless loop.
 - If a **new** thread repeats a topic you already fixed this run, do **not**
   re-edit — reply pointing to the earlier commit SHA and resolve it.
-- A failing check gets at most **3** fix→push attempts. If it still fails with
-  the same root cause, **stop** and report it to the user — never loop forever.
+- **Check-fix attempts are `/fix-pr-checks`' job** — it shares this ledger and caps a
+  failing check at **3** fix→push attempts. If it reports a check **exhausted** (still
+  failing on the same root cause after 3), **stop** and report it to the user — never
+  loop forever.
 - End the loop when a full pass resolves no new substantive threads and has no
   actionable check failures. Hard backstop: ~10 passes, then report and stop.
 - Waiting: use `gh pr checks --watch` for in-flight CI. When only waiting on a
@@ -143,10 +127,22 @@ check's attempt counter.
 ## 3. Ready / merge
 
 The PR is **ready** when every review thread is resolved AND no blocking check is
-failing or pending (`claude-code-review` being un-converged does not block).
+failing or pending (the Claude review being un-converged does not block).
+
+**Ready means mergeable *now*.** Before declaring ready, check `mergeStateStatus`
+(from step 0). If it is `BEHIND`, bring the branch up to date and wait for the re-run
+so the PR isn't reported ready while still needing a rebase:
+
+```bash
+gh pr update-branch        # merges latest main into the PR branch
+gh pr checks --watch       # wait for the re-triggered CI
+```
+
+Re-check threads + checks after the update, then proceed. (If `update-branch` reports
+a conflict it can't resolve, stop and surface it to the user.)
 
 - **Watch-only**: report "PR is ready" with a short summary (threads handled,
-  checks green) and stop.
+  checks green, branch up to date) and stop.
 - **Merge-when-ready**: on ready, merge and clean up, then report the result.
 
   **First ensure a clean working tree** — `gh pr merge --delete-branch` switches
@@ -175,7 +171,8 @@ failing or pending (`claude-code-review` being un-converged does not block).
 - If a requested change is ambiguous or risky, reply on the thread with your
   assessment and leave it for the user (note it in the final summary) rather than
   guessing.
-- Run the pre-PR checklist (`/format`, `/lint`, `/build-for-testing`, `/test`)
-  after the **last** code change in a pass, before pushing.
+- Run the pre-PR gate (`make lint`, `/build-for-testing`, `/test`, `/test-snapshots`)
+  after the **last** code change in a pass, before pushing. (Formatting is handled by
+  the PostToolUse hook as files are edited.)
 
 Arguments: $ARGUMENTS

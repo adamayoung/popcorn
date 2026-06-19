@@ -7,28 +7,73 @@ description: Create a pull request
 
 I'll create a pull request for the current branch by following these steps. If any steps fail, stop.
 
-1. Run `/format` to format code
-2. Check for formatting changes and commit them if needed with message "🤖 apply code formatting"
-3. Run `/lint` to verify code style and quality
-4. Run `/build-for-testing` to ensure project builds successfully with no warnings
-5. Run `/test` to verify all tests pass
-6. Spawn the `code-reviewer` agent to perform a code review of all changes. Pass it:
+**Arguments:** pass `reviewed` to skip the internal code-reviewer pass (step 4) — use
+this when the change has already been code-reviewed and converged (e.g. `/deliver`'s
+Phase 3 already ran `/review-changes`). The review is also skipped automatically when
+the diff touches no `*.swift`.
+
+1. **Commit all outstanding work.** Formatting is applied automatically by the
+   PostToolUse hook as files are edited, so there is no separate format step. Run `git
+   status`; if the working tree has any uncommitted/unstaged changes, stage and commit
+   them — the PR reflects **committed history only**, so anything left uncommitted is
+   **missing from the PR**. First **verify no secrets, `.env`, or build artifacts** are
+   included (`.env` must stay gitignored; check `git status` before `git add`). Use a
+   descriptive gitmoji message. If the tree is already clean (e.g. work was committed
+   during `/deliver`), this is a no-op.
+2. **Rebase onto the latest `main`.** Bring local `main` up to date with remote, then
+   rebase the feature branch onto it — do this **before** the gate so the gate (and the
+   eventual PR) reflects the real merge result, not stale code:
+
+    ```bash
+    git fetch origin
+    git checkout main && git merge --ff-only origin/main   # local main == remote main
+    git checkout -                                          # back to the feature branch
+    git rebase main
+    ```
+
+    - If `git merge --ff-only` fails, local `main` has diverged from `origin/main` —
+      **stop** and investigate; do not force it.
+    - If `git rebase` reports conflicts, **stop**, resolve them, then continue. Never
+      skip or force past a conflict you don't understand.
+    - The rebase rewrites the branch tip, so a branch that was **already pushed** needs
+      `git push --force-with-lease` at the push step below.
+    - Already on / branched off an up-to-date `main` with nothing to replay → fast no-op.
+3. **The gate** — run in order, stop on any failure (the rebase above means this runs
+   against the post-merge tree):
+   - `make lint` — the clean-tree lint gate (swiftlint `--strict` + swiftformat `--lint`
+     over the whole repo; catches pre-existing violations the per-edit hook won't). Run
+     it **first** (it depends on `clean-spm`, which clears build caches, so subsequent
+     builds start cold — that's expected, not a hang). Delegate to a Haiku subagent.
+   - **New-file re-lint:** for any file added in this branch (`git diff --diff-filter=A
+     --name-only origin/main...HEAD -- '*.swift'`), run `swiftlint --no-cache` on it —
+     the cache can false-green a brand-new file that CI's clean checkout would flag.
+   - `/build-for-testing` — build succeeds with no warnings (warnings are errors).
+   - `/test` — all unit tests pass.
+   - `/test-snapshots` — all snapshot tests pass.
+
+   If the gate fails, stop and fix — **commit the fixes** — then re-run; never open a PR
+   on a red gate.
+4. **Code review** — **skip this step entirely** if `reviewed` was passed **or** the
+   diff touches no `*.swift`. Otherwise spawn the `code-reviewer` agent to review all
+   changes, following [`.github/CODE_REVIEW.md`](../../../.github/CODE_REVIEW.md). Pass it:
    - The full diff: `git diff origin/main...HEAD`
    - The list of changed files: `git diff --name-only origin/main...HEAD`
    - Instruct it to read full files (not just diff hunks) and compare with sibling implementations for pattern consistency
-7. Summarize the code review findings:
+5. Summarize the code review findings:
     - List any critical or high-severity issues that should be addressed
     - List any medium-severity suggestions for improvement
     - Note any low-severity or stylistic recommendations
-8. If there are critical/high-severity issues:
+6. If there are critical/high-severity issues:
     - Recommend specific changes needed
     - Ask user for confirmation before proceeding (fix issues or continue anyway)
     - If user wants to fix issues, stop and let them address the feedback
-9. Check if branch is up-to-date with main (warn if behind)
-10. Run `git status` and `git diff origin/main...HEAD` to understand all changes
-11. Analyze the commits and changes to generate an appropriate title and summary
-12. Push the current branch to remote using `git push` (not `gh` CLI, which bypasses webhooks/workflows)
-13. Create a PR using `gh pr create` with:
+7. **Ensure a clean working tree before pushing.** Re-run `git status`; commit anything
+   still outstanding (review fixes from steps 4–6, or gate fixes) so the push includes
+   everything. Then run `git diff origin/main...HEAD` to understand all changes.
+8. Analyze the commits and changes to generate an appropriate title and summary
+9. Push the current branch to remote using `git push` (not `gh` CLI, which bypasses
+   webhooks/workflows) — use `git push --force-with-lease` if you rebased in step 2.
+10. Create a PR using `gh pr create` with:
     - **IMPORTANT: Title MUST start with a gitmoji prefix** (e.g., "✨ Add new feature", "🐛 Fix bug", "📚 Improve documentation")
         - Refer to <https://gitmoji.dev> to use the correct emoji
         - Common: ✨ feature, 🐛 bugfix, ♻️ refactor, 🧪 tests, 📚 docs, 🔧 config, 🎨 style

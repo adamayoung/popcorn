@@ -79,6 +79,6 @@ Update `<Name>+Mocks.swift` in all test targets that use it.
 
 ### 11. Verify
 
-Run the full pre-PR checklist: `/format`, `/lint`, `/build`, `/test`
+Run the full pre-PR checklist: `make lint`, `/build`, `/test` (formatting is applied automatically by the PostToolUse hook)
 
 $ARGUMENTS
