@@ -132,9 +132,54 @@ Before creating a pull request, **always** verify:
 2. Run `/build-for-testing` — build succeeds with no warnings (warnings are errors)
 3. Run `/test` — all unit tests pass
 4. Run `/test-snapshots` — all snapshot tests pass
-5. PR title follows gitmoji format: `<gitmoji> <description>` (see [GIT.md](docs/GIT.md))
+5. Run `/capture-knowledge` — record any durable gotchas/decisions into `knowledge/` (no-op if nothing durable was learned)
+6. PR title follows gitmoji format: `<gitmoji> <description>` (see [GIT.md](docs/GIT.md))
 
 This prevents CI failures and ensures code quality before review.
+
+### Self-Review
+
+After the checklist passes, review your own changes before considering the task complete:
+
+- Read through every modified file.
+- Remove unnecessary changes, leftover debugging code, or dead comments.
+- Check every public declaration has an accurate `///` doc comment.
+- Look for opportunities to simplify; verify consistency with sibling implementations.
+
+Make improvements where you find them.
+
+## Development Workflow
+
+Feature work is **skill-driven**. Draft and approve a plan (plan mode / the plan tool),
+then run **`/deliver`** to carry it through to a ready-to-merge PR. **Invoking
+`/deliver` is itself the plan-approval gate** — it then runs autonomously to a single
+hard stop, **ready-to-merge**, pausing only for a plan-review blocker or a red gate it
+can't triage. It **auto-scales** its review machinery to the change's risk (lite vs
+full) and ends each delivery with a short retrospective into
+[`knowledge/delivery-retros.md`](knowledge/delivery-retros.md):
+
+branch → (`/review-plan` for risky/large changes) → `/implement-plan` →
+`/review-changes` (+ fix) → `/capture-knowledge` → `/pr reviewed` → `/watch-pr` → retro.
+
+Key skills:
+
+- **`/deliver`** — run the whole pipeline from an approved plan (`/deliver auto` runs it
+  unattended via a 3-critic decision panel; `/deliver merge` auto-merges once green).
+- **`/review-plan`** — adversarial 3-critic review of a plan; apply the consensus
+  (single-reviewer `plan-reviewer` agent for small plans).
+- **`/implement-plan`** — implement test-first (`/canon-tdd`) to an empty test list,
+  committing at logical checkpoints.
+- **`/review-changes`** — code review of the working-tree change (one `code-reviewer`,
+  or a fan-out + adversarial verification for large diffs), following
+  [`.github/CODE_REVIEW.md`](.github/CODE_REVIEW.md).
+- **`/capture-knowledge`** — record durable learnings into `knowledge/`.
+- **`/pr`**, **`/watch-pr`** — open and shepherd the pull request.
+
+**Code review** — both the local `/review-changes` and the GitHub Actions reviewer
+follow one shared spec, [`.github/CODE_REVIEW.md`](.github/CODE_REVIEW.md), and **run
+only when the change touches Swift**. Two subagents back the pipeline: `code-reviewer`
+(deep Swift review) and `documentation-writer` (DocC `///` generation); `plan-reviewer`
+backs the plan review.
 
 ## Key Entry Points
 
