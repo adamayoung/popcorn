@@ -82,16 +82,14 @@ When making an incremental change that is **localised to a single module** and t
 - Specific errors/failures as `file:line — message`
 - Do NOT include the full log — only actionable information, plus the log path on failure
 
-This applies to all build, test, lint, and format commands — both `make` targets and direct `swift` CLI invocations. The `/build`, `/build-for-testing`, `/test`, `/test-single`, `/*-package`, `/format`, and `/lint` skills already wrap this — invoke them rather than running the commands yourself. Xcode MCP (`xcode`) tool calls are exempt (they return structured results).
+This applies to all build, test, and lint commands — both `make` targets and direct `swift` CLI invocations. The `/build`, `/build-for-testing`, `/test`, `/test-single`, and `/*-package` skills already wrap this — invoke them rather than running the commands yourself. (Formatting is applied automatically by the PostToolUse hook; the lint gate is `make lint`, delegated to a Haiku subagent.) Xcode MCP (`xcode`) tool calls are exempt (they return structured results).
 
 ### Formatting
 
-| Task | Slash Command |
-|------|---------------|
-| Auto-fix | `/format` |
-| Check only | `/lint` |
-
-**Always run `/format` and `/lint` after making code changes** to ensure consistent style before committing.
+Formatting is applied **automatically** by the PostToolUse hook (see *Auto-formatting
+on edit* below) — there is no manual format step. The **lint gate** is `make lint`
+(swiftlint `--strict` + swiftformat `--lint` over the whole repo); run it via a Haiku
+subagent before a PR to catch any pre-existing violations the per-edit hook won't.
 
 ### Auto-formatting on edit (PostToolUse hook)
 
@@ -103,7 +101,7 @@ Consequences: the on-disk content can differ from what you wrote (imports reorde
 blank lines collapsed). **Re-`Read` a file before a dependent `Edit`** if the edit
 relies on exact surrounding text, and don't attribute hook reformatting to your own
 diff. The hook only touches files you edit and only Swift — it can't fix real
-compile/lint errors, so still run the lint gate before a PR. (No markdown hook —
+compile or lint errors, so still run the lint gate before a PR. (No markdown hook —
 markdown is authored lint-clean by hand.)
 
 **SourceKit new-file lag.** After creating a **new** `.swift` file and referencing its
@@ -130,10 +128,11 @@ rule the `/deliver` pipeline depends on (its Phase 0.5 branches before any edit)
 
 Before creating a pull request, **always** verify:
 
-1. Run `/format` and `/lint` — no violations
+1. Run `make lint` — no violations (formatting is applied automatically by the PostToolUse hook)
 2. Run `/build-for-testing` — build succeeds with no warnings (warnings are errors)
-3. Run `/test` — all tests pass
-4. PR title follows gitmoji format: `<gitmoji> <description>` (see [GIT.md](docs/GIT.md))
+3. Run `/test` — all unit tests pass
+4. Run `/test-snapshots` — all snapshot tests pass
+5. PR title follows gitmoji format: `<gitmoji> <description>` (see [GIT.md](docs/GIT.md))
 
 This prevents CI failures and ensures code quality before review.
 
@@ -211,7 +210,12 @@ Localization: [SWIFTUI.md § Localization](docs/SWIFTUI.md) — SCREAMING_SNAKE_
 ### Project-Specific Rules
 
 - When adding or removing feature flags in a feature's `*Dependencies` / view model, always update the corresponding view-model tests for the flag-gated behavior (cover both enabled and disabled paths)
-- **Statsig gate creation**: When adding a new feature flag in code, also create the corresponding Statsig gate using the Statsig MCP (`mcp__statsig__Create_Gate`). Enable it for the `development` environment only (not a full public rollout). Use `mcp__statsig__Get_Gate_Details_by_ID` on a sibling gate to match the naming/config pattern. The gate ID must match the `FeatureFlag.id` in code (snake_case).
+- **Feature flag creation**: Adding a new feature flag means two things —
+  1. **Code:** add a `static let` to `FeatureFlag.swift` and register it in `allFlags`; update `FeatureFlagTests.swift` (count + ID list).
+  2. **Statsig gate:** create the gate via the Statsig MCP, enabled for the **`development` environment only** (not a full public rollout). The gate ID **must** match the `FeatureFlag.id` in code (snake_case). The 3-call sequence:
+     - `mcp__statsig__Get_Gate_Details_by_ID` — read a sibling gate to match the naming/config pattern.
+     - `mcp__statsig__Create_Gate` — `id` = the `FeatureFlag.id` (snake_case), `name` = Title Case of the ID, rule "Development only" with `passPercentage 100`, condition type "public", `environments: ["development"]`.
+     - `mcp__statsig__Update_Gate_Entirely` — add the description ("Controls access to <feature name>").
 - **Test plan registration**: When adding new Swift test targets that contain unit tests (NOT snapshot tests), add the target to `TestPlans/PopcornUnitTests.xctestplan`. Without this, the tests won't run when executing the test plan. Each entry needs `containerPath` (relative path from workspace root prefixed with `container:`), `identifier` (test target name), and `name` (test target name)
 - **Test coverage for new features**: Every new feature must have tests at ALL layers — adapter mappers, use cases, and feature view models. Don't just test the happy path; include error paths and edge cases. Check sibling implementations for the test patterns to follow.
 

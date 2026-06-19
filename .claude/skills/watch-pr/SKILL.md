@@ -56,12 +56,12 @@ the ledger:
 1. Read the comment(s) and decide whether a code change is warranted. Many
    threads come from the `claude-code-review` bot — weigh them on merit, not
    authority (see Loop Guard for its re-review behaviour).
-2. **Needs a fix** (clear and in scope): edit the code, then **run `/format` and
-   `/lint`** (there is no pre-commit hook in this repo, so do this yourself),
-   and verify with `/build-for-testing` and `/test` — plus `/test-snapshots` if
-   the change touches UI/snapshots. Those skills run via the Xcode MCP or a Haiku
-   subagent, so their output stays out of your context. Commit with a gitmoji
-   message + the `Co-Authored-By` footer, then `git push`. Note the commit SHA.
+2. **Needs a fix** (clear and in scope): edit the code (the PostToolUse hook formats
+   each Swift file on save), then **run `make lint`** as the clean-tree gate, and
+   verify with `/build-for-testing` and `/test` — plus `/test-snapshots` if the change
+   touches UI/snapshots. Those skills run via the Xcode MCP or a Haiku subagent, so
+   their output stays out of your context. Commit with a gitmoji message + the
+   `Co-Authored-By` footer, then `git push`. Note the commit SHA.
 3. **No fix warranted** (you disagree, out of scope, it's a question, or already
    done): make no code change — you'll explain in the reply.
 4. **Reply** on the thread: what you assessed and whether you fixed it (include
@@ -116,10 +116,10 @@ Report back ONLY:
 Do not paste raw logs.
 ```
 
-Then fix the issue, run `/format` + `/lint`, verify with the matching skill
-(`/build-for-testing`, `/test`, `/test-snapshots`), commit (gitmoji +
-`Co-Authored-By`), and `git push` — the push re-triggers CI. Increment that
-check's attempt counter.
+Then fix the issue (the hook formats edited Swift files), run `make lint`, verify with
+the matching skill (`/build-for-testing`, `/test`, `/test-snapshots`), commit (gitmoji +
+`Co-Authored-By`), and `git push` — the push re-triggers CI. Increment that check's
+attempt counter.
 
 ## 2. Loop guard (do not get stuck)
 
@@ -145,8 +145,20 @@ check's attempt counter.
 The PR is **ready** when every review thread is resolved AND no blocking check is
 failing or pending (`claude-code-review` being un-converged does not block).
 
+**Ready means mergeable *now*.** Before declaring ready, check `mergeStateStatus`
+(from step 0). If it is `BEHIND`, bring the branch up to date and wait for the re-run
+so the PR isn't reported ready while still needing a rebase:
+
+```bash
+gh pr update-branch        # merges latest main into the PR branch
+gh pr checks --watch       # wait for the re-triggered CI
+```
+
+Re-check threads + checks after the update, then proceed. (If `update-branch` reports
+a conflict it can't resolve, stop and surface it to the user.)
+
 - **Watch-only**: report "PR is ready" with a short summary (threads handled,
-  checks green) and stop.
+  checks green, branch up to date) and stop.
 - **Merge-when-ready**: on ready, merge and clean up, then report the result.
 
   **First ensure a clean working tree** — `gh pr merge --delete-branch` switches
@@ -175,7 +187,8 @@ failing or pending (`claude-code-review` being un-converged does not block).
 - If a requested change is ambiguous or risky, reply on the thread with your
   assessment and leave it for the user (note it in the final summary) rather than
   guessing.
-- Run the pre-PR checklist (`/format`, `/lint`, `/build-for-testing`, `/test`)
-  after the **last** code change in a pass, before pushing.
+- Run the pre-PR gate (`make lint`, `/build-for-testing`, `/test`, `/test-snapshots`)
+  after the **last** code change in a pass, before pushing. (Formatting is handled by
+  the PostToolUse hook as files are edited.)
 
 Arguments: $ARGUMENTS

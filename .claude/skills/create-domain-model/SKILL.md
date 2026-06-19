@@ -67,6 +67,6 @@ Follow the `/add-use-case` skill for wiring into the architecture.
 
 ### 9. Verify
 
-Run the full pre-PR checklist: `/format`, `/lint`, `/build`, `/test`
+Run the full pre-PR checklist: `make lint`, `/build`, `/test` (formatting is applied automatically by the PostToolUse hook)
 
 $ARGUMENTS

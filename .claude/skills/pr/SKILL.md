@@ -7,12 +7,32 @@ description: Create a pull request
 
 I'll create a pull request for the current branch by following these steps. If any steps fail, stop.
 
-1. Run `/format` to format code
-2. Check for formatting changes and commit them if needed with message "🤖 apply code formatting"
-3. Run `/lint` to verify code style and quality
-4. Run `/build-for-testing` to ensure project builds successfully with no warnings
-5. Run `/test` to verify all tests pass
-6. Spawn the `code-reviewer` agent to perform a code review of all changes. Pass it:
+**Arguments:** pass `reviewed` to skip the internal code-reviewer pass (step 6) — use
+this when the change has already been code-reviewed and converged (e.g. `/deliver`'s
+Phase 3 already ran `/review-changes`). The review is also skipped automatically when
+the diff touches no `*.swift`.
+
+1. **The gate.** Formatting is handled automatically by the PostToolUse hook as files
+   are edited, so there is no separate format step. Run the gate in order — stop on any
+   failure:
+   - `make lint` — the clean-tree lint gate (swiftlint `--strict` + swiftformat `--lint`
+     over the whole repo; catches pre-existing violations the per-edit hook won't). Run
+     it **first** (it depends on `clean-spm`, which clears build caches, so subsequent
+     builds start cold — that's expected, not a hang). Delegate to a Haiku subagent.
+   - **New-file re-lint:** for any file added in this branch (`git diff --diff-filter=A
+     --name-only origin/main...HEAD -- '*.swift'`), run `swiftlint --no-cache` on it —
+     the cache can false-green a brand-new file that CI's clean checkout would flag.
+   - `/build-for-testing` — build succeeds with no warnings (warnings are errors).
+   - `/test` — all unit tests pass.
+   - `/test-snapshots` — all snapshot tests pass.
+2. (Formatting is committed inline by the hook — no separate "apply code formatting"
+   commit is needed.)
+3. *(reserved)*
+4. *(build is part of step 1's gate)*
+5. *(tests are part of step 1's gate)*
+6. **Code review** — **skip this step entirely** if `reviewed` was passed **or** the
+   diff touches no `*.swift`. Otherwise spawn the `code-reviewer` agent to review all
+   changes, following [`.github/CODE_REVIEW.md`](../../../.github/CODE_REVIEW.md). Pass it:
    - The full diff: `git diff origin/main...HEAD`
    - The list of changed files: `git diff --name-only origin/main...HEAD`
    - Instruct it to read full files (not just diff hunks) and compare with sibling implementations for pattern consistency

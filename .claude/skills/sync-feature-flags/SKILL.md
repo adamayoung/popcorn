@@ -9,7 +9,7 @@ Syncs Statsig feature gates (source of truth) to `FeatureFlag.swift` in code. Ha
 
 ## Direction
 
-This skill syncs **Statsig → Code** (Statsig is the source of truth). For the reverse direction — creating a new Statsig gate when adding a feature flag in code — see the "Feature Flag Creation Pattern" in `plan-feature/references/patterns.md`. New gates should be created with `mcp__statsig__Create_Gate`, enabled for `development` environment only.
+This skill syncs **Statsig → Code** (Statsig is the source of truth). For the reverse direction — creating a new Statsig gate when adding a feature flag in code — see **"Feature flag creation"** under *Project-Specific Rules* in [`CLAUDE.md`](../../../CLAUDE.md). New gates are created with `mcp__statsig__Create_Gate`, enabled for the `development` environment only.
 
 ## Key Files
 
@@ -221,7 +221,7 @@ Files modified:
 
 After all changes:
 
-> Remember to run the pre-PR checklist: `/format`, `/lint`, `/build`, `/test`
+> Remember to run the pre-PR checklist: `make lint`, `/build`, `/test` (formatting is applied automatically by the PostToolUse hook)
 
 Do NOT run these automatically — let the user invoke them.
 

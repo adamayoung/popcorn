@@ -127,7 +127,7 @@ Before writing any findings, complete these exploration steps:
 ## Code Change Protocol
 
 - Always read full files and existing sibling implementations before writing findings (see Review Protocol above).
-- After reviewing, remind to run `/format` to apply formatting fixes.
+- Formatting is applied automatically by the PostToolUse hook on each Swift edit; no manual format step is needed.
 - Reference documentation: SWIFT.md, SWIFTUI.md, SWIFTDATA.md, ARCHITECTURE.md for detailed conventions.
 - Never read or touch `DerivedData/`, `.swiftpm/`, or `.build/`.
 - When needing to verify Apple APIs (concurrency safety, availability, behavior), use `mcp__sosumi__searchAppleDocumentation` and `mcp__sosumi__fetchAppleDocumentation` tools to check official documentation.
