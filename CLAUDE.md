@@ -14,6 +14,21 @@ Popcorn is a modular SwiftUI application for browsing movies and TV series acros
 
 **Platforms**: iOS 26.0+, macOS 26.0+, visionOS 2.0+
 
+## Knowledge Base
+
+Durable, project-specific learnings live in [`knowledge/`](knowledge/) — read it on
+demand; it is not loaded here to keep this file lean. (Reference knowledge; `CLAUDE.md`
+stays imperative.)
+
+- [`knowledge/decisions/`](knowledge/decisions/) — **ADRs** (design decisions + rationale).
+- [`knowledge/gotchas.md`](knowledge/gotchas.md) — quirks, tooling traps, SwiftData/
+  CloudKit & TMDb-mapping surprises, things that needed a lookup.
+
+**Before solving a non-trivial problem**, skim the relevant file. **After learning
+something durable** (a gotcha, a quirk, a design decision), record it there — run
+`/capture-knowledge` (it runs automatically before a PR in `/deliver`). Add an ADR for
+any non-obvious design decision.
+
 ## Getting Started
 
 ### Configuration
@@ -77,6 +92,31 @@ This applies to all build, test, lint, and format commands — both `make` targe
 | Check only | `/lint` |
 
 **Always run `/format` and `/lint` after making code changes** to ensure consistent style before committing.
+
+### Auto-formatting on edit (PostToolUse hook)
+
+A `PostToolUse` hook (in `.claude/settings.json`) runs automatically after every
+`Edit`/`Write` to a `.swift` file: `swiftlint --fix` then `swiftformat` on that file.
+So files are reshaped on disk **after** you write them.
+
+Consequences: the on-disk content can differ from what you wrote (imports reordered,
+blank lines collapsed). **Re-`Read` a file before a dependent `Edit`** if the edit
+relies on exact surrounding text, and don't attribute hook reformatting to your own
+diff. The hook only touches files you edit and only Swift — it can't fix real
+compile/lint errors, so still run the lint gate before a PR. (No markdown hook —
+markdown is authored lint-clean by hand.)
+
+**SourceKit new-file lag.** After creating a **new** `.swift` file and referencing its
+symbols elsewhere, the editor may report `Cannot find 'X' in scope` — indexing-lag
+false positives that clear on the next build. Trust the build, not live diagnostics.
+
+### Branching — never edit `main`
+
+**Never make changes directly on `main`.** All changes — features, fixes,
+documentation, configuration — MUST be made on a branch created from `main`. Before
+editing any file, verify with `git branch --show-current`; if on `main`, branch first
+with a conventional prefix (`feature/`, `fix/`, `chore/`, `docs/`). This is a hard
+rule the `/deliver` pipeline depends on (its Phase 0.5 branches before any edit).
 
 ### Git Push
 

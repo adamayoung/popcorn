@@ -27,6 +27,19 @@
     ]
   },
   "outputStyle": "default",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=$(jq -r '.tool_input.file_path // empty'); case \"$f\" in *.swift) swiftlint --fix \"$f\" >/dev/null 2>&1; swiftformat \"$f\" >/dev/null 2>&1 ;; esac"
+          }
+        ]
+      }
+    ]
+  },
   "enabledPlugins": {
     "swift-testing-expert@swift-testing-agent-skill": true,
     "swiftui-expert@swiftui-expert-skill": true,
