@@ -290,8 +290,8 @@ with `git push`, and opens the PR with a gitmoji title and structured body.
 
 **Note on the gate's coverage:** the local gate builds Debug via `/build-for-testing`. A
 **Release-only** failure (`release-build.yml`) is caught by CI, not locally — that's
-expected; `/watch-pr` (Phase 5) handles it. And `claude-code-review` is a **non-blocking**
-neutral check — never treat it as a gate.
+expected; `/watch-pr` (Phase 5) handles it. And the Claude review (the `claude-review`
+job) is a **non-blocking** neutral check — never treat it as a gate.
 
 **If a gate step fails, triage before you stop** (Contract §4):
 
