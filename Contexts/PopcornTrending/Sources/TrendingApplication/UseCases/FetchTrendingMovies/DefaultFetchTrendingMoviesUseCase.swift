@@ -36,10 +36,9 @@ final class DefaultFetchTrendingMoviesUseCase: FetchTrendingMoviesUseCase {
         let moviePreviews: [MoviePreview]
         let appConfiguration: AppConfiguration
         do {
-            (moviePreviews, appConfiguration) = try await (
-                repository.movies(page: page),
-                appConfigurationProvider.appConfiguration()
-            )
+            async let moviePreviewsTask = repository.movies(page: page)
+            async let appConfigurationTask = appConfigurationProvider.appConfiguration()
+            (moviePreviews, appConfiguration) = try await (moviePreviewsTask, appConfigurationTask)
         } catch let error {
             throw FetchTrendingMoviesError(error)
         }

@@ -26,10 +26,9 @@ final class DefaultFetchPersonDetailsUseCase: FetchPersonDetailsUseCase {
         let person: Person
         let appConfiguration: AppConfiguration
         do {
-            (person, appConfiguration) = try await (
-                repository.person(withID: id),
-                appConfigurationProvider.appConfiguration()
-            )
+            async let personTask = repository.person(withID: id)
+            async let appConfigurationTask = appConfigurationProvider.appConfiguration()
+            (person, appConfiguration) = try await (personTask, appConfigurationTask)
         } catch let error {
             throw FetchPersonDetailsError(error)
         }

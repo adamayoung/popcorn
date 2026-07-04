@@ -52,10 +52,11 @@ final class DefaultFetchDiscoverTVSeriesUseCase: FetchDiscoverTVSeriesUseCase {
         let genres: [Genre]
         let appConfiguration: AppConfiguration
         do {
+            async let moviePreviewsTask = repository.tvSeries(filter: filter, page: page)
+            async let genresTask = genreProvider.tvSeriesGenres()
+            async let appConfigurationTask = appConfigurationProvider.appConfiguration()
             (moviePreviews, genres, appConfiguration) = try await (
-                repository.tvSeries(filter: filter, page: page),
-                genreProvider.tvSeriesGenres(),
-                appConfigurationProvider.appConfiguration()
+                moviePreviewsTask, genresTask, appConfigurationTask
             )
         } catch let error {
             throw FetchDiscoverTVSeriesError(error)

@@ -30,10 +30,11 @@ final class DefaultFetchAllGenresUseCase: FetchAllGenresUseCase {
         let tvSeriesGenres: [Genre]
         let appConfiguration: AppConfiguration
         do {
+            async let movieGenresTask = repository.movieGenres()
+            async let tvSeriesGenresTask = repository.tvSeriesGenres()
+            async let appConfigurationTask = appConfigurationProvider.appConfiguration()
             (movieGenres, tvSeriesGenres, appConfiguration) = try await (
-                repository.movieGenres(),
-                repository.tvSeriesGenres(),
-                appConfigurationProvider.appConfiguration()
+                movieGenresTask, tvSeriesGenresTask, appConfigurationTask
             )
         } catch let error as GenreRepositoryError {
             throw FetchAllGenresError(error)

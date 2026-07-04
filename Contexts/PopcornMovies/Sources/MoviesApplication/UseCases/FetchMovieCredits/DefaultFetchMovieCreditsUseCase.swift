@@ -26,10 +26,9 @@ final class DefaultFetchMovieCreditsUseCase: FetchMovieCreditsUseCase {
         let credits: Credits
         let appConfiguration: AppConfiguration
         do {
-            (credits, appConfiguration) = try await (
-                movieCreditsRepository.credits(forMovie: movieID),
-                appConfigurationProvider.appConfiguration()
-            )
+            async let creditsTask = movieCreditsRepository.credits(forMovie: movieID)
+            async let appConfigurationTask = appConfigurationProvider.appConfiguration()
+            (credits, appConfiguration) = try await (creditsTask, appConfigurationTask)
         } catch let error {
             throw FetchMovieCreditsError(error)
         }

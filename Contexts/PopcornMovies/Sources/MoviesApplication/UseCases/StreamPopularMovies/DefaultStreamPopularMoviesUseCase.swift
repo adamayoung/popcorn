@@ -41,9 +41,10 @@ final class DefaultStreamPopularMoviesUseCase: StreamPopularMoviesUseCase {
                         continue
                     }
 
+                    async let appConfigurationTask = appConfigurationProvider.appConfiguration()
+                    async let imageCollectionsTask = imageCollections(for: moviePreviews)
                     let (appConfiguration, imageCollections) = try await (
-                        appConfigurationProvider.appConfiguration(),
-                        imageCollections(for: moviePreviews)
+                        appConfigurationTask, imageCollectionsTask
                     )
 
                     let themeColors = await self.extractThemeColors(

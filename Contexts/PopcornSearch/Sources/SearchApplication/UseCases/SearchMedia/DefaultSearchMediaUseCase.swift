@@ -33,10 +33,9 @@ final class DefaultSearchMediaUseCase: SearchMediaUseCase {
         let mediaPreviews: [MediaPreview]
         let appConfiguration: AppConfiguration
         do {
-            (mediaPreviews, appConfiguration) = try await (
-                repository.search(query: query, page: page),
-                appConfigurationProvider.appConfiguration()
-            )
+            async let mediaPreviewsTask = repository.search(query: query, page: page)
+            async let appConfigurationTask = appConfigurationProvider.appConfiguration()
+            (mediaPreviews, appConfiguration) = try await (mediaPreviewsTask, appConfigurationTask)
         } catch let error {
             throw SearchMediaError(error)
         }

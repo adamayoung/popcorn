@@ -38,10 +38,9 @@ final class DefaultFetchWatchlistMoviesUseCase: FetchWatchlistMoviesUseCase {
         let watchlistMovies: Set<WatchlistMovie>
         let appConfiguration: AppConfiguration
         do {
-            (watchlistMovies, appConfiguration) = try await (
-                movieWatchlistRepository.movies(),
-                appConfigurationProvider.appConfiguration()
-            )
+            async let watchlistMoviesTask = movieWatchlistRepository.movies()
+            async let appConfigurationTask = appConfigurationProvider.appConfiguration()
+            (watchlistMovies, appConfiguration) = try await (watchlistMoviesTask, appConfigurationTask)
         } catch let error {
             throw FetchWatchlistMoviesError(error)
         }
