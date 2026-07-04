@@ -39,10 +39,9 @@ final class DefaultFetchSimilarMoviesUseCase: FetchSimilarMoviesUseCase {
         let moviePreviews: [MoviePreview]
         let appConfiguration: AppConfiguration
         do {
-            (moviePreviews, appConfiguration) = try await (
-                similarMovieRepository.similar(toMovie: movieID, page: page),
-                appConfigurationProvider.appConfiguration()
-            )
+            async let moviePreviewsTask = similarMovieRepository.similar(toMovie: movieID, page: page)
+            async let appConfigurationTask = appConfigurationProvider.appConfiguration()
+            (moviePreviews, appConfiguration) = try await (moviePreviewsTask, appConfigurationTask)
         } catch let error {
             throw FetchSimilarMoviesError(error)
         }

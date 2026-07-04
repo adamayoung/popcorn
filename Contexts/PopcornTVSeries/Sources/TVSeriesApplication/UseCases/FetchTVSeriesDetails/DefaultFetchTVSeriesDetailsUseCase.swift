@@ -37,10 +37,11 @@ final class DefaultFetchTVSeriesDetailsUseCase: FetchTVSeriesDetailsUseCase {
         let imageCollection: ImageCollection
         let appConfiguration: AppConfiguration
         do {
+            async let tvSeriesTask = repository.tvSeries(withID: id)
+            async let imageCollectionTask = repository.images(forTVSeries: id)
+            async let appConfigurationTask = appConfigurationProvider.appConfiguration()
             (tvSeries, imageCollection, appConfiguration) = try await (
-                repository.tvSeries(withID: id),
-                repository.images(forTVSeries: id),
-                appConfigurationProvider.appConfiguration()
+                tvSeriesTask, imageCollectionTask, appConfigurationTask
             )
         } catch let error {
             let detailsError = FetchTVSeriesDetailsError(error)

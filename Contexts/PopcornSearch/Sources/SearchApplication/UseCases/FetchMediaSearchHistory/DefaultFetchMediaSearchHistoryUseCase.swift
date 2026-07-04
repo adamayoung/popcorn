@@ -29,10 +29,9 @@ final class DefaultFetchMediaSearchHistoryUseCase: FetchMediaSearchHistoryUseCas
         let entries: [MediaSearchHistoryEntry]
         let appConfiguration: AppConfiguration
         do {
-            (entries, appConfiguration) = try await (
-                repository.mediaSearchHistory(),
-                appConfigurationProvider.appConfiguration()
-            )
+            async let entriesTask = repository.mediaSearchHistory()
+            async let appConfigurationTask = appConfigurationProvider.appConfiguration()
+            (entries, appConfiguration) = try await (entriesTask, appConfigurationTask)
         } catch let error {
             throw FetchMediaSearchHistoryError(error)
         }

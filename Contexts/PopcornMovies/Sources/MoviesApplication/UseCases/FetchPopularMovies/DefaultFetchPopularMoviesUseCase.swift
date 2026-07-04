@@ -36,10 +36,9 @@ final class DefaultFetchPopularMoviesUseCase: FetchPopularMoviesUseCase {
         let moviePreviews: [MoviePreview]
         let appConfiguration: AppConfiguration
         do {
-            (moviePreviews, appConfiguration) = try await (
-                popularMovieRepository.popular(page: page),
-                appConfigurationProvider.appConfiguration()
-            )
+            async let moviePreviewsTask = popularMovieRepository.popular(page: page)
+            async let appConfigurationTask = appConfigurationProvider.appConfiguration()
+            (moviePreviews, appConfiguration) = try await (moviePreviewsTask, appConfigurationTask)
         } catch let error {
             throw FetchPopularMoviesError(error)
         }

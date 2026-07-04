@@ -33,10 +33,9 @@ final class DefaultFetchTrendingTVSeriesUseCase: FetchTrendingTVSeriesUseCase {
         let tvSeriesPreviews: [TVSeriesPreview]
         let appConfiguration: AppConfiguration
         do {
-            (tvSeriesPreviews, appConfiguration) = try await (
-                repository.tvSeries(page: page),
-                appConfigurationProvider.appConfiguration()
-            )
+            async let tvSeriesPreviewsTask = repository.tvSeries(page: page)
+            async let appConfigurationTask = appConfigurationProvider.appConfiguration()
+            (tvSeriesPreviews, appConfiguration) = try await (tvSeriesPreviewsTask, appConfigurationTask)
         } catch let error {
             throw FetchTrendingTVSeriesError(error)
         }

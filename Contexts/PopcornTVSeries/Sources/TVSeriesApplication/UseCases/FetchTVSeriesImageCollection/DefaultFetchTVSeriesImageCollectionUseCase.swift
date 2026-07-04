@@ -34,10 +34,9 @@ final class DefaultFetchTVSeriesImageCollectionUseCase: FetchTVSeriesImageCollec
         let imageCollection: ImageCollection
         let appConfiguration: AppConfiguration
         do {
-            (imageCollection, appConfiguration) = try await (
-                repository.images(forTVSeries: tvSeriesID),
-                appConfigurationProvider.appConfiguration()
-            )
+            async let imageCollectionTask = repository.images(forTVSeries: tvSeriesID)
+            async let appConfigurationTask = appConfigurationProvider.appConfiguration()
+            (imageCollection, appConfiguration) = try await (imageCollectionTask, appConfigurationTask)
         } catch let error {
             let imageCollectionError = FetchTVSeriesImageCollectionError(error)
             span?.setData(error: imageCollectionError)

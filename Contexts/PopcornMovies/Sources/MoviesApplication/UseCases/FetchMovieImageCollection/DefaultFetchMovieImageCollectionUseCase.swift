@@ -27,10 +27,9 @@ final class DefaultFetchMovieImageCollectionUseCase: FetchMovieImageCollectionUs
         let imageCollection: ImageCollection
         let appConfiguration: AppConfiguration
         do {
-            (imageCollection, appConfiguration) = try await (
-                movieImageRepository.imageCollection(forMovie: movieID),
-                appConfigurationProvider.appConfiguration()
-            )
+            async let imageCollectionTask = movieImageRepository.imageCollection(forMovie: movieID)
+            async let appConfigurationTask = appConfigurationProvider.appConfiguration()
+            (imageCollection, appConfiguration) = try await (imageCollectionTask, appConfigurationTask)
         } catch let error {
             throw FetchMovieImageCollectionError(error)
         }

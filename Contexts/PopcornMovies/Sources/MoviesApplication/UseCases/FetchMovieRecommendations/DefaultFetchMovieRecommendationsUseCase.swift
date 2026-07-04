@@ -39,10 +39,11 @@ final class DefaultFetchMovieRecommendationsUseCase: FetchMovieRecommendationsUs
         let moviePreviews: [MoviePreview]
         let appConfiguration: AppConfiguration
         do {
-            (moviePreviews, appConfiguration) = try await (
-                movieRecommendationRepository.recommendations(forMovie: movieID, page: page),
-                appConfigurationProvider.appConfiguration()
+            async let moviePreviewsTask = movieRecommendationRepository.recommendations(
+                forMovie: movieID, page: page
             )
+            async let appConfigurationTask = appConfigurationProvider.appConfiguration()
+            (moviePreviews, appConfiguration) = try await (moviePreviewsTask, appConfigurationTask)
         } catch let error {
             throw FetchMovieRecommendationsError(error)
         }

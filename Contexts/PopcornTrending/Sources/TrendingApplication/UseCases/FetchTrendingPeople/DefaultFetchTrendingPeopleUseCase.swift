@@ -30,10 +30,9 @@ final class DefaultFetchTrendingPeopleUseCase: FetchTrendingPeopleUseCase {
         let personPreviews: [PersonPreview]
         let appConfiguration: AppConfiguration
         do {
-            (personPreviews, appConfiguration) = try await (
-                repository.people(page: page),
-                appConfigurationProvider.appConfiguration()
-            )
+            async let personPreviewsTask = repository.people(page: page)
+            async let appConfigurationTask = appConfigurationProvider.appConfiguration()
+            (personPreviews, appConfiguration) = try await (personPreviewsTask, appConfigurationTask)
         } catch let error {
             throw FetchTrendingPeopleError(error)
         }
