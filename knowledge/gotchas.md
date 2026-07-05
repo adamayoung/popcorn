@@ -11,6 +11,17 @@ and dated; link an ADR if a decision came out of it.
 *YYYY-MM-DD.* What bit us, why, and the resolution. Keep it to a few lines.
 -->
 
+### Injecting an observability provider in tests — use `$localProvider`, never a global
+
+*2026-07-05.* `SpanContext`'s global provider is **bootstrap-only**: written once at
+launch via the internal `SpanContext.configure(_:)` (from `ObservabilityService`) and
+held in a `Mutex`. There is no public setter. Tests must inject a provider through the
+`@TaskLocal` override — `SpanContext.$localProvider.withValue(mock) { … }` — which is
+per-task and cannot leak across swift-testing's parallel suites. The old
+`SpanContext.provider = …` global write from tests was a genuine cross-suite data race.
+To assert the *no-span* path, inject nothing: the global stays nil in the test process,
+so `provider` resolves to nil by default (don't reset it).
+
 ### `try await (a, b, c)` tuple awaits run serially, not concurrently
 
 *2026-07-05.* Awaiting a *tuple* of async calls — `let (x, y) = try await (repo.a(),
