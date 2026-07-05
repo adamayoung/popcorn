@@ -19,13 +19,10 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(path: "../../AppDependencies"),
         .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Core/Presentation"),
         .package(path: "../../Contexts/PopcornTVSeries"),
-        .package(path: "../../Platform/FeatureAccess"),
-        .package(path: "../../Platform/Observability"),
         .package(path: "../../Core/SnapshotTestHelpers")
     ],
 
@@ -33,10 +30,8 @@ let package = Package(
         .target(
             name: "TVSeriesDetailsFeature",
             dependencies: [
-                "AppDependencies",
                 "DesignSystem",
                 "Presentation",
-                "Observability",
                 .product(name: "CoreDomain", package: "CoreDomain"),
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries")
             ],
@@ -45,11 +40,9 @@ let package = Package(
         .testTarget(
             name: "TVSeriesDetailsFeatureTests",
             dependencies: [
-                "AppDependencies",
                 "TVSeriesDetailsFeature",
                 "Presentation",
                 .product(name: "CoreDomain", package: "CoreDomain"),
-                .product(name: "FeatureAccessTestHelpers", package: "FeatureAccess"),
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
                 .product(name: "TVSeriesDomain", package: "PopcornTVSeries")
             ]

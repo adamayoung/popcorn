@@ -18,13 +18,10 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(path: "../../AppDependencies"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Core/Presentation"),
         .package(path: "../../Contexts/PopcornTVSeries"),
         .package(path: "../../Core/CoreDomain"),
-        .package(path: "../../Platform/FeatureAccess"),
-        .package(path: "../../Platform/Observability"),
         .package(path: "../../Core/SnapshotTestHelpers")
     ],
 
@@ -32,12 +29,9 @@ let package = Package(
         .target(
             name: "TVEpisodeDetailsFeature",
             dependencies: [
-                "AppDependencies",
                 "DesignSystem",
                 "Presentation",
-                .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
-                "FeatureAccess",
-                "Observability"
+                .product(name: "TVSeriesApplication", package: "PopcornTVSeries")
             ],
             resources: [
                 .process("Localizable.xcstrings")
@@ -46,11 +40,9 @@ let package = Package(
         .testTarget(
             name: "TVEpisodeDetailsFeatureTests",
             dependencies: [
-                "AppDependencies",
                 "TVEpisodeDetailsFeature",
                 "Presentation",
                 .product(name: "CoreDomain", package: "CoreDomain"),
-                .product(name: "FeatureAccessTestHelpers", package: "FeatureAccess"),
                 .product(name: "TVSeriesApplication", package: "PopcornTVSeries")
             ]
         ),

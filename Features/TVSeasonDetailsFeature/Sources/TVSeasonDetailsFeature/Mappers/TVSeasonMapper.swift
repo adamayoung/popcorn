@@ -8,9 +8,14 @@
 import Foundation
 import TVSeriesApplication
 
-struct TVSeasonMapper {
+/// Maps a context ``TVSeasonDetails`` to the feature's ``TVSeason`` presentation model.
+public struct TVSeasonMapper {
 
-    func map(_ details: TVSeasonDetails) -> TVSeason {
+    /// Creates a TV season mapper.
+    public init() {}
+
+    /// Maps a context ``TVSeasonDetails`` to a presentation ``TVSeason``.
+    public func map(_ details: TVSeasonDetails) -> TVSeason {
         TVSeason(
             id: details.id,
             seasonNumber: details.seasonNumber,

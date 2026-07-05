@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import AppDependencies
 import Foundation
 import TVSeriesApplication
 
@@ -13,8 +12,8 @@ import TVSeriesApplication
 ///
 /// A plain `Sendable` struct of closures providing the data dependencies for
 /// ``TVSeasonDetailsViewModel``. Constructing it requires every closure, so a
-/// missing dependency is a compile error. Build the production instance with
-/// ``live(services:)``.
+/// missing dependency is a compile error. The production instance is built by the app's
+/// composition layer; use ``preview`` for previews and tests.
 public struct TVSeasonDetailsDependencies: Sendable {
 
     public var fetchSeasonAndEpisodes: @Sendable (
@@ -29,36 +28,6 @@ public struct TVSeasonDetailsDependencies: Sendable {
         ) async throws -> (TVSeason, [TVEpisode])
     ) {
         self.fetchSeasonAndEpisodes = fetchSeasonAndEpisodes
-    }
-
-}
-
-public extension TVSeasonDetailsDependencies {
-
-    /// Builds the production dependencies from the app's shared services,
-    /// wiring the use case, mappers, and error wrapping.
-    static func live(services: AppServices) -> TVSeasonDetailsDependencies {
-        let fetchTVSeasonDetails = services.tvSeriesFactory.makeFetchTVSeasonDetailsUseCase()
-
-        return TVSeasonDetailsDependencies(
-            fetchSeasonAndEpisodes: { tvSeriesID, seasonNumber in
-                do {
-                    let details = try await fetchTVSeasonDetails.execute(
-                        tvSeriesID: tvSeriesID,
-                        seasonNumber: seasonNumber
-                    )
-                    let seasonMapper = TVSeasonMapper()
-                    let episodeMapper = TVEpisodeMapper()
-
-                    let season = seasonMapper.map(details)
-                    let episodes = details.episodes.map(episodeMapper.map)
-
-                    return (season, episodes)
-                } catch let error as FetchTVSeasonDetailsError {
-                    throw FetchSeasonDetailsError(error)
-                }
-            }
-        )
     }
 
 }

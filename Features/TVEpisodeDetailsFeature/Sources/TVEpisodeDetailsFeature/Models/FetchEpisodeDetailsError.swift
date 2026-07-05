@@ -8,12 +8,13 @@
 import Foundation
 import TVSeriesApplication
 
-enum FetchEpisodeDetailsError: LocalizedError {
+/// A user-facing error surfaced when fetching a TV episode's details fails.
+public enum FetchEpisodeDetailsError: LocalizedError {
 
     case notFound(Error? = nil)
     case unknown(Error? = nil)
 
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .notFound:
             String(localized: "EPISODE_NOT_FOUND_ERROR_DESCRIPTION", bundle: .module)
@@ -22,7 +23,7 @@ enum FetchEpisodeDetailsError: LocalizedError {
         }
     }
 
-    var failureReason: String? {
+    public var failureReason: String? {
         switch self {
         case .notFound:
             String(localized: "EPISODE_NOT_FOUND_ERROR_REASON", bundle: .module)
@@ -31,7 +32,7 @@ enum FetchEpisodeDetailsError: LocalizedError {
         }
     }
 
-    var recoverySuggestion: String? {
+    public var recoverySuggestion: String? {
         switch self {
         case .notFound:
             String(localized: "EPISODE_NOT_FOUND_ERROR_RECOVERY", bundle: .module)
@@ -44,7 +45,9 @@ enum FetchEpisodeDetailsError: LocalizedError {
 
 extension FetchEpisodeDetailsError {
 
-    init(_ error: any Error) {
+    /// Wraps an arbitrary error, mapping known ``FetchTVEpisodeDetailsError`` cases to
+    /// specific cases and anything else to ``unknown``.
+    public init(_ error: any Error) {
         if let fetchTVEpisodeDetailsError = error as? FetchTVEpisodeDetailsError {
             self.init(fetchTVEpisodeDetailsError)
             return

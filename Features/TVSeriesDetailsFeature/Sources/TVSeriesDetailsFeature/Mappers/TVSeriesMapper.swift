@@ -8,12 +8,17 @@
 import Foundation
 import TVSeriesApplication
 
-struct TVSeriesMapper {
+/// Maps a context ``TVSeriesDetails`` to the feature's ``TVSeries`` presentation model.
+public struct TVSeriesMapper {
 
     private let genreMapper = GenreMapper()
     private let tvSeasonPreviewMapper = TVSeasonPreviewMapper()
 
-    func map(_ tvSeriesDetails: TVSeriesDetails) -> TVSeries {
+    /// Creates a TV series mapper.
+    public init() {}
+
+    /// Maps a context ``TVSeriesDetails`` to a presentation ``TVSeries``.
+    public func map(_ tvSeriesDetails: TVSeriesDetails) -> TVSeries {
         let genres: [Genre]? = {
             guard let genres = tvSeriesDetails.genres else {
                 return nil
