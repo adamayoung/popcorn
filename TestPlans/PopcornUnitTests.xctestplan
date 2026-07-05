@@ -9,6 +9,7 @@
     }
   ],
   "defaultOptions" : {
+    "codeCoverage" : true,
     "environmentVariableEntries" : [
       {
         "key" : "TMDB_API_KEY",

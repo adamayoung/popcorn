@@ -45,7 +45,11 @@ let package = Package(
         ),
         .testTarget(
             name: "PlotRemixGameApplicationTests",
-            dependencies: ["PlotRemixGameApplication"]
+            dependencies: [
+                "PlotRemixGameApplication",
+                "PlotRemixGameDomain",
+                "CoreDomain"
+            ]
         ),
 
         .target(

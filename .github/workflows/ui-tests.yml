@@ -1,16 +1,20 @@
-name: Unit Tests
+name: UI Tests
 
+# Manual + nightly only (not on every PR): the UI journeys are being
+# re-established and are not yet proven stable enough to gate PRs. Promote to
+# `pull_request` once they've been reliably green for a while.
 on:
-  pull_request:
   workflow_dispatch:
+  schedule:
+    - cron: "0 3 * * *"
 
 concurrency:
-  group: ios-ci-${{ github.workflow }}-${{ github.ref }}
+  group: ios-uitest-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  unit-tests:
-    name: Build and Test
+  ui-tests:
+    name: Build and UI Test
     runs-on: macos-26
     timeout-minutes: 45
     env:
@@ -39,47 +43,35 @@ jobs:
             -scheme Popcorn \
             -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }},OS=${{ env.IOS_VERSION }}" \
             -skipMacroValidation \
-            -testPlan PopcornUnitTests \
+            -testPlan PopcornUITests \
             -clonedSourcePackagesDirPath .spm \
             -derivedDataPath DerivedData \
             CODE_SIGNING_ALLOWED=NO \
             build-for-testing
 
-      - name: Unit Test
+      - name: UI Test
         run: |
           NSUnbufferedIO=YES xcodebuild \
             -scheme Popcorn \
             -destination "platform=iOS Simulator,name=${{ env.SIMULATOR_NAME }},OS=${{ env.IOS_VERSION }}" \
             -skipMacroValidation \
-            -testPlan PopcornUnitTests \
+            -testPlan PopcornUITests \
             -clonedSourcePackagesDirPath .spm \
             -derivedDataPath DerivedData \
-            -resultBundlePath UnitTestResults.xcresult \
-            -parallel-testing-enabled NO \
+            -resultBundlePath UITestResults.xcresult \
             CODE_SIGNING_ALLOWED=NO \
             test-without-building
-
-      - name: Coverage summary
-        if: success()
-        run: |
-          if [ -d UnitTestResults.xcresult ]; then
-            echo "## Code coverage (per target)" >> "$GITHUB_STEP_SUMMARY"
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
-            xcrun xccov view --report --only-targets UnitTestResults.xcresult \
-              | tee -a "$GITHUB_STEP_SUMMARY" || true
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
-          fi
 
       - name: Archive test results
         if: failure()
         run: |
-          if [ -d UnitTestResults.xcresult ]; then
-            zip -r -q UnitTestResults.xcresult.zip UnitTestResults.xcresult
+          if [ -d UITestResults.xcresult ]; then
+            zip -r -q UITestResults.xcresult.zip UITestResults.xcresult
           fi
 
       - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: unit-test-results
-          path: UnitTestResults.xcresult.zip
+          name: ui-test-results
+          path: UITestResults.xcresult.zip
