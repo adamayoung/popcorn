@@ -47,6 +47,7 @@ let package = Package(
             dependencies: [
                 "TrendingApplication",
                 "TrendingDomain",
+                .product(name: "CoreDomain", package: "CoreDomain"),
                 .product(name: "CoreDomainTestHelpers", package: "CoreDomain")
             ]
         ),

@@ -37,8 +37,12 @@ struct PersonPreviewDetailsMapperTests {
         #expect(result.initials == "TH")
     }
 
-    @Test("maps profile URL set from profile path")
-    func mapsProfileURLSet() {
+    @Test("currently sizes the profile with the poster handler (known quirk)")
+    func mapsProfileURLSetUsingPosterHandler() {
+        // Characterization of current (wrong) behaviour: the mapper sizes the
+        // profile via `posterURLSet(for:)` instead of `profileURLSet(for:)`, so
+        // profiles are fetched at poster width buckets. Do NOT re-point this
+        // assertion to `profileURLSet(for:)` without fixing the production mapper.
         let personPreview = PersonPreview.mock(profilePath: URL(string: "/profile.jpg"))
 
         let result = mapper.map(personPreview, imagesConfiguration: imagesConfiguration)

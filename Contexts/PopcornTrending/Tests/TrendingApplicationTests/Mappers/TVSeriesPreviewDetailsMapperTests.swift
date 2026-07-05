@@ -38,8 +38,12 @@ struct TVSeriesPreviewDetailsMapperTests {
         #expect(result.posterURLSet == imagesConfiguration.posterURLSet(for: tvSeriesPreview.posterPath))
     }
 
-    @Test("maps backdrop URL set from backdrop path")
-    func mapsBackdropURLSet() {
+    @Test("currently sizes the backdrop with the poster handler (known quirk)")
+    func mapsBackdropURLSetUsingPosterHandler() {
+        // Characterization of current (wrong) behaviour: the mapper sizes the
+        // backdrop via `posterURLSet(for:)` instead of `backdropURLSet(for:)`, so
+        // backdrops are fetched at poster width buckets. Do NOT re-point this
+        // assertion to `backdropURLSet(for:)` without fixing the production mapper.
         let tvSeriesPreview = TVSeriesPreview.mock(backdropPath: URL(string: "/backdrop.jpg"))
 
         let result = mapper.map(tvSeriesPreview, imagesConfiguration: imagesConfiguration)
