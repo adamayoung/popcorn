@@ -134,4 +134,45 @@ struct MediaSearchViewModelErrorTests {
         )
     }
 
+    @Test("retry re-runs the loader that failed, not the one the current query implies")
+    @MainActor
+    func retryTargetsFailedLoaderNotCurrentQuery() async {
+        let genresCallCount = Mutex(0)
+        let searchCallCount = Mutex(0)
+        let viewModel = MediaSearchViewModelTests.makeViewModel(
+            dependencies: MediaSearchViewModelTests.stubDependencies(
+                fetchGenres: {
+                    let isFirstCall = genresCallCount.withLock { count in
+                        let wasZero = count == 0
+                        count += 1
+                        return wasZero
+                    }
+                    if isFirstCall {
+                        throw TestError.generic
+                    }
+                    return MediaSearchViewModelTests.testGenres
+                },
+                search: { _ in
+                    searchCallCount.withLock { $0 += 1 }
+                    return MediaSearchViewModelTests.testResults
+                }
+            )
+        )
+
+        // Genres/history load fails while the query is still empty.
+        await viewModel.fetchGenresAndSearchHistory()
+        #expect(viewModel.viewState == .error(ViewStateError(TestError.generic)))
+
+        // The `.searchable` field stays live during loading, so by the time Retry
+        // is tapped the query has gone non-empty — but the failure was in the
+        // genres/history loader, so that is what must re-run (never `search()`).
+        viewModel.query = "running"
+        viewModel.retry()
+
+        await MediaSearchViewModelTests.waitUntil { genresCallCount.withLock { $0 } == 2 }
+
+        #expect(genresCallCount.withLock { $0 } == 2)
+        #expect(searchCallCount.withLock { $0 } == 0)
+    }
+
 }

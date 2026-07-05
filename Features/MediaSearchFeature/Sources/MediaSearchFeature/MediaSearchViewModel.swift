@@ -143,6 +143,7 @@ public final class MediaSearchViewModel {
             Self.logger.error(
                 "Failed fetching genres and search history: \(error.localizedDescription, privacy: .public)"
             )
+            failedLoader = .genresAndHistory
             viewState = .error(ViewStateError(error))
             return
         }
@@ -213,6 +214,7 @@ public final class MediaSearchViewModel {
             Self.logger.error(
                 "Failed searching for media [query: \"\(query, privacy: .private)\"]: \(error.localizedDescription, privacy: .public)"
             )
+            failedLoader = .search
             viewState = .error(ViewStateError(error))
             return
         }
@@ -234,27 +236,41 @@ public final class MediaSearchViewModel {
 
     // MARK: - Retry
 
-    /// Retries after an error, re-running whichever loader produced it.
+    /// Which loader produced the current `.error`, so ``retry()`` re-runs the
+    /// operation that actually failed rather than inferring it from ``query``.
+    private enum FailedLoader {
+        case genresAndHistory
+        case search
+    }
+
+    private var failedLoader: FailedLoader?
+
+    /// Retries after an error, re-running the loader that produced it.
     ///
-    /// An empty ``query`` means the failure came from
-    /// ``fetchGenresAndSearchHistory()``, so `viewState` is reset to `.initial`
-    /// first — otherwise its `guard case .initial` would silently no-op the
-    /// retry. A non-empty query means ``search()`` failed, which has no such
-    /// guard and can be re-run directly.
+    /// Dispatches on the tracked ``failedLoader``, not ``query``: the
+    /// `.searchable` field stays live during the initial load, so the query can
+    /// go non-empty while `fetchGenresAndSearchHistory()` is still in flight —
+    /// inferring the loader from `query` there would wrongly retry `search()` and
+    /// strand genres/history behind their `guard case .initial`. The
+    /// genres/history path resets `viewState = .initial` first so that guard can
+    /// pass again; the search path routes through `searchTask` (cancel-and-
+    /// replace, as `queryChanged` does) so re-taps don't spawn concurrent searches.
     public func retry() {
-        if query.isEmpty {
+        switch failedLoader {
+        case .genresAndHistory:
             viewState = .initial
             Task { [weak self] in
                 await self?.fetchGenresAndSearchHistory()
             }
-        } else {
-            // Route through `searchTask` (cancel-and-replace, as `queryChanged`
-            // does) so repeated retry taps don't spawn concurrent searches and a
-            // later `queryChanged` can cancel a now-stale retry.
+
+        case .search:
             searchTask?.cancel()
             searchTask = Task { [weak self] in
                 await self?.search()
             }
+
+        case nil:
+            break
         }
     }
 
