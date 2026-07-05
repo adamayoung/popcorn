@@ -199,8 +199,6 @@ struct DefaultConfigurationRepositoryTests {
         let cachedConfiguration = AppConfiguration.mock()
         mockLocalDataSource.configurationStub = cachedConfiguration
 
-        SpanContext.provider = nil
-
         let repository = DefaultConfigurationRepository(
             remoteDataSource: mockRemoteDataSource,
             localDataSource: mockLocalDataSource

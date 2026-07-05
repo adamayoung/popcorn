@@ -15,13 +15,17 @@ public enum SpanContext {
     /// TaskLocal override for test isolation.
     @TaskLocal public static var localProvider: (any ObservabilityProviding)?
 
-    /// The observability provider that manages span context.
-    ///
-    /// In production, uses the global provider set via assignment.
-    /// In tests, can be overridden using $_localProvider.withValue() for isolation.
+    /// The observability provider: the task-local override if set (tests), else
+    /// the global set once at bootstrap.
     public static var provider: (any ObservabilityProviding)? {
-        get { localProvider ?? globalProvider }
-        set { globalProvider = newValue }
+        localProvider ?? globalProvider
+    }
+
+    /// Sets the global provider. Call once, at app bootstrap. Tests must use
+    /// `$localProvider.withValue(...)` for isolation, never this. Last-write-wins
+    /// (no precondition — SwiftUI previews build `AppServices` more than once).
+    static func configure(_ provider: some ObservabilityProviding) {
+        globalProvider = provider
     }
 
     public static var current: (any Span)? {

@@ -151,8 +151,6 @@ struct DefaultFetchAppConfigurationUseCaseTests {
         let expectedConfiguration = AppConfiguration.mock()
         mockRepository.configurationStub = .success(expectedConfiguration)
 
-        SpanContext.provider = nil
-
         let useCase = DefaultFetchAppConfigurationUseCase(repository: mockRepository)
 
         _ = try await useCase.execute()

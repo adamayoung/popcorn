@@ -34,8 +34,6 @@ struct DefaultTVSeriesRepositoryTests {
         mockLocalDataSource.tvSeriesWithIDStub = .success(tvSeries)
         mockLocalDataSource.imagesForTVSeriesStub = .success(imageCollection)
 
-        SpanContext.provider = nil
-
         let repository = DefaultTVSeriesRepository(
             remoteDataSource: mockRemoteDataSource,
             localDataSource: mockLocalDataSource

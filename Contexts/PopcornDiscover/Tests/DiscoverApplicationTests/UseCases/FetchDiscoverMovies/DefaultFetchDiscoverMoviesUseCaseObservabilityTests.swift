@@ -105,8 +105,6 @@ struct DefaultFetchDiscoverMoviesUseCaseObservabilityTests {
         mockAppConfigurationProvider.appConfigurationStub = .success(AppConfiguration.mock())
         mockLogoImageProvider.imageURLSetStub = .success(nil)
 
-        SpanContext.provider = nil
-
         let useCase = makeUseCase()
 
         let result = try await useCase.execute()

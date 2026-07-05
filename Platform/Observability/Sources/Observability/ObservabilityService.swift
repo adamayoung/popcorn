@@ -16,7 +16,7 @@ struct ObservabilityService: Observing, ObservabilityInitialising {
 
     init(provider: some ObservabilityProviding) {
         self.provider = provider
-        SpanContext.provider = provider
+        SpanContext.configure(provider)
     }
 
     func start(_ config: ObservabilityConfiguration) async throws {

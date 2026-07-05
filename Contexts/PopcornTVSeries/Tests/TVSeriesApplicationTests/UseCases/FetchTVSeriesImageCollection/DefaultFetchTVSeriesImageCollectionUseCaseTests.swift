@@ -197,8 +197,6 @@ struct DefaultFetchTVSeriesImageCollectionUseCaseTests {
 
         mockRepository.imagesForTVSeriesStub = .success(imageCollection)
 
-        SpanContext.provider = nil
-
         let useCase = DefaultFetchTVSeriesImageCollectionUseCase(
             repository: mockRepository,
             appConfigurationProvider: mockAppConfigProvider
