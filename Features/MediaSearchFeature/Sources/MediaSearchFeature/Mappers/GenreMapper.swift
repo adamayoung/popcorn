@@ -8,9 +8,14 @@
 import Foundation
 import GenresApplication
 
-struct GenreMapper {
+/// Maps a context ``GenreDetailsExtended`` to the feature's ``Genre`` presentation model.
+public struct GenreMapper {
 
-    func map(_ genreDetails: GenreDetailsExtended) -> Genre {
+    /// Creates a genre mapper.
+    public init() {}
+
+    /// Maps a context ``GenreDetailsExtended`` to a presentation ``Genre``.
+    public func map(_ genreDetails: GenreDetailsExtended) -> Genre {
         Genre(
             id: genreDetails.id,
             name: genreDetails.name,

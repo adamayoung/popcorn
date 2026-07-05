@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import AppDependencies
 import Foundation
 import GenresApplication
 import SearchApplication
@@ -14,7 +13,8 @@ import SearchApplication
 ///
 /// A plain `Sendable` struct of closures providing the data dependencies for
 /// ``MediaSearchViewModel``. Constructing it requires every closure, so a missing
-/// dependency is a compile error. Build the production instance with ``live(services:)``.
+/// dependency is a compile error. The production instance is built by the app's
+/// composition layer; use ``preview`` for previews and tests.
 public struct MediaSearchDependencies: Sendable {
 
     public var fetchGenres: @Sendable () async throws -> [Genre]
@@ -38,45 +38,6 @@ public struct MediaSearchDependencies: Sendable {
         self.addMovieSearchHistoryEntry = addMovieSearchHistoryEntry
         self.addTVSeriesSearchHistoryEntry = addTVSeriesSearchHistoryEntry
         self.addPersonSearchHistoryEntry = addPersonSearchHistoryEntry
-    }
-
-}
-
-public extension MediaSearchDependencies {
-
-    /// Builds the production dependencies from the app's shared services.
-    static func live(services: AppServices) -> MediaSearchDependencies {
-        let fetchAllGenres = services.genresFactory.makeFetchAllGenresUseCase()
-        let searchMedia = services.searchFactory.makeSearchMediaUseCase()
-        let fetchMediaSearchHistory = services.searchFactory.makeFetchMediaSearchHistory()
-        let addMediaSearchHistoryEntry = services.searchFactory.makeAddMediaSearchHistoryEntryUseCase()
-
-        return MediaSearchDependencies(
-            fetchGenres: {
-                let genres = try await fetchAllGenres.execute()
-                let mapper = GenreMapper()
-                return genres.map(mapper.map)
-            },
-            search: { query in
-                let media = try await searchMedia.execute(query: query)
-                let mapper = MediaPreviewMapper()
-                return media.map(mapper.map)
-            },
-            fetchMediaSearchHistory: {
-                let media = try await fetchMediaSearchHistory.execute()
-                let mapper = MediaPreviewMapper()
-                return media.map(mapper.map)
-            },
-            addMovieSearchHistoryEntry: { id in
-                try await addMediaSearchHistoryEntry.execute(movieID: id)
-            },
-            addTVSeriesSearchHistoryEntry: { id in
-                try await addMediaSearchHistoryEntry.execute(tvSeriesID: id)
-            },
-            addPersonSearchHistoryEntry: { id in
-                try await addMediaSearchHistoryEntry.execute(personID: id)
-            }
-        )
     }
 
 }

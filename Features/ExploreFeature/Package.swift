@@ -19,14 +19,12 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(path: "../../AppDependencies"),
         .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Core/Presentation"),
         .package(path: "../../Contexts/PopcornDiscover"),
         .package(path: "../../Contexts/PopcornTrending"),
         .package(path: "../../Contexts/PopcornMovies"),
-        .package(path: "../../Platform/Observability"),
         .package(path: "../../Core/SnapshotTestHelpers")
     ],
 
@@ -34,10 +32,8 @@ let package = Package(
         .target(
             name: "ExploreFeature",
             dependencies: [
-                "AppDependencies",
                 "DesignSystem",
                 "Presentation",
-                "Observability",
                 .product(name: "DiscoverApplication", package: "PopcornDiscover"),
                 .product(name: "TrendingApplication", package: "PopcornTrending"),
                 .product(name: "MoviesApplication", package: "PopcornMovies")

@@ -7,25 +7,26 @@
 
 import Foundation
 
-enum FetchExploreContentError: LocalizedError {
+/// A user-facing error surfaced when fetching Explore content fails.
+public enum FetchExploreContentError: LocalizedError {
 
     case unknown(Error? = nil)
 
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .unknown:
             String(localized: "EXPLORE_CONTENT_LOAD_ERROR_DESCRIPTION", bundle: .module)
         }
     }
 
-    var failureReason: String? {
+    public var failureReason: String? {
         switch self {
         case .unknown:
             String(localized: "EXPLORE_CONTENT_LOAD_ERROR_REASON", bundle: .module)
         }
     }
 
-    var recoverySuggestion: String? {
+    public var recoverySuggestion: String? {
         switch self {
         case .unknown:
             String(localized: "EXPLORE_CONTENT_LOAD_ERROR_RECOVERY", bundle: .module)
@@ -34,8 +35,9 @@ enum FetchExploreContentError: LocalizedError {
 
 }
 
-extension FetchExploreContentError {
+public extension FetchExploreContentError {
 
+    /// Wraps an arbitrary error as ``unknown``.
     init(_ error: any Error) {
         self = .unknown(error)
     }
