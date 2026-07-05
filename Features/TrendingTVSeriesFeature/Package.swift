@@ -19,7 +19,6 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(path: "../../AppDependencies"),
         .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Contexts/PopcornTrending"),
@@ -30,7 +29,6 @@ let package = Package(
         .target(
             name: "TrendingTVSeriesFeature",
             dependencies: [
-                "AppDependencies",
                 "DesignSystem",
                 .product(name: "TrendingApplication", package: "PopcornTrending")
             ],
