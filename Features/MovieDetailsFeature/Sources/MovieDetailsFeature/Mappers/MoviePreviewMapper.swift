@@ -8,9 +8,11 @@
 import Foundation
 import MoviesApplication
 
-struct MoviePreviewMapper {
+public struct MoviePreviewMapper {
 
-    func map(_ moviePreviewDetails: MoviePreviewDetails) -> MoviePreview {
+    public init() {}
+
+    public func map(_ moviePreviewDetails: MoviePreviewDetails) -> MoviePreview {
         MoviePreview(
             id: moviePreviewDetails.id,
             title: moviePreviewDetails.title,

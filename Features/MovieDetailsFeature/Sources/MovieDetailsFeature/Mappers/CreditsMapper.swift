@@ -8,9 +8,11 @@
 import Foundation
 import MoviesApplication
 
-struct CreditsMapper {
+public struct CreditsMapper {
 
-    func map(_ creditsDetails: CreditsDetails) -> Credits {
+    public init() {}
+
+    public func map(_ creditsDetails: CreditsDetails) -> Credits {
         Credits(
             id: creditsDetails.id,
             castMembers: creditsDetails.cast.prefix(5).map(map),

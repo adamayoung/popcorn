@@ -8,11 +8,13 @@
 import Foundation
 import MoviesApplication
 
-struct MovieMapper {
+public struct MovieMapper {
 
     private let genreMapper = GenreMapper()
 
-    func map(_ movieDetails: MovieDetails) -> Movie {
+    public init() {}
+
+    public func map(_ movieDetails: MovieDetails) -> Movie {
         let genres: [Genre]? = {
             guard let genres = movieDetails.genres else {
                 return nil
