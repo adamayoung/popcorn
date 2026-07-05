@@ -8,12 +8,13 @@
 import Foundation
 import TVSeriesApplication
 
-enum FetchCreditsError: LocalizedError {
+/// A user-facing error surfaced when fetching a TV episode's cast and crew credits fails.
+public enum FetchCreditsError: LocalizedError {
 
     case notFound(Error? = nil)
     case unknown(Error? = nil)
 
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .notFound:
             String(localized: "CREDITS_NOT_FOUND_FOR_EPISODE_ERROR_DESCRIPTION", bundle: .module)
@@ -22,7 +23,7 @@ enum FetchCreditsError: LocalizedError {
         }
     }
 
-    var failureReason: String? {
+    public var failureReason: String? {
         switch self {
         case .notFound:
             String(localized: "CREDITS_NOT_FOUND_FOR_EPISODE_ERROR_REASON", bundle: .module)
@@ -31,7 +32,7 @@ enum FetchCreditsError: LocalizedError {
         }
     }
 
-    var recoverySuggestion: String? {
+    public var recoverySuggestion: String? {
         switch self {
         case .notFound:
             String(localized: "CREDITS_NOT_FOUND_FOR_EPISODE_ERROR_RECOVERY", bundle: .module)
@@ -44,7 +45,9 @@ enum FetchCreditsError: LocalizedError {
 
 extension FetchCreditsError {
 
-    init(_ error: any Error) {
+    /// Wraps an arbitrary error, mapping known ``FetchTVEpisodeCreditsError`` cases to
+    /// specific cases and anything else to ``unknown``.
+    public init(_ error: any Error) {
         if let fetchTVEpisodeCreditsError = error as? FetchTVEpisodeCreditsError {
             self.init(fetchTVEpisodeCreditsError)
             return
