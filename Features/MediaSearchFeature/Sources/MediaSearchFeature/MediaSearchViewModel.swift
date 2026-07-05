@@ -143,7 +143,7 @@ public final class MediaSearchViewModel {
             Self.logger.error(
                 "Failed fetching genres and search history: \(error.localizedDescription, privacy: .public)"
             )
-            updateViewState()
+            viewState = .error(ViewStateError(error))
             return
         }
 
@@ -213,7 +213,7 @@ public final class MediaSearchViewModel {
             Self.logger.error(
                 "Failed searching for media [query: \"\(query, privacy: .private)\"]: \(error.localizedDescription, privacy: .public)"
             )
-            updateViewState()
+            viewState = .error(ViewStateError(error))
             return
         }
 
@@ -230,6 +230,28 @@ public final class MediaSearchViewModel {
         }
 
         updateViewState()
+    }
+
+    // MARK: - Retry
+
+    /// Retries after an error, re-running whichever loader produced it.
+    ///
+    /// An empty ``query`` means the failure came from
+    /// ``fetchGenresAndSearchHistory()``, so `viewState` is reset to `.initial`
+    /// first — otherwise its `guard case .initial` would silently no-op the
+    /// retry. A non-empty query means ``search()`` failed, which has no such
+    /// guard and can be re-run directly.
+    public func retry() {
+        if query.isEmpty {
+            viewState = .initial
+            Task { [weak self] in
+                await self?.fetchGenresAndSearchHistory()
+            }
+        } else {
+            Task { [weak self] in
+                await self?.search()
+            }
+        }
     }
 
     // MARK: - Navigation

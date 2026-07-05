@@ -69,24 +69,6 @@ struct MediaSearchViewModelTests {
         #expect(fetchCalled.withLock { $0 } == false)
     }
 
-    @Test("fetchGenresAndSearchHistory failure logs and derives empty genres (unfocused)")
-    @MainActor
-    func fetchFailureDerivesEmptyGenres() async {
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchGenres: { throw TestError.generic }
-            )
-        )
-
-        await viewModel.fetchGenresAndSearchHistory()
-
-        // Mirrors the former reducer: the load-failed action's tail `updateViewState`
-        // re-derives the surface — empty query + unfocused → empty genres.
-        #expect(
-            viewModel.viewState == .genres(MediaSearchViewModel.GenresViewSnapshot())
-        )
-    }
-
     // MARK: - queryChanged / debounce
 
     @Test("queryChanged debounces then applies search results")
@@ -291,7 +273,8 @@ private final class SpyMediaSearchNavigator: MediaSearchNavigating {
 
 // MARK: - ViewState Test Conveniences
 
-private extension MediaSearchViewModel.ViewState {
+/// Not `private`: also used by ``MediaSearchViewModelErrorTests``.
+extension MediaSearchViewModel.ViewState {
 
     var isSearchResults: Bool {
         if case .searchResults = self {
@@ -390,6 +373,7 @@ extension MediaSearchViewModelTests {
 
 // MARK: - Test Helpers
 
-private enum TestError: Error, Equatable {
+/// Not `private`: also used by ``MediaSearchViewModelErrorTests``.
+enum TestError: Error, Equatable {
     case generic
 }

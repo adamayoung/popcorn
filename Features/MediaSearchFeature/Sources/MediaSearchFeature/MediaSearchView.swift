@@ -5,6 +5,8 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import DesignSystem
+import Presentation
 import SwiftUI
 
 /// The media search screen, driven by ``MediaSearchViewModel``.
@@ -47,6 +49,9 @@ public struct MediaSearchView: View {
                     onPersonTapped: { viewModel.selectPerson(id: $0.id) }
                 )
 
+            case .error(let error):
+                errorBody(error)
+
             default:
                 EmptyView()
             }
@@ -82,6 +87,20 @@ public struct MediaSearchView: View {
         }
         .task { await viewModel.fetchGenresAndSearchHistory() }
         .navigationTitle(Text("SEARCH", bundle: .module))
+    }
+
+}
+
+extension MediaSearchView {
+
+    private func errorBody(_ error: ViewStateError) -> some View {
+        ContentLoadErrorView(
+            message: error.message,
+            systemImage: "magnifyingglass",
+            reason: error.reason,
+            isRetryable: error.isRetryable,
+            retryAction: { viewModel.retry() }
+        )
     }
 
 }
@@ -156,6 +175,24 @@ public struct MediaSearchView: View {
                         viewModel: .preview(
                             viewState: .noSearchResults(.init(query: "running")),
                             query: "running"
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    #Preview("Error") {
+        TabView {
+            Tab(
+                "SEARCH",
+                systemImage: "magnifyingglass",
+                role: .search
+            ) {
+                NavigationStack {
+                    MediaSearchView(
+                        viewModel: .preview(
+                            viewState: .error(ViewStateError(message: "Something went wrong"))
                         )
                     )
                 }
