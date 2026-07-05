@@ -38,12 +38,18 @@ To let the App-layer builder construct the feature's closures, the feature-inter
 **presentation mappers** (`MovieMapper`, …) and **`Fetch…Error` types** (with their
 inits) that the builder references become **`public`**.
 
-**No Xcode project (`.pbxproj`) change is required.** The App target already resolves
-context `*Application`/`*Composition` modules **transitively** through `AppDependencies`
-(it directly links only the feature packages + `FeatureAccess`, yet `PopcornApp` imports
-`AppDependencies` and `AppRootDependencies` imports `TVListingsApplication`/`Composition`
-today). An App-layer `+Live.swift` can therefore `import MoviesApplication` transitively
-with no project-file surgery.
+**Xcode project (`.pbxproj`):** an App-layer `+Live.swift` can `import MoviesApplication`
+etc. **transitively** — the App target resolves context `*Application`/`*Composition`
+modules through `AppDependencies` without listing each one, so per-feature conversions
+need no project-file surgery.
+
+**Correction (2026-07-05):** the App target obtained **`AppDependencies` itself**
+transitively *through the feature packages* (it directly linked only the feature packages
++ `FeatureAccess`/`FeatureAccessAdapters`). So converting the **last** feature package to a leaf severs that path
+and breaks `PopcornApp` + every `+Live.swift` with `no such module 'AppDependencies'`. The
+one required `.pbxproj` change is therefore to add **`AppDependencies` as a direct product
+dependency of the `Popcorn` app target** (done in the final sweep batch). Individual
+feature conversions still need no project change; only this single App-target edge does.
 
 `AppRootDependencies.live` already lives in the App layer and is unchanged.
 
