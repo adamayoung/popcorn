@@ -397,10 +397,21 @@ public final class MovieDetailsViewModel {
 
 Each feature declares a `Sendable` struct of `@Sendable` closures — the dependency surface
 the view model needs. Constructing it requires every closure, so a missing dependency is a
-compile error. Build the production instance with `static func live(services:)`, which reads
-use cases and feature flags from the shared `AppServices` graph.
+compile error. The **feature package owns only the struct** (plus a `#if DEBUG`
+`.preview`); it does **not** depend on `AppDependencies`, which keeps it a leaf (touching an
+adapter no longer rebuilds it).
+
+The production builder lives in the **App layer**, at
+`App/Composition/Live/<Feature>Dependencies+Live.swift` — a `static func live(services:)`
+that reads use cases and feature flags off the shared `AppServices` graph. So the feature's
+presentation **mappers and `Fetch…Error` types are `public`**, so the App-layer builder can
+construct the closures. See
+[ADR-0001](../knowledge/decisions/0001-feature-packages-are-leaves.md). (No `.pbxproj`
+change is needed: the App resolves context `*Application`/`*Composition` modules
+transitively through `AppDependencies`.)
 
 ```swift
+// In the feature package — just the struct + preview, no AppDependencies:
 public struct MovieDetailsDependencies: Sendable {
 
     public var fetchMovie: @Sendable (_ id: Int) async throws -> Movie
@@ -410,7 +421,8 @@ public struct MovieDetailsDependencies: Sendable {
     public init(/* ... */) { /* ... */ }
 }
 
-public extension MovieDetailsDependencies {
+// In the App target — App/Composition/Live/MovieDetailsDependencies+Live.swift:
+extension MovieDetailsDependencies {
 
     /// Builds the production dependencies from the app's shared services.
     static func live(services: AppServices) -> MovieDetailsDependencies {
@@ -421,7 +433,7 @@ public extension MovieDetailsDependencies {
         return MovieDetailsDependencies(
             fetchMovie: { id in
                 let details = try await fetchMovieDetails.execute(id: id)
-                return MovieMapper().map(details)
+                return MovieMapper().map(details)   // MovieMapper is public
             },
             toggleOnWatchlist: { id in
                 try await toggleWatchlistMovie.execute(id: id)
@@ -432,7 +444,8 @@ public extension MovieDetailsDependencies {
 }
 ```
 
-A `#if DEBUG` `static var preview` provides mock dependencies for previews and snapshot tests.
+A `#if DEBUG` `static var preview` (in the feature) provides mock dependencies for previews
+and snapshot tests.
 
 ### Feature Navigation Protocol
 
@@ -515,9 +528,11 @@ public final class AppServices: Sendable {
 }
 ```
 
-Each feature's `Dependencies.live(services:)` reads use cases and platform services off this
-graph (e.g. `services.moviesFactory.makeFetchMovieDetailsUseCase()`,
-`services.featureFlags`).
+Each feature's App-layer `Dependencies.live(services:)` builder — in
+`App/Composition/Live/<Feature>Dependencies+Live.swift`, not the feature package — reads use
+cases and platform services off this graph (e.g.
+`services.moviesFactory.makeFetchMovieDetailsUseCase()`, `services.featureFlags`). See
+[ADR-0001](../knowledge/decisions/0001-feature-packages-are-leaves.md).
 
 ## Adapters: External Service Bridges
 
@@ -553,8 +568,8 @@ MovieDetailsView (@State viewModel)
     ↓
 MovieDetailsViewModel                 # Feature view model
     ↓
-MovieDetailsDependencies              # Per-feature Sendable struct of closures
-    ↓  (.live(services:))
+MovieDetailsDependencies              # Per-feature Sendable struct of closures (feature = leaf)
+    ↓  (App/Composition/Live/…+Live.swift → .live(services:))
 AppServices                           # Composition root — assembles each context factory:
     ├─ PopcornMoviesAdaptersFactory   #   builds the TMDb-backed adapters (ports)
     └─ PopcornMoviesFactory(…)        #   wired from those adapters (Composition layer)
@@ -644,8 +659,9 @@ func openMovieIntelligence(id: Int) {
 ### ViewModelFactory
 
 `ViewModelFactory` (in `App/Composition/`) is the App-layer seam that builds each feature's
-view model from the shared `AppServices` graph, wiring `Dependencies.live(services:)` to a
-navigator supplied by the tab's router:
+view model from the shared `AppServices` graph, wiring the App-layer
+`Dependencies.live(services:)` builder (in `App/Composition/Live/`) to a navigator supplied
+by the tab's router:
 
 ```swift
 @MainActor

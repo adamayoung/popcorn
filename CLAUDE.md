@@ -207,8 +207,11 @@ view model exposing a `ViewState`. External services are bridged in **Adapters**
 root that wires adapters into context factories and exposes them to features.
 
 Conventions worth knowing up front (detail in ARCHITECTURE.md):
-- A feature's primary **view, view model, `Dependencies`, and `Navigating` protocol live at the
-  root** of its source folder; `Views/` holds the subviews the main view composes (omit when none).
+- A feature's primary **view, view model, `Dependencies` struct, and `Navigating` protocol live at
+  the root** of its source folder; `Views/` holds the subviews the main view composes (omit when
+  none). The `Dependencies.live(services:)` **production builder** lives in the **App layer**
+  (`App/Composition/Live/<Feature>Dependencies+Live.swift`), not the feature — so features stay
+  leaves with no `AppDependencies` edge (see `knowledge/decisions/0001-feature-packages-are-leaves.md`).
 - Feature views own their view model via `@State` and drive loading from `.task(id:)`.
 - A context's `Popcorn{Context}Factory` is a **concrete** `Sendable` final class (no factory
   protocol). Adapter factories return **port implementations** (`make… -> some Port`); the
