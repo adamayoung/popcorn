@@ -33,8 +33,7 @@ let package = Package(
             dependencies: [
                 "DesignSystem",
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
-                .product(name: "IntelligenceDomain", package: "PopcornIntelligence"),
-                "Observability"
+                .product(name: "IntelligenceDomain", package: "PopcornIntelligence")
             ],
             resources: [
                 .process("Assets.xcassets"),
