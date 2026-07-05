@@ -18,7 +18,6 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(path: "../../AppDependencies"),
         .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Core/Presentation"),
@@ -30,7 +29,6 @@ let package = Package(
         .target(
             name: "WatchlistFeature",
             dependencies: [
-                "AppDependencies",
                 "DesignSystem",
                 "Presentation",
                 .product(name: "MoviesApplication", package: "PopcornMovies")

@@ -19,7 +19,6 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(path: "../../AppDependencies"),
         .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Contexts/PopcornMovies"),
@@ -32,10 +31,9 @@ let package = Package(
         .target(
             name: "MovieIntelligenceFeature",
             dependencies: [
-                "AppDependencies",
                 "DesignSystem",
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
-                .product(name: "IntelligenceApplication", package: "PopcornIntelligence"),
+                .product(name: "IntelligenceDomain", package: "PopcornIntelligence"),
                 "Observability"
             ],
             resources: [
