@@ -406,9 +406,11 @@ The production builder lives in the **App layer**, at
 that reads use cases and feature flags off the shared `AppServices` graph. So the feature's
 presentation **mappers and `Fetch…Error` types are `public`**, so the App-layer builder can
 construct the closures. See
-[ADR-0001](../knowledge/decisions/0001-feature-packages-are-leaves.md). (No `.pbxproj`
-change is needed: the App resolves context `*Application`/`*Composition` modules
-transitively through `AppDependencies`.)
+[ADR-0001](../knowledge/decisions/0001-feature-packages-are-leaves.md). (Per-feature
+conversions need no `.pbxproj` change — the App resolves context
+`*Application`/`*Composition` modules transitively through `AppDependencies`. The one
+project change the full sweep required was adding `AppDependencies` itself as a direct
+App-target dependency, since the App had been getting it transitively via the features.)
 
 ```swift
 // In the feature package — just the struct + preview, no AppDependencies:

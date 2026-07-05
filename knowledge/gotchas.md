@@ -11,6 +11,20 @@ and dated; link an ADR if a decision came out of it.
 *YYYY-MM-DD.* What bit us, why, and the resolution. Keep it to a few lines.
 -->
 
+### The App target got `AppDependencies` transitively through the feature packages
+
+*2026-07-05.* The `Popcorn` app target's pbxproj directly links only the 20 feature
+packages + `FeatureAccess`/`FeatureAccessAdapters` — **not** `AppDependencies`. Yet `PopcornApp` imports
+`AppDependencies` and builds, because every feature package depended on `AppDependencies`,
+so the App resolved it *transitively through them*. Consequence discovered during the
+ADR-0001 leaf sweep: converting the **last** feature to a leaf (dropping its
+`AppDependencies` edge) severs that transitive path and breaks the whole App with
+`no such module 'AppDependencies'` in `PopcornApp.swift` and every
+`App/Composition/Live/*+Live.swift`. Fix: add `AppDependencies` as a **direct** product
+dependency of the app target in `Popcorn.xcodeproj`. General lesson: a target that only
+links intermediate packages can be silently relying on a transitive module; removing the
+last intermediate that provides it is what surfaces the missing direct edge.
+
 ### Mocks called concurrently must guard call-tracking with a `Mutex`
 
 *2026-07-05.* The common sibling mock pattern (a plain `final class` that appends to a

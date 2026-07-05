@@ -8,9 +8,14 @@
 import Foundation
 import PlotRemixGameDomain
 
-struct GameMapper {
+/// Maps a context ``PlotRemixGameDomain/Game`` to the feature's ``Game`` presentation model.
+public struct GameMapper {
 
-    func map(_ game: PlotRemixGameDomain.Game) -> Game {
+    /// Creates a game mapper.
+    public init() {}
+
+    /// Maps a context ``PlotRemixGameDomain/Game`` to a presentation ``Game``.
+    public func map(_ game: PlotRemixGameDomain.Game) -> Game {
         let questionMapper = GameQuestionMapper()
         let questions = game.questions.map(questionMapper.map)
 

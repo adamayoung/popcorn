@@ -18,7 +18,6 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(path: "../../AppDependencies"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Core/Presentation"),
         .package(path: "../../Contexts/PopcornTVListings")
@@ -28,10 +27,8 @@ let package = Package(
         .target(
             name: "TVListingsFeature",
             dependencies: [
-                "AppDependencies",
                 "DesignSystem",
                 "Presentation",
-                .product(name: "TVListingsApplication", package: "PopcornTVListings"),
                 .product(name: "TVListingsDomain", package: "PopcornTVListings")
             ],
             resources: [.process("Localizable.xcstrings")]
