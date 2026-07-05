@@ -5,17 +5,15 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import AppDependencies
 import Foundation
-import IntelligenceApplication
 import IntelligenceDomain
-import MoviesApplication
 
 /// The dependencies required by ``MovieIntelligenceViewModel``.
 ///
 /// A plain `Sendable` struct of closures providing the data dependencies for
 /// ``MovieIntelligenceViewModel``. Constructing it requires every closure, so a missing
-/// dependency is a compile error. Build the production instance with ``live(services:)``.
+/// dependency is a compile error. The production instance is built by the app's
+/// composition layer; use ``preview`` for previews and tests.
 public struct MovieIntelligenceDependencies: Sendable {
 
     public var fetchMovie: @Sendable (_ id: Int) async throws -> IntelligenceDomain.Movie
@@ -30,30 +28,6 @@ public struct MovieIntelligenceDependencies: Sendable {
         self.fetchMovie = fetchMovie
         self.createSession = createSession
         self.captureError = captureError
-    }
-
-}
-
-public extension MovieIntelligenceDependencies {
-
-    /// Builds the production dependencies from the app's shared services.
-    ///
-    /// `captureError` reports through the shared observability service.
-    static func live(services: AppServices) -> MovieIntelligenceDependencies {
-        let fetchMovieDetails = services.moviesFactory.makeFetchMovieDetailsUseCase()
-        let createMovieIntelligenceSession = services.intelligenceFactory
-            .makeCreateMovieIntelligenceSessionUseCase()
-
-        return MovieIntelligenceDependencies(
-            fetchMovie: { id in
-                let movie = try await fetchMovieDetails.execute(id: id)
-                return MovieMapper().map(movie)
-            },
-            createSession: { movieID in
-                try await createMovieIntelligenceSession.execute(movieID: movieID)
-            },
-            captureError: { services.observability.capture(error: $0) }
-        )
     }
 
 }

@@ -9,9 +9,14 @@ import Foundation
 import IntelligenceDomain
 import MoviesApplication
 
-struct MovieMapper {
+/// Maps a context ``MovieDetails`` to the feature's ``IntelligenceDomain/Movie`` presentation model.
+public struct MovieMapper {
 
-    func map(_ movieDetails: MovieDetails) -> IntelligenceDomain.Movie {
+    /// Creates a movie mapper.
+    public init() {}
+
+    /// Maps a context ``MovieDetails`` to an ``IntelligenceDomain/Movie``.
+    public func map(_ movieDetails: MovieDetails) -> IntelligenceDomain.Movie {
         IntelligenceDomain.Movie(
             id: movieDetails.id,
             title: movieDetails.title,

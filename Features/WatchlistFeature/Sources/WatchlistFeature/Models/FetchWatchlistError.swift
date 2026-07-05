@@ -8,25 +8,26 @@
 import Foundation
 import MoviesApplication
 
-enum FetchWatchlistError: LocalizedError {
+/// A user-facing error surfaced when fetching the watchlist fails.
+public enum FetchWatchlistError: LocalizedError {
 
     case unknown(Error? = nil)
 
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .unknown:
             String(localized: "WATCHLIST_LOAD_ERROR_DESCRIPTION", bundle: .module)
         }
     }
 
-    var failureReason: String? {
+    public var failureReason: String? {
         switch self {
         case .unknown:
             String(localized: "WATCHLIST_LOAD_ERROR_REASON", bundle: .module)
         }
     }
 
-    var recoverySuggestion: String? {
+    public var recoverySuggestion: String? {
         switch self {
         case .unknown:
             String(localized: "WATCHLIST_LOAD_ERROR_RECOVERY", bundle: .module)
@@ -37,7 +38,9 @@ enum FetchWatchlistError: LocalizedError {
 
 extension FetchWatchlistError {
 
-    init(_ error: any Error) {
+    /// Wraps an arbitrary error, mapping known ``FetchWatchlistMoviesError`` cases to
+    /// specific cases and anything else to ``unknown``.
+    public init(_ error: any Error) {
         if let fetchWatchlistMoviesError = error as? FetchWatchlistMoviesError {
             self.init(fetchWatchlistMoviesError)
             return
