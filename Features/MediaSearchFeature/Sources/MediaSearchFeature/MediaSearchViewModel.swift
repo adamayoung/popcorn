@@ -143,7 +143,8 @@ public final class MediaSearchViewModel {
             Self.logger.error(
                 "Failed fetching genres and search history: \(error.localizedDescription, privacy: .public)"
             )
-            updateViewState()
+            failedLoader = .genresAndHistory
+            viewState = .error(ViewStateError(error))
             return
         }
 
@@ -213,7 +214,8 @@ public final class MediaSearchViewModel {
             Self.logger.error(
                 "Failed searching for media [query: \"\(query, privacy: .private)\"]: \(error.localizedDescription, privacy: .public)"
             )
-            updateViewState()
+            failedLoader = .search
+            viewState = .error(ViewStateError(error))
             return
         }
 
@@ -230,6 +232,46 @@ public final class MediaSearchViewModel {
         }
 
         updateViewState()
+    }
+
+    // MARK: - Retry
+
+    /// Which loader produced the current `.error`, so ``retry()`` re-runs the
+    /// operation that actually failed rather than inferring it from ``query``.
+    private enum FailedLoader {
+        case genresAndHistory
+        case search
+    }
+
+    private var failedLoader: FailedLoader?
+
+    /// Retries after an error, re-running the loader that produced it.
+    ///
+    /// Dispatches on the tracked ``failedLoader``, not ``query``: the
+    /// `.searchable` field stays live during the initial load, so the query can
+    /// go non-empty while `fetchGenresAndSearchHistory()` is still in flight —
+    /// inferring the loader from `query` there would wrongly retry `search()` and
+    /// strand genres/history behind their `guard case .initial`. The
+    /// genres/history path resets `viewState = .initial` first so that guard can
+    /// pass again; the search path routes through `searchTask` (cancel-and-
+    /// replace, as `queryChanged` does) so re-taps don't spawn concurrent searches.
+    public func retry() {
+        switch failedLoader {
+        case .genresAndHistory:
+            viewState = .initial
+            Task { [weak self] in
+                await self?.fetchGenresAndSearchHistory()
+            }
+
+        case .search:
+            searchTask?.cancel()
+            searchTask = Task { [weak self] in
+                await self?.search()
+            }
+
+        case nil:
+            break
+        }
     }
 
     // MARK: - Navigation
