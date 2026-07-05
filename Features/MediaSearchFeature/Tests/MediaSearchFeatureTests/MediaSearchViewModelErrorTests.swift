@@ -46,6 +46,23 @@ struct MediaSearchViewModelErrorTests {
         #expect(viewModel.viewState == .error(ViewStateError(TestError.generic)))
     }
 
+    @Test("search cancellation does not surface an error state")
+    @MainActor
+    func searchCancellationDoesNotShowError() async {
+        let viewModel = MediaSearchViewModelTests.makeViewModel(
+            dependencies: MediaSearchViewModelTests.stubDependencies(
+                search: { _ in throw CancellationError() }
+            ),
+            query: "running"
+        )
+
+        await viewModel.search()
+
+        // A cancelled search must not masquerade as a user-facing error; the
+        // surface is left untouched rather than flipped to `.error`.
+        #expect(viewModel.viewState == .initial)
+    }
+
     @Test("retry after a genres/history failure resets to initial and re-fetches")
     @MainActor
     func retryAfterGenresFailureRefetchesAndSucceeds() async {

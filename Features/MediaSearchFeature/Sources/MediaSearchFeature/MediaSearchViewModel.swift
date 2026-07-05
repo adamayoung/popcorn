@@ -248,7 +248,11 @@ public final class MediaSearchViewModel {
                 await self?.fetchGenresAndSearchHistory()
             }
         } else {
-            Task { [weak self] in
+            // Route through `searchTask` (cancel-and-replace, as `queryChanged`
+            // does) so repeated retry taps don't spawn concurrent searches and a
+            // later `queryChanged` can cancel a now-stale retry.
+            searchTask?.cancel()
+            searchTask = Task { [weak self] in
                 await self?.search()
             }
         }
