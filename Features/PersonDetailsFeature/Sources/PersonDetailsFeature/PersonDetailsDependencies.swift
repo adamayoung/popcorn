@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import AppDependencies
 import Foundation
 import PeopleApplication
 
@@ -13,7 +12,8 @@ import PeopleApplication
 ///
 /// A plain `Sendable` struct of closures providing the data dependencies for
 /// ``PersonDetailsViewModel``. Constructing it requires every closure, so a missing
-/// dependency is a compile error. Build the production instance with ``live(services:)``.
+/// dependency is a compile error. The production instance is built by the app's
+/// composition layer; use ``preview`` for previews and tests.
 public struct PersonDetailsDependencies: Sendable {
 
     public var fetchPerson: @Sendable (_ id: Int) async throws -> Person
@@ -26,33 +26,6 @@ public struct PersonDetailsDependencies: Sendable {
     ) {
         self.fetchPerson = fetchPerson
         self.isFocalPointEnabled = isFocalPointEnabled
-    }
-
-}
-
-public extension PersonDetailsDependencies {
-
-    /// Builds the production dependencies from the app's shared services.
-    static func live(services: AppServices) -> PersonDetailsDependencies {
-        let fetchPersonDetails = services.peopleFactory.makeFetchPersonDetailsUseCase()
-        let featureFlags = services.featureFlags
-
-        return PersonDetailsDependencies(
-            fetchPerson: { id in
-                do {
-                    let person = try await fetchPersonDetails.execute(id: id)
-                    let mapper = PersonMapper()
-                    return mapper.map(person)
-                } catch let error as FetchPersonDetailsError {
-                    throw FetchPersonError(error)
-                }
-            },
-            // Shares the backdropFocalPoint gate intentionally — focal point
-            // alignment is a single feature covering both backdrop and profile images.
-            isFocalPointEnabled: {
-                featureFlags.isEnabled(.backdropFocalPoint)
-            }
-        )
     }
 
 }

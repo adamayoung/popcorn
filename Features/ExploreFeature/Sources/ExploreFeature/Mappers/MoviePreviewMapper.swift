@@ -10,9 +10,15 @@ import Foundation
 import MoviesApplication
 import TrendingApplication
 
-struct MoviePreviewMapper {
+/// Maps a context `MoviePreviewDetails` (from Trending, Movies, or Discover) to the
+/// feature's ``MoviePreview`` presentation model.
+public struct MoviePreviewMapper {
 
-    func map(_ moviePreviewDetails: TrendingApplication.MoviePreviewDetails) -> MoviePreview {
+    /// Creates a movie-preview mapper.
+    public init() {}
+
+    /// Maps a ``TrendingApplication`` `MoviePreviewDetails` to a presentation ``MoviePreview``.
+    public func map(_ moviePreviewDetails: TrendingApplication.MoviePreviewDetails) -> MoviePreview {
         MoviePreview(
             id: moviePreviewDetails.id,
             title: moviePreviewDetails.title,
@@ -22,7 +28,8 @@ struct MoviePreviewMapper {
         )
     }
 
-    func map(_ moviePreviewDetails: MoviesApplication.MoviePreviewDetails) -> MoviePreview {
+    /// Maps a ``MoviesApplication`` `MoviePreviewDetails` to a presentation ``MoviePreview``.
+    public func map(_ moviePreviewDetails: MoviesApplication.MoviePreviewDetails) -> MoviePreview {
         MoviePreview(
             id: moviePreviewDetails.id,
             title: moviePreviewDetails.title,
@@ -32,7 +39,8 @@ struct MoviePreviewMapper {
         )
     }
 
-    func map(_ moviePreviewDetails: DiscoverApplication.MoviePreviewDetails) -> MoviePreview {
+    /// Maps a ``DiscoverApplication`` `MoviePreviewDetails` to a presentation ``MoviePreview``.
+    public func map(_ moviePreviewDetails: DiscoverApplication.MoviePreviewDetails) -> MoviePreview {
         MoviePreview(
             id: moviePreviewDetails.id,
             title: moviePreviewDetails.title,

@@ -8,9 +8,14 @@
 import Foundation
 import TrendingApplication
 
-struct PersonPreviewMapper {
+/// Maps a context ``PersonPreviewDetails`` to the feature's ``PersonPreview`` presentation model.
+public struct PersonPreviewMapper {
 
-    func map(_ personPreviewDetails: PersonPreviewDetails) -> PersonPreview {
+    /// Creates a person-preview mapper.
+    public init() {}
+
+    /// Maps a context ``PersonPreviewDetails`` to a presentation ``PersonPreview``.
+    public func map(_ personPreviewDetails: PersonPreviewDetails) -> PersonPreview {
         PersonPreview(
             id: personPreviewDetails.id,
             name: personPreviewDetails.name,

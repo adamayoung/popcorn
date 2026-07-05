@@ -8,9 +8,14 @@
 import Foundation
 import PeopleApplication
 
-struct PersonMapper {
+/// Maps a context ``PersonDetails`` to the feature's ``Person`` presentation model.
+public struct PersonMapper {
 
-    func map(_ personDetails: PersonDetails) -> Person {
+    /// Creates a person mapper.
+    public init() {}
+
+    /// Maps a context ``PersonDetails`` to a presentation ``Person``.
+    public func map(_ personDetails: PersonDetails) -> Person {
         let gender: Gender = switch personDetails.gender {
         case .female: .female
         case .male: .male
