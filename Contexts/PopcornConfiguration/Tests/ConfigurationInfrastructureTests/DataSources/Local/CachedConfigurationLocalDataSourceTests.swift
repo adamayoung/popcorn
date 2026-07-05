@@ -167,8 +167,6 @@ struct CachedConfigurationLocalDataSourceTests {
 
     @Test("configuration works without span")
     func configurationWorksWithoutSpan() async {
-        SpanContext.provider = nil
-
         let dataSource = CachedConfigurationLocalDataSource(cache: mockCache)
 
         let result = await dataSource.configuration()
@@ -180,7 +178,6 @@ struct CachedConfigurationLocalDataSourceTests {
     @Test("setConfiguration works without span")
     func setConfigurationWorksWithoutSpan() async {
         let configuration = AppConfiguration.mock()
-        SpanContext.provider = nil
 
         let dataSource = CachedConfigurationLocalDataSource(cache: mockCache)
 

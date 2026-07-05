@@ -215,8 +215,6 @@ struct DefaultDiscoverMovieRepositoryTests {
         let cachedMovies = MoviePreview.mocks
         mockLocalDataSource.moviesStub = .success(cachedMovies)
 
-        SpanContext.provider = nil
-
         let repository = makeRepository()
 
         let result = try await repository.movies(filter: nil, page: 1)
