@@ -8,9 +8,15 @@
 import FeatureAccess
 import Foundation
 
-struct FeatureFlagMapper {
+/// Maps a `FeatureAccess.FeatureFlag` to the feature's ``FeatureFlag`` presentation model.
+public struct FeatureFlagMapper {
 
-    func map(_ model: FeatureAccess.FeatureFlag, value: Bool, overrideValue: Bool?) -> FeatureFlag {
+    /// Creates a feature-flag mapper.
+    public init() {}
+
+    /// Maps a `FeatureAccess.FeatureFlag` (with its actual and override values) to a
+    /// presentation ``FeatureFlag``.
+    public func map(_ model: FeatureAccess.FeatureFlag, value: Bool, overrideValue: Bool?) -> FeatureFlag {
         FeatureFlag(
             id: model.id,
             name: model.name,

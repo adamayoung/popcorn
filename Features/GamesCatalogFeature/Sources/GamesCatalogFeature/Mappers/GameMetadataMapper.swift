@@ -9,9 +9,14 @@ import Foundation
 import GamesCatalogDomain
 import SwiftUI
 
-struct GameMetadataMapper {
+/// Maps a context ``GamesCatalogDomain/GameMetadata`` to the feature's ``GameMetadata`` presentation model.
+public struct GameMetadataMapper {
 
-    func map(_ gameMetadata: GamesCatalogDomain.GameMetadata) -> GameMetadata {
+    /// Creates a game-metadata mapper.
+    public init() {}
+
+    /// Maps a context ``GamesCatalogDomain/GameMetadata`` to a presentation ``GameMetadata``.
+    public func map(_ gameMetadata: GamesCatalogDomain.GameMetadata) -> GameMetadata {
         GameMetadata(
             id: gameMetadata.id,
             name: gameMetadata.name,

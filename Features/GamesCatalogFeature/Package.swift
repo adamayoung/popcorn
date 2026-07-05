@@ -19,11 +19,9 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(path: "../../AppDependencies"),
         .package(path: "../../Contexts/PopcornGamesCatalog"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Core/Presentation"),
-        .package(path: "../../Platform/Observability"),
         .package(path: "../../Core/SnapshotTestHelpers")
     ],
 
@@ -31,10 +29,8 @@ let package = Package(
         .target(
             name: "GamesCatalogFeature",
             dependencies: [
-                "AppDependencies",
                 .product(name: "GamesCatalogApplication", package: "PopcornGamesCatalog"),
                 .product(name: "GamesCatalogDomain", package: "PopcornGamesCatalog"),
-                "Observability",
                 "DesignSystem",
                 "Presentation"
             ],

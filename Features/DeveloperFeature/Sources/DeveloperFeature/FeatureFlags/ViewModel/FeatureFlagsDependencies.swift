@@ -5,16 +5,14 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import AppDependencies
-import FeatureAccess
 import Foundation
 
 /// The dependencies required by ``FeatureFlagsViewModel``.
 ///
 /// A plain `Sendable` struct of closures providing the data dependencies for
 /// ``FeatureFlagsViewModel``. Constructing it requires every closure, so a
-/// missing dependency is a compile error. Build the production instance with
-/// ``live(services:)``.
+/// missing dependency is a compile error. The production instance is built by the app's
+/// composition layer; use ``preview`` for previews and tests.
 public struct FeatureFlagsDependencies: Sendable {
 
     public var fetchFeatureFlags: @Sendable () async throws -> [FeatureFlag]
@@ -29,46 +27,6 @@ public struct FeatureFlagsDependencies: Sendable {
         self.fetchFeatureFlags = fetchFeatureFlags
         self.updateFeatureFlagValue = updateFeatureFlagValue
         self.removeAllOverrides = removeAllOverrides
-    }
-
-}
-
-public extension FeatureFlagsDependencies {
-
-    /// Builds the production dependencies from the app's shared services.
-    ///
-    /// Reads and mutates the shared feature-flag override service, mapping
-    /// `FeatureAccess.FeatureFlag.allFlags` via ``FeatureFlagMapper`` with the
-    /// service's actual and override values.
-    static func live(services: AppServices) -> FeatureFlagsDependencies {
-        let featureFlags = services.featureFlagsOverride
-
-        return FeatureFlagsDependencies(
-            fetchFeatureFlags: {
-                let flags = FeatureAccess.FeatureFlag.allFlags
-                let mapper = FeatureFlagMapper()
-                return flags.map { flag in
-                    let value = featureFlags.actualValue(for: flag)
-                    let overrideValue = featureFlags.overrideValue(for: flag)
-                    return mapper.map(flag, value: value, overrideValue: overrideValue)
-                }
-            },
-            updateFeatureFlagValue: { flag, value in
-                guard let featureFlag = FeatureAccess.FeatureFlag.flag(withID: flag.id) else {
-                    return
-                }
-
-                guard let value else {
-                    featureFlags.removeOverride(for: featureFlag)
-                    return
-                }
-
-                featureFlags.setOverrideValue(value, for: featureFlag)
-            },
-            removeAllOverrides: {
-                featureFlags.removeAllOverrides()
-            }
-        )
     }
 
 }

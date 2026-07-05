@@ -19,7 +19,6 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(path: "../../AppDependencies"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Core/Presentation"),
         .package(path: "../../Platform/FeatureAccess"),
@@ -30,7 +29,6 @@ let package = Package(
         .target(
             name: "DeveloperFeature",
             dependencies: [
-                "AppDependencies",
                 "FeatureAccess",
                 "DesignSystem",
                 "Presentation"

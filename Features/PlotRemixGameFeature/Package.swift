@@ -19,7 +19,6 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(path: "../../AppDependencies"),
         .package(path: "../../Contexts/PopcornGamesCatalog"),
         .package(path: "../../Contexts/PopcornPlotRemixGame"),
         .package(path: "../../Core/DesignSystem"),
@@ -31,8 +30,6 @@ let package = Package(
         .target(
             name: "PlotRemixGameFeature",
             dependencies: [
-                "AppDependencies",
-                .product(name: "GamesCatalogApplication", package: "PopcornGamesCatalog"),
                 .product(name: "GamesCatalogDomain", package: "PopcornGamesCatalog"),
                 .product(name: "PlotRemixGameApplication", package: "PopcornPlotRemixGame"),
                 "DesignSystem",
