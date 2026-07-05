@@ -8,9 +8,14 @@
 import Foundation
 import TVSeriesApplication
 
-struct CreditsMapper {
+/// Maps a context ``AggregateCreditsDetails`` to the feature's ``Credits`` presentation model.
+public struct CreditsMapper {
 
-    func map(_ aggregateCreditsDetails: AggregateCreditsDetails) -> Credits {
+    /// Creates a credits mapper.
+    public init() {}
+
+    /// Maps a context ``AggregateCreditsDetails`` to a presentation ``Credits`` (cast and crew by department).
+    public func map(_ aggregateCreditsDetails: AggregateCreditsDetails) -> Credits {
         Credits(
             id: aggregateCreditsDetails.id,
             castMembers: aggregateCreditsDetails.cast.map(map),

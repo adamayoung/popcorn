@@ -5,7 +5,6 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import AppDependencies
 import Foundation
 import IntelligenceDomain
 
@@ -13,8 +12,8 @@ import IntelligenceDomain
 ///
 /// A plain `Sendable` struct of closures providing the data dependencies for
 /// ``TVSeriesIntelligenceViewModel``. Constructing it requires every closure,
-/// so a missing dependency is a compile error. Build the production instance
-/// with ``live(services:)``.
+/// so a missing dependency is a compile error. The production instance is built
+/// by the app's composition layer; use ``preview`` for previews and tests.
 public struct TVSeriesIntelligenceDependencies: Sendable {
 
     public var fetchTVSeries: @Sendable (_ id: Int) async throws -> TVSeries
@@ -29,35 +28,6 @@ public struct TVSeriesIntelligenceDependencies: Sendable {
         self.fetchTVSeries = fetchTVSeries
         self.createSession = createSession
         self.captureError = captureError
-    }
-
-}
-
-public extension TVSeriesIntelligenceDependencies {
-
-    /// Builds the production dependencies from the app's shared services.
-    ///
-    /// Wires the use cases, mapper, and error capture via the shared observability
-    /// service.
-    static func live(services: AppServices) -> TVSeriesIntelligenceDependencies {
-        let fetchTVSeriesDetails = services.tvSeriesFactory.makeFetchTVSeriesDetailsUseCase()
-        let createTVSeriesIntelligenceSession = services.intelligenceFactory
-            .makeCreateTVSeriesIntelligenceSessionUseCase()
-        let observability = services.observability
-
-        return TVSeriesIntelligenceDependencies(
-            fetchTVSeries: { id in
-                let tvSeries = try await fetchTVSeriesDetails.execute(id: id)
-                let mapper = TVSeriesMapper()
-                return mapper.map(tvSeries)
-            },
-            createSession: { tvSeriesID in
-                try await createTVSeriesIntelligenceSession.execute(tvSeriesID: tvSeriesID)
-            },
-            captureError: { error in
-                observability.capture(error: error)
-            }
-        )
     }
 
 }

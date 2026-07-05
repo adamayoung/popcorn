@@ -19,12 +19,10 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(path: "../../AppDependencies"),
         .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Contexts/PopcornIntelligence"),
         .package(path: "../../Contexts/PopcornTVSeries"),
-        .package(path: "../../Platform/Observability"),
         .package(path: "../../Core/SnapshotTestHelpers")
     ],
 
@@ -32,12 +30,9 @@ let package = Package(
         .target(
             name: "TVSeriesIntelligenceFeature",
             dependencies: [
-                "AppDependencies",
                 "DesignSystem",
-                .product(name: "IntelligenceApplication", package: "PopcornIntelligence"),
                 .product(name: "IntelligenceDomain", package: "PopcornIntelligence"),
-                .product(name: "TVSeriesApplication", package: "PopcornTVSeries"),
-                "Observability"
+                .product(name: "TVSeriesApplication", package: "PopcornTVSeries")
             ]
         ),
         .testTarget(
