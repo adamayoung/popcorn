@@ -19,12 +19,10 @@ let package = Package(
     ],
 
     dependencies: [
-        .package(path: "../../AppDependencies"),
         .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Core/DesignSystem"),
         .package(path: "../../Core/Presentation"),
         .package(path: "../../Contexts/PopcornMovies"),
-        .package(path: "../../Platform/FeatureAccess"),
         .package(path: "../../Core/SnapshotTestHelpers")
     ],
 
@@ -32,7 +30,6 @@ let package = Package(
         .target(
             name: "MovieDetailsFeature",
             dependencies: [
-                "AppDependencies",
                 "DesignSystem",
                 "Presentation",
                 .product(name: "CoreDomain", package: "CoreDomain"),
@@ -43,11 +40,9 @@ let package = Package(
         .testTarget(
             name: "MovieDetailsFeatureTests",
             dependencies: [
-                "AppDependencies",
                 "MovieDetailsFeature",
                 "Presentation",
                 .product(name: "CoreDomain", package: "CoreDomain"),
-                .product(name: "FeatureAccessTestHelpers", package: "FeatureAccess"),
                 .product(name: "MoviesApplication", package: "PopcornMovies"),
                 .product(name: "MoviesDomain", package: "PopcornMovies")
             ]

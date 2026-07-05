@@ -8,9 +8,14 @@
 import Foundation
 import MoviesApplication
 
-struct CreditsMapper {
+/// Maps a context ``CreditsDetails`` to the feature's ``Credits`` presentation model.
+public struct CreditsMapper {
 
-    func map(_ creditsDetails: CreditsDetails) -> Credits {
+    /// Creates a credits mapper.
+    public init() {}
+
+    /// Maps a context ``CreditsDetails`` to a presentation ``Credits`` (top cast and crew).
+    public func map(_ creditsDetails: CreditsDetails) -> Credits {
         Credits(
             id: creditsDetails.id,
             castMembers: creditsDetails.cast.prefix(5).map(map),

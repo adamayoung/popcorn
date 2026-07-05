@@ -8,12 +8,13 @@
 import Foundation
 import MoviesApplication
 
-enum FetchMovieError: LocalizedError {
+/// A user-facing error surfaced when fetching a movie fails.
+public enum FetchMovieError: LocalizedError {
 
     case notFound(Error? = nil)
     case unknown(Error? = nil)
 
-    var errorDescription: String? {
+    public var errorDescription: String? {
         switch self {
         case .notFound:
             String(localized: "MOVIE_NOT_FOUND_ERROR_DESCRIPTION", bundle: .module)
@@ -22,7 +23,7 @@ enum FetchMovieError: LocalizedError {
         }
     }
 
-    var failureReason: String? {
+    public var failureReason: String? {
         switch self {
         case .notFound:
             String(localized: "MOVIE_NOT_FOUND_ERROR_REASON", bundle: .module)
@@ -31,7 +32,7 @@ enum FetchMovieError: LocalizedError {
         }
     }
 
-    var recoverySuggestion: String? {
+    public var recoverySuggestion: String? {
         switch self {
         case .notFound:
             String(localized: "MOVIE_NOT_FOUND_ERROR_RECOVERY", bundle: .module)
@@ -44,7 +45,9 @@ enum FetchMovieError: LocalizedError {
 
 extension FetchMovieError {
 
-    init(_ error: any Error) {
+    /// Wraps an arbitrary error, mapping known ``FetchMovieDetailsError`` cases to
+    /// specific cases and anything else to ``unknown``.
+    public init(_ error: any Error) {
         if let fetchMovieDetailsError = error as? FetchMovieDetailsError {
             self.init(fetchMovieDetailsError)
             return
