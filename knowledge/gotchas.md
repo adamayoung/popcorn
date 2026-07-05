@@ -11,6 +11,18 @@ and dated; link an ADR if a decision came out of it.
 *YYYY-MM-DD.* What bit us, why, and the resolution. Keep it to a few lines.
 -->
 
+### Mocks called concurrently must guard call-tracking with a `Mutex`
+
+*2026-07-05.* The common sibling mock pattern (a plain `final class` that appends to a
+call-log array / increments a counter) is only safe when the mock is invoked
+**serially**. When a use case fans its dependency out across a `TaskGroup` (e.g.
+`DefaultGeneratePlotRemixGameUseCase` calls `MovieProviding.randomSimilarMovies` /
+`SynopsisRiddleGenerating.riddle` once per movie, concurrently), a naive mock crashes
+`swift test` with **SIGTRAP** (concurrent `Array.append` corruption) — often on the very
+first run. Fix: move the call-tracking state behind a `Synchronization.Mutex<State>` and
+read/write it via `.withLock`. Stub *inputs* set before the exercise and only read during
+it don't need the lock; only the mutated tracking state does.
+
 ### Injecting an observability provider in tests — use `$localProvider`, never a global
 
 *2026-07-05.* `SpanContext`'s global provider is **bootstrap-only**: written once at
