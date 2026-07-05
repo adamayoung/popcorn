@@ -8,9 +8,14 @@
 import Foundation
 import TVSeriesApplication
 
-struct TVEpisodeMapper {
+/// Maps a context ``TVEpisodeDetails`` to the feature's ``TVEpisode`` presentation model.
+public struct TVEpisodeMapper {
 
-    func map(_ details: TVEpisodeDetails) -> TVEpisode {
+    /// Creates a TV episode mapper.
+    public init() {}
+
+    /// Maps a context ``TVEpisodeDetails`` to a presentation ``TVEpisode``.
+    public func map(_ details: TVEpisodeDetails) -> TVEpisode {
         TVEpisode(
             id: details.id,
             name: details.name,
