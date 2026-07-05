@@ -8,6 +8,7 @@
 import Foundation
 import MoviesApplication
 
+/// A user-facing error surfaced when fetching a movie fails.
 public enum FetchMovieError: LocalizedError {
 
     case notFound(Error? = nil)
@@ -44,6 +45,8 @@ public enum FetchMovieError: LocalizedError {
 
 extension FetchMovieError {
 
+    /// Wraps an arbitrary error, mapping known ``FetchMovieDetailsError`` cases to
+    /// specific cases and anything else to ``unknown``.
     public init(_ error: any Error) {
         if let fetchMovieDetailsError = error as? FetchMovieDetailsError {
             self.init(fetchMovieDetailsError)

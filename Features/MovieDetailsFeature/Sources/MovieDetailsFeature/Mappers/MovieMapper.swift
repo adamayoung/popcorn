@@ -8,12 +8,15 @@
 import Foundation
 import MoviesApplication
 
+/// Maps a context ``MovieDetails`` to the feature's ``Movie`` presentation model.
 public struct MovieMapper {
 
     private let genreMapper = GenreMapper()
 
+    /// Creates a movie mapper.
     public init() {}
 
+    /// Maps a context ``MovieDetails`` to a presentation ``Movie``.
     public func map(_ movieDetails: MovieDetails) -> Movie {
         let genres: [Genre]? = {
             guard let genres = movieDetails.genres else {
