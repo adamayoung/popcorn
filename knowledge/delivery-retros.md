@@ -16,7 +16,7 @@ table (`date · PR · weight · one-line outcome`) — see [`README.md`](README.
 
 <!-- Newest entry goes here. -->
 
-### Third-party dependency update · branch chore/update-swift-dependencies · 2026-07-09 · full
+### Third-party dependency update · PR #76 · 2026-07-09 · full
 
 - *Phases / skills:* worktree → (`review-plan` skipped — plan approved via `/deliver`) →
   manual bump + re-resolve → `review-changes` (single reviewer, clean) → `security-review`
