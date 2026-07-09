@@ -20,26 +20,44 @@ the diff touches no `*.swift`.
    included (`.env` must stay gitignored; check `git status` before `git add`). Use a
    descriptive gitmoji message. If the tree is already clean (e.g. work was committed
    during `/deliver`), this is a no-op.
-2. **Rebase onto the latest `main`.** Bring local `main` up to date with remote, then
-   rebase the feature branch onto it — do this **before** the gate so the gate (and the
-   eventual PR) reflects the real merge result, not stale code:
+2. **Rebase onto the latest `origin/main`.** Fetch the remote and rebase the feature
+   branch directly onto `origin/main` — do this **before** the gate so the gate (and
+   the eventual PR) reflects the real merge result, not stale code:
 
     ```bash
     git fetch origin
-    git checkout main && git merge --ff-only origin/main   # local main == remote main
-    git checkout -                                          # back to the feature branch
-    git rebase main
+    git rebase origin/main
     ```
 
-    - If `git merge --ff-only` fails, local `main` has diverged from `origin/main` —
-      **stop** and investigate; do not force it.
+    - **Rebase onto `origin/main`, not local `main`** — this is **worktree-safe**. A
+      `/deliver` runs inside a git worktree, and `git checkout main` there fails
+      (`fatal: 'main' is already used by worktree …`) whenever the main checkout is on
+      `main`; rebasing onto `origin/main` avoids checking `main` out at all and uses
+      the true remote base directly.
     - If `git rebase` reports conflicts, **stop**, resolve them, then continue. Never
       skip or force past a conflict you don't understand.
     - The rebase rewrites the branch tip, so a branch that was **already pushed** needs
       `git push --force-with-lease` at the push step below.
-    - Already on / branched off an up-to-date `main` with nothing to replay → fast no-op.
+    - Already branched off an up-to-date `origin/main` with nothing to replay → fast
+      no-op.
 3. **The gate** — run in order, stop on any failure (the rebase above means this runs
-   against the post-merge tree):
+   against the post-merge tree). Scale it to the diff first:
+   - **Docs-only fast gate.** When the diff touches **no build- or test-affecting
+     files** — no `*.swift` and none of `Makefile`, `Package.swift`/`Package.resolved`,
+     `*.xctestplan`, `*.xcconfig`, `*.pbxproj`, `*.xcstrings`, or
+     `.github/workflows/**` — the build/test legs have nothing to exercise: run
+     `make lint` only and skip the rest of this step. Detect with:
+
+     ```bash
+     git diff --name-only origin/main...HEAD \
+       | grep -qE '\.swift$|Makefile|Package\.(swift|resolved)$|\.xctestplan$|\.xcconfig$|\.pbxproj|\.xcstrings$|^\.github/workflows/' \
+       && echo "code/build touched → full gate" \
+       || echo "docs-only → make lint only"
+     ```
+
+     The PR's own CI still runs its full matrix regardless — this only trims the
+     **local** gate; it never lowers what actually guards `main`. When in doubt, run
+     the full gate.
    - `make lint` — the clean-tree lint gate (swiftlint `--strict` + swiftformat `--lint`
      over the whole repo; catches pre-existing violations the per-edit hook won't). Run
      it **first** (it depends on `clean-spm`, which clears build caches, so subsequent
