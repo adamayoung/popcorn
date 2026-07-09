@@ -114,7 +114,8 @@ false positives that clear on the next build. Trust the build, not live diagnost
 documentation, configuration — MUST be made on a branch created from `main`. Before
 editing any file, verify with `git branch --show-current`; if on `main`, branch first
 with a conventional prefix (`feature/`, `fix/`, `chore/`, `docs/`). This is a hard
-rule the `/deliver` pipeline depends on (its Phase 0.5 branches before any edit).
+rule the `/deliver` pipeline depends on (its Phase 1 enters a fresh worktree before
+any edit).
 
 ### Git Push
 
@@ -154,12 +155,14 @@ Feature work is **skill-driven**. Draft and approve a plan (plan mode / the plan
 then run **`/deliver`** to carry it through to a ready-to-merge PR. **Invoking
 `/deliver` is itself the plan-approval gate** — it then runs autonomously to a single
 hard stop, **ready-to-merge**, pausing only for a plan-review blocker or a red gate it
-can't triage. It **auto-scales** its review machinery to the change's risk (lite vs
-full) and ends each delivery with a short retrospective into
-[`knowledge/delivery-retros.md`](knowledge/delivery-retros.md):
+can't triage. Each run happens in its **own git worktree** (torn down on merge), it
+**auto-scales** its review machinery to the change's risk (lite vs full), and it writes
+a short retrospective into
+[`knowledge/delivery-retros.md`](knowledge/delivery-retros.md) that rides the PR:
 
-branch → (`/review-plan` for risky/large changes) → `/implement-plan` →
-`/review-changes` (+ fix) → `/capture-knowledge` → `/pr reviewed` → `/watch-pr` → retro.
+worktree → (`/review-plan` for risky/large changes) → `/implement-plan` →
+`/review-changes` (+ fix) → `/security-review` (+ fix) → `/capture-knowledge` →
+rubric check → retro → `/pr reviewed` → `/watch-pr` → wrap-up → teardown on merge.
 
 Key skills:
 

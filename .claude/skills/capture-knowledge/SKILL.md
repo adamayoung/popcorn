@@ -44,7 +44,7 @@ nothing is a valid outcome** — don't manufacture entries to look productive.
 
 This skill writes **`gotchas.md`** and **ADRs** only. It does **not** touch
 `delivery-retros.md` or `skill-improvement-log.md` — those are written by
-`/deliver`'s Phase 6 retrospective, not here.
+`/deliver`'s Phase 8 retrospective and Phase 11 wrap-up, not here.
 
 ## Steps
 

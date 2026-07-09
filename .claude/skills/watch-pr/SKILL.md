@@ -1,6 +1,6 @@
 ---
 name: watch-pr
-description: Watch the current branch's PR — reply to and resolve review threads, fix failing checks, and optionally merge when ready
+description: Watch the current branch's PR (or a given PR number) — reply to and resolve review threads, fix failing checks, and optionally merge when ready
 ---
 
 # Watch PR
@@ -13,13 +13,28 @@ Repo is `adamayoung/popcorn`; `gh` is authenticated.
 include `merge` (e.g. `/watch-pr merge` or "merge when ready"), enable
 **merge-when-ready**; otherwise run in **watch-only** mode.
 
+**Run in the background.** Watching blocks on CI for minutes at a time, so run the
+watch as a background task — the user can keep interacting while it runs, and is
+pinged when the PR needs attention or is ready. Don't tie up the foreground on a
+wait loop.
+
 ## 0. Find the PR
 
+**A PR number in the arguments wins.** If the arguments include a PR number
+(e.g. `/watch-pr 123` or `/watch-pr merge 123`), watch that PR and skip branch
+discovery entirely — pin **every** `gh` call in this skill to it (`gh pr view
+<NUMBER>`, `gh pr checks <NUMBER>`, `gh pr update-branch <NUMBER>`, `gh pr merge
+<NUMBER>`, and pass it to `/fix-pr-checks`). A caller that launches this skill **in
+the background** (e.g. `/deliver` Phase 10, which may move the session to another
+deliverable's worktree while the watch runs) must pass the number — the watch must
+never depend on "current branch" staying stable for its lifetime.
+
 ```bash
-gh pr view --json number,url,state,headRefName,mergeStateStatus,statusCheckRollup,reviewDecision
+gh pr view [<NUMBER>] --json number,url,state,headRefName,mergeStateStatus,statusCheckRollup,reviewDecision
 ```
 
-- No PR for the current branch → stop and tell the user (suggest `/pr`).
+- No PR found (none for the current branch, or the given number doesn't resolve) →
+  stop and tell the user (suggest `/pr`).
 - State not `OPEN` → stop and report.
 
 Keep a **run ledger** in your working notes: resolved thread IDs, a topic
@@ -155,6 +170,11 @@ a conflict it can't resolve, stop and surface it to the user.)
   git status --porcelain          # must be empty before merging
   gh pr merge --squash --delete-branch
   ```
+
+  **Inside a `/deliver` worktree**, merge without local cleanup — `--delete-branch`
+  checks out `main`, which fails in a worktree (`main` is checked out by the main
+  checkout). Use `gh pr merge <NUMBER> --squash` alone and leave branch/worktree
+  cleanup to `/deliver` Phase 12's teardown.
 
   If `gh pr merge` reports the **server merge succeeded but local cleanup failed**
   (e.g. "cannot pull with rebase: You have unstaged changes"), the PR did merge —

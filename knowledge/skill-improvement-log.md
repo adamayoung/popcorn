@@ -1,9 +1,9 @@
 # Skill-Improvement Log
 
 A durable record of every skill-improvement proposal raised by `/deliver`'s
-**Phase 6 recurring-pattern scan**, and the decision on it. Newest at the top.
+**Phase 11 recurring-pattern scan**, and the decision on it. Newest at the top.
 
-**Why this exists:** the Phase 6 scan surfaces proposals and waits for approval.
+**Why this exists:** the Phase 11 scan surfaces proposals and waits for approval.
 Without a memory of past decisions, it would re-propose ideas already **applied** or
 deliberately **deferred/rejected** — wasting attention and re-litigating settled
 calls. The scan **consults this log before proposing** and skips any pattern already
