@@ -71,7 +71,9 @@ extension SwiftDataFetchStreaming {
         )
 
         for await _ in notifications {
-            if Task.isCancelled { break }
+            if Task.isCancelled {
+                break
+            }
 
             yieldSnapshot()
         }
@@ -103,7 +105,9 @@ extension SwiftDataFetchStreaming {
         )
 
         for await _ in notifications {
-            if Task.isCancelled { break }
+            if Task.isCancelled {
+                break
+            }
 
             yieldSnapshot()
         }
