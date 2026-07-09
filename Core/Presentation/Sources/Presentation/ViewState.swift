@@ -31,32 +31,56 @@ public extension ViewState {
 
     /// Returns `true` if the view state is `initial`.
     var isInitial: Bool {
-        if case .initial = self { true } else { false }
+        if case .initial = self {
+            true
+        } else {
+            false
+        }
     }
 
     /// Returns `true` if the view state is `loading`.
     var isLoading: Bool {
-        if case .loading = self { true } else { false }
+        if case .loading = self {
+            true
+        } else {
+            false
+        }
     }
 
     /// Returns `true` if the view state is `ready`.
     var isReady: Bool {
-        if case .ready = self { true } else { false }
+        if case .ready = self {
+            true
+        } else {
+            false
+        }
     }
 
     /// Returns `true` if the view state is `error`.
     var isError: Bool {
-        if case .error = self { true } else { false }
+        if case .error = self {
+            true
+        } else {
+            false
+        }
     }
 
     /// Returns the content if the view state is `ready`, otherwise `nil`.
     var content: Content? {
-        if case .ready(let content) = self { content } else { nil }
+        if case .ready(let content) = self {
+            content
+        } else {
+            nil
+        }
     }
 
     /// Returns the error if the view state is `error`, otherwise `nil`.
     var error: ViewStateError? {
-        if case .error(let error) = self { error } else { nil }
+        if case .error(let error) = self {
+            error
+        } else {
+            nil
+        }
     }
 
     /// Records the outcome of a failed `.task`-driven load.
