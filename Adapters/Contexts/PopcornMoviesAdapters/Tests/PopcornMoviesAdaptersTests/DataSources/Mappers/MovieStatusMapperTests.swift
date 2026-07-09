@@ -58,4 +58,11 @@ struct MovieStatusMapperTests {
         #expect(result == .cancelled)
     }
 
+    @Test("Maps unknown status")
+    func mapsUnknownStatus() {
+        let result = mapper.map(.unknown)
+
+        #expect(result == .unknown)
+    }
+
 }

@@ -30,6 +30,9 @@ struct MovieStatusMapper {
 
         case .cancelled:
             .cancelled
+
+        case .unknown:
+            .unknown
         }
     }
 

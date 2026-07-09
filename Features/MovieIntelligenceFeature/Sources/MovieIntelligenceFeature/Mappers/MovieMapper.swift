@@ -41,6 +41,7 @@ public struct MovieMapper {
                 case .postProduction: .postProduction
                 case .released: .released
                 case .cancelled: .cancelled
+                case .unknown: .unknown
                 }
             },
             productionCompanies: movieDetails.productionCompanies?.map {

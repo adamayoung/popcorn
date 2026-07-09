@@ -43,6 +43,15 @@ struct MovieMapperUpdateEntityTests {
         #expect(entity.isAdultOnly == true)
     }
 
+    @Test("persists unknown status as its raw value")
+    func updatesEntityWithUnknownStatus() {
+        let entity = MoviesMovieEntity(movieID: 123, title: "Title", overview: "Overview")
+
+        mapper.map(Movie.mock(id: 123, title: "Title", overview: "Overview", status: .unknown), to: entity)
+
+        #expect(entity.status == "unknown")
+    }
+
     @Test("updates existing entity with relationships")
     func updatesExistingEntityWithRelationships() {
         let entity = MoviesMovieEntity(movieID: 123, title: "Old Title", overview: "Old Overview")

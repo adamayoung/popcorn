@@ -28,7 +28,7 @@ let package = Package(
         .package(path: "../PopcornMoviesAdapters"),
         .package(path: "../PopcornTVSeriesAdapters"),
         .package(path: "../PopcornPeopleAdapters"),
-        .package(url: "https://github.com/adamayoung/TMDb.git", from: "18.0.0")
+        .package(url: "https://github.com/adamayoung/TMDb.git", from: "18.2.0")
     ],
 
     targets: [

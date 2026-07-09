@@ -15,5 +15,6 @@ public enum MovieStatus: String, Equatable, Sendable {
     case postProduction
     case released
     case cancelled
+    case unknown
 
 }

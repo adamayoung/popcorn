@@ -20,8 +20,8 @@ Popcorn is a modular SwiftUI application for browsing movies and TV series acros
 
 | Dependency | Version | Purpose |
 |------------|---------|---------|
-| [TMDb](https://github.com/adamayoung/TMDb) | 16.0+ | Movie and TV metadata, imagery, and discovery endpoints |
-| [SDWebImageSwiftUI](https://github.com/SDWebImage/SDWebImageSwiftUI) | 3.0+ | Asynchronous poster, backdrop, and profile image rendering |
-| [sentry-cocoa](https://github.com/getsentry/sentry-cocoa) | 8.57+ | Observability and crash/error reporting |
-| [statsig-kit](https://github.com/nicktmro/statsig-kit) | 1.55+ | Remote feature-flag evaluation |
-| [swift-snapshot-testing](https://github.com/pointfreeco/swift-snapshot-testing) | 1.18+ | Snapshot tests for UI components |
+| [TMDb](https://github.com/adamayoung/TMDb) | 18.2+ | Movie and TV metadata, imagery, and discovery endpoints |
+| [SDWebImageSwiftUI](https://github.com/SDWebImage/SDWebImageSwiftUI) | 3.1+ | Asynchronous poster, backdrop, and profile image rendering |
+| [sentry-cocoa](https://github.com/getsentry/sentry-cocoa) | 9.21+ | Observability and crash/error reporting |
+| [statsig-kit](https://github.com/statsig-io/statsig-kit) | 1.62+ | Remote feature-flag evaluation |
+| [swift-snapshot-testing](https://github.com/pointfreeco/swift-snapshot-testing) | 1.19+ | Snapshot tests for UI components |

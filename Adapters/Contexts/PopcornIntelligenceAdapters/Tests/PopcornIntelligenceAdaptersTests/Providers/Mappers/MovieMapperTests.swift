@@ -101,6 +101,21 @@ struct MovieMapperTests {
         #expect(result.backdropPath == backdropURLSet.path)
     }
 
+    @Test("Maps unknown status")
+    func mapsUnknownStatus() {
+        let movieDetails = MovieDetails(
+            id: 1,
+            title: "Test Movie",
+            overview: "",
+            status: .unknown,
+            isOnWatchlist: false
+        )
+
+        let result = mapper.map(movieDetails)
+
+        #expect(result.status == .unknown)
+    }
+
     @Test("Handles empty overview string")
     func handlesEmptyOverviewString() {
         let movieDetails = MovieDetails(
