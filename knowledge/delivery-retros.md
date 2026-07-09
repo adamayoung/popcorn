@@ -16,6 +16,34 @@ table (`date · PR · weight · one-line outcome`) — see [`README.md`](README.
 
 <!-- Newest entry goes here. -->
 
+### Third-party dependency update · branch chore/update-swift-dependencies · 2026-07-09 · full
+
+- *Phases / skills:* worktree → (`review-plan` skipped — plan approved via `/deliver`) →
+  manual bump + re-resolve → `review-changes` (single reviewer, clean) → `security-review`
+  (no findings) → `capture-knowledge` → independent rubric grader (PASS) → retro → `pr`.
+  Bumped TMDb 18.0.0→18.2.0 (×9 adapters), sentry-cocoa 9.17.0→9.21.0,
+  swift-snapshot-testing 1.19.2→1.19.3; statsig-kit + SDWebImageSwiftUI already latest.
+- *What worked:* release-note review at plan time flagged the only anticipated risk (the
+  snapshot 1.19.3 safe-area fix — which proved benign, 18/18 passed, no re-record). The
+  "enumerate all sites up front" discipline paid off: one type-driven grep found all three
+  exhaustive switches over the affected enums, so the TMDb `Status.unknown` break was fixed
+  completely rather than one build-error at a time. The independent grader re-swept every
+  `Package.swift` and confirmed no third-party dep was missed.
+- *Friction:* the "mechanical version bump" was **not** mechanical — TMDb 18.2.0 (a *minor*
+  bump) silently added `Status.unknown`, breaking exhaustive switches at compile time; the
+  build halts at the first, so the full blast radius isn't visible from a single failure.
+  The SPM-vs-xcodebuild transitive-resolution divergence and the gitignored-per-package
+  `Package.resolved` facts each needed investigation (both captured to `gotchas.md`).
+- *Deviations:* skipped pure-TDD for the version bump itself (no new behaviour to drive) —
+  the `Status.unknown` fix **was** done test-first at three layers. Applied one advisory-Low
+  from review (a persistence round-trip test). Left a pre-existing, unrelated
+  `'as' test is always true` warning (`MovieIntelligenceViewModel:100`, `LLMSession`
+  typed-throws) untouched, per "don't patch unrelated issues onto this branch".
+- *One improvement:* a dependency-bump plan should include a standing step — "grep the dep's
+  public non-frozen enums and every exhaustive switch over them" — because a minor/patch bump
+  adding an enum case is a recurring, compile-breaking surprise that a clean build reveals
+  only one site at a time.
+
 ### DI de-coupling epic (feature packages → leaves) · PRs #66–#72 · 2026-07-05 · full (epic)
 
 - *Phases / skills:* ADR-first, then a reference PR (MovieDetails) + 5 batch PRs
