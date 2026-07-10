@@ -77,10 +77,14 @@ When making an incremental change that is **localised to a single module** and t
 
 ### Build & Test Output Management
 
-**Always delegate `make` commands and `swift build`/`swift test` to a Haiku subagent** (Agent tool, `subagent_type: "general-purpose"`, `model: "haiku"`). These commands produce large logs that fill the main conversation context. The subagent runs the command (writing output to a log file) and reports back only:
+**Never run `make` commands or `swift build`/`swift test` in the foreground** — their large logs fill the main conversation context. Keep them out of context one of two ways, chosen by length and setting:
+
+**Default — a Haiku subagent** (Agent tool, `subagent_type: "general-purpose"`, `model: "haiku"`) that runs the command (writing output to a log file) and reports back only:
 - Pass/fail status
 - Specific errors/failures as `file:line — message`
 - Do NOT include the full log — only actionable information, plus the log path on failure
+
+**Long-running gate run you'll block on** (e.g. the `/deliver` pre-PR gate) — a **backgrounded `Bash`** (`run_in_background: true`) that redirects to a log and appends `; echo "EXIT=$?"`; on the completion notification, grep the log for the `EXIT=` marker plus errors/failures (targeted greps, not the whole log). It self-reports **once** on exit, unlike a subagent poll loop that returns premature "still waiting" notes on multi-minute runs.
 
 This applies to all build, test, and lint commands — both `make` targets and direct `swift` CLI invocations. The `/build`, `/build-for-testing`, `/test`, `/test-single`, and `/*-package` skills already wrap this — invoke them rather than running the commands yourself. (Formatting is applied automatically by the PostToolUse hook; the lint gate is `make lint`, delegated to a Haiku subagent.) Xcode MCP (`xcode`) tool calls are exempt (they return structured results).
 

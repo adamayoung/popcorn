@@ -19,7 +19,7 @@ Run a subset of the app's test suite by specifying a test target, class, or meth
    matching `$ARGUMENTS`. On a build failure, call `mcp__xcode__GetBuildLog` with the
    `tabIdentifier` and `severity: "error"`.
 
-**Fallback — `make`, when the MCP isn't available.** Delegate to a **Haiku subagent**
+**Fallback — `make`, when the MCP isn't available.** For a **long-running run you'll block on** (e.g. a `/deliver` pre-PR gate step), prefer a **backgrounded `Bash`** (`run_in_background: true`) that redirects to a log and appends `; echo "EXIT=$?"`, then — on the completion notification — grep the log for the `EXIT=` marker plus failing tests (targeted greps keep the verbose log out of context); it self-reports **once** on exit, whereas a Haiku subagent driving its own poll loop tends to return premature "still waiting" notes. Otherwise, delegate to a **Haiku subagent**
 (`subagent_type: general-purpose`, `model: haiku`) so output stays out of your context.
 Do not run it yourself. Prompt the subagent to:
 

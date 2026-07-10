@@ -104,17 +104,22 @@ implementation = separate `/deliver` sessions.)
 
 - The conductor stays **lean** (plan reference, ledger, gate, short per-phase
   summaries); heavy work is already isolated in Workflows/subagents (the
-  `/review-plan` critics, the `code-reviewer` fan-out, the Haiku build/test
-  runners) — keep it that way.
+  `/review-plan` critics, the `code-reviewer` fan-out, the backgrounded-shell /
+  Haiku build/test runners) — keep it that way.
 - **Implement runs inline — on purpose** (the TDD list stays visible). Do
   **not** convert it to a silent subagent.
 - **The gate stays in the main agent**; phases hand off via git / disk / the
   PR, not context.
 - Separate worktrees get separate `DerivedData`/`.build` dirs; run builds
   sequentially *within* one worktree. **Inside a worktree, build/test via
-  `make` (Haiku subagent), not the Xcode MCP** — Xcode has the *main
-  checkout's* workspace open
-  ([`references/worktree-lifecycle.md`](references/worktree-lifecycle.md)).
+  `make`, not the Xcode MCP** — Xcode has the *main checkout's* workspace open
+  ([`references/worktree-lifecycle.md`](references/worktree-lifecycle.md)). For
+  a **long-running gate run you'll block on** (Phase 9), prefer a **backgrounded
+  `Bash`** (`run_in_background: true`) that logs to a file and appends
+  `; echo "EXIT=$?"`, then grep the log for the exit marker + errors on the
+  completion notification — it self-reports **once** on exit, whereas a Haiku
+  subagent driving its own poll loop returns premature "still waiting" notes. A
+  Haiku subagent is still right for short, foreground summaries.
 
 ## Phase 0 — Preconditions
 
@@ -309,7 +314,10 @@ scaled to a lint-only fast gate when nothing build-affecting changed —
 pushes with `git push`, and opens the PR. Note the gate's coverage: it
 builds Debug, so a **Release-only** failure (`release-build.yml`) is caught
 by CI, not locally — expected; Phase 10 handles it. The `claude-review` job
-is a **non-blocking** neutral check — never treat it as a gate.
+is a **non-blocking** neutral check — never treat it as a gate. **Run each long
+gate leg as a backgrounded `Bash`** that logs to a file and self-reports on exit
+(see *Context & isolation* above), not a Haiku subagent — a subagent driving its
+own poll loop returns premature "still waiting" notes on multi-minute runs.
 
 **If the gate fails, triage** (§4): the failing test/file in
 `git diff --name-only origin/main...HEAD`? **In-diff** →

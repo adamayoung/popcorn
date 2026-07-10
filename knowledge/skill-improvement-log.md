@@ -61,17 +61,20 @@ two fields the dedup step keys on.
 - **Rationale:** automates a diagnosis this run did by hand twice; keeps the gate trustworthy.
 - **Reconsider when:** the owner reviews these, or the framework flake is fixed upstream.
 
-### 2026-07-05 — Run long gates as backgrounded Bash + Monitor, not a Haiku subagent · deferred
+### 2026-07-05 — Run long gates as backgrounded Bash + Monitor, not a Haiku subagent · applied
 
-- **Pattern:** for the multi-minute `make lint`/`build`/`test` gates (PRs #62–#64), Haiku
-  gate subagents repeatedly returned interim "still waiting" notes instead of a final
-  consolidated result, needing nudges. Switching mid-run to a backgrounded `Bash`
-  (`run_in_background`) that writes to a log + greps terminal markers (with a `Monitor` on CI)
+- **Pattern:** for the multi-minute `make lint`/`build`/`test` gates (PRs #62–#64, and again
+  on PR #76's pre-PR gate), Haiku gate subagents repeatedly returned interim "still waiting"
+  notes instead of a final consolidated result, needing nudges. Switching mid-run to a
+  backgrounded `Bash` (`run_in_background`) that writes to a log + greps terminal markers
   was reliable and kept logs out of context.
-- **Decision:** *deferred* — pending owner approval. Candidate change: the `/deliver`
-  gate guidance (and the `/build`/`/test` wrappers when not inside Xcode) should prefer a
-  backgrounded shell command that self-reports on exit over a Haiku subagent for
-  long-running, single-result gate steps.
+- **Decision:** *applied* 2026-07-10 (owner-approved). Codified "prefer a backgrounded `Bash`
+  that self-reports on exit over a Haiku subagent for long-running, single-result gate steps"
+  in `/deliver`'s *Context & isolation* + Phase 9 gate note, the `/build`, `/build-for-testing`,
+  `/test`, `/test-single`, and `/test-snapshots` wrapper fallbacks, and CLAUDE.md's *Build &
+  Test Output Management* (a two-mechanism carve-out — the Haiku subagent stays the default
+  for short/foreground summaries).
 - **Rationale:** a subagent that stops at an interim note is a reliability tax on every
-  long gate; the backgrounded-command pattern gives one clean completion signal.
-- **Reconsider when:** the owner reviews these, or subagent long-run reporting becomes reliable.
+  long gate; the backgrounded-command pattern gives one clean completion signal while keeping
+  the verbose log out of context via the log file.
+- **Reconsider when:** n/a (applied).
