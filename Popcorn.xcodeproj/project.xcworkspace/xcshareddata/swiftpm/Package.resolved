@@ -1,5 +1,5 @@
 {
-  "originHash" : "4378e1e750656254629c70c3a9eb0edc9f38105410795070ba8e99a0bf0e644a",
+  "originHash" : "fa6300786ecea84e81d5f50e8765af4898ce4631f5d5aef5874fe27033bb9c06",
   "pins" : [
     {
       "identity" : "sdwebimage",
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/getsentry/sentry-cocoa.git",
       "state" : {
-        "revision" : "f296a015239d68ad4214981f4a1d3d7ab4cc82c4",
-        "version" : "9.17.0"
+        "revision" : "53eb9bd5da18e208cfd80e86863d3f4c7ba21b1d",
+        "version" : "9.21.0"
       }
     },
     {
@@ -51,8 +51,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-snapshot-testing",
       "state" : {
-        "revision" : "ad5e3190cc63dc288f28546f9c6827efc1e9d495",
-        "version" : "1.19.2"
+        "revision" : "1bc16f430d8410e7f087d4c787767b26fd32fe30",
+        "version" : "1.19.3"
       }
     },
     {
@@ -69,8 +69,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/adamayoung/TMDb.git",
       "state" : {
-        "revision" : "930a9ce13f6be02940cf87a8db34dc4180b5cee8",
-        "version" : "18.0.0"
+        "revision" : "07439fe4db796a5563ff69d61c97baaeb1fbef0c",
+        "version" : "18.2.0"
       }
     },
     {

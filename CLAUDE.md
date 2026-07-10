@@ -246,9 +246,9 @@ domain models, or sync logic.
 
 | Dependency | Version | Used By |
 |------------|---------|---------|
-| TMDb | 18.0+ | Context Adapters |
+| TMDb | 18.2+ | Context Adapters |
 | SDWebImageSwiftUI | 3.1+ | DesignSystem |
-| sentry-cocoa | 9.17+ | ObservabilityAdapters |
+| sentry-cocoa | 9.21+ | ObservabilityAdapters |
 | statsig-kit | 1.62+ | FeatureAccessAdapters |
 | swift-snapshot-testing | 1.19+ | Feature snapshot tests |
 

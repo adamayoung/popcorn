@@ -77,7 +77,8 @@ struct MovieMapperTests {
     func mapsAllStatuses() {
         let cases: [(MoviesDomain.MovieStatus, IntelligenceDomain.MovieStatus)] = [
             (.rumoured, .rumoured), (.planned, .planned), (.inProduction, .inProduction),
-            (.postProduction, .postProduction), (.released, .released), (.cancelled, .cancelled)
+            (.postProduction, .postProduction), (.released, .released), (.cancelled, .cancelled),
+            (.unknown, .unknown)
         ]
         for (input, expected) in cases {
             let details = MovieDetails(id: 1, title: "M", overview: "", status: input, isOnWatchlist: false)

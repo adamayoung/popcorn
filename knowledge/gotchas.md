@@ -11,6 +11,43 @@ and dated; link an ADR if a decision came out of it.
 *YYYY-MM-DD.* What bit us, why, and the resolution. Keep it to a few lines.
 -->
 
+### Bumping a third-party dependency can add enum cases that break exhaustive switches
+
+*2026-07-09.* Updating **TMDb 18.0.0 → 18.2.0** (a *minor* bump) silently added a
+`.unknown` resilience case to the public `TMDb.Status` enum — unrecognised API values now
+decode to `.unknown` instead of throwing. That turned our exhaustive `switch` over
+`TMDb.Status` in `MovieStatusMapper` into a **compile error**. Because the build stops at
+the first non-exhaustive switch, don't chase these one build-error at a time: after any
+dependency bump, sweep **every** exhaustive switch over that dependency's public
+(non-frozen) enums up front with a type-driven grep (e.g. `rg 'case \.<distinctiveCase>'`).
+The sweep here found three switches — `MovieStatusMapper` (`TMDb.Status`) plus the two
+Intelligence `MovieMapper`s (over the domain `MovieStatus`). Fix followed the
+`GenderMapper` convention: add a matching `.unknown` case to the domain enums
+(`MoviesDomain.MovieStatus` + `IntelligenceDomain.MovieStatus`) and map it 1:1. A
+`String`-backed enum case needs no SwiftData/CloudKit migration (stored as its rawValue).
+
+### `Package.resolved`: only the workspace file is tracked, and resolvers disagree on transitives
+
+*2026-07-09.* Only the **workspace** `Package.resolved`
+(`Popcorn.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`) is
+git-tracked; all 33 per-package `Package.resolved` are gitignored (`.gitignore`:
+`**/Package.resolved`, with the workspace path force-added). So a dependency bump's
+committed diff is just the touched `Package.swift` files + the single workspace
+`Package.resolved` (+ any code the bump forced); running `swift package update` in the
+per-package dirs rewrites gitignored files only and produces no committed diff. Two traps
+when re-resolving:
+
+- **Per-package and workspace resolves pick different transitive versions.**
+  `swift package update` inside an isolated package resolves transitives to the newest
+  allowed *there*, but the full-workspace `xcodebuild -resolvePackageDependencies` caps
+  them lower because another package in the graph constrains them. Example: isolated
+  `SnapshotTestHelpers` picked swift-custom-dump 1.6.1 / swift-syntax 603.0.2 /
+  xctest-dynamic-overlay 1.11.0, while the workspace held them at 1.5.0 / 603.0.0 / 1.9.0.
+  The **workspace** file is authoritative for the app build — trust it, not the
+  per-package files.
+- **`-resolvePackageDependencies` only moves pins that violate the new lower bound.** To
+  force the tracked workspace file fully to latest, delete it and re-resolve.
+
 ### The App target got `AppDependencies` transitively through the feature packages
 
 *2026-07-05.* The `Popcorn` app target's pbxproj directly links only the 20 feature
