@@ -51,8 +51,7 @@ package final class MoviesApplicationFactory: Sendable {
             movieRepository: movieRepository,
             movieImageRepository: movieImageRepository,
             movieWatchlistRepository: movieWatchlistRepository,
-            appConfigurationProvider: appConfigurationProvider,
-            themeColorProvider: themeColorProvider
+            appConfigurationProvider: appConfigurationProvider
         )
     }
 
