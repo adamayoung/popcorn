@@ -19,7 +19,7 @@ public struct TrendingMoviesView: View {
     /// A 100pt minimum keeps three posters across on every iPhone width
     /// (375–440pt) while letting iPad and Mac fit more.
     private static let columns = [
-        GridItem(.adaptive(minimum: 100), spacing: 16)
+        GridItem(.adaptive(minimum: 100), spacing: .spacing16)
     ]
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -62,8 +62,8 @@ public struct TrendingMoviesView: View {
 extension TrendingMoviesView {
 
     private var content: some View {
-        LazyVGrid(columns: Self.columns, spacing: 16) {
-            ForEach(Array(movies.enumerated()), id: \.element.id) { offset, movie in
+        LazyVGrid(columns: Self.columns, spacing: .spacing16) {
+            ForEach(movies.enumerated(), id: \.element.id) { offset, movie in
                 Button {
                     viewModel.selectMovie(id: movie.id)
                 } label: {

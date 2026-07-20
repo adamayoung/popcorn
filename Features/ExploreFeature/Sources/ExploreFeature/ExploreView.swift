@@ -145,11 +145,10 @@ extension ExploreView {
             Button {
                 viewModel.selectTrendingMovies()
             } label: {
-                HStack(spacing: 4) {
+                HStack(spacing: .spacing4) {
                     Text("TRENDING_MOVIES", bundle: .module)
                         .font(.title2)
                         .bold()
-                        .accessibilityAddTraits(.isHeader)
 
                     Image(systemName: "chevron.right")
                         .font(.title3)
@@ -157,6 +156,9 @@ extension ExploreView {
                         .foregroundStyle(.secondary)
                 }
             }
+            .accessibilityIdentifier("explore.trending-movies.header")
+            .accessibilityAddTraits(.isHeader)
+            .accessibilityHint(Text("VIEW_ALL_TRENDING_MOVIES_HINT", bundle: .module))
             .buttonStyle(.plain)
         }
         .padding(.horizontal)

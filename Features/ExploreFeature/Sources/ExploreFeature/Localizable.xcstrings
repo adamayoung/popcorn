@@ -110,6 +110,17 @@
           }
         }
       }
+    },
+    "VIEW_ALL_TRENDING_MOVIES_HINT" : {
+      "comment" : "Accessibility hint for the trending movies section header button, describing what happens when activated.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View all trending movies"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"
