@@ -37,7 +37,7 @@ struct MoviePreviewMapperTests {
 
         #expect(result.id == 798_645)
         #expect(result.title == "The Running Man")
-        #expect(result.posterURL == URL(string: "https://example.com/thumbnail.jpg"))
+        #expect(result.posterURL == URL(string: "https://example.com/card.jpg"))
     }
 
     @Test("Maps MoviePreviewDetails with nil poster URL set")

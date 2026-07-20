@@ -14,6 +14,18 @@ struct ExploreRouterTests {
 
     // MARK: - ExploreNavigating (home)
 
+    @Test("home openTrendingMovies() pushes trendingMovies")
+    func homeOpenTrendingMoviesPushesRoute() {
+        let router = ExploreRouter()
+        let navigator = ExploreRouterNavigator(router: router)
+
+        navigator.openTrendingMovies()
+
+        #expect(router.path == [.trendingMovies])
+        #expect(router.presentedMovieIntelligence == nil)
+        #expect(router.presentedTVSeriesIntelligence == nil)
+    }
+
     @Test("home openMovieDetails(id:transitionID:) pushes movieDetails forwarding the transitionID")
     func homeOpenMovieDetailsForwardsTransitionID() {
         let router = ExploreRouter()

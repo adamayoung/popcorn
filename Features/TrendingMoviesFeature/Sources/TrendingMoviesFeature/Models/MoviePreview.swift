@@ -27,22 +27,56 @@ public struct MoviePreview: Identifiable, Sendable, Equatable, Hashable {
 
 extension MoviePreview {
 
+    /// Six movies so previews and snapshots exercise a full two rows of the
+    /// three-across iPhone grid. Seeded from the live TMDb trending feed.
     static var mocks: [MoviePreview] {
         [
             MoviePreview(
-                id: 1,
-                title: "The Running Man",
+                id: 1_368_337,
+                title: "The Odyssey",
                 posterURL: URL(
                     string:
-                    "https://image.tmdb.org/t/p/w780/dKL78O9zxczVgjtNcQ9UkbYLzqX.jpg"
+                    "https://image.tmdb.org/t/p/w342/5rhTDKUhPYvpdQIijFIs5VoWsON.jpg"
                 )
             ),
             MoviePreview(
-                id: 2,
-                title: "Black Phone 2",
+                id: 1_083_381,
+                title: "Backrooms",
                 posterURL: URL(
                     string:
-                    "https://image.tmdb.org/t/p/w780/xUWUODKPIilQoFUzjHM6wKJkP3Y.jpg"
+                    "https://image.tmdb.org/t/p/w342/rhGx6E3qRNMgj3i5su2oukNHwIQ.jpg"
+                )
+            ),
+            MoviePreview(
+                id: 1_339_713,
+                title: "Obsession",
+                posterURL: URL(
+                    string:
+                    "https://image.tmdb.org/t/p/w342/bRwnj8WEKBCvmfeUNOukJPwB43K.jpg"
+                )
+            ),
+            MoviePreview(
+                id: 1_273_221,
+                title: "Scary Movie",
+                posterURL: URL(
+                    string:
+                    "https://image.tmdb.org/t/p/w342/1KlYdWoOrbL5ux357rW9LC155qw.jpg"
+                )
+            ),
+            MoviePreview(
+                id: 1_228_710,
+                title: "The Mandalorian and Grogu",
+                posterURL: URL(
+                    string:
+                    "https://image.tmdb.org/t/p/w342/5Vi8dSauVwH1HOsiZceDMbRr1Ca.jpg"
+                )
+            ),
+            MoviePreview(
+                id: 1_003_596,
+                title: "Avengers: Doomsday",
+                posterURL: URL(
+                    string:
+                    "https://image.tmdb.org/t/p/w342/cWXtJhrlruF8CeYuaBGE8vdj3Q9.jpg"
                 )
             )
         ]

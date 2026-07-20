@@ -136,6 +136,10 @@ public final class ExploreViewModel {
 
     // MARK: - Navigation
 
+    public func selectTrendingMovies() {
+        navigator.openTrendingMovies()
+    }
+
     public func selectMovie(id: Int, transitionID: String?) {
         navigator.openMovieDetails(id: id, transitionID: transitionID)
     }

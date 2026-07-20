@@ -11,6 +11,7 @@ import MovieDetailsFeature
 import MovieIntelligenceFeature
 import PersonDetailsFeature
 import SwiftUI
+import TrendingMoviesFeature
 import TVEpisodeCastAndCrewFeature
 import TVEpisodeDetailsFeature
 import TVSeasonDetailsFeature
@@ -76,6 +77,8 @@ struct ExploreRootView: View {
     @ViewBuilder
     private func destination(_ route: ExploreRoute) -> some View {
         switch route {
+        case .trendingMovies:
+            trendingMovies()
         case .movieDetails(let id, let transitionID):
             movieDetails(id: id, transitionID: transitionID)
         case .tvSeriesDetails(let id, let transitionID):
@@ -103,6 +106,13 @@ struct ExploreRootView: View {
                 episodeNumber: episodeNumber
             )
         }
+    }
+
+    private func trendingMovies() -> some View {
+        TrendingMoviesView(
+            viewModel: factory.makeTrendingMovies(navigator: navigator),
+            transitionNamespace: namespace
+        )
     }
 
     @ViewBuilder
