@@ -16,6 +16,50 @@ table (`date · PR · weight · one-line outcome`) — see [`README.md`](README.
 
 <!-- Newest entry goes here. -->
 
+### Trending movies poster grid · `feature/explore-trending-movies-navigation` · 2026-07-20 · full
+
+*Phases / skills:* plan mode → `/deliver` (no worktree — see deviations) →
+`/review-changes` (7-dimension fan-out + adversarial verify) → `/security-review` →
+`swiftui-accessibility-expert` → `/capture-knowledge` → independent grader. Scope grew
+twice mid-run at the user's request: a zoom transition, then a `ViewState` migration.
+
+*What worked:*
+- The **review fan-out earned its cost outright.** It found that the `ExploreView`
+  snapshot baseline was never re-recorded after the trending header became a button with
+  a chevron. Confirmed by actually running the test — it failed, and would have turned CI
+  red on merge. Zero of the Critical/High findings were dropped by adversarial verify.
+- **Looking at recorded snapshots, not just their exit codes.** Both a wrong 3-across
+  assumption and a bogus error-state test were caught by opening the PNG. A green
+  snapshot run means "matches the baseline", not "the baseline is right".
+- Consulting `swiftui-accessibility-expert` surfaced a missing `accessibilityHint` that
+  the obvious sibling (`WatchlistView`) omits but eight other views implement.
+
+*Friction:*
+- `swift test` in the feature package can't build (snapshot target → UIKit), so every
+  iteration paid full-app build cost. The `/test-package` skill documents this, but only
+  in a trailing note — it cost a wasted subagent run before it was found.
+- One `make test` died with `Failed to create a bundle instance representing
+  PopcornTests.xctest` with **zero** failing tests; clean on retry. Cost a triage detour.
+  Worth noting alongside the existing `Runner._applyScopingTraits` flake entry.
+- Editing `.xcstrings` with a JSON round-trip reformatted the whole catalog (127-line
+  diff, key reorder, lost trailing newline). Edit string catalogs **textually**.
+
+*Deviations:*
+- **No worktree.** Phase 1 found the branch had zero commits ahead of `main` with the
+  entire Explore-navigation feature uncommitted; branching elsewhere would have stranded
+  it. Committed it in place first (user-confirmed) and worked on the existing branch.
+  The skill assumes a clean tree and has no branch for this.
+- Skipped a second full fan-out after the fix commit — used the single-reviewer path,
+  since the fix diff was small. Matches `/review-changes`'s own sizing rule.
+- Left two known items unfixed by choice: a dead `openTVSeriesDetails(id:)` (user's own
+  in-flight code, explicitly asked to preserve) and the sibling `TrendingPeople` /
+  `TrendingTVSeries` view models, which have the same missing-error-state shape but are
+  not yet reachable.
+
+*One improvement:* `/deliver` Phase 1 should explicitly handle "uncommitted work already
+in the tree" — commit-in-place on the current branch is the safe move, and the current
+worktree-first instruction actively risks stranding the user's work.
+
 ### Third-party dependency update · PR #76 · 2026-07-09 · full
 
 - *Phases / skills:* worktree → (`review-plan` skipped — plan approved via `/deliver`) →

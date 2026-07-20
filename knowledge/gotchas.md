@@ -11,6 +11,58 @@ and dated; link an ADR if a decision came out of it.
 *YYYY-MM-DD.* What bit us, why, and the resolution. Keep it to a few lines.
 -->
 
+### A seeded `.error` view state can't be snapshot-tested — `.task(id:)` retries it
+
+*2026-07-20.* An error-state snapshot for `TrendingMoviesView` recorded a **spinner**, not
+the error view. Constructing a view model at `.error` and rendering it does not hold: the
+view's `.task(id:)` runs on first appearance and `load()` only short-circuits on `.ready` /
+`.loading`, so a seeded `.error` is immediately retried into `.loading` before the image is
+captured. The test would have passed forever while asserting the wrong thing. In production
+the state is stable (reached by a failing `load()`; `.task` won't rerun until `reload()`
+bumps `reloadID`) — the artefact is purely from seeding. Cover the `.error` transition in a
+**view-model** test instead; that is why no feature here snapshot-tests an error state.
+`.ready` states seed fine — the `!isReady` guard makes `load()` a no-op — which is how the
+empty-state snapshot works.
+
+### Zoom transition IDs must be scoped per screen, not per item
+
+*2026-07-20.* Two screens that publish the **same** items as zoom sources into the same
+`Namespace` need different `matchedTransitionSource` identifiers. The Explore carousel and
+the pushed trending grid both list the same movies, and the carousel stays mounted
+underneath while the grid is on top — reusing `"<id>"` would leave
+`.navigationTransition(.zoom(sourceID:))` with two candidate sources for one movie. Hence
+the per-screen context suffix (`42_trending-movies` vs `42_trending-movies-grid`). This is
+what the per-feature `TransitionID` type's `context` is for; it is duplicated per feature
+on purpose (feature packages are leaves — see
+[0001](decisions/0001-feature-packages-are-leaves.md)).
+
+### `.adaptive(minimum:)` grid columns: copying a sibling's number changes the column count
+
+*2026-07-20.* `GridItem(.adaptive(minimum:))` fits `floor((width + spacing) / (minimum +
+spacing))` columns, so the same literal yields different counts on different screens.
+`WatchlistFeature`'s `minimum: 120` gives only **2** columns at iPhone widths (390pt −32pt
+padding = 358 → `floor(374/136)` = 2); a 3-across iPhone grid needs `minimum: 100`
+(375–440pt all yield 3). Derive the number from the target column count and content width
+rather than copying it from a sibling grid.
+
+### `swift test` can't build a feature package whose snapshot target imports UIKit
+
+*2026-07-20.* Running `swift test` in a feature package directory builds **all** its
+targets for macOS, so a package with a snapshot-test target fails at
+`SnapshotTestHelpers` → `import UIKit` ("unable to resolve module dependency"), before any
+test runs. Not a project error — use the full-app `/test` (or Xcode MCP `RunSomeTests`) for
+those packages, or `swift build` sources only. Documented in the `/test-package` skill.
+
+### Typed throws survive an existential — a second generic `catch` is unreachable
+
+*2026-07-20.* `MovieIntelligenceViewModel.sendPrompt` had a `catch let error as LLMSessionError`
+plus a generic `catch` wrapping anything else as `.unknown`, commented "typed throws are erased
+when calling through an `any LLMSession` existential". That is wrong: `LLMSession.respond(to:)`
+declares `throws(LLMSessionError)` with a **concrete** error type (not an associated type), so
+the typed throw is preserved through `any LLMSession` and `catch let error` binds as
+`LLMSessionError`. The generic block was dead code. The proof is that it compiles at all —
+`self.error` is `LLMSessionError?`, so if erasure really happened the assignment wouldn't build.
+
 ### Bumping a third-party dependency can add enum cases that break exhaustive switches
 
 *2026-07-09.* Updating **TMDb 18.0.0 → 18.2.0** (a *minor* bump) silently added a
