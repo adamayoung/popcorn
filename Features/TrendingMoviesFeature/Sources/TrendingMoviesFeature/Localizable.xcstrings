@@ -11,6 +11,17 @@
           }
         }
       }
+    },
+    "VIEW_MOVIE_DETAILS_HINT" : {
+      "comment" : "Accessibility hint for a movie button, describing what happens when activated.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View movie details"
+          }
+        }
+      }
     }
   },
   "version" : "1.1"
