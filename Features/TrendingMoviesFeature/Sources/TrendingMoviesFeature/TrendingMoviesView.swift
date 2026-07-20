@@ -11,9 +11,9 @@ import SwiftUI
 /// The trending movies view, driven by ``TrendingMoviesViewModel``.
 ///
 /// A standalone leaf view that owns its view model. Renders an adaptive grid of
-/// movie posters — three across on iPhone, more on wider screens. Takes a
-/// `transitionNamespace` even though it does not apply `.matchedTransitionSource`
-/// (no zoom transition).
+/// movie posters — three across on iPhone, more on wider screens. Each poster is
+/// a zoom transition source, so pushing movie details animates out of the tapped
+/// poster; `transitionNamespace` must be the one the destination zooms into.
 public struct TrendingMoviesView: View {
 
     /// A 100pt minimum keeps three posters across on every iPhone width
@@ -64,8 +64,10 @@ extension TrendingMoviesView {
     private var content: some View {
         LazyVGrid(columns: Self.columns, spacing: .spacing16) {
             ForEach(movies.enumerated(), id: \.element.id) { offset, movie in
+                let transitionID = TransitionID(movie: movie).value
+
                 Button {
-                    viewModel.selectMovie(id: movie.id)
+                    viewModel.selectMovie(id: movie.id, transitionID: transitionID)
                 } label: {
                     PosterImage(url: movie.posterURL)
                         .aspectRatio(500.0 / 750.0, contentMode: .fit)
@@ -79,6 +81,7 @@ extension TrendingMoviesView {
                 .accessibilityLabel(Text(verbatim: movie.title))
                 .accessibilityHint(Text("VIEW_MOVIE_DETAILS_HINT", bundle: .module))
                 .buttonStyle(.plain)
+                .matchedTransitionSource(id: transitionID, in: namespace)
             }
         }
         .animation(reduceMotion ? nil : .default, value: movies)

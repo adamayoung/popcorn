@@ -78,8 +78,8 @@ public final class TrendingMoviesViewModel {
 
     // MARK: - Navigation
 
-    public func selectMovie(id: Int) {
-        navigator.openMovieDetails(id: id)
+    public func selectMovie(id: Int, transitionID: String?) {
+        navigator.openMovieDetails(id: id, transitionID: transitionID)
     }
 
 }

@@ -7,7 +7,7 @@
 
 import TrendingMoviesFeature
 
-/// This protocol's sole requirement, `openMovieDetails(id:)`, is witnessed by the
-/// `MovieDetailsNavigating` extension. Trending rows push without a zoom, so they
-/// pass no `transitionID`.
+/// This protocol's sole requirement, `openMovieDetails(id:transitionID:)`, is
+/// witnessed by the `ExploreNavigating` extension. The trending grid makes each
+/// poster a zoom source, so it forwards a `transitionID`.
 extension ExploreRouterNavigator: TrendingMoviesNavigating {}

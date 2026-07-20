@@ -108,15 +108,28 @@ struct TrendingMoviesViewModelTests {
         #expect(viewModel.reloadID == initialID + 1)
     }
 
-    @Test("selectMovie invokes the navigator with the movie identifier")
+    @Test("selectMovie forwards the id and transitionID to the navigator")
     @MainActor
     func selectMovieInvokesNavigator() {
         let navigator = SpyTrendingMoviesNavigator()
         let viewModel = Self.makeViewModel(navigator: navigator)
 
-        viewModel.selectMovie(id: 456)
+        viewModel.selectMovie(id: 456, transitionID: "456_trending-movies-grid")
 
         #expect(navigator.openedMovieID == 456)
+        #expect(navigator.openedMovieTransitionID == "456_trending-movies-grid")
+    }
+
+    @Test("selectMovie forwards a nil transitionID when there is no zoom source")
+    @MainActor
+    func selectMovieForwardsNilTransitionID() {
+        let navigator = SpyTrendingMoviesNavigator()
+        let viewModel = Self.makeViewModel(navigator: navigator)
+
+        viewModel.selectMovie(id: 456, transitionID: nil)
+
+        #expect(navigator.openedMovieID == 456)
+        #expect(navigator.openedMovieTransitionID == nil)
     }
 
 }
@@ -126,9 +139,11 @@ struct TrendingMoviesViewModelTests {
 @MainActor
 private final class SpyTrendingMoviesNavigator: TrendingMoviesNavigating {
     var openedMovieID: Int?
+    var openedMovieTransitionID: String?
 
-    func openMovieDetails(id: Int) {
+    func openMovieDetails(id: Int, transitionID: String?) {
         openedMovieID = id
+        openedMovieTransitionID = transitionID
     }
 }
 
