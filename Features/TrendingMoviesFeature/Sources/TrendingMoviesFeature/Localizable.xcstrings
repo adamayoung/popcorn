@@ -1,13 +1,13 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "TRENDING" : {
+    "TRENDING_MOVIES" : {
       "comment" : "The navigation title for the trending movies screen.",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Trending"
+            "value" : "Trending Movies"
           }
         }
       }

@@ -51,7 +51,7 @@ public struct TrendingMoviesView: View {
                 ProgressView()
             }
         }
-        .navigationTitle(Text("TRENDING", bundle: .module))
+        .navigationTitle(Text("TRENDING_MOVIES", bundle: .module))
         .task(id: viewModel.reloadID) {
             await viewModel.load()
         }

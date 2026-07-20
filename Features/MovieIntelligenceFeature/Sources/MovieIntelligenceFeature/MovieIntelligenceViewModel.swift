@@ -97,20 +97,11 @@ public final class MovieIntelligenceViewModel {
             let response = try await session.respond(to: prompt)
             isThinking = false
             messages.append(Message(role: .assistant, textContent: response))
-        } catch let error as LLMSessionError {
+        } catch let error {
             dependencies.captureError(error)
             Self.logger.error("Failed to send prompt: \(error.localizedDescription)")
             isThinking = false
             self.error = error
-            messages.append(Message(role: .assistant, textContent: "I couldn't respond to that. Please try again."))
-        } catch {
-            // Typed throws are erased when calling through an `any LLMSession` existential,
-            // so this catch handles any unexpected errors from concrete implementations.
-            let sessionError = LLMSessionError.unknown(error.localizedDescription)
-            dependencies.captureError(error)
-            Self.logger.error("Unexpected error sending prompt: \(error.localizedDescription)")
-            isThinking = false
-            self.error = sessionError
             messages.append(Message(role: .assistant, textContent: "I couldn't respond to that. Please try again."))
         }
     }

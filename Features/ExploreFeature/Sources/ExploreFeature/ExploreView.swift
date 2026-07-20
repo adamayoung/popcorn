@@ -142,10 +142,22 @@ extension ExploreView {
     @ViewBuilder
     private func trendingMoviesSection(_ movies: [MoviePreview]) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("TRENDING_MOVIES", bundle: .module)
-                .font(.title2)
-                .bold()
-                .accessibilityAddTraits(.isHeader)
+            Button {
+                viewModel.selectTrendingMovies()
+            } label: {
+                HStack(spacing: 4) {
+                    Text("TRENDING_MOVIES", bundle: .module)
+                        .font(.title2)
+                        .bold()
+                        .accessibilityAddTraits(.isHeader)
+
+                    Image(systemName: "chevron.right")
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .buttonStyle(.plain)
         }
         .padding(.horizontal)
         .padding(.vertical, 0)
