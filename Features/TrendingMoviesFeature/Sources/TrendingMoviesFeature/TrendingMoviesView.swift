@@ -6,14 +6,16 @@
 //
 
 import DesignSystem
+import Presentation
 import SwiftUI
 
 /// The trending movies view, driven by ``TrendingMoviesViewModel``.
 ///
 /// A standalone leaf view that owns its view model. Renders an adaptive grid of
-/// movie posters — three across on iPhone, more on wider screens. Each poster is
-/// a zoom transition source, so pushing movie details animates out of the tapped
-/// poster; `transitionNamespace` must be the one the destination zooms into.
+/// movie posters — three across on iPhone, more on wider screens — with loading,
+/// empty, and error states. Each poster is a zoom transition source, so pushing
+/// movie details animates out of the tapped poster; `transitionNamespace` must be
+/// the one the destination zooms into.
 public struct TrendingMoviesView: View {
 
     /// A 100pt minimum keeps three posters across on every iPhone width
@@ -26,14 +28,6 @@ public struct TrendingMoviesView: View {
     @State private var viewModel: TrendingMoviesViewModel
     private let namespace: Namespace.ID
 
-    private var movies: [MoviePreview] {
-        viewModel.movies
-    }
-
-    private var isLoading: Bool {
-        viewModel.isInitiallyLoading
-    }
-
     public init(
         viewModel: TrendingMoviesViewModel,
         transitionNamespace: Namespace.ID
@@ -44,13 +38,29 @@ public struct TrendingMoviesView: View {
 
     public var body: some View {
         ScrollView {
-            content
-        }
-        .overlay {
-            if isLoading {
-                ProgressView()
+            switch viewModel.viewState {
+            case .ready(let snapshot):
+                if snapshot.movies.isEmpty {
+                    emptyBody
+                        .containerRelativeFrame(.vertical)
+                } else {
+                    content(movies: snapshot.movies)
+                }
+            case .error(let error):
+                errorBody(error)
+                    .containerRelativeFrame(.vertical)
+            default:
+                EmptyView()
             }
         }
+        .overlay {
+            if viewModel.viewState.isLoading {
+                ProgressView()
+                    .accessibilityLabel(Text("LOADING", bundle: .module))
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }
+        }
+        .accessibilityIdentifier("trendingMovies.view")
         .navigationTitle(Text("TRENDING_MOVIES", bundle: .module))
         .task(id: viewModel.reloadID) {
             await viewModel.load()
@@ -61,7 +71,28 @@ public struct TrendingMoviesView: View {
 
 extension TrendingMoviesView {
 
-    private var content: some View {
+    private func errorBody(_ error: ViewStateError) -> some View {
+        ContentLoadErrorView(
+            message: error.message,
+            systemImage: "film",
+            reason: error.reason,
+            isRetryable: error.isRetryable,
+            retryAction: { viewModel.reload() }
+        )
+    }
+
+    private var emptyBody: some View {
+        ContentUnavailableView {
+            Label(
+                LocalizedStringResource("NO_TRENDING_MOVIES", bundle: .module),
+                systemImage: "film"
+            )
+        } description: {
+            Text(LocalizedStringResource("NO_TRENDING_MOVIES_DESCRIPTION", bundle: .module))
+        }
+    }
+
+    private func content(movies: [MoviePreview]) -> some View {
         LazyVGrid(columns: Self.columns, spacing: .spacing16) {
             ForEach(movies.enumerated(), id: \.element.id) { offset, movie in
                 let transitionID = TransitionID(movie: movie).value
@@ -91,12 +122,34 @@ extension TrendingMoviesView {
 }
 
 #if DEBUG
-    #Preview {
+    #Preview("Ready") {
         @Previewable @Namespace var namespace
 
         NavigationStack {
             TrendingMoviesView(
-                viewModel: .preview(),
+                viewModel: .preview(movies: MoviePreview.mocks),
+                transitionNamespace: namespace
+            )
+        }
+    }
+
+    #Preview("Empty") {
+        @Previewable @Namespace var namespace
+
+        NavigationStack {
+            TrendingMoviesView(
+                viewModel: .preview(movies: []),
+                transitionNamespace: namespace
+            )
+        }
+    }
+
+    #Preview("Loading") {
+        @Previewable @Namespace var namespace
+
+        NavigationStack {
+            TrendingMoviesView(
+                viewModel: .preview(viewState: .loading),
                 transitionNamespace: namespace
             )
         }

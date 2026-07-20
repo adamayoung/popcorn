@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Presentation
 import Synchronization
 import Testing
 @testable import TrendingMoviesFeature
@@ -13,9 +14,9 @@ import Testing
 @Suite("TrendingMoviesViewModel Tests")
 struct TrendingMoviesViewModelTests {
 
-    @Test("load populates movies from the dependency")
+    @Test("load success builds a ready snapshot from the dependency")
     @MainActor
-    func loadPopulatesMovies() async {
+    func loadSuccessBuildsReadySnapshot() async {
         let viewModel = Self.makeViewModel(
             dependencies: Self.stubDependencies(
                 fetchTrendingMovies: { Self.testMovies }
@@ -24,47 +25,27 @@ struct TrendingMoviesViewModelTests {
 
         await viewModel.load()
 
-        #expect(viewModel.movies == Self.testMovies)
+        #expect(viewModel.viewState.content?.movies == Self.testMovies)
     }
 
-    @Test("load clears isLoading on success")
+    @Test("load success with no movies is still ready, so the view shows its empty state")
     @MainActor
-    func loadClearsLoadingOnSuccess() async {
+    func loadSuccessWithNoMoviesIsReady() async {
         let viewModel = Self.makeViewModel(
             dependencies: Self.stubDependencies(
-                fetchTrendingMovies: { Self.testMovies }
+                fetchTrendingMovies: { [] }
             )
         )
 
         await viewModel.load()
 
-        #expect(viewModel.isLoading == false)
+        #expect(viewModel.viewState.isReady)
+        #expect(viewModel.viewState.content?.movies.isEmpty == true)
     }
 
-    @Test("load sets isLoading true while fetching, then clears it")
+    @Test("load failure sets viewState to error")
     @MainActor
-    func loadSetsLoadingWhileFetching() async {
-        let observer = LoadingObserver()
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchTrendingMovies: {
-                    await observer.capture()
-                    return Self.testMovies
-                }
-            )
-        )
-        observer.viewModel = viewModel
-
-        #expect(viewModel.isLoading == false)
-        await viewModel.load()
-
-        #expect(observer.loadingDuringFetch == true)
-        #expect(viewModel.isLoading == false)
-    }
-
-    @Test("load leaves movies unchanged on failure")
-    @MainActor
-    func loadLeavesMoviesUnchangedOnFailure() async {
+    func loadFailureSetsError() async {
         let fetchCalled = Mutex(false)
         let viewModel = Self.makeViewModel(
             dependencies: Self.stubDependencies(
@@ -78,23 +59,81 @@ struct TrendingMoviesViewModelTests {
         await viewModel.load()
 
         #expect(fetchCalled.withLock { $0 } == true)
-        #expect(viewModel.movies.isEmpty)
+        #expect(viewModel.viewState.isError)
     }
 
-    @Test("isInitiallyLoading is true while loading with no movies")
+    @Test("load sets viewState to loading while fetching, then clears it")
     @MainActor
-    func isInitiallyLoadingWhenEmptyAndLoading() {
-        let viewModel = Self.makeViewModel(isLoading: true)
+    func loadSetsLoadingWhileFetching() async {
+        let observer = LoadingObserver()
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchTrendingMovies: {
+                    await observer.capture()
+                    return Self.testMovies
+                }
+            )
+        )
+        observer.viewModel = viewModel
 
-        #expect(viewModel.isInitiallyLoading)
+        #expect(viewModel.viewState.isLoading == false)
+        await viewModel.load()
+
+        #expect(observer.loadingDuringFetch == true)
+        #expect(viewModel.viewState.isLoading == false)
     }
 
-    @Test("isInitiallyLoading is false once movies are present")
+    @Test("load is a no-op when already loading (guards re-entrancy)")
     @MainActor
-    func isInitiallyLoadingFalseWithMovies() {
-        let viewModel = Self.makeViewModel(movies: Self.testMovies, isLoading: true)
+    func loadNoOpWhenLoading() async {
+        let fetchCount = Mutex(0)
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchTrendingMovies: {
+                    fetchCount.withLock { $0 += 1 }
+                    return Self.testMovies
+                }
+            ),
+            viewState: .loading
+        )
 
-        #expect(viewModel.isInitiallyLoading == false)
+        await viewModel.load()
+
+        #expect(fetchCount.withLock { $0 } == 0)
+    }
+
+    @Test("load is a no-op when already ready")
+    @MainActor
+    func loadNoOpWhenReady() async {
+        let fetchCount = Mutex(0)
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchTrendingMovies: {
+                    fetchCount.withLock { $0 += 1 }
+                    return Self.testMovies
+                }
+            ),
+            viewState: .ready(TrendingMoviesViewSnapshot(movies: Self.testMovies))
+        )
+
+        await viewModel.load()
+
+        #expect(fetchCount.withLock { $0 } == 0)
+    }
+
+    @Test("cancelled load resets to initial (no spurious error) so the next .task re-fetches")
+    @MainActor
+    func loadCancellationResetsToInitial() async {
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchTrendingMovies: { throw CancellationError() }
+            )
+        )
+
+        await viewModel.load()
+
+        #expect(viewModel.viewState.isInitial)
+        #expect(viewModel.viewState.isError == false)
     }
 
     @Test("reload bumps reloadID")
@@ -149,15 +188,15 @@ private final class SpyTrendingMoviesNavigator: TrendingMoviesNavigating {
 
 // MARK: - Loading Observer
 
-/// Captures the view model's `isLoading` value at the moment the fetch closure
-/// runs, so a test can assert loading was set before the network call resolves.
+/// Captures the view model's loading state at the moment the fetch closure runs,
+/// so a test can assert loading was set before the network call resolves.
 @MainActor
 private final class LoadingObserver {
     weak var viewModel: TrendingMoviesViewModel?
     var loadingDuringFetch = false
 
     func capture() {
-        loadingDuringFetch = viewModel?.isLoading ?? false
+        loadingDuringFetch = viewModel?.viewState.isLoading ?? false
     }
 }
 
@@ -169,14 +208,12 @@ extension TrendingMoviesViewModelTests {
     static func makeViewModel(
         dependencies: TrendingMoviesDependencies = stubDependencies(),
         navigator: any TrendingMoviesNavigating = SpyTrendingMoviesNavigator(),
-        movies: [MoviePreview] = [],
-        isLoading: Bool = false
+        viewState: ViewState<TrendingMoviesViewSnapshot> = .initial
     ) -> TrendingMoviesViewModel {
         TrendingMoviesViewModel(
             dependencies: dependencies,
             navigator: navigator,
-            movies: movies,
-            isLoading: isLoading
+            viewState: viewState
         )
     }
 

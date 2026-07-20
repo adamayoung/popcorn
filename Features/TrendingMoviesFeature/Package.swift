@@ -21,6 +21,7 @@ let package = Package(
     dependencies: [
         .package(path: "../../Core/CoreDomain"),
         .package(path: "../../Core/DesignSystem"),
+        .package(path: "../../Core/Presentation"),
         .package(path: "../../Contexts/PopcornTrending"),
         .package(path: "../../Core/SnapshotTestHelpers")
     ],
@@ -30,6 +31,7 @@ let package = Package(
             name: "TrendingMoviesFeature",
             dependencies: [
                 "DesignSystem",
+                "Presentation",
                 .product(name: "TrendingApplication", package: "PopcornTrending")
             ],
             resources: [.process("Localizable.xcstrings")]
@@ -38,6 +40,7 @@ let package = Package(
             name: "TrendingMoviesFeatureTests",
             dependencies: [
                 "TrendingMoviesFeature",
+                "Presentation",
                 .product(name: "CoreDomain", package: "CoreDomain"),
                 .product(name: "TrendingApplication", package: "PopcornTrending")
             ]

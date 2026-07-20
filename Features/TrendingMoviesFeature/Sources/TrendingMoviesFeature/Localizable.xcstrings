@@ -1,6 +1,39 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "LOADING" : {
+      "comment" : "Accessibility label for a loading indicator.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading"
+          }
+        }
+      }
+    },
+    "NO_TRENDING_MOVIES" : {
+      "comment" : "Title shown when there are no trending movies to display.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Trending Movies"
+          }
+        }
+      }
+    },
+    "NO_TRENDING_MOVIES_DESCRIPTION" : {
+      "comment" : "Description shown when there are no trending movies to display.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check back later to see what people are watching."
+          }
+        }
+      }
+    },
     "TRENDING_MOVIES" : {
       "comment" : "The navigation title for the trending movies screen.",
       "localizations" : {
