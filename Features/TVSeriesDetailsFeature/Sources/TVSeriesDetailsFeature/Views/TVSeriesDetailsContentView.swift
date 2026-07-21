@@ -123,10 +123,10 @@ extension TVSeriesDetailsContentView {
     private var castAndCrewSection: some View {
         switch castAndCrewState {
         case .loading:
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: .spacing8) {
                 sectionHeader("CAST_AND_CREW")
                 CarouselPlaceholder(shape: .profile)
-                    .padding(.leading, 16)
+                    .padding(.leading, .spacing16)
                     .accessibilityElement()
                     .accessibilityLabel(Text("LOADING", bundle: .module))
             }
@@ -140,7 +140,7 @@ extension TVSeriesDetailsContentView {
     }
 
     private func castAndCrewCarousel(_ credits: Credits) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: .spacing8) {
             sectionHeader("CAST_AND_CREW") {
                 navigateToCastAndCrew(tvSeries.id)
             }
@@ -154,7 +154,7 @@ extension TVSeriesDetailsContentView {
     }
 
     private var seasonsCarousel: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: .spacing8) {
             sectionHeader("SEASONS")
 
             SeasonsCarousel(

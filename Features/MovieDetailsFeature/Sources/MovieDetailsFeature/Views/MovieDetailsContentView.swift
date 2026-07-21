@@ -147,10 +147,10 @@ extension MovieDetailsContentView {
     private var castAndCrewSection: some View {
         switch castAndCrewState {
         case .loading:
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: .spacing8) {
                 sectionHeader("CAST_AND_CREW")
                 CarouselPlaceholder(shape: .profile)
-                    .padding(.leading, 16)
+                    .padding(.leading, .spacing16)
                     .accessibilityElement()
                     .accessibilityLabel(Text("LOADING", bundle: .module))
             }
@@ -167,10 +167,10 @@ extension MovieDetailsContentView {
     private var recommendedMoviesSection: some View {
         switch recommendedMoviesState {
         case .loading:
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: .spacing8) {
                 sectionHeader("RECOMMENDED")
                 CarouselPlaceholder(shape: .backdrop)
-                    .padding(.leading, 16)
+                    .padding(.leading, .spacing16)
                     .accessibilityElement()
                     .accessibilityLabel(Text("LOADING", bundle: .module))
             }
@@ -184,7 +184,7 @@ extension MovieDetailsContentView {
     }
 
     private func castAndCrewCarousel(_ credits: Credits) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: .spacing8) {
             sectionHeader("CAST_AND_CREW") {
                 navigateToCastAndCrew(movie.id)
             }
@@ -198,7 +198,7 @@ extension MovieDetailsContentView {
     }
 
     private func recommendedMoviesCarousel(_ movies: [MoviePreview]) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: .spacing8) {
             sectionHeader("RECOMMENDED")
 
             RecommendedCarousel(
