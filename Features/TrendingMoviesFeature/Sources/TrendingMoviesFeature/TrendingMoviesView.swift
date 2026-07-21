@@ -18,13 +18,6 @@ import SwiftUI
 /// the one the destination zooms into.
 public struct TrendingMoviesView: View {
 
-    /// A 100pt minimum keeps three posters across on every iPhone width
-    /// (375–440pt) while letting iPad and Mac fit more.
-    private static let columns = [
-        GridItem(.adaptive(minimum: 100), spacing: .spacing16)
-    ]
-
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var viewModel: TrendingMoviesViewModel
     private let namespace: Namespace.ID
 
@@ -93,41 +86,22 @@ extension TrendingMoviesView {
     }
 
     private func content(movies: [MoviePreview]) -> some View {
-        VStack(spacing: .spacing16) {
-            LazyVGrid(columns: Self.columns, spacing: .spacing16) {
-                ForEach(movies.enumerated(), id: \.element.id) { offset, movie in
-                    let transitionID = TransitionID(movie: movie).value
-
-                    Button {
-                        viewModel.selectMovie(id: movie.id, transitionID: transitionID)
-                    } label: {
-                        PosterImage(url: movie.posterURL)
-                            .aspectRatio(500.0 / 750.0, contentMode: .fit)
-                            .clipShape(.rect(cornerRadius: 10))
-                            .overlay {
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.gray.opacity(0.3), lineWidth: 1)
-                            }
-                    }
-                    .accessibilityIdentifier("trendingMovies.movie.\(offset)")
-                    .accessibilityLabel(Text(verbatim: movie.title))
-                    .accessibilityHint(Text("VIEW_MOVIE_DETAILS_HINT", bundle: .module))
-                    .buttonStyle(.plain)
-                    .matchedTransitionSource(id: transitionID, in: namespace)
-                    .task {
-                        await viewModel.loadMoreIfNeeded(at: offset)
-                    }
-                }
+        PosterGrid(
+            items: movies,
+            isLoadingMore: viewModel.isLoadingMore,
+            transitionNamespace: namespace,
+            accessibilityIDPrefix: "trendingMovies",
+            accessibilityHint: Text("VIEW_MOVIE_DETAILS_HINT", bundle: .module),
+            posterURL: { $0.posterURL },
+            transitionID: { TransitionID(movie: $0).value },
+            accessibilityLabel: { $0.title },
+            onSelect: { movie, transitionID in
+                viewModel.selectMovie(id: movie.id, transitionID: transitionID)
+            },
+            loadMore: { offset in
+                await viewModel.loadMoreIfNeeded(at: offset)
             }
-            .animation(reduceMotion ? nil : .default, value: movies)
-
-            if viewModel.isLoadingMore {
-                ProgressView()
-                    .padding(.vertical, .spacing16)
-                    .accessibilityLabel(Text("LOADING", bundle: .module))
-                    .accessibilityIdentifier("trendingMovies.loadingMore")
-            }
-        }
+        )
         .padding()
     }
 
