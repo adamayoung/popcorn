@@ -18,7 +18,7 @@ final class DefaultTrendingRepository: TrendingRepository {
 
     func movies(
         page: Int
-    ) async throws(TrendingRepositoryError) -> [MoviePreview] {
+    ) async throws(TrendingRepositoryError) -> MoviePreviewPage {
         try await remoteDataSource.movies(page: page)
     }
 

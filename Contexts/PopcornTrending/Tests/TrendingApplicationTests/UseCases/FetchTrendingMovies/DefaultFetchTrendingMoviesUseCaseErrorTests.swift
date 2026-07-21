@@ -74,7 +74,7 @@ struct DefaultFetchTrendingMoviesUseCaseErrorTests {
 
     @Test("execute throws unauthorised when app configuration provider throws unauthorised")
     func executeThrowsUnauthorisedWhenAppConfigurationProviderThrowsUnauthorised() async {
-        mockRepository.moviesStub = .success(MoviePreview.mocks)
+        mockRepository.moviesStub = .success(.mock())
         mockAppConfigurationProvider.appConfigurationStub = .failure(.unauthorised)
 
         let useCase = makeUseCase()
@@ -98,7 +98,7 @@ struct DefaultFetchTrendingMoviesUseCaseErrorTests {
     @Test("execute throws unknown when app configuration provider throws unknown")
     func executeThrowsUnknownWhenAppConfigurationProviderThrowsUnknown() async {
         let underlyingError = NSError(domain: "test", code: 456)
-        mockRepository.moviesStub = .success(MoviePreview.mocks)
+        mockRepository.moviesStub = .success(.mock())
         mockAppConfigurationProvider.appConfigurationStub = .failure(.unknown(underlyingError))
 
         let useCase = makeUseCase()

@@ -28,34 +28,40 @@ final class DefaultFetchTrendingMoviesUseCase: FetchTrendingMoviesUseCase {
         self.themeColorProvider = themeColorProvider
     }
 
-    func execute() async throws(FetchTrendingMoviesError) -> [MoviePreviewDetails] {
+    func execute() async throws(FetchTrendingMoviesError) -> MoviePreviewDetailsPage {
         try await execute(page: 1)
     }
 
-    func execute(page: Int) async throws(FetchTrendingMoviesError) -> [MoviePreviewDetails] {
-        let moviePreviews: [MoviePreview]
+    func execute(page: Int) async throws(FetchTrendingMoviesError) -> MoviePreviewDetailsPage {
+        let moviePreviewPage: MoviePreviewPage
         let appConfiguration: AppConfiguration
         do {
-            async let moviePreviewsTask = repository.movies(page: page)
+            async let moviePreviewPageTask = repository.movies(page: page)
             async let appConfigurationTask = appConfigurationProvider.appConfiguration()
-            (moviePreviews, appConfiguration) = try await (moviePreviewsTask, appConfigurationTask)
+            (moviePreviewPage, appConfiguration) = try await (moviePreviewPageTask, appConfigurationTask)
         } catch let error {
             throw FetchTrendingMoviesError(error)
         }
 
         let themeColors = await extractThemeColors(
-            for: moviePreviews,
+            for: moviePreviewPage.movies,
             imagesConfiguration: appConfiguration.images
         )
 
         let mapper = MoviePreviewDetailsMapper()
-        return moviePreviews.map {
+        let movies = moviePreviewPage.movies.map {
             mapper.map(
                 $0,
                 imagesConfiguration: appConfiguration.images,
                 themeColor: themeColors[$0.id]
             )
         }
+
+        return MoviePreviewDetailsPage(
+            page: moviePreviewPage.page,
+            totalPages: moviePreviewPage.totalPages,
+            movies: movies
+        )
     }
 
 }

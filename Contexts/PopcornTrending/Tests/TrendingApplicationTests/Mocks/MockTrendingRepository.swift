@@ -12,9 +12,9 @@ final class MockTrendingRepository: TrendingRepository, @unchecked Sendable {
 
     var moviesCallCount = 0
     var moviesCalledWith: [Int] = []
-    var moviesStub: Result<[MoviePreview], TrendingRepositoryError>?
+    var moviesStub: Result<MoviePreviewPage, TrendingRepositoryError>?
 
-    func movies(page: Int) async throws(TrendingRepositoryError) -> [MoviePreview] {
+    func movies(page: Int) async throws(TrendingRepositoryError) -> MoviePreviewPage {
         moviesCallCount += 1
         moviesCalledWith.append(page)
 

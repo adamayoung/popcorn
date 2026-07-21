@@ -35,3 +35,15 @@ extension MoviePreview {
     }
 
 }
+
+extension MoviePreviewPage {
+
+    static func mock(
+        page: Int = 1,
+        totalPages: Int = 1,
+        movies: [MoviePreview] = MoviePreview.mocks
+    ) -> MoviePreviewPage {
+        MoviePreviewPage(page: page, totalPages: totalPages, movies: movies)
+    }
+
+}
