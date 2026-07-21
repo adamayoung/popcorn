@@ -16,7 +16,7 @@ public protocol MovieRemoteDataSource: Sendable {
         forMovie movieID: Int
     ) async throws(MovieRemoteDataSourceError) -> ImageCollection
 
-    func popular(page: Int) async throws(MovieRemoteDataSourceError) -> [MoviePreview]
+    func popular(page: Int) async throws(MovieRemoteDataSourceError) -> MoviePreviewPage
 
     func similar(
         toMovie movieID: Int,

@@ -194,10 +194,24 @@ extension ExploreView {
     @ViewBuilder
     private func popularMoviesSection(_ movies: [MoviePreview]) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("POPULAR_MOVIES", bundle: .module)
-                .font(.title2)
-                .bold()
-                .accessibilityAddTraits(.isHeader)
+            Button {
+                viewModel.selectPopularMovies()
+            } label: {
+                HStack(spacing: .spacing4) {
+                    Text("POPULAR_MOVIES", bundle: .module)
+                        .font(.title2)
+                        .bold()
+
+                    Image(systemName: "chevron.right")
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .accessibilityIdentifier("explore.popular-movies.header")
+            .accessibilityAddTraits(.isHeader)
+            .accessibilityHint(Text("VIEW_ALL_POPULAR_MOVIES_HINT", bundle: .module))
+            .buttonStyle(.plain)
         }
         .padding(.horizontal)
         .padding(.vertical, 0)

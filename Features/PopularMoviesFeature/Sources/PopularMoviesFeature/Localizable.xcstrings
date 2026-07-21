@@ -1,0 +1,61 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "LOADING" : {
+      "comment" : "Accessibility label for a loading indicator.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading"
+          }
+        }
+      }
+    },
+    "NO_POPULAR_MOVIES" : {
+      "comment" : "Title shown when there are no popular movies to display.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Popular Movies"
+          }
+        }
+      }
+    },
+    "NO_POPULAR_MOVIES_DESCRIPTION" : {
+      "comment" : "Description shown when there are no popular movies to display.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Check back later to see what people are watching."
+          }
+        }
+      }
+    },
+    "POPULAR_MOVIES" : {
+      "comment" : "The navigation title for the popular movies screen.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Popular Movies"
+          }
+        }
+      }
+    },
+    "VIEW_MOVIE_DETAILS_HINT" : {
+      "comment" : "Accessibility hint for a movie button, describing what happens when activated.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View movie details"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.1"
+}

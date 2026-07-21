@@ -24,23 +24,23 @@ final class DefaultPopularMovieRepository: PopularMovieRepository {
         self.localDataSource = localDataSource
     }
 
-    func popular(page: Int) async throws(PopularMovieRepositoryError) -> [MoviePreview] {
+    func popular(page: Int) async throws(PopularMovieRepositoryError) -> MoviePreviewPage {
         do {
-            if let cachedMovies = try await localDataSource.popular(page: page) {
-                return cachedMovies
+            if let cachedPage = try await localDataSource.popular(page: page) {
+                return cachedPage
             }
         } catch let error {
             throw PopularMovieRepositoryError(error)
         }
 
-        let movies: [MoviePreview]
-        do { movies = try await remoteDataSource.popular(page: page) } catch let error {
+        let moviePage: MoviePreviewPage
+        do { moviePage = try await remoteDataSource.popular(page: page) } catch let error {
             throw PopularMovieRepositoryError(error)
         }
 
-        try? await localDataSource.setPopular(movies, page: page)
+        try? await localDataSource.setPopular(moviePage)
 
-        return movies
+        return moviePage
     }
 
     func popularStream() async -> AsyncThrowingStream<[MoviePreview]?, Error> {
@@ -48,10 +48,9 @@ final class DefaultPopularMovieRepository: PopularMovieRepository {
 
         Task {
             do {
-                let page = 1
                 if try await localDataSource.popular(page: 1) == nil {
-                    let movies = try await remoteDataSource.popular(page: page)
-                    try await localDataSource.setPopular(movies, page: page)
+                    let moviePage = try await remoteDataSource.popular(page: 1)
+                    try await localDataSource.setPopular(moviePage)
                 }
             } catch {
                 Self.logger.error("Failed to fetch/cache popular movies in stream: \(error)")
@@ -71,12 +70,12 @@ final class DefaultPopularMovieRepository: PopularMovieRepository {
 
         let nextPage = currentPage + 1
 
-        let movies: [MoviePreview]
-        do { movies = try await remoteDataSource.popular(page: nextPage) } catch let error {
+        let moviePage: MoviePreviewPage
+        do { moviePage = try await remoteDataSource.popular(page: nextPage) } catch let error {
             throw PopularMovieRepositoryError(error)
         }
 
-        do { try await localDataSource.setPopular(movies, page: nextPage) } catch let error {
+        do { try await localDataSource.setPopular(moviePage) } catch let error {
             throw PopularMovieRepositoryError(error)
         }
     }

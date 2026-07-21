@@ -17,6 +17,8 @@ public protocol ExploreNavigating {
 
     func openDiscoverMovies()
 
+    func openPopularMovies()
+
     func openMovieDetails(id: Int, transitionID: String?)
 
     func openTVSeriesDetails(id: Int, transitionID: String?)
@@ -31,6 +33,7 @@ public protocol ExploreNavigating {
         public init() {}
         public func openTrendingMovies() {}
         public func openDiscoverMovies() {}
+        public func openPopularMovies() {}
         public func openMovieDetails(id: Int, transitionID: String?) {}
         public func openTVSeriesDetails(id: Int, transitionID: String?) {}
         public func openPersonDetails(id: Int, transitionID: String?) {}

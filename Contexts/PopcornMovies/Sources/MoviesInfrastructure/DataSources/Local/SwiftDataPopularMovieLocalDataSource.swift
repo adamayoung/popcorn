@@ -18,7 +18,7 @@ actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDa
 
     private var ttl: TimeInterval = 60 * 60 * 24 // 1 day
 
-    func popular(page: Int) async throws(PopularMovieLocalDataSourceError) -> [MoviePreview]? {
+    func popular(page: Int) async throws(PopularMovieLocalDataSourceError) -> MoviePreviewPage? {
         let descriptor = FetchDescriptor<MoviesPopularMovieItemEntity>(
             predicate: #Predicate { $0.page == page },
             sortBy: [SortDescriptor(\.sortIndex)]
@@ -59,12 +59,25 @@ actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDa
             return nil
         }
 
+        // A page cached before `totalPages` was stored (a pre-migration row) has
+        // no pagination metadata, so it can't be reconstructed into a page — treat
+        // it as a miss. The caller's write-through then deletes and rewrites it
+        // with metadata, so this self-heals on the next fetch.
+        guard let totalPages = entities.first?.totalPages else {
+            Self.logger.debug(
+                "SwiftData MISS (no page metadata): PopularMovies(page: \(page, privacy: .public))"
+            )
+            return nil
+        }
+
         Self.logger.debug("SwiftData HIT: PopularMovies(page: \(page, privacy: .public))")
 
         let mapper = MoviePreviewMapper()
-        return entities.compactMap {
+        let movies = entities.compactMap {
             mapper.compactMap($0.movie)
         }
+
+        return MoviePreviewPage(page: page, totalPages: totalPages, movies: movies)
     }
 
     func popularStream() -> AsyncThrowingStream<[MoviePreview]?, Error> {
@@ -100,11 +113,12 @@ actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDa
     }
 
     func setPopular(
-        _ moviePreviews: [MoviePreview],
-        page: Int
+        _ page: MoviePreviewPage
     ) async throws(PopularMovieLocalDataSourceError) {
+        let pageNumber = page.page
+        let totalPages = page.totalPages
         let deleteDescriptor = FetchDescriptor<MoviesPopularMovieItemEntity>(
-            predicate: #Predicate { $0.page >= page }
+            predicate: #Predicate { $0.page >= pageNumber }
         )
         do {
             let entitiesToDelete = try modelContext.fetch(deleteDescriptor)
@@ -113,7 +127,7 @@ actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDa
             throw .persistence(error)
         }
 
-        for (index, preview) in moviePreviews.enumerated() {
+        for (index, preview) in page.movies.enumerated() {
             let id = preview.id
             let descriptor = FetchDescriptor<MoviesMoviePreviewEntity>(
                 predicate: #Predicate { $0.movieID == id }
@@ -137,7 +151,8 @@ actor SwiftDataPopularMovieLocalDataSource: PopularMovieLocalDataSource, SwiftDa
 
             let itemEntity = MoviesPopularMovieItemEntity(
                 sortIndex: index,
-                page: page,
+                page: pageNumber,
+                totalPages: totalPages,
                 movie: previewEntity
             )
             modelContext.insert(itemEntity)

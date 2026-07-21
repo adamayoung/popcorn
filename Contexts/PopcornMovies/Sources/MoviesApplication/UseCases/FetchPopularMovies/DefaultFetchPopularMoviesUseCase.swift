@@ -28,21 +28,22 @@ final class DefaultFetchPopularMoviesUseCase: FetchPopularMoviesUseCase {
         self.themeColorProvider = themeColorProvider
     }
 
-    func execute() async throws(FetchPopularMoviesError) -> [MoviePreviewDetails] {
+    func execute() async throws(FetchPopularMoviesError) -> MoviePreviewDetailsPage {
         try await execute(page: 1)
     }
 
-    func execute(page: Int) async throws(FetchPopularMoviesError) -> [MoviePreviewDetails] {
-        let moviePreviews: [MoviePreview]
+    func execute(page: Int) async throws(FetchPopularMoviesError) -> MoviePreviewDetailsPage {
+        let moviePreviewPage: MoviePreviewPage
         let appConfiguration: AppConfiguration
         do {
             async let moviePreviewsTask = popularMovieRepository.popular(page: page)
             async let appConfigurationTask = appConfigurationProvider.appConfiguration()
-            (moviePreviews, appConfiguration) = try await (moviePreviewsTask, appConfigurationTask)
+            (moviePreviewPage, appConfiguration) = try await (moviePreviewsTask, appConfigurationTask)
         } catch let error {
             throw FetchPopularMoviesError(error)
         }
 
+        let moviePreviews = moviePreviewPage.movies
         let imageCollections = try await imageCollections(for: moviePreviews)
         let themeColors = await extractThemeColors(
             for: moviePreviews,
@@ -50,7 +51,7 @@ final class DefaultFetchPopularMoviesUseCase: FetchPopularMoviesUseCase {
         )
 
         let mapper = MoviePreviewDetailsMapper()
-        return moviePreviews.map {
+        let movies = moviePreviews.map {
             mapper.map(
                 $0,
                 imageCollection: imageCollections[$0.id],
@@ -58,6 +59,12 @@ final class DefaultFetchPopularMoviesUseCase: FetchPopularMoviesUseCase {
                 themeColor: themeColors[$0.id]
             )
         }
+
+        return MoviePreviewDetailsPage(
+            page: moviePreviewPage.page,
+            totalPages: moviePreviewPage.totalPages,
+            movies: movies
+        )
     }
 
 }

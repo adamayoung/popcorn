@@ -102,6 +102,13 @@
     },
     {
       "target" : {
+        "containerPath" : "container:Features\/PopularMoviesFeature",
+        "identifier" : "PopularMoviesFeatureSnapshotTests",
+        "name" : "PopularMoviesFeatureSnapshotTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Features\/TrendingPeopleFeature",
         "identifier" : "TrendingPeopleFeatureSnapshotTests",
         "name" : "TrendingPeopleFeatureSnapshotTests"

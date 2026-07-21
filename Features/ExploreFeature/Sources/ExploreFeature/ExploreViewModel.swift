@@ -144,6 +144,10 @@ public final class ExploreViewModel {
         navigator.openDiscoverMovies()
     }
 
+    public func selectPopularMovies() {
+        navigator.openPopularMovies()
+    }
+
     public func selectMovie(id: Int, transitionID: String?) {
         navigator.openMovieDetails(id: id, transitionID: transitionID)
     }

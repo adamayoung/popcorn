@@ -20,10 +20,10 @@ public protocol PopularMovieRepository: Sendable {
     /// Fetches a page of popular movies.
     ///
     /// - Parameter page: The page number to fetch (1-indexed).
-    /// - Returns: An array of ``MoviePreview`` instances representing popular movies.
+    /// - Returns: A ``MoviePreviewPage`` of popular movies together with its pagination metadata.
     /// - Throws: ``PopularMovieRepositoryError`` if the movies cannot be fetched.
     ///
-    func popular(page: Int) async throws(PopularMovieRepositoryError) -> [MoviePreview]
+    func popular(page: Int) async throws(PopularMovieRepositoryError) -> MoviePreviewPage
 
     ///
     /// Creates a stream that continuously emits updates of popular movies.

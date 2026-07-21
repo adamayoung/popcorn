@@ -15,6 +15,7 @@
 		668F587E2ECCB82A00B47B07 /* MovieDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 668F587D2ECCB82A00B47B07 /* MovieDetailsFeature */; };
 		66D15C0FE1EA700000000001 /* DiscoverMoviesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66D15C0FE1EA700000000002 /* DiscoverMoviesFeature */; };
 		668F58892ECCFEBE00B47B07 /* TrendingMoviesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 668F58882ECCFEBE00B47B07 /* TrendingMoviesFeature */; };
+		66D15C0FE1EA700000000101 /* PopularMoviesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66D15C0FE1EA700000000102 /* PopularMoviesFeature */; };
 		668F588C2ECDB2D500B47B07 /* TrendingTVSeriesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 668F588B2ECDB2D500B47B07 /* TrendingTVSeriesFeature */; };
 		668F58912ECDD5CA00B47B07 /* TVSeriesDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 668F58902ECDD5CA00B47B07 /* TVSeriesDetailsFeature */; };
 		66A2E0502F0B01C0002B8706 /* MovieCastAndCrewFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66A2E04F2F0B01C0002B8706 /* MovieCastAndCrewFeature */; };
@@ -98,6 +99,7 @@
 				MovieIntelligenceFeature,
 				PersonDetailsFeature,
 				PlotRemixGameFeature,
+				PopularMoviesFeature,
 				TrendingMoviesFeature,
 				TrendingPeopleFeature,
 				TrendingTVSeriesFeature,
@@ -241,6 +243,7 @@
 			files = (
 				66D15C0FE1EA700000000001 /* DiscoverMoviesFeature in Frameworks */,
 				668F58892ECCFEBE00B47B07 /* TrendingMoviesFeature in Frameworks */,
+				66D15C0FE1EA700000000101 /* PopularMoviesFeature in Frameworks */,
 				900E28EA2ED0781900ED5DFC /* ExploreFeature in Frameworks */,
 				66A2E0502F0B01C0002B8706 /* MovieCastAndCrewFeature in Frameworks */,
 				66A2E0522F0B01C0002B8706 /* TVSeriesCastAndCrewFeature in Frameworks */,
@@ -350,6 +353,7 @@
 				668F587D2ECCB82A00B47B07 /* MovieDetailsFeature */,
 				66D15C0FE1EA700000000002 /* DiscoverMoviesFeature */,
 				668F58882ECCFEBE00B47B07 /* TrendingMoviesFeature */,
+				66D15C0FE1EA700000000102 /* PopularMoviesFeature */,
 				668F588B2ECDB2D500B47B07 /* TrendingTVSeriesFeature */,
 				668F58902ECDD5CA00B47B07 /* TVSeriesDetailsFeature */,
 				666AEE262ECDEEEC0038814E /* TrendingPeopleFeature */,
@@ -942,6 +946,10 @@
 		668F58882ECCFEBE00B47B07 /* TrendingMoviesFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TrendingMoviesFeature;
+		};
+		66D15C0FE1EA700000000102 /* PopularMoviesFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PopularMoviesFeature;
 		};
 		668F588B2ECDB2D500B47B07 /* TrendingTVSeriesFeature */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -18,6 +18,7 @@ import MovieDetailsFeature
 import MovieIntelligenceFeature
 import PersonDetailsFeature
 import PlotRemixGameFeature
+import PopularMoviesFeature
 import TrendingMoviesFeature
 import TVEpisodeCastAndCrewFeature
 import TVEpisodeDetailsFeature
@@ -137,6 +138,17 @@ final class ViewModelFactory {
         navigator: some DiscoverMoviesNavigating
     ) -> DiscoverMoviesViewModel {
         DiscoverMoviesViewModel(
+            dependencies: .live(services: services),
+            navigator: navigator
+        )
+    }
+
+    // MARK: - Popular Movies
+
+    func makePopularMovies(
+        navigator: some PopularMoviesNavigating
+    ) -> PopularMoviesViewModel {
+        PopularMoviesViewModel(
             dependencies: .live(services: services),
             navigator: navigator
         )
