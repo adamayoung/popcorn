@@ -166,6 +166,17 @@ far faster than the whole app). Switch to the full-app `/build-for-testing` +
 the final gate. Prefer the Xcode MCP (`xcode`) when working inside Xcode. See
 `CLAUDE.md` § "Incremental vs Full Builds".
 
+**Whole-module clone → parity, not test-first-from-scratch.** When a unit is a
+wholesale clone of a sibling **already merged on `main`** (tagged
+`clone-of:<sibling>` in `/deliver`'s ledger), `canon-tdd`'s
+*pure-refactor-with-existing-coverage* carve-out applies: you `cp -R` the sibling
+and its tests and substitute names (procedure in `/deliver`'s Phase 3 +
+`references/review-loops.md`), so the tests arrive **with** the code rather than
+being written first. The discipline shifts from red-green-refactor to the
+**parity review** — proving every delta from the sibling is a mechanical rename
+or an enumerated intended deviation. Any non-mechanical delta is `novel` code and
+*does* return to the one-test-at-a-time loop.
+
 **Popcorn-specific items the plan may add to the list:**
 
 - A new `FeatureFlag` → the matching **Statsig gate must be created** (development

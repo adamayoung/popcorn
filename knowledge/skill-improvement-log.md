@@ -31,6 +31,83 @@ two fields the dedup step keys on.
 
 <!-- Newest entry goes here. -->
 
+### 2026-07-21 — Scale review depth to per-unit novelty (the clone lane) · applied
+
+- **Pattern:** in PR #83 (retro), a 2,786-line diff that was ~90% a faithful `cp`+`sed`
+  clone of the already-merged Trending/Discover features still drew the full 7-dimension
+  Opus adversarial fan-out. `/deliver` scales review to diff *size* and *risk* but not to
+  *novelty*, so a whole-module clone of an already-reviewed sibling was re-reviewed from
+  scratch (~4.7 min of the ~10.5 min review block).
+- **Decision:** *applied* 2026-07-21 (owner-approved). Added a **per-unit novelty axis**
+  (`novel` vs `clone-of:<merged-sibling-path>`) to `/deliver`'s *Delivery weight* section,
+  a fourth **"clone of a merged sibling → parity review, not fan-out"** bullet to Phase 4's
+  *Granularity by weight*, and a **"Clone-of-a-merged-sibling review"** subsection to
+  `references/review-loops.md`. Novelty is judged **per unit, not per PR**: any
+  non-mechanical delta reclassifies the unit `novel` and it takes the full fan-out. Paired
+  with the #4 entry (`cp`+`sed` implementation) as the two halves of the clone lane. Landed
+  via branch `docs/deliver-speedups` (PR #85).
+- **Rationale:** re-reviewing a merged, already-reviewed sibling's clone from scratch buys
+  nothing a parity diff can't; the guardrail (any non-mechanical delta → `novel` → full
+  review) keeps it safe, and "shape-similarity ≠ clone status" stops the paged-pipeline
+  false positive (real new migration code that only mirrors a sibling's shape).
+- **Reconsider when:** n/a (applied).
+
+### 2026-07-21 — De-duplicate the Phase 9 gate via a known-green base SHA · applied
+
+- **Pattern:** in PR #83 (retro), Phase 3 finished on a green `build-for-testing` + `test`
+  + `test-snapshots`, and Phase 9's `/pr reviewed` re-ran the identical three commands
+  (~2.5 min) even though the only commits since were docs (the Phase 6 capture + Phase 8
+  retro `.md`) and the rebase was a no-op. `/pr`'s docs-only fast gate keyed on *"the whole
+  PR diff is docs-only"* — false here — so it missed the real signal, *"the delta since the
+  last green gate is docs-only."*
+- **Decision:** *applied* 2026-07-21 (owner-approved). `/deliver` Phase 3 now records a
+  **green-gate SHA** in the ledger (HEAD at the last green finishing gate; updated after any
+  re-gated code fix); Phase 9 passes it as `/pr reviewed base=<sha>`; `/pr`'s step-3 fast
+  gate gained a **known-green-base** branch that skips build/test/snapshot (lint still runs)
+  when `git merge-base --is-ancestor <base> HEAD` holds **and** `git diff --name-only <base>
+  HEAD` is docs-only. Landed via branch `docs/deliver-speedups` (PR #85).
+- **Rationale:** the identical tree already passed the identical gate at the green base
+  (proven by is-ancestor + docs-only-delta), so the second run is pure redundancy; gating on
+  `merge-base --is-ancestor` (not a name check) ensures a real rebase can't skip a needed
+  build, and CI still runs the full matrix as the backstop.
+- **Reconsider when:** n/a (applied).
+
+### 2026-07-21 — Parallelize the cold Phase 4 ∥ Phase 5 read-only reviews · applied
+
+- **Pattern:** across PR #82's retro (which ran the parallel-security trick ad hoc) and
+  PR #83's, code review (Phase 4, ~4.7 min) and security review (Phase 5, ~1.8 min) ran
+  sequentially even though both only **read** the same committed tree and both came back
+  clean — the common case for a low-novelty change. The sequencing bought nothing.
+- **Decision:** *applied* 2026-07-21 (owner-approved). Documented in `/deliver` Phases 4–5
+  that the **cold first pass** of code-review and security-review may run **concurrently**,
+  converging independently, and that the pipeline **serializes only on the fix path** (a fix
+  from either re-runs the other on the fixed tree). Rubric verification (Phase 7) stays
+  strictly after both converge, since it builds/tests. Landed via branch
+  `docs/deliver-speedups` (PR #85).
+- **Rationale:** two read-only lenses over the same immutable tree have no ordering
+  dependency until one mutates it; making the ad-hoc trick the default reclaims the shorter
+  review's wall-clock for free on the clean common case.
+- **Reconsider when:** n/a (applied).
+
+### 2026-07-21 — Make `cp`+`sed` cloning the documented clone-unit implementation · applied
+
+- **Pattern:** in PR #83 (retro), cloning a whole feature module by `cp -R` + ordered `sed`
+  was the *fastest* part of the delivery and inherited the sibling's tests + formatting
+  (equal-or-shorter substitutions kept `make format` at 0 changes) — but it was done ad hoc,
+  with two traps hit live (a generic rename corrupting specific module names; a `-depth` walk
+  renaming a parent dir and leaving file paths stale).
+- **Decision:** *applied* 2026-07-21 (owner-approved). Added a Phase 3 clone-implementation
+  bullet to `/deliver` (tied to the `clone-of:<sibling>` tag), the full procedure + traps
+  (name-order, dirs-before-files, snapshot / `.swiftformat` strip) to
+  `references/review-loops.md` alongside the parity-review subsection, and a `canon-tdd`
+  *pure-refactor-with-existing-coverage* carve-out note to `/implement-plan`. Paired with the
+  #1 entry as the two halves of the clone lane (clone-and-substitute → parity-review). Landed
+  via branch `docs/deliver-speedups` (PR #85).
+- **Rationale:** the fastest, most faithful way to stand up a clone is to copy it, not
+  retype it; documenting the ordered-substitution traps stops the two failure modes from
+  recurring, and the existing-coverage carve-out keeps it honest with Canon TDD.
+- **Reconsider when:** n/a (applied).
+
 ### 2026-07-21 — Don't nest `&` inside a backgrounded gate command · applied
 
 - **Pattern:** across PR #82's retro and PR #83's, the backgrounded-gate pattern was
