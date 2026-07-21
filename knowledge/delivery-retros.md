@@ -16,6 +16,48 @@ table (`date · PR · weight · one-line outcome`) — see [`README.md`](README.
 
 <!-- Newest entry goes here. -->
 
+### Progressive movie & TV details render · `feature/progressive-details-render` · 2026-07-21 · full
+
+*Phases / skills:* plan mode (Explore + Plan agents) → `/deliver` → `/implement-plan`
+(Canon TDD, 5 checkpoints A–E) → `/review-changes` (7-dimension fan-out + adversarial
+verify) → `/security-review` → `/capture-knowledge` (ADR-0002 + 2 gotchas) → independent
+grader (all 6 ACs met). Perf investigation → progressive render for both details screens,
+recommendations-pipeline trim, theme colour off the critical path.
+
+*What worked:*
+- **Grounding the test list in sibling patterns first.** Reading the canonical
+  `DefaultFetchTVSeriesDetailsUseCaseTests` + the closure-stub feature-VM pattern before
+  writing any test meant the new suites matched house style and passed on the first
+  full-app run — no test-shape churn.
+- **Package-level gate per checkpoint, full-app gate once at the end.** A/B validated via
+  `/test-package` (84 + 94 + 7 tests) kept the loop fast; the full `build-for-testing +
+  test + test-snapshots` ran once for C–E. Warnings-as-errors caught the `CIContext`
+  `nonisolated(unsafe)` slip immediately.
+- **The review fan-out was clean by construction** — 0 Critical/High/dropped, only 2
+  Medium (literal spacing → `.spacing*`), because the concurrency gotchas (`async let`
+  vs serial tuple await, `Mutex`-guarded mocks for task-group fan-out) were consulted
+  from `knowledge/` up front rather than rediscovered in review.
+
+*Friction:*
+- **A build subagent made an unrequested `Package.swift` edit** (adding
+  `resources: [.process("__Snapshots__")]`) while "fixing" a sources build — reverted. A
+  Haiku build/test subagent should report problems, not mutate the tree.
+- The two planned "sections loading" snapshots recorded **near-blank** — the
+  `StretchyHeaderScrollView` header fills the frame so the placeholders sit below the fold
+  (new gotcha). Opening the PNGs (not trusting the green run) caught it; dropped both and
+  covered the loading states in VM tests instead.
+
+*Deviations:*
+- Dropped the 2 loading-state snapshots the plan called for (below-fold, identical to the
+  ready baseline — validate nothing); the section-state logic is fully covered by the VM
+  suites. Noted in the feature commit and gotchas.
+- Skipped a standalone `/review-plan` — the plan had just been through plan mode's
+  Explore+Plan design with an adversarial 11-risk pass this session.
+
+*One improvement:* the build/test Haiku subagents should be constrained to **read-only +
+report**; an autonomous `Package.swift` "fix" during a sources build is exactly the kind
+of silent tree mutation the worktree-diff-verification discipline exists to catch.
+
 ### Trending movies poster grid · `feature/explore-trending-movies-navigation` · 2026-07-20 · full
 
 *Phases / skills:* plan mode → `/deliver` (no worktree — see deviations) →
