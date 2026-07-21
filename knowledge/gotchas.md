@@ -92,6 +92,14 @@ below-the-fold states of these screens — cover placeholder/loading rendering i
 **view-model** test (assert the section `ViewState`) instead. Sibling of the seeded-`.error`
 gotcha below: both are cases where a snapshot silently asserts the wrong thing.
 
+The same blind spot applies to any **visual change** below the fold, not just loading
+states. When the "Cast & Crew" header chevron was enlarged across the detail screens, the
+`MovieDetailsView` and `TVSeriesDetailsView` snapshots stayed green (Cast & Crew sits below
+the 600pt header) and only `TVEpisodeDetailsView` needed re-recording — it is a plain
+`ScrollView` with a short 16:9 still, so its Cast & Crew section lands in-frame. Don't
+assume an intentional detail-screen UI change will surface in these snapshots; it only does
+for content in roughly the top viewport (~844pt at the pinned iPhone 13 Pro layout).
+
 ### `CIContext` is already `Sendable` — don't annotate a shared static with `nonisolated(unsafe)`
 
 *2026-07-21.* Sharing one `CIContext` across calls in `ImageAverageColorExtractor`

@@ -148,7 +148,7 @@ extension MovieDetailsContentView {
         switch castAndCrewState {
         case .loading:
             VStack(alignment: .leading, spacing: .spacing8) {
-                sectionHeader("CAST_AND_CREW")
+                SectionHeader(Text("CAST_AND_CREW", bundle: .module))
                 CarouselPlaceholder(shape: .profile)
                     .padding(.leading, .spacing16)
                     .accessibilityElement()
@@ -168,7 +168,7 @@ extension MovieDetailsContentView {
         switch recommendedMoviesState {
         case .loading:
             VStack(alignment: .leading, spacing: .spacing8) {
-                sectionHeader("RECOMMENDED")
+                SectionHeader(Text("RECOMMENDED", bundle: .module))
                 CarouselPlaceholder(shape: .backdrop)
                     .padding(.leading, .spacing16)
                     .accessibilityElement()
@@ -185,7 +185,7 @@ extension MovieDetailsContentView {
 
     private func castAndCrewCarousel(_ credits: Credits) -> some View {
         VStack(alignment: .leading, spacing: .spacing8) {
-            sectionHeader("CAST_AND_CREW") {
+            SectionHeader(Text("CAST_AND_CREW", bundle: .module)) {
                 navigateToCastAndCrew(movie.id)
             }
 
@@ -199,42 +199,13 @@ extension MovieDetailsContentView {
 
     private func recommendedMoviesCarousel(_ movies: [MoviePreview]) -> some View {
         VStack(alignment: .leading, spacing: .spacing8) {
-            sectionHeader("RECOMMENDED")
+            SectionHeader(Text("RECOMMENDED", bundle: .module))
 
             RecommendedCarousel(
                 movies: movies,
                 didSelectMovie: didSelectMovie
             )
         }
-    }
-
-    private func sectionHeader(
-        _ key: LocalizedStringKey,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button {
-            action()
-        } label: {
-            HStack(spacing: .spacing4) {
-                Text(key, bundle: .module)
-                    .font(.title2)
-                    .fontWeight(.bold)
-
-                Image(systemName: "chevron.right")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.secondary)
-            }
-        }
-        .buttonStyle(.plain)
-        .padding(.horizontal)
-    }
-
-    private func sectionHeader(_ key: LocalizedStringKey) -> some View {
-        Text(key, bundle: .module)
-            .font(.title2)
-            .fontWeight(.bold)
-            .padding(.horizontal)
     }
 
 }
