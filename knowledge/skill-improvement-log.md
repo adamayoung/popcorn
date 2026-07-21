@@ -45,7 +45,7 @@ two fields the dedup step keys on.
   `references/review-loops.md`. Novelty is judged **per unit, not per PR**: any
   non-mechanical delta reclassifies the unit `novel` and it takes the full fan-out. Paired
   with the #4 entry (`cp`+`sed` implementation) as the two halves of the clone lane. Landed
-  via branch `docs/deliver-speedups` (PR #TBD).
+  via branch `docs/deliver-speedups` (PR #85).
 - **Rationale:** re-reviewing a merged, already-reviewed sibling's clone from scratch buys
   nothing a parity diff can't; the guardrail (any non-mechanical delta → `novel` → full
   review) keeps it safe, and "shape-similarity ≠ clone status" stops the paged-pipeline
@@ -65,7 +65,7 @@ two fields the dedup step keys on.
   re-gated code fix); Phase 9 passes it as `/pr reviewed base=<sha>`; `/pr`'s step-3 fast
   gate gained a **known-green-base** branch that skips build/test/snapshot (lint still runs)
   when `git merge-base --is-ancestor <base> HEAD` holds **and** `git diff --name-only <base>
-  HEAD` is docs-only. Landed via branch `docs/deliver-speedups` (PR #TBD).
+  HEAD` is docs-only. Landed via branch `docs/deliver-speedups` (PR #85).
 - **Rationale:** the identical tree already passed the identical gate at the green base
   (proven by is-ancestor + docs-only-delta), so the second run is pure redundancy; gating on
   `merge-base --is-ancestor` (not a name check) ensures a real rebase can't skip a needed
@@ -83,7 +83,7 @@ two fields the dedup step keys on.
   converging independently, and that the pipeline **serializes only on the fix path** (a fix
   from either re-runs the other on the fixed tree). Rubric verification (Phase 7) stays
   strictly after both converge, since it builds/tests. Landed via branch
-  `docs/deliver-speedups` (PR #TBD).
+  `docs/deliver-speedups` (PR #85).
 - **Rationale:** two read-only lenses over the same immutable tree have no ordering
   dependency until one mutates it; making the ad-hoc trick the default reclaims the shorter
   review's wall-clock for free on the clean common case.
@@ -102,7 +102,7 @@ two fields the dedup step keys on.
   `references/review-loops.md` alongside the parity-review subsection, and a `canon-tdd`
   *pure-refactor-with-existing-coverage* carve-out note to `/implement-plan`. Paired with the
   #1 entry as the two halves of the clone lane (clone-and-substitute → parity-review). Landed
-  via branch `docs/deliver-speedups` (PR #TBD).
+  via branch `docs/deliver-speedups` (PR #85).
 - **Rationale:** the fastest, most faithful way to stand up a clone is to copy it, not
   retype it; documenting the ordered-substitution traps stops the two failure modes from
   recurring, and the existing-coverage carve-out keeps it honest with Canon TDD.
