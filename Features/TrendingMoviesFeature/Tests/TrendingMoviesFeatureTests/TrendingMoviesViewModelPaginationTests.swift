@@ -140,9 +140,19 @@ struct TrendingMoviesViewModelPaginationTests {
         #expect(viewModel.hasMore == false)
     }
 
-    @Test("loadMoreIfNeeded triggers a fetch for a cell within the threshold of the end")
+    /// 20 movies, threshold 12 → the boundary index is 20 - 12 = 8: index 8 triggers,
+    /// index 7 does not. Cases 19/0 bracket well past either side of that edge.
+    @Test(
+        "loadMoreIfNeeded fetches the next page only for a cell within the threshold of the end",
+        arguments: [
+            (index: 19, expectsFetch: true),
+            (index: 8, expectsFetch: true),
+            (index: 7, expectsFetch: false),
+            (index: 0, expectsFetch: false)
+        ]
+    )
     @MainActor
-    func loadMoreIfNeededTriggersNearEnd() async {
+    func loadMoreIfNeededRespectsThreshold(index: Int, expectsFetch: Bool) async {
         let page1 = (1 ... 20).map { MoviePreview(id: $0, title: "\($0)") }
         let requested = Mutex<[Int]>([])
         let viewModel = Support.makeViewModel(
@@ -157,29 +167,9 @@ struct TrendingMoviesViewModelPaginationTests {
         )
 
         await viewModel.load()
-        await viewModel.loadMoreIfNeeded(at: 19)
+        await viewModel.loadMoreIfNeeded(at: index)
 
-        #expect(requested.withLock { $0 } == [1, 2])
-    }
-
-    @Test("loadMoreIfNeeded does not fetch for a cell far from the end")
-    @MainActor
-    func loadMoreIfNeededIgnoresEarlyCell() async {
-        let page1 = (1 ... 20).map { MoviePreview(id: $0, title: "\($0)") }
-        let requested = Mutex<[Int]>([])
-        let viewModel = Support.makeViewModel(
-            dependencies: Support.stubDependencies(
-                fetchTrendingMovies: { page in
-                    requested.withLock { $0.append(page) }
-                    return MoviePreviewPage(page: 1, totalPages: 3, movies: page1)
-                }
-            )
-        )
-
-        await viewModel.load()
-        await viewModel.loadMoreIfNeeded(at: 0)
-
-        #expect(requested.withLock { $0 } == [1])
+        #expect(requested.withLock { $0 } == (expectsFetch ? [1, 2] : [1]))
     }
 
 }

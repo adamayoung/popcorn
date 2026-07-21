@@ -156,4 +156,29 @@ struct TrendingMoviesViewModelLoadMoreGuardsTests {
         #expect(viewModel.isLoadingMore == false)
     }
 
+    @Test("loadMore gives up after maxLoadMoreAttempts when every fetched page is only duplicates")
+    @MainActor
+    func loadMoreStopsAfterMaxAttemptsOnDuplicatePages() async {
+        let page1 = [MoviePreview(id: 1, title: "1"), MoviePreview(id: 2, title: "2")]
+        let requested = Mutex<[Int]>([])
+        let viewModel = Support.makeViewModel(
+            dependencies: Support.stubDependencies(
+                fetchTrendingMovies: { page in
+                    requested.withLock { $0.append(page) }
+                    // Plenty of pages remain, but every one only repeats page 1.
+                    return MoviePreviewPage(page: page, totalPages: 10, movies: page1)
+                }
+            )
+        )
+
+        await viewModel.load()
+        await viewModel.loadMore()
+
+        // 1 initial load + exactly maxLoadMoreAttempts (3) duplicate fetches, then it stops.
+        #expect(requested.withLock { $0 } == [1, 2, 3, 4])
+        #expect(viewModel.viewState.content?.movies == page1)
+        #expect(viewModel.isLoadingMore == false)
+        #expect(viewModel.hasMore == true)
+    }
+
 }
