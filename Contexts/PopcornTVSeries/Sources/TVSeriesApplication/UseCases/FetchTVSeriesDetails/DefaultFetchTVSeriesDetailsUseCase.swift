@@ -33,15 +33,31 @@ final class DefaultFetchTVSeriesDetailsUseCase: FetchTVSeriesDetailsUseCase {
         )
         span?.setData(key: "tv_series_id", value: id)
 
-        let tvSeries: TVSeries
-        let imageCollection: ImageCollection
-        let appConfiguration: AppConfiguration
+        let tvSeriesDetails: TVSeriesDetails
         do {
+            // All three fetches start immediately; theme-colour extraction then overlaps
+            // the image-collection await rather than running serially after the fan-out.
             async let tvSeriesTask = repository.tvSeries(withID: id)
             async let imageCollectionTask = repository.images(forTVSeries: id)
             async let appConfigurationTask = appConfigurationProvider.appConfiguration()
-            (tvSeries, imageCollection, appConfiguration) = try await (
-                tvSeriesTask, imageCollectionTask, appConfigurationTask
+
+            let tvSeries = try await tvSeriesTask
+            let appConfiguration = try await appConfigurationTask
+
+            async let themeColorTask = extractThemeColor(
+                posterPath: tvSeries.posterPath,
+                imagesConfiguration: appConfiguration.images
+            )
+
+            let imageCollection = try await imageCollectionTask
+            let themeColor = await themeColorTask
+
+            let mapper = TVSeriesDetailsMapper()
+            tvSeriesDetails = mapper.map(
+                tvSeries,
+                imageCollection: imageCollection,
+                imagesConfiguration: appConfiguration.images,
+                themeColor: themeColor
             )
         } catch let error {
             let detailsError = FetchTVSeriesDetailsError(error)
@@ -49,19 +65,6 @@ final class DefaultFetchTVSeriesDetailsUseCase: FetchTVSeriesDetailsUseCase {
             span?.finish(status: .internalError)
             throw detailsError
         }
-
-        let themeColor = await extractThemeColor(
-            posterPath: tvSeries.posterPath,
-            imagesConfiguration: appConfiguration.images
-        )
-
-        let mapper = TVSeriesDetailsMapper()
-        let tvSeriesDetails = mapper.map(
-            tvSeries,
-            imageCollection: imageCollection,
-            imagesConfiguration: appConfiguration.images,
-            themeColor: themeColor
-        )
 
         span?.finish()
         return tvSeriesDetails

@@ -241,4 +241,57 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
         #expect(result.name == tvSeries.name)
     }
 
+    @Test("execute should apply the theme colour from the provider")
+    func execute_shouldApplyThemeColorFromProvider() async throws {
+        let id = 600
+        let tvSeries = TVSeries.mock(id: id, posterPath: URL(string: "/poster.jpg"))
+        let imageCollection = ImageCollection.mock(id: id)
+        let themeColor = ThemeColor.mock()
+
+        mockRepository.tvSeriesWithIDStub = .success(tvSeries)
+        mockRepository.imagesForTVSeriesStub = .success(imageCollection)
+        let themeColorProvider = MockThemeColorProvider(themeColorResult: themeColor)
+
+        let useCase = DefaultFetchTVSeriesDetailsUseCase(
+            repository: mockRepository,
+            appConfigurationProvider: mockAppConfigProvider,
+            themeColorProvider: themeColorProvider
+        )
+
+        let result = try await useCase.execute(id: id)
+
+        #expect(result.themeColor == themeColor)
+        #expect(themeColorProvider.themeColorCallCount == 1)
+    }
+
+    @Test("execute should throw and finish span with internal error on images failure")
+    func execute_shouldThrowOnImagesFailure() async {
+        let id = 700
+        let tvSeries = TVSeries.mock(id: id)
+        let mockSpan = MockSpan()
+
+        mockRepository.tvSeriesWithIDStub = .success(tvSeries)
+        mockRepository.imagesForTVSeriesStub = .failure(.notFound)
+
+        mockObservabilityProvider.currentSpanStub = mockSpan
+        mockSpan.childSpanStub = mockSpan
+
+        let useCase = DefaultFetchTVSeriesDetailsUseCase(
+            repository: mockRepository,
+            appConfigurationProvider: mockAppConfigProvider
+        )
+
+        await #expect(
+            performing: {
+                try await SpanContext.$localProvider.withValue(mockObservabilityProvider) {
+                    try await useCase.execute(id: id)
+                }
+            },
+            throws: { error in
+                error is FetchTVSeriesDetailsError
+            }
+        )
+        #expect(mockSpan.finishCalledWithStatus[0] == .internalError)
+    }
+
 }
