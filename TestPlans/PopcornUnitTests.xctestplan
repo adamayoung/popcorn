@@ -89,6 +89,13 @@
     },
     {
       "target" : {
+        "containerPath" : "container:Features\/PopularMoviesFeature",
+        "identifier" : "PopularMoviesFeatureTests",
+        "name" : "PopularMoviesFeatureTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Contexts\/PopcornPeople",
         "identifier" : "PeopleApplicationTests",
         "name" : "PeopleApplicationTests"
