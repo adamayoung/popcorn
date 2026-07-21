@@ -14,23 +14,23 @@ import Testing
 @Suite("MovieDetailsViewModel Tests")
 struct MovieDetailsViewModelTests {
 
-    @Test("fetch success loads movie, recommendations, and credits")
+    // MARK: - Primary fetch
+
+    @Test("fetch success sets viewState to the movie without touching the sections")
     @MainActor
-    func fetchSuccessLoadsAllData() async {
+    func fetchSuccessSetsMovie() async {
         let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchMovie: { _ in Self.testMovie },
-                fetchRecommendedMovies: { _ in Self.testRecommendations },
-                fetchCredits: { _ in Self.testCredits }
-            )
+            dependencies: Self.stubDependencies(fetchMovie: { _ in Self.testMovie })
         )
 
         await viewModel.fetch()
 
-        #expect(viewModel.viewState == .ready(Self.testViewSnapshot))
+        #expect(viewModel.viewState == .ready(Self.testMovie))
+        #expect(viewModel.recommendedMoviesState.isInitial)
+        #expect(viewModel.castAndCrewState.isInitial)
     }
 
-    @Test("fetch failure sets viewState to error")
+    @Test("fetch failure sets viewState to error and leaves sections initial")
     @MainActor
     func fetchFailureSetsError() async {
         let viewModel = Self.makeViewModel(
@@ -40,9 +40,75 @@ struct MovieDetailsViewModelTests {
         await viewModel.fetch()
 
         #expect(viewModel.viewState == .error(ViewStateError(TestError.generic)))
+        #expect(viewModel.recommendedMoviesState.isInitial)
+        #expect(viewModel.castAndCrewState.isInitial)
     }
 
-    @Test("stream update replaces the loaded movie (loaded before updated)")
+    // MARK: - Progressive load
+
+    @Test("load populates both sections after the movie is ready")
+    @MainActor
+    func loadPopulatesSections() async {
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchMovie: { _ in Self.testMovie },
+                fetchRecommendedMovies: { _ in Self.testRecommendations },
+                fetchCredits: { _ in Self.testCredits }
+            )
+        )
+
+        await viewModel.load()
+
+        #expect(viewModel.viewState == .ready(Self.testMovie))
+        #expect(viewModel.recommendedMoviesState == .ready(Self.testRecommendations))
+        #expect(viewModel.castAndCrewState == .ready(Self.testCredits))
+    }
+
+    @Test("load short-circuits the sections when the primary fetch fails")
+    @MainActor
+    func loadShortCircuitsSectionsOnPrimaryFailure() async {
+        let recommendedCalled = Mutex(false)
+        let creditsCalled = Mutex(false)
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchMovie: { _ in throw TestError.generic },
+                fetchRecommendedMovies: { _ in recommendedCalled.withLock { $0 = true }; return [] },
+                fetchCredits: { _ in
+                    creditsCalled.withLock { $0 = true }
+                    return Self.testCredits
+                }
+            )
+        )
+
+        await viewModel.load()
+
+        #expect(recommendedCalled.withLock { $0 } == false)
+        #expect(creditsCalled.withLock { $0 } == false)
+        #expect(viewModel.recommendedMoviesState.isInitial)
+        #expect(viewModel.castAndCrewState.isInitial)
+    }
+
+    @Test("a section failure degrades that section without failing the screen")
+    @MainActor
+    func sectionFailureDegradesOnly() async {
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchMovie: { _ in Self.testMovie },
+                fetchRecommendedMovies: { _ in throw TestError.generic },
+                fetchCredits: { _ in Self.testCredits }
+            )
+        )
+
+        await viewModel.load()
+
+        #expect(viewModel.viewState == .ready(Self.testMovie))
+        #expect(viewModel.recommendedMoviesState.isError)
+        #expect(viewModel.castAndCrewState == .ready(Self.testCredits))
+    }
+
+    // MARK: - Stream
+
+    @Test("stream update replaces the movie and leaves the sections intact")
     @MainActor
     func streamUpdateReplacesMovie() async {
         let updatedMovie = Movie(id: 123, title: "Test Movie", overview: "Test overview", isOnWatchlist: true)
@@ -60,52 +126,50 @@ struct MovieDetailsViewModelTests {
             )
         )
 
-        await viewModel.fetch()
-        await viewModel.observeMovieUpdates()
+        await viewModel.load()
 
-        #expect(viewModel.viewState == .ready(MovieDetailsViewSnapshot(
-            movie: updatedMovie,
-            recommendedMovies: Self.testRecommendations,
-            castMembers: Self.testCredits.castMembers,
-            crewMembers: Self.testCredits.crewMembers
-        )))
+        #expect(viewModel.viewState == .ready(updatedMovie))
+        #expect(viewModel.recommendedMoviesState == .ready(Self.testRecommendations))
+        #expect(viewModel.castAndCrewState == .ready(Self.testCredits))
     }
+
+    // MARK: - Watchlist
 
     @Test("toggleOnWatchlist calls the dependency but does not mutate state")
     @MainActor
     func toggleDoesNotMutateState() async {
         let toggled = Mutex(false)
-        let snapshot = Self.testViewSnapshot
         let viewModel = Self.makeViewModel(
             dependencies: Self.stubDependencies(
                 toggleOnWatchlist: { _ in toggled.withLock { $0 = true } }
             ),
-            viewState: .ready(snapshot),
+            viewState: .ready(Self.testMovie),
             isWatchlistEnabled: true
         )
 
         await viewModel.toggleOnWatchlist()
 
         #expect(toggled.withLock { $0 } == true)
-        #expect(viewModel.viewState == .ready(snapshot))
+        #expect(viewModel.viewState == .ready(Self.testMovie))
     }
+
+    // MARK: - Guards
 
     @Test("fetch is a no-op when already ready")
     @MainActor
     func fetchNoOpWhenReady() async {
         let fetchCalled = Mutex(false)
-        let snapshot = Self.testViewSnapshot
         let viewModel = Self.makeViewModel(
             dependencies: Self.stubDependencies(
                 fetchMovie: { _ in fetchCalled.withLock { $0 = true }; return Self.testMovie }
             ),
-            viewState: .ready(snapshot)
+            viewState: .ready(Self.testMovie)
         )
 
         await viewModel.fetch()
 
         #expect(fetchCalled.withLock { $0 } == false)
-        #expect(viewModel.viewState == .ready(snapshot))
+        #expect(viewModel.viewState == .ready(Self.testMovie))
     }
 
     @Test("fetch is a no-op when already loading")
@@ -165,7 +229,7 @@ struct MovieDetailsViewModelTests {
 // MARK: - Spy Navigator
 
 @MainActor
-private final class SpyMovieDetailsNavigator: MovieDetailsNavigating {
+final class SpyMovieDetailsNavigator: MovieDetailsNavigating {
     var openedMovieID: Int?
     var openedIntelligenceID: Int?
     var openedPersonID: Int?
@@ -196,7 +260,9 @@ extension MovieDetailsViewModelTests {
     static func makeViewModel(
         dependencies: MovieDetailsDependencies = stubDependencies(),
         navigator: any MovieDetailsNavigating = SpyMovieDetailsNavigator(),
-        viewState: ViewState<MovieDetailsViewSnapshot> = .initial,
+        viewState: ViewState<Movie> = .initial,
+        recommendedMoviesState: ViewState<[MoviePreview]> = .initial,
+        castAndCrewState: ViewState<Credits> = .initial,
         isWatchlistEnabled: Bool = false
     ) -> MovieDetailsViewModel {
         MovieDetailsViewModel(
@@ -204,6 +270,8 @@ extension MovieDetailsViewModelTests {
             dependencies: dependencies,
             navigator: navigator,
             viewState: viewState,
+            recommendedMoviesState: recommendedMoviesState,
+            castAndCrewState: castAndCrewState,
             isWatchlistEnabled: isWatchlistEnabled
         )
     }
@@ -272,19 +340,10 @@ extension MovieDetailsViewModelTests {
         ]
     )
 
-    static var testViewSnapshot: MovieDetailsViewSnapshot {
-        MovieDetailsViewSnapshot(
-            movie: testMovie,
-            recommendedMovies: testRecommendations,
-            castMembers: testCredits.castMembers,
-            crewMembers: testCredits.crewMembers
-        )
-    }
-
 }
 
 // MARK: - Test Helpers
 
-private enum TestError: Error, Equatable {
+enum TestError: Error, Equatable {
     case generic
 }

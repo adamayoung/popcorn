@@ -11,6 +11,30 @@ and dated; link an ADR if a decision came out of it.
 *YYYY-MM-DD.* What bit us, why, and the resolution. Keep it to a few lines.
 -->
 
+### A full-view snapshot of a `StretchyHeaderScrollView` screen only captures the header
+
+*2026-07-21.* A "sections loading" snapshot of `MovieDetailsView` rendered **identically**
+to the all-ready snapshot — both were a near-blank page with just the toolbar. The
+details screens are built on `StretchyHeaderScrollView` with a 600pt flexible header; at
+scroll offset 0 the header (a `BackdropImage` from a remote URL that never loads in a
+snapshot → blank) fills the viewport, so the overview, carousels, and their loading
+placeholders all sit **below the fold** and are never in the captured frame. A loading-state
+snapshot therefore validates nothing the ready-state one doesn't. Don't add snapshots for
+below-the-fold states of these screens — cover placeholder/loading rendering in a
+**view-model** test (assert the section `ViewState`) instead. Sibling of the seeded-`.error`
+gotcha below: both are cases where a snapshot silently asserts the wrong thing.
+
+### `CIContext` is already `Sendable` — don't annotate a shared static with `nonisolated(unsafe)`
+
+*2026-07-21.* Sharing one `CIContext` across calls in `ImageAverageColorExtractor`
+(`private static let context = CIContext()`) is correct — it's expensive to build and
+thread-safe. The reflex to write `nonisolated(unsafe) private static let` **fails the
+build**: on the iOS 26 SDK `CIContext` already conforms to `Sendable`, so the compiler
+emits *"'nonisolated(unsafe)' is unnecessary for a constant with 'Sendable' type
+'CIContext'"* — a warning, and the build is warnings-as-errors. Use a plain
+`private static let`. Reach for `nonisolated(unsafe)` only when the type is genuinely
+non-`Sendable`; check whether the SDK already made it `Sendable` first.
+
 ### A seeded `.error` view state can't be snapshot-tested — `.task(id:)` retries it
 
 *2026-07-20.* An error-state snapshot for `TrendingMoviesView` recorded a **spinner**, not

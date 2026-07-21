@@ -12,6 +12,10 @@ import Foundation
 /// Extracts the average color from image data using Core Image.
 enum ImageAverageColorExtractor {
 
+    /// Shared rendering context. `CIContext` is expensive to create and safe to use
+    /// from multiple threads, so it is built once rather than per extraction.
+    private static let context = CIContext()
+
     /// Extracts the average color from raw image data.
     ///
     /// Uses `CIAreaAverage` to compute the mean color across the entire image,
@@ -38,7 +42,6 @@ enum ImageAverageColorExtractor {
         }
 
         var bitmap = [UInt8](repeating: 0, count: 4)
-        let context = CIContext()
         context.render(
             outputImage,
             toBitmap: &bitmap,

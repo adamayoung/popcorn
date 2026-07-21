@@ -24,8 +24,8 @@ public struct TVSeriesDetailsView: View {
     public var body: some View {
         ZStack {
             switch viewModel.viewState {
-            case .ready(let snapshot):
-                content(snapshot)
+            case .ready(let tvSeries):
+                content(tvSeries)
             case .error(let error):
                 errorBody(error)
             default:
@@ -34,13 +34,13 @@ public struct TVSeriesDetailsView: View {
         }
         .accessibilityIdentifier("tv-series-details.view")
         .toolbar {
-            if case .ready(let snapshot) = viewModel.viewState, viewModel.isIntelligenceEnabled {
+            if case .ready(let tvSeries) = viewModel.viewState, viewModel.isIntelligenceEnabled {
                 ToolbarItem(placement: toolbarTrailingPlacement) {
                     Button(
                         LocalizedStringResource("INTELLIGENCE", bundle: .module),
                         systemImage: "apple.intelligence"
                     ) {
-                        viewModel.openIntelligence(id: snapshot.tvSeries.id)
+                        viewModel.openIntelligence(id: tvSeries.id)
                     }
                 }
             }
@@ -82,11 +82,10 @@ extension TVSeriesDetailsView {
 
 extension TVSeriesDetailsView {
 
-    private func content(_ snapshot: TVSeriesDetailsViewSnapshot) -> some View {
+    private func content(_ tvSeries: TVSeries) -> some View {
         TVSeriesDetailsContentView(
-            tvSeries: snapshot.tvSeries,
-            castMembers: snapshot.castMembers,
-            crewMembers: snapshot.crewMembers,
+            tvSeries: tvSeries,
+            castAndCrewState: viewModel.castAndCrewState,
             isBackdropFocalPointEnabled: viewModel.isBackdropFocalPointEnabled,
             didSelectSeason: { seasonNumber in
                 viewModel.selectSeason(seasonNumber: seasonNumber)
@@ -121,14 +120,21 @@ extension TVSeriesDetailsView {
         NavigationStack {
             TVSeriesDetailsView(
                 viewModel: .preview(
-                    viewState: .ready(
-                        .init(
-                            tvSeries: TVSeries.mock,
-                            castMembers: CastMember.mocks,
-                            crewMembers: CrewMember.mocks
-                        )
-                    ),
+                    viewState: .ready(.mock),
+                    castAndCrewState: .ready(.mock),
                     isIntelligenceEnabled: true,
+                    isBackdropFocalPointEnabled: true
+                )
+            )
+        }
+    }
+
+    #Preview("Cast & Crew Loading") {
+        NavigationStack {
+            TVSeriesDetailsView(
+                viewModel: .preview(
+                    viewState: .ready(.mock),
+                    castAndCrewState: .loading,
                     isBackdropFocalPointEnabled: true
                 )
             )

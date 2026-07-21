@@ -50,9 +50,9 @@ extension MovieDetailsDependencies {
                 }
             },
             fetchRecommendedMovies: { movieID in
-                let movies = try await fetchMovieRecommendations.execute(movieID: movieID)
+                let movies = try await fetchMovieRecommendations.execute(movieID: movieID, page: 1, limit: 5)
                 let mapper = MoviePreviewMapper()
-                return movies.prefix(5).map(mapper.map)
+                return movies.map(mapper.map)
             },
             fetchCredits: { movieID in
                 let credits = try await fetchMovieCredits.execute(movieID: movieID)

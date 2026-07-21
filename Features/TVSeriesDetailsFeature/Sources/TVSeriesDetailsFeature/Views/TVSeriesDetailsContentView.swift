@@ -7,13 +7,13 @@
 
 import CoreDomain
 import DesignSystem
+import Presentation
 import SwiftUI
 
 struct TVSeriesDetailsContentView: View {
 
     var tvSeries: TVSeries
-    var castMembers: [CastMember]
-    var crewMembers: [CrewMember]
+    var castAndCrewState: ViewState<Credits>
     var isBackdropFocalPointEnabled: Bool
     var didSelectSeason: (_ seasonNumber: Int) -> Void
     var didSelectPerson: (_ personID: Int) -> Void
@@ -114,30 +114,47 @@ extension TVSeriesDetailsContentView {
                     .padding(.bottom)
             }
 
-            if !castMembers.isEmpty || !crewMembers.isEmpty {
-                castAndCrewCarousel
-                    .padding(.bottom)
-            }
+            castAndCrewSection
         }
         .padding(.vertical)
     }
 
-    private var castAndCrewCarousel: some View {
-        VStack(alignment: .leading, spacing: 8) {
+    @ViewBuilder
+    private var castAndCrewSection: some View {
+        switch castAndCrewState {
+        case .loading:
+            VStack(alignment: .leading, spacing: .spacing8) {
+                sectionHeader("CAST_AND_CREW")
+                CarouselPlaceholder(shape: .profile)
+                    .padding(.leading, .spacing16)
+                    .accessibilityElement()
+                    .accessibilityLabel(Text("LOADING", bundle: .module))
+            }
+            .padding(.bottom)
+        case .ready(let credits) where !credits.castMembers.isEmpty || !credits.crewMembers.isEmpty:
+            castAndCrewCarousel(credits)
+                .padding(.bottom)
+        default:
+            EmptyView()
+        }
+    }
+
+    private func castAndCrewCarousel(_ credits: Credits) -> some View {
+        VStack(alignment: .leading, spacing: .spacing8) {
             sectionHeader("CAST_AND_CREW") {
                 navigateToCastAndCrew(tvSeries.id)
             }
 
             CastAndCrewCarousel(
-                castMembers: castMembers,
-                crewMembers: crewMembers,
+                castMembers: credits.castMembers,
+                crewMembers: credits.crewMembers,
                 didSelectPerson: didSelectPerson
             )
         }
     }
 
     private var seasonsCarousel: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: .spacing8) {
             sectionHeader("SEASONS")
 
             SeasonsCarousel(
@@ -184,8 +201,20 @@ extension TVSeriesDetailsContentView {
     NavigationStack {
         TVSeriesDetailsContentView(
             tvSeries: TVSeries.mock,
-            castMembers: CastMember.mocks,
-            crewMembers: CrewMember.mocks,
+            castAndCrewState: .ready(.mock),
+            isBackdropFocalPointEnabled: true,
+            didSelectSeason: { _ in },
+            didSelectPerson: { _ in },
+            navigateToCastAndCrew: { _ in }
+        )
+    }
+}
+
+#Preview("Cast & Crew Loading") {
+    NavigationStack {
+        TVSeriesDetailsContentView(
+            tvSeries: TVSeries.mock,
+            castAndCrewState: .loading,
             isBackdropFocalPointEnabled: true,
             didSelectSeason: { _ in },
             didSelectPerson: { _ in },
@@ -203,8 +232,7 @@ extension TVSeriesDetailsContentView {
                 overview: "A series with no seasons data available.",
                 seasons: []
             ),
-            castMembers: [],
-            crewMembers: [],
+            castAndCrewState: .ready(Credits(id: 1, castMembers: [], crewMembers: [])),
             isBackdropFocalPointEnabled: false,
             didSelectSeason: { _ in },
             didSelectPerson: { _ in },

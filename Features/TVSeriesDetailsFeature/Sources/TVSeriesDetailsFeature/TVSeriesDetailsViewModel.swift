@@ -10,26 +10,12 @@ import Observation
 import OSLog
 import Presentation
 
-/// The data shown by ``TVSeriesDetailsView`` once loaded.
-public struct TVSeriesDetailsViewSnapshot: Equatable, Sendable {
-
-    public let tvSeries: TVSeries
-    public let castMembers: [CastMember]
-    public let crewMembers: [CrewMember]
-
-    public init(
-        tvSeries: TVSeries,
-        castMembers: [CastMember] = [],
-        crewMembers: [CrewMember] = []
-    ) {
-        self.tvSeries = tvSeries
-        self.castMembers = castMembers
-        self.crewMembers = crewMembers
-    }
-
-}
-
 /// Drives ``TVSeriesDetailsView``.
+///
+/// The screen renders progressively: ``viewState`` gates the primary TV-series content
+/// and becomes `.ready` as soon as the series itself loads, while the cast-and-crew
+/// carousel loads independently into its own view state. A cast-and-crew failure
+/// degrades that section only — it never fails the whole screen.
 ///
 /// Loading is driven by the view through ``load()`` from a `.task(id:)`, so SwiftUI
 /// owns the lifetime: the work is cancelled on disappear and restarted on reappear
@@ -37,17 +23,20 @@ public struct TVSeriesDetailsViewSnapshot: Equatable, Sendable {
 /// view-model-owned `Task` — structured concurrency keeps the work tied to the
 /// view's lifetime with no manual cancellation.
 ///
-/// TV series details has no live stream and no watchlist toggle: ``load()`` is a
-/// single fetch.
+/// TV series details has no live stream and no watchlist toggle.
 @Observable
 @MainActor
 public final class TVSeriesDetailsViewModel {
 
-    public typealias ViewSnapshot = TVSeriesDetailsViewSnapshot
-
     private static let logger = Logger.tvSeriesDetails
 
-    public private(set) var viewState: ViewState<ViewSnapshot>
+    /// The primary TV-series content. Becomes `.ready` once the series has loaded,
+    /// without waiting for the cast-and-crew section.
+    public private(set) var viewState: ViewState<TVSeries>
+
+    /// The cast-and-crew carousel, loaded independently after the series is ready.
+    public private(set) var castAndCrewState: ViewState<Credits>
+
     public private(set) var isCastAndCrewEnabled: Bool
     public private(set) var isIntelligenceEnabled: Bool
     public private(set) var isBackdropFocalPointEnabled: Bool
@@ -66,7 +55,8 @@ public final class TVSeriesDetailsViewModel {
         transitionID: String? = nil,
         dependencies: TVSeriesDetailsDependencies,
         navigator: any TVSeriesDetailsNavigating,
-        viewState: ViewState<ViewSnapshot> = .initial,
+        viewState: ViewState<TVSeries> = .initial,
+        castAndCrewState: ViewState<Credits> = .initial,
         isCastAndCrewEnabled: Bool = false,
         isIntelligenceEnabled: Bool = false,
         isBackdropFocalPointEnabled: Bool = false
@@ -76,6 +66,7 @@ public final class TVSeriesDetailsViewModel {
         self.dependencies = dependencies
         self.navigator = navigator
         self.viewState = viewState
+        self.castAndCrewState = castAndCrewState
         self.isCastAndCrewEnabled = isCastAndCrewEnabled
         self.isIntelligenceEnabled = isIntelligenceEnabled
         self.isBackdropFocalPointEnabled = isBackdropFocalPointEnabled
@@ -93,12 +84,17 @@ public final class TVSeriesDetailsViewModel {
         isBackdropFocalPointEnabled = (try? dependencies.isBackdropFocalPointEnabled()) ?? false
     }
 
-    /// Fetches details. There is no live stream, so this is a single fetch.
+    /// Fetches the series, then loads the cast-and-crew section once it is ready.
     ///
     /// Drive this from the view's `.task(id:)`; SwiftUI cancels it on disappear
     /// and reruns it on reappear / ``reload()``.
     public func load() async {
         await fetch()
+        guard viewState.isReady else {
+            return
+        }
+
+        await loadCastAndCrew()
     }
 
     /// Retries loading after an error by changing ``reloadID``, which reruns the
@@ -140,38 +136,36 @@ public final class TVSeriesDetailsViewModel {
             "User fetching TV series [tvSeriesID: \(self.tvSeriesID, privacy: .private)]"
         )
 
-        let tvSeries: TVSeries
         do {
-            tvSeries = try await dependencies.fetchTVSeries(tvSeriesID)
+            let tvSeries = try await dependencies.fetchTVSeries(tvSeriesID)
+            viewState = .ready(tvSeries)
         } catch {
             Self.logger.error(
                 "Failed fetching TV series [tvSeriesID: \(self.tvSeriesID, privacy: .private)]: \(error.localizedDescription, privacy: .public)"
             )
             viewState.applyLoadFailure(error)
+        }
+    }
+
+    func loadCastAndCrew() async {
+        guard (try? dependencies.isCastAndCrewEnabled()) == true else {
+            castAndCrewState = .initial
+            return
+        }
+        guard !castAndCrewState.isReady, !castAndCrewState.isLoading else {
             return
         }
 
-        let isCastAndCrewEnabled = (try? dependencies.isCastAndCrewEnabled()) ?? false
-
-        var castMembers: [CastMember] = []
-        var crewMembers: [CrewMember] = []
-        if isCastAndCrewEnabled {
-            do {
-                let credits = try await dependencies.fetchCredits(tvSeriesID)
-                castMembers = credits.castMembers
-                crewMembers = credits.crewMembers
-            } catch {
-                Self.logger.warning(
-                    "Failed fetching credits [tvSeriesID: \(self.tvSeriesID, privacy: .private)]: \(error.localizedDescription, privacy: .public)"
-                )
-            }
+        castAndCrewState = .loading
+        do {
+            let credits = try await dependencies.fetchCredits(tvSeriesID)
+            castAndCrewState = .ready(credits)
+        } catch {
+            Self.logger.warning(
+                "Failed fetching credits [tvSeriesID: \(self.tvSeriesID, privacy: .private)]: \(error.localizedDescription, privacy: .public)"
+            )
+            castAndCrewState.applyLoadFailure(error)
         }
-
-        viewState = .ready(ViewSnapshot(
-            tvSeries: tvSeries,
-            castMembers: castMembers,
-            crewMembers: crewMembers
-        ))
     }
 
 }
@@ -179,19 +173,21 @@ public final class TVSeriesDetailsViewModel {
 #if DEBUG
     public extension TVSeriesDetailsViewModel {
 
-        /// A view model pinned to a fixed view state with no-op dependencies and
+        /// A view model pinned to fixed view states with no-op dependencies and
         /// navigation, for previews and snapshot tests.
         static func preview(
-            viewState: ViewState<ViewSnapshot>,
+            viewState: ViewState<TVSeries>,
+            castAndCrewState: ViewState<Credits> = .initial,
             isCastAndCrewEnabled: Bool = false,
             isIntelligenceEnabled: Bool = false,
             isBackdropFocalPointEnabled: Bool = false
         ) -> TVSeriesDetailsViewModel {
             TVSeriesDetailsViewModel(
-                tvSeriesID: viewState.content?.tvSeries.id ?? 0,
+                tvSeriesID: viewState.content?.id ?? 0,
                 dependencies: .preview,
                 navigator: NoOpTVSeriesDetailsNavigator(),
                 viewState: viewState,
+                castAndCrewState: castAndCrewState,
                 isCastAndCrewEnabled: isCastAndCrewEnabled,
                 isIntelligenceEnabled: isIntelligenceEnabled,
                 isBackdropFocalPointEnabled: isBackdropFocalPointEnabled

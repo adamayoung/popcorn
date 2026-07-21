@@ -7,20 +7,37 @@
 
 import Foundation
 import MoviesDomain
+import Synchronization
 
-/// @unchecked Sendable is safe here: each test creates its own instance and
-/// configures stubs before any concurrent access occurs.
+/// @unchecked Sendable is safe here: stubs are configured before the exercise,
+/// and the mutable call-tracking state is guarded by a `Mutex` so the mock stays
+/// correct when a use case fans `imageCollection(forMovie:)` out across a task group.
 final class MockMovieImageRepository: MovieImageRepository, @unchecked Sendable {
 
-    var imageCollectionCallCount = 0
-    var imageCollectionCalledWith: [Int] = []
+    private struct Tracking {
+        var callCount = 0
+        var calledWith: [Int] = []
+    }
+
+    private let tracking = Mutex(Tracking())
+
     var imageCollectionStubs: [Int: Result<ImageCollection, MovieImageRepositoryError>] = [:]
+
+    var imageCollectionCallCount: Int {
+        tracking.withLock { $0.callCount }
+    }
+
+    var imageCollectionCalledWith: [Int] {
+        tracking.withLock { $0.calledWith }
+    }
 
     func imageCollection(
         forMovie movieID: Int
     ) async throws(MovieImageRepositoryError) -> ImageCollection {
-        imageCollectionCallCount += 1
-        imageCollectionCalledWith.append(movieID)
+        tracking.withLock {
+            $0.callCount += 1
+            $0.calledWith.append(movieID)
+        }
 
         guard let stub = imageCollectionStubs[movieID] else {
             throw .notFound
