@@ -11,6 +11,34 @@ and dated; link an ADR if a decision came out of it.
 *YYYY-MM-DD.* What bit us, why, and the resolution. Keep it to a few lines.
 -->
 
+### swift-testing hangs on `async` methods that use typed throws — the suite gets `.disabled`
+
+*2026-07-21.* `TMDbMovieRemoteDataSourceListsTests` (in `PopcornMoviesAdapters`) is
+annotated `.disabled("Typed throws causes Swift Testing to hang")` — the
+`TMDbMovieRemoteDataSource` methods use `throws(MovieRemoteDataSourceError)`, and
+awaiting one from a `@Test` hangs the runner
+([swiftlang/swift-testing#777](https://github.com/swiftlang/swift-testing/issues/777)).
+Consequence: **tests you add to a `.disabled` suite compile but never execute.** The
+popular-movies adapter paging tests (page/`totalPages` surfacing + the
+`min(totalPages, 1000)` clamp) live in that suite, so that behaviour is validated by
+*compilation + the full-app run* only, not by an executed adapter unit test. When you
+add a test to a `PopcornMoviesAdapters` remote-data-source suite, check whether the
+suite is `.disabled` before trusting it as coverage; cover the same behaviour at a
+layer whose tests actually run (the context use-case/repository tests, or the
+feature/app path).
+
+### Popular-movies image enrichment is all-or-nothing, unlike recommendations
+
+*2026-07-21.* `DefaultFetchPopularMoviesUseCase.imageCollections(for:)` fetches a
+per-movie `ImageCollection` in a `withThrowingTaskGroup` iterated with
+`for try await` — so **one movie's `imageCollection(forMovie:)` throwing fails the
+whole page fetch** (`FetchPopularMoviesError`). `DefaultFetchMovieRecommendationsUseCase`
+does the opposite: it *tolerates* a per-item image failure and keeps the movie without
+its logo. This asymmetry is pre-existing and was preserved (not introduced) by the
+paged-pipeline refactor. If popular-movies pages start failing wholesale when a single
+TMDb image request 404s, this is why — a follow-up could align popular with the
+tolerant recommendations pattern.
+
 ### Wiring a new local feature package into the app is a 5-part hand-edit of `project.pbxproj`
 
 *2026-07-21.* `Popcorn.xcodeproj` uses Xcode-16 **`PBXFileSystemSynchronized`
