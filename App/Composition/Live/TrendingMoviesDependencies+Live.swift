@@ -19,10 +19,10 @@ extension TrendingMoviesDependencies {
         let fetchTrendingMovies = services.trendingFactory.makeFetchTrendingMoviesUseCase()
 
         return TrendingMoviesDependencies(
-            fetchTrendingMovies: {
-                let moviePreviews = try await fetchTrendingMovies.execute()
+            fetchTrendingMovies: { page in
+                let detailsPage = try await fetchTrendingMovies.execute(page: page)
                 let mapper = MoviePreviewMapper()
-                return moviePreviews.map(mapper.map)
+                return mapper.map(detailsPage)
             }
         )
     }

@@ -15,10 +15,10 @@ import Foundation
 /// composition layer; use ``preview`` for previews and tests.
 public struct TrendingMoviesDependencies: Sendable {
 
-    public var fetchTrendingMovies: @Sendable () async throws -> [MoviePreview]
+    public var fetchTrendingMovies: @Sendable (_ page: Int) async throws -> MoviePreviewPage
 
     public init(
-        fetchTrendingMovies: @escaping @Sendable () async throws -> [MoviePreview]
+        fetchTrendingMovies: @escaping @Sendable (_ page: Int) async throws -> MoviePreviewPage
     ) {
         self.fetchTrendingMovies = fetchTrendingMovies
     }
@@ -28,10 +28,13 @@ public struct TrendingMoviesDependencies: Sendable {
 #if DEBUG
     public extension TrendingMoviesDependencies {
 
-        /// Mock dependencies for previews and snapshot tests.
+        /// Mock dependencies for previews and snapshot tests. Reports a single page,
+        /// so the load-more footer never appears.
         static var preview: TrendingMoviesDependencies {
             TrendingMoviesDependencies(
-                fetchTrendingMovies: { MoviePreview.mocks }
+                fetchTrendingMovies: { page in
+                    MoviePreviewPage(page: page, totalPages: 1, movies: MoviePreview.mocks)
+                }
             )
         }
 

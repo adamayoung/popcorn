@@ -72,4 +72,24 @@ struct MoviePreviewMapperTests {
         #expect(results[2].title == "Movie 3")
     }
 
+    @Test("Maps MoviePreviewDetailsPage preserving pagination metadata")
+    func mapsMoviePreviewDetailsPage() {
+        let detailsPage = MoviePreviewDetailsPage(
+            page: 2,
+            totalPages: 5,
+            movies: [
+                MoviePreviewDetails(id: 1, title: "Movie 1", overview: "Overview 1"),
+                MoviePreviewDetails(id: 2, title: "Movie 2", overview: "Overview 2")
+            ]
+        )
+
+        let result = mapper.map(detailsPage)
+
+        #expect(result.page == 2)
+        #expect(result.totalPages == 5)
+        #expect(result.movies.count == 2)
+        #expect(result.movies[0].id == 1)
+        #expect(result.movies[1].id == 2)
+    }
+
 }
