@@ -118,8 +118,13 @@ implementation = separate `/deliver` sessions.)
   `Bash`** (`run_in_background: true`) that logs to a file and appends
   `; echo "EXIT=$?"`, then grep the log for the exit marker + errors on the
   completion notification — it self-reports **once** on exit, whereas a Haiku
-  subagent driving its own poll loop returns premature "still waiting" notes. A
-  Haiku subagent is still right for short, foreground summaries.
+  subagent driving its own poll loop returns premature "still waiting" notes.
+  **Never nest `&` inside that command** (`( make … ) &`) — the harness already
+  backgrounds it for you, so an extra `&` detaches the real command and the
+  wrapper script exits immediately, making the harness report the wrapper's
+  premature `exit 0` rather than the gate's true result. Let the backgrounded job
+  run the command in its foreground (`make … > log 2>&1; echo "EXIT=$?" >> log`).
+  A Haiku subagent is still right for short, foreground summaries.
 
 ## Phase 0 — Preconditions
 

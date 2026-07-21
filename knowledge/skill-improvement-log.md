@@ -31,6 +31,28 @@ two fields the dedup step keys on.
 
 <!-- Newest entry goes here. -->
 
+### 2026-07-21 — Don't nest `&` inside a backgrounded gate command · applied
+
+- **Pattern:** across PR #82's retro and PR #83's, the backgrounded-gate pattern was
+  written as `( make … ) &` inside a `run_in_background` Bash job. The harness already
+  backgrounds the job, so the inner `&` double-backgrounds: the wrapper script exits
+  immediately (detaching the real `make`), and the harness fires a premature
+  completion notification reporting the wrapper's `exit 0` — not the gate's true
+  result. Each time it cost a confused round-trip grepping the log to discover the
+  build was actually still running. A specific pitfall of the already-applied
+  2026-07-10 backgrounded-Bash gate pattern, which the *Context & isolation* note did
+  not warn against.
+- **Decision:** *applied* 2026-07-21 (owner-approved). Added an explicit
+  **"Never nest `&` inside that command"** warning to `/deliver`'s *Context &
+  isolation* bullet (`.claude/skills/deliver/SKILL.md`), with the correct foreground
+  form `make … > log 2>&1; echo "EXIT=$?" >> log`. The Phase 9 gate note already
+  defers to that bullet by reference, so no second edit was needed. Landed via branch
+  `chore/deliver-nested-ampersand-note`.
+- **Rationale:** a twice-seen reliability tax with a one-line documentation fix; the
+  existing note described the `EXIT=$?` marker but not the double-backgrounding trap
+  that makes the marker necessary.
+- **Reconsider when:** n/a (applied).
+
 ### 2026-07-21 — /test-package should gate feature packages out up front · applied
 
 - **Pattern:** across PRs #79, `feature/explore-trending-movies-navigation`, and #80,
