@@ -106,109 +106,6 @@ struct MovieDetailsViewModelTests {
         #expect(viewModel.castAndCrewState == .ready(Self.testCredits))
     }
 
-    // MARK: - Feature flags
-
-    @Test("disabled section flags leave the sections initial and skip their dependencies")
-    @MainActor
-    func disabledSectionFlagsSkipDependencies() async {
-        let recommendedCalled = Mutex(false)
-        let creditsCalled = Mutex(false)
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchMovie: { _ in Self.testMovie },
-                fetchRecommendedMovies: { _ in recommendedCalled.withLock { $0 = true }; return [] },
-                fetchCredits: { _ in
-                    creditsCalled.withLock { $0 = true }
-                    return Self.testCredits
-                },
-                isCastAndCrewEnabled: { false },
-                isRecommendedMoviesEnabled: { false }
-            )
-        )
-
-        await viewModel.load()
-
-        #expect(recommendedCalled.withLock { $0 } == false)
-        #expect(creditsCalled.withLock { $0 } == false)
-        #expect(viewModel.recommendedMoviesState.isInitial)
-        #expect(viewModel.castAndCrewState.isInitial)
-    }
-
-    @Test("a flag turning off resets a previously ready section to initial")
-    @MainActor
-    func flagTurningOffResetsSection() async {
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(isCastAndCrewEnabled: { false }),
-            castAndCrewState: .ready(Self.testCredits)
-        )
-
-        await viewModel.loadCastAndCrew()
-
-        #expect(viewModel.castAndCrewState.isInitial)
-    }
-
-    // MARK: - Re-entry guards
-
-    @Test("a cancelled section load resets to initial and reloads on the next run")
-    @MainActor
-    func cancelledSectionReloadsOnNextRun() async {
-        let callCount = Mutex(0)
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchRecommendedMovies: { _ in
-                    let attempt = callCount.withLock { $0 += 1; return $0 }
-                    if attempt == 1 {
-                        throw CancellationError()
-                    }
-                    return Self.testRecommendations
-                }
-            )
-        )
-
-        await viewModel.loadRecommendedMovies()
-        #expect(viewModel.recommendedMoviesState.isInitial)
-
-        await viewModel.loadRecommendedMovies()
-        #expect(viewModel.recommendedMoviesState == .ready(Self.testRecommendations))
-    }
-
-    @Test("a section load is a no-op when the section is already ready")
-    @MainActor
-    func sectionLoadNoOpWhenReady() async {
-        let called = Mutex(false)
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchRecommendedMovies: { _ in called.withLock { $0 = true }; return [] }
-            ),
-            recommendedMoviesState: .ready(Self.testRecommendations)
-        )
-
-        await viewModel.loadRecommendedMovies()
-
-        #expect(called.withLock { $0 } == false)
-        #expect(viewModel.recommendedMoviesState == .ready(Self.testRecommendations))
-    }
-
-    @Test("a section load is a no-op when the section is already loading")
-    @MainActor
-    func sectionLoadNoOpWhenLoading() async {
-        let called = Mutex(false)
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchCredits: { _ in
-                    called.withLock { $0 = true }
-                    return Self.testCredits
-                }
-            ),
-            castAndCrewState: .loading
-        )
-
-        await viewModel.loadCastAndCrew()
-
-        #expect(called.withLock { $0 } == false)
-        #expect(viewModel.castAndCrewState.isLoading)
-    }
-
     // MARK: - Stream
 
     @Test("stream update replaces the movie and leaves the sections intact")
@@ -332,7 +229,7 @@ struct MovieDetailsViewModelTests {
 // MARK: - Spy Navigator
 
 @MainActor
-private final class SpyMovieDetailsNavigator: MovieDetailsNavigating {
+final class SpyMovieDetailsNavigator: MovieDetailsNavigating {
     var openedMovieID: Int?
     var openedIntelligenceID: Int?
     var openedPersonID: Int?
@@ -447,6 +344,6 @@ extension MovieDetailsViewModelTests {
 
 // MARK: - Test Helpers
 
-private enum TestError: Error, Equatable {
+enum TestError: Error, Equatable {
     case generic
 }
