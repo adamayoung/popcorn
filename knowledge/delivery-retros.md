@@ -16,6 +16,64 @@ table (`date · PR · weight · one-line outcome`) — see [`README.md`](README.
 
 <!-- Newest entry goes here. -->
 
+### Popular movies grid + paged popular pipeline · branch `feature/popular-movies-feature` · 2026-07-21 · full
+
+*Phases / skills:* plan mode (`get_context` + 2 Explore + 1 Plan agent) → `/deliver`
+→ `/review-plan` **skipped** (ExitPlanMode approval counts as reviewed) →
+`/implement-plan` (Canon TDD, per-package checkpoints) → `/review-changes`
+(7-dimension fan-out + adversarial verify: **0 findings, 0 dropped**) →
+`/security-review` (clean) → `/capture-knowledge` (2 gotchas, no ADR) → independent
+grader (**all 7 ACs met**). Threaded TMDb `page`/`totalPages` through the
+`PopcornMovies` popular stack (mirroring Discover's cache-aware paged pipeline) and
+mirrored `TrendingMoviesFeature` into a new `PopularMoviesFeature`, made the Explore
+"Popular Movies" header tappable.
+
+*What worked:*
+- **The entire popular-movies backend already existed** — `FetchPopularMoviesUseCase`
+  was wired into `AppServices` and already feeding the Explore carousel behind the
+  registered `explorePopularMovies` flag. Exploration caught this up front, so the
+  only real design work was making that use case paged; the feature + header were
+  pure replication. No new flag, no Statsig gate.
+- **Discover had already shipped the exact SwiftData change.** The optional
+  `totalPages` on the cache entity + "nil totalPages ⇒ treat as a miss so it
+  self-heals" pattern was copied 1:1 from `SwiftDataDiscoverMovieLocalDataSource`,
+  which de-risked the only migration-touching part of the change.
+- **Cloning the feature package via `cp -R` + `sed`** (Trending→Popular, with
+  context-product names substituted first so the generic rename didn't catch them).
+  Because every substitution was equal-or-shorter length, `make format` reported
+  **0 files changed** and lint passed first try — the clone inherited the reference's
+  formatting exactly.
+- **Per-package green checkpoints, then one full-app pass.** `PopcornMovies` (117
+  tests) + the adapter (99) validated via `swift test` before the App was touched;
+  feature + wiring + Explore validated together via full-app build/test/snapshot.
+  Code review (7 Opus dimensions) and security review both came back clean first pass.
+
+*Friction:*
+- **The 5-part `project.pbxproj` hand-edit again** (already in `gotchas.md` from
+  PR #82) — mechanical but unforgiving; `plutil -lint` after the edit is the cheap
+  safety check.
+- **A `.disabled` adapter test suite silently swallows new coverage.**
+  `TMDbMovieRemoteDataSourceListsTests` is disabled (swift-testing hangs on typed-throws
+  async), so the two new popular page/clamp adapter tests compile but never run —
+  captured to `gotchas.md`. Adapter paging is really validated by compile + full-app.
+- **Snapshot re-records took two runs** (record `.missing` → assert-green), plus a
+  manual delete of the stale `exploreView.1.png` before the record pass (an
+  existing-but-changed baseline isn't auto-overwritten). Predictable, same as PR #82.
+
+*Deviations:*
+- **Skipped `/review-plan`'s critics.** The plan carried `ExitPlanMode` approval and
+  was authored by a dedicated Plan agent; I additionally self-verified the two riskiest
+  files (the popular repository + SwiftData local source) before implementing. Justified
+  by the deliver rule, but worth noting the plan wasn't independently critic-reviewed.
+
+*One improvement:*
+- **The `( make … ) &` double-backgrounding bug recurred** — PR #82's retro already
+  flagged it, and it bit again this run (the wrapper's `&` detached the real build, so
+  the harness fired a premature "exit 0"). It cost a confused round-trip. This is now a
+  twice-seen pattern: `/deliver`'s *Context & isolation* note should explicitly say
+  **"never nest `&` inside a `run_in_background` gate command — let the job run the
+  command in its foreground"**, not just describe the `EXIT=$?` marker.
+
 ### Discover movies grid + reusable PosterGrid · PR #82 · 2026-07-21 · full
 
 *Phases / skills:* plan mode (`get_context` + 3 Explore + 1 Plan agent) → `/deliver`
