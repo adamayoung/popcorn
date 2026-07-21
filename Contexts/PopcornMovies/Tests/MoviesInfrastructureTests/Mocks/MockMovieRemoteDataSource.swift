@@ -53,9 +53,9 @@ final class MockMovieRemoteDataSource: MovieRemoteDataSource, @unchecked Sendabl
 
     var popularCallCount = 0
     var popularCalledWith: [Int] = []
-    var popularStub: Result<[MoviePreview], MovieRemoteDataSourceError>?
+    var popularStub: Result<MoviePreviewPage, MovieRemoteDataSourceError>?
 
-    func popular(page: Int) async throws(MovieRemoteDataSourceError) -> [MoviePreview] {
+    func popular(page: Int) async throws(MovieRemoteDataSourceError) -> MoviePreviewPage {
         popularCallCount += 1
         popularCalledWith.append(page)
 
@@ -64,8 +64,8 @@ final class MockMovieRemoteDataSource: MovieRemoteDataSource, @unchecked Sendabl
         }
 
         switch stub {
-        case .success(let movies):
-            return movies
+        case .success(let page):
+            return page
         case .failure(let error):
             throw error
         }

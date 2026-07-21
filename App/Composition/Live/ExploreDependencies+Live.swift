@@ -40,7 +40,7 @@ extension ExploreDependencies {
             },
             fetchPopularMovies: {
                 try await mapping("ExploreClient.fetchPopularMovies") {
-                    try await fetchPopularMovies.execute().map { MoviePreviewMapper().map($0) }
+                    try await fetchPopularMovies.execute().movies.map { MoviePreviewMapper().map($0) }
                 }
             },
             fetchTrendingTVSeries: {

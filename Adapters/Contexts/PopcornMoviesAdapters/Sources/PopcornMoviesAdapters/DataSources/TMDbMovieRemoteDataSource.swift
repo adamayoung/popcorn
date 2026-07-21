@@ -47,17 +47,22 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
         return mapper.map(tmdbImageCollection)
     }
 
-    func popular(page: Int) async throws(MovieRemoteDataSourceError) -> [MoviePreview] {
-        let tmdbMovies: [TMDb.MovieListItem]
+    func popular(page: Int) async throws(MovieRemoteDataSourceError) -> MoviePreviewPage {
+        let response: TMDb.MoviePageableList
         do {
-            tmdbMovies = try await movieService.popular(page: page)
-                .results
+            response = try await movieService.popular(page: page)
         } catch let error {
             throw MovieRemoteDataSourceError(error)
         }
 
         let mapper = MoviePreviewMapper()
-        return tmdbMovies.map(mapper.map)
+        return MoviePreviewPage(
+            page: response.page,
+            // TMDb's `MovieService` preconditions `page` to 1...1000; clamping
+            // `totalPages` here guarantees no caller ever requests beyond that limit.
+            totalPages: min(response.totalPages, 1000),
+            movies: response.results.map(mapper.map)
+        )
     }
 
     func similar(

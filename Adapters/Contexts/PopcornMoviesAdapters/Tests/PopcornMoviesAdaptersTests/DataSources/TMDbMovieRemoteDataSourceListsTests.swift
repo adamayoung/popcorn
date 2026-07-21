@@ -63,11 +63,38 @@ struct TMDbMovieRemoteDataSourceListsTests {
 
         let result = try await dataSource.popular(page: page)
 
-        #expect(result.count == 1)
-        #expect(result[0].id == 550)
-        #expect(result[0].title == "Fight Club")
+        #expect(result.movies.count == 1)
+        #expect(result.movies[0].id == 550)
+        #expect(result.movies[0].title == "Fight Club")
         #expect(mockService.popularCallCount == 1)
         #expect(mockService.popularCalledWith[0].page == page)
+    }
+
+    @Test("popular surfaces page and totalPages from the response")
+    func popular_surfacesPageAndTotalPages() async throws {
+        mockService.popularStub = .success(
+            MoviePageableList(page: 3, results: [], totalResults: 100, totalPages: 5)
+        )
+
+        let dataSource = TMDbMovieRemoteDataSource(movieService: mockService)
+
+        let result = try await dataSource.popular(page: 3)
+
+        #expect(result.page == 3)
+        #expect(result.totalPages == 5)
+    }
+
+    @Test("popular clamps totalPages to the TMDb maximum of 1000")
+    func popular_clampsTotalPagesToOneThousand() async throws {
+        mockService.popularStub = .success(
+            MoviePageableList(page: 1, results: [], totalResults: 100_000, totalPages: 5000)
+        )
+
+        let dataSource = TMDbMovieRemoteDataSource(movieService: mockService)
+
+        let result = try await dataSource.popular(page: 1)
+
+        #expect(result.totalPages == 1000)
     }
 
     @Test("popular throws notFound error for TMDb notFound")
