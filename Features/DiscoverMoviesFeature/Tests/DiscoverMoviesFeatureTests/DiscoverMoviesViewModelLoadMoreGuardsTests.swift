@@ -54,6 +54,26 @@ struct DiscoverMoviesViewModelLoadMoreGuardsTests {
         #expect(fetchCount.withLock { $0 } == 0)
     }
 
+    @Test("loadMoreIfNeeded is a no-op when the view state has no loaded content")
+    @MainActor
+    func loadMoreIfNeededNoOpWhenNotReady() async {
+        let fetchCount = Mutex(0)
+        let viewModel = Support.makeViewModel(
+            dependencies: Support.stubDependencies(
+                fetchDiscoverMovies: { page in
+                    fetchCount.withLock { $0 += 1 }
+                    return MoviePreviewPage(page: page, totalPages: 5, movies: Support.testMovies)
+                }
+            )
+        )
+
+        // The view model is still `.initial`, so there is no loaded content — the
+        // near-end trigger must bail before requesting a page.
+        await viewModel.loadMoreIfNeeded(at: 0)
+
+        #expect(fetchCount.withLock { $0 } == 0)
+    }
+
     @Test("loadMore ignores a re-entrant call while a fetch is already in flight")
     @MainActor
     func loadMoreReentrancyGuard() async {
