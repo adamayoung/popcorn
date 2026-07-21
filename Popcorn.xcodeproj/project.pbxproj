@@ -13,6 +13,7 @@
 		666AEE272ECDEEEC0038814E /* TrendingPeopleFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 666AEE262ECDEEEC0038814E /* TrendingPeopleFeature */; };
 		666AEE492ECE0A1B0038814E /* PersonDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 666AEE482ECE0A1B0038814E /* PersonDetailsFeature */; };
 		668F587E2ECCB82A00B47B07 /* MovieDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 668F587D2ECCB82A00B47B07 /* MovieDetailsFeature */; };
+		66D15C0FE1EA700000000001 /* DiscoverMoviesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66D15C0FE1EA700000000002 /* DiscoverMoviesFeature */; };
 		668F58892ECCFEBE00B47B07 /* TrendingMoviesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 668F58882ECCFEBE00B47B07 /* TrendingMoviesFeature */; };
 		668F588C2ECDB2D500B47B07 /* TrendingTVSeriesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 668F588B2ECDB2D500B47B07 /* TrendingTVSeriesFeature */; };
 		668F58912ECDD5CA00B47B07 /* TVSeriesDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 668F58902ECDD5CA00B47B07 /* TVSeriesDetailsFeature */; };
@@ -88,6 +89,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				DeveloperFeature,
+				DiscoverMoviesFeature,
 				ExploreFeature,
 				GamesCatalogFeature,
 				MediaSearchFeature,
@@ -237,6 +239,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66D15C0FE1EA700000000001 /* DiscoverMoviesFeature in Frameworks */,
 				668F58892ECCFEBE00B47B07 /* TrendingMoviesFeature in Frameworks */,
 				900E28EA2ED0781900ED5DFC /* ExploreFeature in Frameworks */,
 				66A2E0502F0B01C0002B8706 /* MovieCastAndCrewFeature in Frameworks */,
@@ -345,6 +348,7 @@
 			packageProductDependencies = (
 				66AADE9000000000000000A1 /* AppDependencies */,
 				668F587D2ECCB82A00B47B07 /* MovieDetailsFeature */,
+				66D15C0FE1EA700000000002 /* DiscoverMoviesFeature */,
 				668F58882ECCFEBE00B47B07 /* TrendingMoviesFeature */,
 				668F588B2ECDB2D500B47B07 /* TrendingTVSeriesFeature */,
 				668F58902ECDD5CA00B47B07 /* TVSeriesDetailsFeature */,
@@ -930,6 +934,10 @@
 		668F587D2ECCB82A00B47B07 /* MovieDetailsFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = MovieDetailsFeature;
+		};
+		66D15C0FE1EA700000000002 /* DiscoverMoviesFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DiscoverMoviesFeature;
 		};
 		668F58882ECCFEBE00B47B07 /* TrendingMoviesFeature */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -13,6 +13,10 @@ extension ExploreRouterNavigator: ExploreNavigating {
         router.path.append(.trendingMovies)
     }
 
+    func openDiscoverMovies() {
+        router.path.append(.discoverMovies)
+    }
+
     func openMovieDetails(id: Int, transitionID: String?) {
         // The home carousel forwards its `transitionID` to drive the zoom transition.
         router.path.append(.movieDetails(id: id, transitionID: transitionID))

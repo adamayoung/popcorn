@@ -118,10 +118,24 @@ extension ExploreView {
     @ViewBuilder
     private func discoverMoviesSection(_ movies: [MoviePreview]) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("DISCOVER_MOVIES", bundle: .module)
-                .font(.title2)
-                .bold()
-                .accessibilityAddTraits(.isHeader)
+            Button {
+                viewModel.selectDiscoverMovies()
+            } label: {
+                HStack(spacing: .spacing4) {
+                    Text("DISCOVER_MOVIES", bundle: .module)
+                        .font(.title2)
+                        .bold()
+
+                    Image(systemName: "chevron.right")
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .accessibilityIdentifier("explore.discover-movies.header")
+            .accessibilityAddTraits(.isHeader)
+            .accessibilityHint(Text("VIEW_ALL_DISCOVER_MOVIES_HINT", bundle: .module))
+            .buttonStyle(.plain)
         }
         .padding(.horizontal)
         .padding(.vertical, 0)

@@ -75,6 +75,13 @@
     },
     {
       "target" : {
+        "containerPath" : "container:Features\/DiscoverMoviesFeature",
+        "identifier" : "DiscoverMoviesFeatureTests",
+        "name" : "DiscoverMoviesFeatureTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Features\/TrendingMoviesFeature",
         "identifier" : "TrendingMoviesFeatureTests",
         "name" : "TrendingMoviesFeatureTests"

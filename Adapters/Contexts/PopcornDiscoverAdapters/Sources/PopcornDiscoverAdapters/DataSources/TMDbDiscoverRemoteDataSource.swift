@@ -18,29 +18,31 @@ final class TMDbDiscoverRemoteDataSource: DiscoverRemoteDataSource {
         self.discoverService = discoverService
     }
 
-    func movies(page: Int) async throws(DiscoverRemoteDataSourceError) -> [MoviePreview] {
-        try await movies(filter: nil, page: page)
-    }
-
     func movies(
         filter: MovieFilter?,
         page: Int
-    ) async throws(DiscoverRemoteDataSourceError) -> [MoviePreview] {
+    ) async throws(DiscoverRemoteDataSourceError) -> MoviePreviewPage {
         let filterMapper = TMDbDiscoverMovieFilterMapper()
-        let tmdbMovies: [MovieListItem]
+        let response: MoviePageableList
         do {
-            tmdbMovies = try await discoverService.movies(
+            response = try await discoverService.movies(
                 filter: filterMapper.compactMap(filter),
                 sortedBy: nil,
                 page: page,
                 language: nil
-            ).results
+            )
         } catch let error {
             throw DiscoverRemoteDataSourceError(error)
         }
 
         let mapper = MoviePreviewMapper()
-        return tmdbMovies.map(mapper.map)
+        return MoviePreviewPage(
+            page: response.page,
+            // TMDb's `DiscoverService` preconditions `page` to 1...1000; clamping
+            // `totalPages` here guarantees no caller ever requests beyond that limit.
+            totalPages: min(response.totalPages, 1000),
+            movies: response.results.map(mapper.map)
+        )
     }
 
     func tvSeries(page: Int) async throws(DiscoverRemoteDataSourceError) -> [TVSeriesPreview] {

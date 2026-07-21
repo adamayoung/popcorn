@@ -9,6 +9,7 @@ import AppDependencies
 #if DEBUG
     import DeveloperFeature
 #endif
+import DiscoverMoviesFeature
 import ExploreFeature
 import GamesCatalogFeature
 import MediaSearchFeature
@@ -125,6 +126,17 @@ final class ViewModelFactory {
         navigator: some TrendingMoviesNavigating
     ) -> TrendingMoviesViewModel {
         TrendingMoviesViewModel(
+            dependencies: .live(services: services),
+            navigator: navigator
+        )
+    }
+
+    // MARK: - Discover Movies
+
+    func makeDiscoverMovies(
+        navigator: some DiscoverMoviesNavigating
+    ) -> DiscoverMoviesViewModel {
+        DiscoverMoviesViewModel(
             dependencies: .live(services: services),
             navigator: navigator
         )

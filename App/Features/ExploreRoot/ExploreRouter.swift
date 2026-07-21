@@ -10,6 +10,7 @@ import Observation
 /// A pushed destination on the Explore tab's navigation stack.
 enum ExploreRoute: Hashable {
     case trendingMovies
+    case discoverMovies
     case movieDetails(id: Int, transitionID: String?)
     case tvSeriesDetails(id: Int, transitionID: String?)
     case tvSeasonDetails(tvSeriesID: Int, seasonNumber: Int)

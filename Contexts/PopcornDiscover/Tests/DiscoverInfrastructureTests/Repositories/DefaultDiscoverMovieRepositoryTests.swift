@@ -24,31 +24,33 @@ struct DefaultDiscoverMovieRepositoryTests {
 
     // MARK: - Cache Hit Tests
 
-    @Test("movies returns cached value when available")
+    @Test("movies returns the cached page when available, preserving its metadata")
     func moviesReturnsCachedValueWhenAvailable() async throws {
-        let cachedMovies = MoviePreview.mocks
-        mockLocalDataSource.moviesStub = .success(cachedMovies)
+        let cachedPage = page(MoviePreview.mocks, page: 2, totalPages: 6)
+        mockLocalDataSource.moviesStub = .success(cachedPage)
 
         let repository = makeRepository()
 
-        let result = try await repository.movies(filter: nil, page: 1)
+        let result = try await repository.movies(filter: nil, page: 2)
 
-        #expect(result.count == cachedMovies.count)
+        #expect(result == cachedPage)
+        #expect(result.page == 2)
+        #expect(result.totalPages == 6)
         #expect(await mockLocalDataSource.moviesCallCount == 1)
         #expect(mockRemoteDataSource.moviesCallCount == 0)
     }
 
     @Test("movies with filter returns cached value when available")
     func moviesWithFilterReturnsCachedValueWhenAvailable() async throws {
-        let cachedMovies = MoviePreview.mocks
+        let cachedPage = page(MoviePreview.mocks)
         let filter = MovieFilter(originalLanguage: "en", genres: [28])
-        mockLocalDataSource.moviesStub = .success(cachedMovies)
+        mockLocalDataSource.moviesStub = .success(cachedPage)
 
         let repository = makeRepository()
 
         let result = try await repository.movies(filter: filter, page: 1)
 
-        #expect(result.count == cachedMovies.count)
+        #expect(result.movies.count == cachedPage.movies.count)
         #expect(await mockLocalDataSource.moviesCallCount == 1)
         let calledWith = await mockLocalDataSource.moviesCalledWith
         #expect(calledWith[0].filter?.originalLanguage == "en")
@@ -59,24 +61,24 @@ struct DefaultDiscoverMovieRepositoryTests {
 
     @Test("movies fetches from remote when cache is empty")
     func moviesFetchesFromRemoteWhenCacheIsEmpty() async throws {
-        let remoteMovies = MoviePreview.mocks
+        let remotePage = page(MoviePreview.mocks, page: 1, totalPages: 4)
         mockLocalDataSource.moviesStub = .success(nil)
-        mockRemoteDataSource.moviesStub = .success(remoteMovies)
+        mockRemoteDataSource.moviesStub = .success(remotePage)
 
         let repository = makeRepository()
 
         let result = try await repository.movies(filter: nil, page: 1)
 
-        #expect(result.count == remoteMovies.count)
+        #expect(result == remotePage)
         #expect(await mockLocalDataSource.moviesCallCount == 1)
         #expect(mockRemoteDataSource.moviesCallCount == 1)
     }
 
-    @Test("movies caches remote value after fetching")
+    @Test("movies caches the remote page (with its metadata) after fetching")
     func moviesCachesRemoteValueAfterFetching() async throws {
-        let remoteMovies = MoviePreview.mocks
+        let remotePage = page(MoviePreview.mocks, page: 1, totalPages: 9)
         mockLocalDataSource.moviesStub = .success(nil)
-        mockRemoteDataSource.moviesStub = .success(remoteMovies)
+        mockRemoteDataSource.moviesStub = .success(remotePage)
 
         let repository = makeRepository()
 
@@ -84,16 +86,17 @@ struct DefaultDiscoverMovieRepositoryTests {
 
         #expect(await mockLocalDataSource.setMoviesCallCount == 1)
         let setMoviesCalledWith = await mockLocalDataSource.setMoviesCalledWith
-        #expect(setMoviesCalledWith[0].movies.count == remoteMovies.count)
-        #expect(setMoviesCalledWith[0].page == 1)
+        #expect(setMoviesCalledWith[0].page.movies.count == remotePage.movies.count)
+        #expect(setMoviesCalledWith[0].page.page == 1)
+        #expect(setMoviesCalledWith[0].page.totalPages == 9)
     }
 
-    @Test("movies passes filter and page to cache when storing")
-    func moviesPassesFilterAndPageToCacheWhenStoring() async throws {
-        let remoteMovies = MoviePreview.mocks
+    @Test("movies passes filter to cache when storing")
+    func moviesPassesFilterToCacheWhenStoring() async throws {
+        let remotePage = page(MoviePreview.mocks, page: 3, totalPages: 5)
         let filter = MovieFilter(originalLanguage: "fr", genres: [35])
         mockLocalDataSource.moviesStub = .success(nil)
-        mockRemoteDataSource.moviesStub = .success(remoteMovies)
+        mockRemoteDataSource.moviesStub = .success(remotePage)
 
         let repository = makeRepository()
 
@@ -101,7 +104,7 @@ struct DefaultDiscoverMovieRepositoryTests {
 
         let setMoviesCalledWith = await mockLocalDataSource.setMoviesCalledWith
         #expect(setMoviesCalledWith[0].filter?.originalLanguage == "fr")
-        #expect(setMoviesCalledWith[0].page == 3)
+        #expect(setMoviesCalledWith[0].page.page == 3)
     }
 
     // MARK: - Error Tests
@@ -178,26 +181,26 @@ struct DefaultDiscoverMovieRepositoryTests {
 
     @Test("movies returns remote data when cache save fails")
     func moviesReturnsRemoteDataWhenCacheSaveFails() async throws {
-        let remoteMovies = MoviePreview.mocks
+        let remotePage = page(MoviePreview.mocks)
         let saveError = NSError(domain: "test", code: 789)
         mockLocalDataSource.moviesStub = .success(nil)
-        mockRemoteDataSource.moviesStub = .success(remoteMovies)
+        mockRemoteDataSource.moviesStub = .success(remotePage)
         mockLocalDataSource.setMoviesStub = .failure(.persistence(saveError))
 
         let repository = makeRepository()
 
         let result = try await repository.movies(filter: nil, page: 1)
 
-        #expect(result == remoteMovies)
+        #expect(result == remotePage)
     }
 
     // MARK: - Pagination Tests
 
     @Test("movies passes correct page to data sources")
     func moviesPassesCorrectPageToDataSources() async throws {
-        let remoteMovies = MoviePreview.mocks
+        let remotePage = page(MoviePreview.mocks, page: 5, totalPages: 10)
         mockLocalDataSource.moviesStub = .success(nil)
-        mockRemoteDataSource.moviesStub = .success(remoteMovies)
+        mockRemoteDataSource.moviesStub = .success(remotePage)
 
         let repository = makeRepository()
 
@@ -212,17 +215,25 @@ struct DefaultDiscoverMovieRepositoryTests {
 
     @Test("movies works without span")
     func moviesWorksWithoutSpan() async throws {
-        let cachedMovies = MoviePreview.mocks
-        mockLocalDataSource.moviesStub = .success(cachedMovies)
+        let cachedPage = page(MoviePreview.mocks)
+        mockLocalDataSource.moviesStub = .success(cachedPage)
 
         let repository = makeRepository()
 
         let result = try await repository.movies(filter: nil, page: 1)
 
-        #expect(result.count == cachedMovies.count)
+        #expect(result.movies.count == cachedPage.movies.count)
     }
 
     // MARK: - Helpers
+
+    private func page(
+        _ movies: [MoviePreview],
+        page: Int = 1,
+        totalPages: Int = 1
+    ) -> MoviePreviewPage {
+        MoviePreviewPage(page: page, totalPages: totalPages, movies: movies)
+    }
 
     private func makeRepository() -> DefaultDiscoverMovieRepository {
         DefaultDiscoverMovieRepository(

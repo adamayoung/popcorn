@@ -33,7 +33,7 @@ struct DefaultFetchDiscoverMoviesUseCaseTests {
         let genres = Genre.mocks
         let appConfiguration = AppConfiguration.mock()
 
-        mockRepository.moviesStub = .success(moviePreviews)
+        mockRepository.moviesStub = .success(page(moviePreviews))
         mockGenreProvider.movieGenresStub = .success(genres)
         mockAppConfigurationProvider.appConfigurationStub = .success(appConfiguration)
         mockLogoImageProvider.imageURLSetStub = .success(nil)
@@ -42,10 +42,28 @@ struct DefaultFetchDiscoverMoviesUseCaseTests {
 
         let result = try await useCase.execute()
 
-        #expect(result.count == moviePreviews.count)
+        #expect(result.movies.count == moviePreviews.count)
         #expect(mockRepository.moviesCallCount == 1)
         #expect(mockGenreProvider.movieGenresCallCount == 1)
         #expect(mockAppConfigurationProvider.appConfigurationCallCount == 1)
+    }
+
+    @Test("execute returns a page preserving the repository page metadata")
+    func executePreservesPageMetadata() async throws {
+        let moviePreviews = MoviePreview.mocks
+
+        mockRepository.moviesStub = .success(page(moviePreviews, page: 3, totalPages: 7))
+        mockGenreProvider.movieGenresStub = .success(Genre.mocks)
+        mockAppConfigurationProvider.appConfigurationStub = .success(AppConfiguration.mock())
+        mockLogoImageProvider.imageURLSetStub = .success(nil)
+
+        let useCase = makeUseCase()
+
+        let result = try await useCase.execute(page: 3)
+
+        #expect(result.page == 3)
+        #expect(result.totalPages == 7)
+        #expect(result.movies.count == moviePreviews.count)
     }
 
     @Test("execute with filter passes filter to repository")
@@ -55,7 +73,7 @@ struct DefaultFetchDiscoverMoviesUseCaseTests {
         let appConfiguration = AppConfiguration.mock()
         let filter = MovieFilter(originalLanguage: "en", genres: [28])
 
-        mockRepository.moviesStub = .success(moviePreviews)
+        mockRepository.moviesStub = .success(page(moviePreviews))
         mockGenreProvider.movieGenresStub = .success(genres)
         mockAppConfigurationProvider.appConfigurationStub = .success(appConfiguration)
         mockLogoImageProvider.imageURLSetStub = .success(nil)
@@ -75,7 +93,7 @@ struct DefaultFetchDiscoverMoviesUseCaseTests {
         let genres = Genre.mocks
         let appConfiguration = AppConfiguration.mock()
 
-        mockRepository.moviesStub = .success(moviePreviews)
+        mockRepository.moviesStub = .success(page(moviePreviews, page: 5, totalPages: 10))
         mockGenreProvider.movieGenresStub = .success(genres)
         mockAppConfigurationProvider.appConfigurationStub = .success(appConfiguration)
         mockLogoImageProvider.imageURLSetStub = .success(nil)
@@ -95,7 +113,7 @@ struct DefaultFetchDiscoverMoviesUseCaseTests {
         let appConfiguration = AppConfiguration.mock()
         let filter = MovieFilter(originalLanguage: "fr", genres: nil)
 
-        mockRepository.moviesStub = .success(moviePreviews)
+        mockRepository.moviesStub = .success(page(moviePreviews, page: 3, totalPages: 8))
         mockGenreProvider.movieGenresStub = .success(genres)
         mockAppConfigurationProvider.appConfigurationStub = .success(appConfiguration)
         mockLogoImageProvider.imageURLSetStub = .success(nil)
@@ -115,7 +133,7 @@ struct DefaultFetchDiscoverMoviesUseCaseTests {
         let genres = Genre.mocks
         let appConfiguration = AppConfiguration.mock()
 
-        mockRepository.moviesStub = .success([moviePreview])
+        mockRepository.moviesStub = .success(page([moviePreview]))
         mockGenreProvider.movieGenresStub = .success(genres)
         mockAppConfigurationProvider.appConfigurationStub = .success(appConfiguration)
         mockLogoImageProvider.imageURLSetStub = .success(nil)
@@ -124,10 +142,10 @@ struct DefaultFetchDiscoverMoviesUseCaseTests {
 
         let result = try await useCase.execute()
 
-        #expect(result.count == 1)
-        #expect(result[0].genres.count == 2)
-        #expect(result[0].genres.contains(where: { $0.name == "Action" }))
-        #expect(result[0].genres.contains(where: { $0.name == "Adventure" }))
+        #expect(result.movies.count == 1)
+        #expect(result.movies[0].genres.count == 2)
+        #expect(result.movies[0].genres.contains(where: { $0.name == "Action" }))
+        #expect(result.movies[0].genres.contains(where: { $0.name == "Adventure" }))
     }
 
     @Test("execute fetches logos for each movie")
@@ -136,7 +154,7 @@ struct DefaultFetchDiscoverMoviesUseCaseTests {
         let genres = Genre.mocks
         let appConfiguration = AppConfiguration.mock()
 
-        mockRepository.moviesStub = .success(moviePreviews)
+        mockRepository.moviesStub = .success(page(moviePreviews))
         mockGenreProvider.movieGenresStub = .success(genres)
         mockAppConfigurationProvider.appConfigurationStub = .success(appConfiguration)
         mockLogoImageProvider.imageURLSetStub = .success(nil)
@@ -148,12 +166,12 @@ struct DefaultFetchDiscoverMoviesUseCaseTests {
         #expect(mockLogoImageProvider.imageURLSetCallCount == moviePreviews.count)
     }
 
-    @Test("execute with no results returns empty array")
-    func executeWithNoResultsReturnsEmptyArray() async throws {
+    @Test("execute with no results returns an empty page")
+    func executeWithNoResultsReturnsEmptyPage() async throws {
         let genres = Genre.mocks
         let appConfiguration = AppConfiguration.mock()
 
-        mockRepository.moviesStub = .success([])
+        mockRepository.moviesStub = .success(page([]))
         mockGenreProvider.movieGenresStub = .success(genres)
         mockAppConfigurationProvider.appConfigurationStub = .success(appConfiguration)
 
@@ -161,11 +179,19 @@ struct DefaultFetchDiscoverMoviesUseCaseTests {
 
         let result = try await useCase.execute()
 
-        #expect(result.isEmpty)
+        #expect(result.movies.isEmpty)
         #expect(mockLogoImageProvider.imageURLSetCallCount == 0)
     }
 
     // MARK: - Helpers
+
+    private func page(
+        _ movies: [MoviePreview],
+        page: Int = 1,
+        totalPages: Int = 1
+    ) -> MoviePreviewPage {
+        MoviePreviewPage(page: page, totalPages: totalPages, movies: movies)
+    }
 
     private func makeUseCase() -> DefaultFetchDiscoverMoviesUseCase {
         DefaultFetchDiscoverMoviesUseCase(

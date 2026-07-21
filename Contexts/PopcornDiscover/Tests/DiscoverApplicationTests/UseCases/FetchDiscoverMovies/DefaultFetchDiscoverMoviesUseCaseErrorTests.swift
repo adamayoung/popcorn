@@ -78,7 +78,9 @@ struct DefaultFetchDiscoverMoviesUseCaseErrorTests {
 
     @Test("execute throws error when genre provider fails")
     func executeThrowsErrorWhenGenreProviderFails() async {
-        mockRepository.moviesStub = .success(MoviePreview.mocks)
+        mockRepository.moviesStub = .success(
+            MoviePreviewPage(page: 1, totalPages: 1, movies: MoviePreview.mocks)
+        )
         mockGenreProvider.movieGenresStub = .failure(.unauthorised)
         mockAppConfigurationProvider.appConfigurationStub = .success(AppConfiguration.mock())
 
@@ -102,7 +104,9 @@ struct DefaultFetchDiscoverMoviesUseCaseErrorTests {
 
     @Test("execute throws error when app configuration provider fails")
     func executeThrowsErrorWhenAppConfigurationProviderFails() async {
-        mockRepository.moviesStub = .success(MoviePreview.mocks)
+        mockRepository.moviesStub = .success(
+            MoviePreviewPage(page: 1, totalPages: 1, movies: MoviePreview.mocks)
+        )
         mockGenreProvider.movieGenresStub = .success(Genre.mocks)
         mockAppConfigurationProvider.appConfigurationStub = .failure(.unauthorised)
 

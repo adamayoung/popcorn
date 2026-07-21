@@ -13,12 +13,12 @@ final class MockDiscoverRemoteDataSource: DiscoverRemoteDataSource, @unchecked S
 
     var moviesCallCount = 0
     var moviesCalledWith: [(filter: MovieFilter?, page: Int)] = []
-    var moviesStub: Result<[MoviePreview], DiscoverRemoteDataSourceError>?
+    var moviesStub: Result<MoviePreviewPage, DiscoverRemoteDataSourceError>?
 
     func movies(
         filter: MovieFilter?,
         page: Int
-    ) async throws(DiscoverRemoteDataSourceError) -> [MoviePreview] {
+    ) async throws(DiscoverRemoteDataSourceError) -> MoviePreviewPage {
         moviesCallCount += 1
         moviesCalledWith.append((filter: filter, page: page))
 
@@ -27,8 +27,8 @@ final class MockDiscoverRemoteDataSource: DiscoverRemoteDataSource, @unchecked S
         }
 
         switch stub {
-        case .success(let movies):
-            return movies
+        case .success(let moviePage):
+            return moviePage
         case .failure(let error):
             throw error
         }

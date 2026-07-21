@@ -33,7 +33,9 @@ struct DefaultFetchDiscoverMoviesUseCaseObservabilityTests {
     @Test("execute creates span with correct operation")
     func executeCreatesSpanWithCorrectOperation() async throws {
         let mockSpan = MockSpan()
-        mockRepository.moviesStub = .success(MoviePreview.mocks)
+        mockRepository.moviesStub = .success(
+            MoviePreviewPage(page: 1, totalPages: 1, movies: MoviePreview.mocks)
+        )
         mockGenreProvider.movieGenresStub = .success(Genre.mocks)
         mockAppConfigurationProvider.appConfigurationStub = .success(AppConfiguration.mock())
         mockLogoImageProvider.imageURLSetStub = .success(nil)
@@ -54,7 +56,9 @@ struct DefaultFetchDiscoverMoviesUseCaseObservabilityTests {
     @Test("execute finishes span on success")
     func executeFinishesSpanOnSuccess() async throws {
         let mockSpan = MockSpan()
-        mockRepository.moviesStub = .success(MoviePreview.mocks)
+        mockRepository.moviesStub = .success(
+            MoviePreviewPage(page: 1, totalPages: 1, movies: MoviePreview.mocks)
+        )
         mockGenreProvider.movieGenresStub = .success(Genre.mocks)
         mockAppConfigurationProvider.appConfigurationStub = .success(AppConfiguration.mock())
         mockLogoImageProvider.imageURLSetStub = .success(nil)
@@ -100,7 +104,9 @@ struct DefaultFetchDiscoverMoviesUseCaseObservabilityTests {
 
     @Test("execute succeeds without span")
     func executeSucceedsWithoutSpan() async throws {
-        mockRepository.moviesStub = .success(MoviePreview.mocks)
+        mockRepository.moviesStub = .success(
+            MoviePreviewPage(page: 1, totalPages: 1, movies: MoviePreview.mocks)
+        )
         mockGenreProvider.movieGenresStub = .success(Genre.mocks)
         mockAppConfigurationProvider.appConfigurationStub = .success(AppConfiguration.mock())
         mockLogoImageProvider.imageURLSetStub = .success(nil)
@@ -109,7 +115,7 @@ struct DefaultFetchDiscoverMoviesUseCaseObservabilityTests {
 
         let result = try await useCase.execute()
 
-        #expect(result.count == MoviePreview.mocks.count)
+        #expect(result.movies.count == MoviePreview.mocks.count)
     }
 
     // MARK: - Helpers

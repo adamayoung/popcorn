@@ -22,7 +22,7 @@ SwiftDataFetchStreaming {
     func movies(
         filter: MovieFilter?,
         page: Int
-    ) async throws(DiscoverMovieLocalDataSourceError) -> [MoviePreview]? {
+    ) async throws(DiscoverMovieLocalDataSourceError) -> MoviePreviewPage? {
         let filterKey = filter?.description
         let descriptor = FetchDescriptor<DiscoverMovieItemEntity>(
             predicate: #Predicate { $0.page == page && $0.filterKey == filterKey },
@@ -66,14 +66,27 @@ SwiftDataFetchStreaming {
             return nil
         }
 
+        // A page cached before `totalPages` was stored (a pre-migration row) has
+        // no pagination metadata, so it can't be reconstructed into a page — treat
+        // it as a miss. The caller's write-through then deletes and rewrites it
+        // with metadata, so this self-heals on the next fetch.
+        guard let totalPages = entities.first?.totalPages else {
+            Self.logger.debug(
+                "SwiftData MISS (no page metadata): DiscoverMovies(filter: \(filterKey ?? "nil", privacy: .public), page: \(page, privacy: .public))"
+            )
+            return nil
+        }
+
         Self.logger.debug(
             "SwiftData HIT: DiscoverMovies(filter: \(filterKey ?? "nil", privacy: .public), page: \(page, privacy: .public))"
         )
 
         let mapper = MoviePreviewMapper()
-        return entities.compactMap {
+        let movies = entities.compactMap {
             mapper.compactMap($0.movie)
         }
+
+        return MoviePreviewPage(page: page, totalPages: totalPages, movies: movies)
     }
 
     func moviesStream(
@@ -117,13 +130,14 @@ SwiftDataFetchStreaming {
     }
 
     func setMovies(
-        _ moviePreviews: [MoviePreview],
-        filter: MovieFilter?,
-        page: Int
+        _ page: MoviePreviewPage,
+        filter: MovieFilter?
     ) async throws(DiscoverMovieLocalDataSourceError) {
         let filterKey = filter?.description
+        let pageNumber = page.page
+        let totalPages = page.totalPages
         let deleteDescriptor = FetchDescriptor<DiscoverMovieItemEntity>(
-            predicate: #Predicate { $0.page >= page && $0.filterKey == filterKey }
+            predicate: #Predicate { $0.page >= pageNumber && $0.filterKey == filterKey }
         )
         do {
             let entitiesToDelete = try modelContext.fetch(deleteDescriptor)
@@ -133,7 +147,7 @@ SwiftDataFetchStreaming {
             throw .persistence(error)
         }
 
-        for (index, preview) in moviePreviews.enumerated() {
+        for (index, preview) in page.movies.enumerated() {
             let id = preview.id
             let descriptor = FetchDescriptor<DiscoverMoviePreviewEntity>(
                 predicate: #Predicate { $0.movieID == id }
@@ -156,7 +170,8 @@ SwiftDataFetchStreaming {
 
             let itemEntity = DiscoverMovieItemEntity(
                 sortIndex: index,
-                page: page,
+                page: pageNumber,
+                totalPages: totalPages,
                 filterKey: filterKey,
                 movie: previewEntity
             )

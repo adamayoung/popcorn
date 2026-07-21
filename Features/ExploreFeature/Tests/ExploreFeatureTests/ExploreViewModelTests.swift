@@ -195,6 +195,17 @@ struct ExploreViewModelTests {
         #expect(navigator.openTrendingMoviesCallCount == 1)
     }
 
+    @Test("selectDiscoverMovies asks the navigator to open discover movies")
+    @MainActor
+    func selectDiscoverMoviesOpensDiscoverMovies() {
+        let navigator = SpyExploreNavigator()
+        let viewModel = Self.makeViewModel(navigator: navigator)
+
+        viewModel.selectDiscoverMovies()
+
+        #expect(navigator.openDiscoverMoviesCallCount == 1)
+    }
+
 }
 
 // MARK: - Spy Navigator
@@ -208,9 +219,14 @@ private final class SpyExploreNavigator: ExploreNavigating {
     var openedPersonID: Int?
     var openedPersonTransitionID: String?
     var openTrendingMoviesCallCount = 0
+    var openDiscoverMoviesCallCount = 0
 
     func openTrendingMovies() {
         openTrendingMoviesCallCount += 1
+    }
+
+    func openDiscoverMovies() {
+        openDiscoverMoviesCallCount += 1
     }
 
     func openMovieDetails(id: Int, transitionID: String?) {

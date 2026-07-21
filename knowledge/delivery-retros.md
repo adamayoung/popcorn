@@ -16,6 +16,62 @@ table (`date · PR · weight · one-line outcome`) — see [`README.md`](README.
 
 <!-- Newest entry goes here. -->
 
+### Discover movies grid + reusable PosterGrid · PR #82 · 2026-07-21 · full
+
+*Phases / skills:* plan mode (`get_context` + 3 Explore + 1 Plan agent) → `/deliver`
+→ `/review-plan` (3 Opus critics, all *sound-with-fixes*, 5 minor findings applied)
+→ `/implement-plan` (Canon TDD, per-package checkpoints) → `/review-changes`
+(7-dimension fan-out + adversarial verify: **0 Critical/High/Medium, 1 Low applied**)
+→ `/security-review` (clean) → `/capture-knowledge` (ADR-0004 + 1 gotcha) →
+independent grader (all 6 ACs met). Extracted the ADR-0003 grid into a shared
+`DesignSystem.PosterGrid` and mirrored `TrendingMoviesFeature` into a new
+`DiscoverMoviesFeature`.
+
+*What worked:*
+- **A full `PopcornDiscover` context already existed** — wired into `AppServices`,
+  the `exploreDiscoverMovies` flag already registered, the local SwiftData cache
+  already paginated. Exploration caught this up front, so the work was "add the
+  ADR-0003 paged treatment to the movies path + a see-all screen", not greenfield —
+  killing a lot of speculative scope before planning.
+- **The PosterGrid extraction gated on trending's snapshot baselines** as the
+  pixel-identity contract. Reproducing the exact cell view-tree (same constants,
+  modifier order, a11y IDs) meant both trending baselines passed **unchanged** on the
+  first snapshot run — proof the refactor was behaviour-preserving.
+- **Per-package/per-layer green checkpoints.** `PopcornDiscover` (50 tests) + the two
+  adapter packages (65 + 49) validated via `swift test` before the App was touched;
+  the feature + wiring validated together via one full-app build/test/snapshot pass.
+  Four tight commits, each green.
+- **`/review-plan` earned its keep on the ripple.** The critics flagged the two
+  compile-forced infra mocks, the dead adapter `movies(page:)` overload, and the
+  verbatim-a11y-label regression *before* implementation, so all were handled inline
+  rather than discovered at build time. The code review then found only 1 Low.
+
+*Friction:*
+- **Wiring a new feature package into `project.pbxproj` is a 5-part hand-edit**
+  (Xcode-16 synchronized folders, empty `packageReferences`, a `membershipExceptions`
+  entry) — non-obvious and undocumented by `add-feature`; captured to `gotchas.md`.
+- **The plan-review critics hit a session usage limit** on the first run (2pm reset)
+  and all three errored mid-flight; a retry one minute after the reset succeeded. One
+  wasted 3×Opus×xhigh burst — nothing actionable beyond "retry after reset".
+- **Snapshot re-records took three runs.** `record: .missing` writes new baselines
+  but fails-on-first-run, and an existing-but-changed baseline (the ExploreView
+  chevron) is **not** auto-overwritten — so: run → delete the stale `exploreView.1.png`
+  → run (records) → run (assert-green). Predictable but three full-app snapshot passes.
+
+*Deviations:*
+- Ran the security review **in parallel** with a unit-test verification (both
+  read-only against the same committed state) to save wall-clock, rather than strictly
+  serial.
+
+*One improvement:*
+- The backgrounded-gate pattern (`make … > log 2>&1; echo "EXIT=$?"`, `run_in_background`)
+  makes the harness completion notification report the trailing **echo's** exit (0),
+  not make's — twice I had to grep the log's `EXIT=` marker for the real code, and once
+  a `( … ) &` wrapper double-backgrounded the build so the notification fired for the
+  immediately-exiting launcher. Worth a one-line note in the gate-running guidance:
+  run the `make` command directly under `run_in_background` (no subshell), and always
+  read the log's `EXIT=` marker — never trust the notification's exit code.
+
 ### Trending movies infinite scroll · PR #80 · 2026-07-21 · full
 
 *Phases / skills:* plan mode (2 Explore + 1 Plan agent, `AskUserQuestion` on
