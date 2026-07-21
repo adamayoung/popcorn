@@ -16,7 +16,7 @@ table (`date · PR · weight · one-line outcome`) — see [`README.md`](README.
 
 <!-- Newest entry goes here. -->
 
-### Progressive movie & TV details render · `feature/progressive-details-render` · 2026-07-21 · full
+### Progressive movie & TV details render · PR #79 · 2026-07-21 · full
 
 *Phases / skills:* plan mode (Explore + Plan agents) → `/deliver` → `/implement-plan`
 (Canon TDD, 5 checkpoints A–E) → `/review-changes` (7-dimension fan-out + adversarial
