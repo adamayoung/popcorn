@@ -16,7 +16,7 @@ table (`date · PR · weight · one-line outcome`) — see [`README.md`](README.
 
 <!-- Newest entry goes here. -->
 
-### Discover movies grid + reusable PosterGrid · `feature/discover-movies-grid` · 2026-07-21 · full
+### Discover movies grid + reusable PosterGrid · PR #82 · 2026-07-21 · full
 
 *Phases / skills:* plan mode (`get_context` + 3 Explore + 1 Plan agent) → `/deliver`
 → `/review-plan` (3 Opus critics, all *sound-with-fixes*, 5 minor findings applied)
