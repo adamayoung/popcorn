@@ -6,10 +6,10 @@
 //
 
 import Foundation
+@testable import PopularMoviesFeature
 import Presentation
 import Synchronization
 import Testing
-@testable import PopularMoviesFeature
 
 @Suite("PopularMoviesViewModel Load-More Guards Tests")
 struct PopularMoviesViewModelLoadMoreGuardsTests {

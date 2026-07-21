@@ -6,10 +6,10 @@
 //
 
 import Foundation
+@testable import PopularMoviesFeature
 import SnapshotTestHelpers
 import SwiftUI
 import Testing
-@testable import PopularMoviesFeature
 
 @Suite("PopularMoviesViewSnapshotTests", .snapshots(record: .missing))
 @MainActor

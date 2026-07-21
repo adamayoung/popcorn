@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import Testing
 @testable import PopularMoviesFeature
+import Testing
 
 @Suite("MoviePreviewPage Tests")
 struct MoviePreviewPageTests {

@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import Presentation
 @testable import PopularMoviesFeature
+import Presentation
 
 // MARK: - Spy Navigator
 

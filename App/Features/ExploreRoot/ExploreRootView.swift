@@ -11,6 +11,7 @@ import MovieCastAndCrewFeature
 import MovieDetailsFeature
 import MovieIntelligenceFeature
 import PersonDetailsFeature
+import PopularMoviesFeature
 import SwiftUI
 import TrendingMoviesFeature
 import TVEpisodeCastAndCrewFeature
@@ -82,6 +83,8 @@ struct ExploreRootView: View {
             trendingMovies()
         case .discoverMovies:
             discoverMovies()
+        case .popularMovies:
+            popularMovies()
         case .movieDetails(let id, let transitionID):
             movieDetails(id: id, transitionID: transitionID)
         case .tvSeriesDetails(let id, let transitionID):
@@ -121,6 +124,13 @@ struct ExploreRootView: View {
     private func discoverMovies() -> some View {
         DiscoverMoviesView(
             viewModel: factory.makeDiscoverMovies(navigator: navigator),
+            transitionNamespace: namespace
+        )
+    }
+
+    private func popularMovies() -> some View {
+        PopularMoviesView(
+            viewModel: factory.makePopularMovies(navigator: navigator),
             transitionNamespace: namespace
         )
     }

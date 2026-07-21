@@ -7,9 +7,9 @@
 
 import CoreDomain
 import Foundation
-import Testing
 import MoviesApplication
 @testable import PopularMoviesFeature
+import Testing
 
 @Suite("MoviePreviewMapper Tests")
 struct MoviePreviewMapperTests {

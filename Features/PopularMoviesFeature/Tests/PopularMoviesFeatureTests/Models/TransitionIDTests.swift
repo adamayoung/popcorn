@@ -5,8 +5,8 @@
 //  Copyright © 2026 Adam Young.
 //
 
-import Testing
 @testable import PopularMoviesFeature
+import Testing
 
 @Suite("TransitionID Tests")
 struct TransitionIDTests {

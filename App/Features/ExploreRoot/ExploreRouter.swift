@@ -11,6 +11,7 @@ import Observation
 enum ExploreRoute: Hashable {
     case trendingMovies
     case discoverMovies
+    case popularMovies
     case movieDetails(id: Int, transitionID: String?)
     case tvSeriesDetails(id: Int, transitionID: String?)
     case tvSeasonDetails(tvSeriesID: Int, seasonNumber: Int)
