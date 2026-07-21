@@ -16,7 +16,7 @@ table (`date · PR · weight · one-line outcome`) — see [`README.md`](README.
 
 <!-- Newest entry goes here. -->
 
-### Popular movies grid + paged popular pipeline · branch `feature/popular-movies-feature` · 2026-07-21 · full
+### Popular movies grid + paged popular pipeline · PR #83 · 2026-07-21 · full
 
 *Phases / skills:* plan mode (`get_context` + 2 Explore + 1 Plan agent) → `/deliver`
 → `/review-plan` **skipped** (ExitPlanMode approval counts as reviewed) →
