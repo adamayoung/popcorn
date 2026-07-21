@@ -140,6 +140,10 @@ public final class ExploreViewModel {
         navigator.openTrendingMovies()
     }
 
+    public func selectDiscoverMovies() {
+        navigator.openDiscoverMovies()
+    }
+
     public func selectMovie(id: Int, transitionID: String?) {
         navigator.openMovieDetails(id: id, transitionID: transitionID)
     }

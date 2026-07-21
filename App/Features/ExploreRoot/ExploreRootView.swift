@@ -5,6 +5,7 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import DiscoverMoviesFeature
 import ExploreFeature
 import MovieCastAndCrewFeature
 import MovieDetailsFeature
@@ -79,6 +80,8 @@ struct ExploreRootView: View {
         switch route {
         case .trendingMovies:
             trendingMovies()
+        case .discoverMovies:
+            discoverMovies()
         case .movieDetails(let id, let transitionID):
             movieDetails(id: id, transitionID: transitionID)
         case .tvSeriesDetails(let id, let transitionID):
@@ -111,6 +114,13 @@ struct ExploreRootView: View {
     private func trendingMovies() -> some View {
         TrendingMoviesView(
             viewModel: factory.makeTrendingMovies(navigator: navigator),
+            transitionNamespace: namespace
+        )
+    }
+
+    private func discoverMovies() -> some View {
+        DiscoverMoviesView(
+            viewModel: factory.makeDiscoverMovies(navigator: navigator),
             transitionNamespace: namespace
         )
     }
