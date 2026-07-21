@@ -9,7 +9,7 @@ import Foundation
 
 public protocol TrendingRepository: Sendable {
 
-    func movies(page: Int) async throws(TrendingRepositoryError) -> [MoviePreview]
+    func movies(page: Int) async throws(TrendingRepositoryError) -> MoviePreviewPage
 
     func tvSeries(page: Int) async throws(TrendingRepositoryError) -> [TVSeriesPreview]
 

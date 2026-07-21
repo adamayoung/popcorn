@@ -10,7 +10,7 @@ import TrendingDomain
 
 public protocol TrendingRemoteDataSource: Sendable {
 
-    func movies(page: Int) async throws(TrendingRepositoryError) -> [MoviePreview]
+    func movies(page: Int) async throws(TrendingRepositoryError) -> MoviePreviewPage
 
     func tvSeries(page: Int) async throws(TrendingRepositoryError) -> [TVSeriesPreview]
 

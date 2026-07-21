@@ -58,20 +58,20 @@ struct TMDbTrendingRemoteDataSourceMoviesTests {
 
         let result = try await dataSource.movies(page: 1)
 
-        #expect(result.count == 1)
-        #expect(result[0].id == 550)
-        #expect(result[0].title == "Fight Club")
-        #expect(result[0].overview == "A ticking-time-bomb insomniac.")
-        #expect(result[0].posterPath == posterPath)
-        #expect(result[0].backdropPath == backdropPath)
+        #expect(result.movies.count == 1)
+        #expect(result.movies[0].id == 550)
+        #expect(result.movies[0].title == "Fight Club")
+        #expect(result.movies[0].overview == "A ticking-time-bomb insomniac.")
+        #expect(result.movies[0].posterPath == posterPath)
+        #expect(result.movies[0].backdropPath == backdropPath)
         #expect(mockService.moviesCallCount == 1)
         #expect(mockService.moviesCalledWith[0].timeWindow == .day)
         #expect(mockService.moviesCalledWith[0].page == 1)
         #expect(mockService.moviesCalledWith[0].language == nil)
     }
 
-    @Test("movies returns empty array when no results")
-    func movies_returnsEmptyArrayWhenNoResults() async throws {
+    @Test("movies returns empty movies when no results")
+    func movies_returnsEmptyMoviesWhenNoResults() async throws {
         mockService.moviesStub = .success(
             MoviePageableList(
                 page: 1,
@@ -85,7 +85,34 @@ struct TMDbTrendingRemoteDataSourceMoviesTests {
 
         let result = try await dataSource.movies(page: 1)
 
-        #expect(result.isEmpty)
+        #expect(result.movies.isEmpty)
+    }
+
+    @Test("movies surfaces page and totalPages from the response")
+    func movies_surfacesPageAndTotalPages() async throws {
+        mockService.moviesStub = .success(
+            MoviePageableList(page: 3, results: [], totalResults: 100, totalPages: 5)
+        )
+
+        let dataSource = TMDbTrendingRemoteDataSource(trendingService: mockService)
+
+        let result = try await dataSource.movies(page: 3)
+
+        #expect(result.page == 3)
+        #expect(result.totalPages == 5)
+    }
+
+    @Test("movies clamps totalPages to the TMDb maximum of 1000")
+    func movies_clampsTotalPagesToOneThousand() async throws {
+        mockService.moviesStub = .success(
+            MoviePageableList(page: 1, results: [], totalResults: 100_000, totalPages: 5000)
+        )
+
+        let dataSource = TMDbTrendingRemoteDataSource(trendingService: mockService)
+
+        let result = try await dataSource.movies(page: 1)
+
+        #expect(result.totalPages == 1000)
     }
 
     @Test("movies throws unauthorised error for TMDb unauthorised")
@@ -195,10 +222,10 @@ struct TMDbTrendingRemoteDataSourceMoviesTests {
 
         let result = try await dataSource.movies(page: 1)
 
-        #expect(result.count == 3)
-        #expect(result[0].id == 1)
-        #expect(result[1].id == 2)
-        #expect(result[2].id == 3)
+        #expect(result.movies.count == 3)
+        #expect(result.movies[0].id == 1)
+        #expect(result.movies[1].id == 2)
+        #expect(result.movies[2].id == 3)
     }
 
 }

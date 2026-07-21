@@ -14,26 +14,28 @@ import Testing
 @Suite("TrendingMoviesViewModel Tests")
 struct TrendingMoviesViewModelTests {
 
+    private typealias Support = TrendingMoviesTestSupport
+
     @Test("load success builds a ready snapshot from the dependency")
     @MainActor
     func loadSuccessBuildsReadySnapshot() async {
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchTrendingMovies: { Self.testMovies }
+        let viewModel = Support.makeViewModel(
+            dependencies: Support.stubDependencies(
+                fetchTrendingMovies: { _ in Support.singlePage(Support.testMovies) }
             )
         )
 
         await viewModel.load()
 
-        #expect(viewModel.viewState.content?.movies == Self.testMovies)
+        #expect(viewModel.viewState.content?.movies == Support.testMovies)
     }
 
     @Test("load success with no movies is still ready, so the view shows its empty state")
     @MainActor
     func loadSuccessWithNoMoviesIsReady() async {
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchTrendingMovies: { [] }
+        let viewModel = Support.makeViewModel(
+            dependencies: Support.stubDependencies(
+                fetchTrendingMovies: { _ in Support.singlePage([]) }
             )
         )
 
@@ -47,11 +49,11 @@ struct TrendingMoviesViewModelTests {
     @MainActor
     func loadFailureSetsError() async {
         let fetchCalled = Mutex(false)
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchTrendingMovies: {
+        let viewModel = Support.makeViewModel(
+            dependencies: Support.stubDependencies(
+                fetchTrendingMovies: { _ in
                     fetchCalled.withLock { $0 = true }
-                    throw TestError.generic
+                    throw TrendingMoviesTestError.generic
                 }
             )
         )
@@ -66,11 +68,11 @@ struct TrendingMoviesViewModelTests {
     @MainActor
     func loadSetsLoadingWhileFetching() async {
         let observer = LoadingObserver()
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchTrendingMovies: {
+        let viewModel = Support.makeViewModel(
+            dependencies: Support.stubDependencies(
+                fetchTrendingMovies: { _ in
                     await observer.capture()
-                    return Self.testMovies
+                    return Support.singlePage(Support.testMovies)
                 }
             )
         )
@@ -87,11 +89,11 @@ struct TrendingMoviesViewModelTests {
     @MainActor
     func loadNoOpWhenLoading() async {
         let fetchCount = Mutex(0)
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchTrendingMovies: {
+        let viewModel = Support.makeViewModel(
+            dependencies: Support.stubDependencies(
+                fetchTrendingMovies: { _ in
                     fetchCount.withLock { $0 += 1 }
-                    return Self.testMovies
+                    return Support.singlePage(Support.testMovies)
                 }
             ),
             viewState: .loading
@@ -106,14 +108,14 @@ struct TrendingMoviesViewModelTests {
     @MainActor
     func loadNoOpWhenReady() async {
         let fetchCount = Mutex(0)
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchTrendingMovies: {
+        let viewModel = Support.makeViewModel(
+            dependencies: Support.stubDependencies(
+                fetchTrendingMovies: { _ in
                     fetchCount.withLock { $0 += 1 }
-                    return Self.testMovies
+                    return Support.singlePage(Support.testMovies)
                 }
             ),
-            viewState: .ready(TrendingMoviesViewSnapshot(movies: Self.testMovies))
+            viewState: .ready(TrendingMoviesViewSnapshot(movies: Support.testMovies))
         )
 
         await viewModel.load()
@@ -124,9 +126,9 @@ struct TrendingMoviesViewModelTests {
     @Test("cancelled load resets to initial (no spurious error) so the next .task re-fetches")
     @MainActor
     func loadCancellationResetsToInitial() async {
-        let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchTrendingMovies: { throw CancellationError() }
+        let viewModel = Support.makeViewModel(
+            dependencies: Support.stubDependencies(
+                fetchTrendingMovies: { _ in throw CancellationError() }
             )
         )
 
@@ -139,7 +141,7 @@ struct TrendingMoviesViewModelTests {
     @Test("reload bumps reloadID")
     @MainActor
     func reloadBumpsReloadID() {
-        let viewModel = Self.makeViewModel()
+        let viewModel = Support.makeViewModel()
 
         let initialID = viewModel.reloadID
         viewModel.reload()
@@ -151,7 +153,7 @@ struct TrendingMoviesViewModelTests {
     @MainActor
     func selectMovieInvokesNavigator() {
         let navigator = SpyTrendingMoviesNavigator()
-        let viewModel = Self.makeViewModel(navigator: navigator)
+        let viewModel = Support.makeViewModel(navigator: navigator)
 
         viewModel.selectMovie(id: 456, transitionID: "456_trending-movies-grid")
 
@@ -163,7 +165,7 @@ struct TrendingMoviesViewModelTests {
     @MainActor
     func selectMovieForwardsNilTransitionID() {
         let navigator = SpyTrendingMoviesNavigator()
-        let viewModel = Self.makeViewModel(navigator: navigator)
+        let viewModel = Support.makeViewModel(navigator: navigator)
 
         viewModel.selectMovie(id: 456, transitionID: nil)
 
@@ -171,75 +173,4 @@ struct TrendingMoviesViewModelTests {
         #expect(navigator.openedMovieTransitionID == nil)
     }
 
-}
-
-// MARK: - Spy Navigator
-
-@MainActor
-private final class SpyTrendingMoviesNavigator: TrendingMoviesNavigating {
-    var openedMovieID: Int?
-    var openedMovieTransitionID: String?
-
-    func openMovieDetails(id: Int, transitionID: String?) {
-        openedMovieID = id
-        openedMovieTransitionID = transitionID
-    }
-}
-
-// MARK: - Loading Observer
-
-/// Captures the view model's loading state at the moment the fetch closure runs,
-/// so a test can assert loading was set before the network call resolves.
-@MainActor
-private final class LoadingObserver {
-    weak var viewModel: TrendingMoviesViewModel?
-    var loadingDuringFetch = false
-
-    func capture() {
-        loadingDuringFetch = viewModel?.viewState.isLoading ?? false
-    }
-}
-
-// MARK: - Factories
-
-extension TrendingMoviesViewModelTests {
-
-    @MainActor
-    static func makeViewModel(
-        dependencies: TrendingMoviesDependencies = stubDependencies(),
-        navigator: any TrendingMoviesNavigating = SpyTrendingMoviesNavigator(),
-        viewState: ViewState<TrendingMoviesViewSnapshot> = .initial
-    ) -> TrendingMoviesViewModel {
-        TrendingMoviesViewModel(
-            dependencies: dependencies,
-            navigator: navigator,
-            viewState: viewState
-        )
-    }
-
-    static func stubDependencies(
-        fetchTrendingMovies: @escaping @Sendable () async throws -> [MoviePreview] = { [] }
-    ) -> TrendingMoviesDependencies {
-        TrendingMoviesDependencies(
-            fetchTrendingMovies: fetchTrendingMovies
-        )
-    }
-
-}
-
-// MARK: - Test Data
-
-extension TrendingMoviesViewModelTests {
-
-    static let testMovies = [
-        MoviePreview(id: 1, title: "Movie 1"),
-        MoviePreview(id: 2, title: "Movie 2")
-    ]
-
-}
-
-// MARK: - Test Helpers
-
-private enum TestError: Error, Equatable {
-    case generic
 }

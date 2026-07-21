@@ -11,6 +11,23 @@ and dated; link an ADR if a decision came out of it.
 *YYYY-MM-DD.* What bit us, why, and the resolution. Keep it to a few lines.
 -->
 
+### A feature package can't be built or tested from the SwiftPM CLI at all
+
+*2026-07-21.* Trying to `/test-package` `TrendingMoviesFeature` failed at the
+package manifest, before any compile: `swift build` — even sources-only
+(`swift build -Xswiftc -warnings-as-errors`) — errors with *"found 2 file(s)
+which are unhandled; explicitly declare them as resources or exclude from the
+target"*, naming the committed `__Snapshots__/….png` references in the snapshot
+test target. The SwiftPM CLI treats stray files under a target directory as
+undeclared resources; Xcode's build handles them fine. This compounds the sibling
+gotcha below (`swift test` fails on the snapshot target's `import UIKit` on
+macOS): net effect — a **feature** package (any with a snapshot-test target)
+can't be built *or* tested via the SwiftPM CLI, so `/build-package` /
+`/test-package` don't apply to it. Build and test features through the full-app
+xcodebuild path (`/build-for-testing`, `/test`, `/test-snapshots`). **Context**
+and **adapter** packages have no snapshot target and build/test fine via
+`swift build --build-tests` / `swift test`.
+
 ### A full-view snapshot of a `StretchyHeaderScrollView` screen only captures the header
 
 *2026-07-21.* A "sections loading" snapshot of `MovieDetailsView` rendered **identically**

@@ -18,20 +18,26 @@ final class TMDbTrendingRemoteDataSource: TrendingRemoteDataSource {
         self.trendingService = trendingService
     }
 
-    func movies(page: Int) async throws(TrendingRepositoryError) -> [MoviePreview] {
-        let tmdbMovies: [MovieListItem]
+    func movies(page: Int) async throws(TrendingRepositoryError) -> MoviePreviewPage {
+        let response: MoviePageableList
         do {
-            tmdbMovies = try await trendingService.movies(
+            response = try await trendingService.movies(
                 inTimeWindow: .day,
                 page: page,
                 language: nil
-            ).results
+            )
         } catch let error {
             throw TrendingRepositoryError(error)
         }
 
         let mapper = MoviePreviewMapper()
-        return tmdbMovies.map(mapper.map)
+        return MoviePreviewPage(
+            page: response.page,
+            // TMDb's `TrendingService` preconditions `page` to 1...1000; clamping
+            // `totalPages` here guarantees no caller ever requests beyond that limit.
+            totalPages: min(response.totalPages, 1000),
+            movies: response.results.map(mapper.map)
+        )
     }
 
     func tvSeries(

@@ -26,4 +26,14 @@ public struct MoviePreviewMapper {
         )
     }
 
+    /// Maps a context ``MoviePreviewDetailsPage`` to a presentation ``MoviePreviewPage``,
+    /// preserving the pagination metadata and mapping each movie in order.
+    public func map(_ page: MoviePreviewDetailsPage) -> MoviePreviewPage {
+        MoviePreviewPage(
+            page: page.page,
+            totalPages: page.totalPages,
+            movies: page.movies.map { map($0) }
+        )
+    }
+
 }
