@@ -117,28 +117,11 @@ extension ExploreView {
 
     @ViewBuilder
     private func discoverMoviesSection(_ movies: [MoviePreview]) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Button {
-                viewModel.selectDiscoverMovies()
-            } label: {
-                HStack(spacing: .spacing4) {
-                    Text("DISCOVER_MOVIES", bundle: .module)
-                        .font(.title2)
-                        .bold()
-
-                    Image(systemName: "chevron.right")
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .accessibilityIdentifier("explore.discover-movies.header")
-            .accessibilityAddTraits(.isHeader)
-            .accessibilityHint(Text("VIEW_ALL_DISCOVER_MOVIES_HINT", bundle: .module))
-            .buttonStyle(.plain)
+        SectionHeader(Text("DISCOVER_MOVIES", bundle: .module)) {
+            viewModel.selectDiscoverMovies()
         }
-        .padding(.horizontal)
-        .padding(.vertical, 0)
+        .accessibilityIdentifier("explore.discover-movies.header")
+        .accessibilityHint(Text("VIEW_ALL_DISCOVER_MOVIES_HINT", bundle: .module))
         .frame(maxWidth: .infinity, alignment: .leading)
 
         MovieCarousel(
@@ -155,28 +138,11 @@ extension ExploreView {
 
     @ViewBuilder
     private func trendingMoviesSection(_ movies: [MoviePreview]) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Button {
-                viewModel.selectTrendingMovies()
-            } label: {
-                HStack(spacing: .spacing4) {
-                    Text("TRENDING_MOVIES", bundle: .module)
-                        .font(.title2)
-                        .bold()
-
-                    Image(systemName: "chevron.right")
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .accessibilityIdentifier("explore.trending-movies.header")
-            .accessibilityAddTraits(.isHeader)
-            .accessibilityHint(Text("VIEW_ALL_TRENDING_MOVIES_HINT", bundle: .module))
-            .buttonStyle(.plain)
+        SectionHeader(Text("TRENDING_MOVIES", bundle: .module)) {
+            viewModel.selectTrendingMovies()
         }
-        .padding(.horizontal)
-        .padding(.vertical, 0)
+        .accessibilityIdentifier("explore.trending-movies.header")
+        .accessibilityHint(Text("VIEW_ALL_TRENDING_MOVIES_HINT", bundle: .module))
         .frame(maxWidth: .infinity, alignment: .leading)
 
         MovieCarousel(
@@ -193,28 +159,11 @@ extension ExploreView {
 
     @ViewBuilder
     private func popularMoviesSection(_ movies: [MoviePreview]) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Button {
-                viewModel.selectPopularMovies()
-            } label: {
-                HStack(spacing: .spacing4) {
-                    Text("POPULAR_MOVIES", bundle: .module)
-                        .font(.title2)
-                        .bold()
-
-                    Image(systemName: "chevron.right")
-                        .font(.title3)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .accessibilityIdentifier("explore.popular-movies.header")
-            .accessibilityAddTraits(.isHeader)
-            .accessibilityHint(Text("VIEW_ALL_POPULAR_MOVIES_HINT", bundle: .module))
-            .buttonStyle(.plain)
+        SectionHeader(Text("POPULAR_MOVIES", bundle: .module)) {
+            viewModel.selectPopularMovies()
         }
-        .padding(.horizontal)
-        .padding(.vertical, 0)
+        .accessibilityIdentifier("explore.popular-movies.header")
+        .accessibilityHint(Text("VIEW_ALL_POPULAR_MOVIES_HINT", bundle: .module))
         .frame(maxWidth: .infinity, alignment: .leading)
 
         MovieCarousel(
@@ -231,15 +180,8 @@ extension ExploreView {
 
     @ViewBuilder
     private func trendingTVSeriesSection(_ tvSeries: [TVSeriesPreview]) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text("TRENDING_TV_SERIES", bundle: .module)
-                .font(.title2)
-                .bold()
-                .accessibilityAddTraits(.isHeader)
-        }
-        .padding(.horizontal)
-        .padding(.vertical, 0)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        SectionHeader(Text("TRENDING_TV_SERIES", bundle: .module))
+            .frame(maxWidth: .infinity, alignment: .leading)
 
         TVSeriesCarousel(
             tvSeries: tvSeries,
@@ -255,15 +197,8 @@ extension ExploreView {
 
     @ViewBuilder
     private func trendingPeopleSection(_ people: [PersonPreview]) -> some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text("TRENDING_PEOPLE", bundle: .module)
-                .font(.title2)
-                .bold()
-                .accessibilityAddTraits(.isHeader)
-        }
-        .padding(.horizontal)
-        .padding(.vertical, 0)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        SectionHeader(Text("TRENDING_PEOPLE", bundle: .module))
+            .frame(maxWidth: .infinity, alignment: .leading)
 
         PersonCarousel(
             people: people,

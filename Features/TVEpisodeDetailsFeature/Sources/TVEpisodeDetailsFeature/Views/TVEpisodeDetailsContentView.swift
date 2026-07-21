@@ -55,7 +55,7 @@ struct TVEpisodeDetailsContentView: View {
 
     private var castAndCrewCarousel: some View {
         VStack(alignment: .leading, spacing: .spacing8) {
-            sectionHeader("CAST_AND_CREW", action: didSelectCastAndCrew)
+            SectionHeader(Text("CAST_AND_CREW", bundle: .module), action: didSelectCastAndCrew)
 
             CastAndCrewCarousel(
                 castMembers: castMembers,
@@ -63,29 +63,6 @@ struct TVEpisodeDetailsContentView: View {
                 didSelectPerson: didSelectPerson
             )
         }
-    }
-
-    private func sectionHeader(
-        _ key: LocalizedStringKey,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button {
-            action()
-        } label: {
-            HStack(spacing: .spacing4) {
-                Text(key, bundle: .module)
-                    .font(.title2)
-                    .fontWeight(.bold)
-
-                Image(systemName: "chevron.right")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.secondary)
-                    .accessibilityHidden(true)
-            }
-        }
-        .buttonStyle(.plain)
-        .padding(.horizontal)
     }
 
 }

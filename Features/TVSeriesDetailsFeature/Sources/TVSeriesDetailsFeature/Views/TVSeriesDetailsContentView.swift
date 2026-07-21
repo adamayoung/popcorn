@@ -124,7 +124,7 @@ extension TVSeriesDetailsContentView {
         switch castAndCrewState {
         case .loading:
             VStack(alignment: .leading, spacing: .spacing8) {
-                sectionHeader("CAST_AND_CREW")
+                SectionHeader(Text("CAST_AND_CREW", bundle: .module))
                 CarouselPlaceholder(shape: .profile)
                     .padding(.leading, .spacing16)
                     .accessibilityElement()
@@ -141,7 +141,7 @@ extension TVSeriesDetailsContentView {
 
     private func castAndCrewCarousel(_ credits: Credits) -> some View {
         VStack(alignment: .leading, spacing: .spacing8) {
-            sectionHeader("CAST_AND_CREW") {
+            SectionHeader(Text("CAST_AND_CREW", bundle: .module)) {
                 navigateToCastAndCrew(tvSeries.id)
             }
 
@@ -155,7 +155,7 @@ extension TVSeriesDetailsContentView {
 
     private var seasonsCarousel: some View {
         VStack(alignment: .leading, spacing: .spacing8) {
-            sectionHeader("SEASONS")
+            SectionHeader(Text("SEASONS", bundle: .module))
 
             SeasonsCarousel(
                 seasons: tvSeries.seasons,
@@ -163,36 +163,6 @@ extension TVSeriesDetailsContentView {
             )
             .accessibilityIdentifier("tv-series-details.seasons.carousel")
         }
-    }
-
-    private func sectionHeader(
-        _ key: LocalizedStringKey,
-        action: @escaping () -> Void
-    ) -> some View {
-        Button {
-            action()
-        } label: {
-            HStack(spacing: .spacing4) {
-                Text(key, bundle: .module)
-                    .font(.title2)
-                    .fontWeight(.bold)
-
-                Image(systemName: "chevron.right")
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.secondary)
-                    .accessibilityHidden(true)
-            }
-        }
-        .buttonStyle(.plain)
-        .padding(.horizontal)
-    }
-
-    private func sectionHeader(_ key: LocalizedStringKey) -> some View {
-        Text(key, bundle: .module)
-            .font(.title2)
-            .fontWeight(.bold)
-            .padding(.horizontal)
     }
 
 }
