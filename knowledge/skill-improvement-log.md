@@ -31,6 +31,27 @@ two fields the dedup step keys on.
 
 <!-- Newest entry goes here. -->
 
+### 2026-07-21 — /test-package should gate feature packages out up front · applied
+
+- **Pattern:** across PRs #79, `feature/explore-trending-movies-navigation`, and #80,
+  attempting `/test-package` on a **feature** package cost a wasted subagent run each
+  time — a feature package can't be built or tested via the SwiftPM CLI at all (the
+  snapshot target's `import UIKit` fails `swift build --build-tests` / `swift test` on
+  macOS, and even sources-only `swift build` fails because the committed
+  `__Snapshots__/*.png` are undeclared resources). The limitation lived only as an
+  incomplete trailing note — which suggested a sources-only fallback that doesn't work.
+- **Decision:** *applied* 2026-07-21 (owner-approved). Added a **"Gate first"** section
+  at the top of `/test-package` (`.claude/skills/test-package/SKILL.md`) that detects a
+  feature package (under `Features/`, or a `__Snapshots__/` dir / a
+  `SnapshotTestHelpers`/`UIKit` test import) and refuses up front — routing to the
+  full-app `/build-for-testing` / `/test` / `/test-snapshots` — and corrected the stale
+  trailing note (there is no sources-only fallback). Landed via branch
+  `chore/test-package-feature-gate`.
+- **Rationale:** the check is a cheap precondition that removes a recurring wasted
+  subagent round-trip; a gate up front beats a trailing note that was both easy to miss
+  and factually wrong.
+- **Reconsider when:** n/a (applied).
+
 ### 2026-07-05 — Gate should detect the "0 tests executed" silent failure · deferred
 
 - **Pattern:** across PRs #62/#63/#64/#65 and the Item-5 gates, `make test` with a
