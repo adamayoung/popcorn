@@ -24,8 +24,8 @@ public struct MovieDetailsView: View {
     public var body: some View {
         ZStack {
             switch viewModel.viewState {
-            case .ready(let snapshot):
-                content(snapshot)
+            case .ready(let movie):
+                content(movie)
             case .error(let error):
                 errorBody(error)
             default:
@@ -34,25 +34,25 @@ public struct MovieDetailsView: View {
         }
         .accessibilityIdentifier("movie-details.view")
         .toolbar {
-            if case .ready(let snapshot) = viewModel.viewState {
+            if case .ready(let movie) = viewModel.viewState {
                 if viewModel.isWatchlistEnabled {
                     ToolbarItem(placement: toolbarTrailingPlacement) {
                         Button(
-                            snapshot.movie.isOnWatchlist ?
+                            movie.isOnWatchlist ?
                                 LocalizedStringResource("REMOVE_FROM_WATCHLIST", bundle: .module) :
                                 LocalizedStringResource("ADD_TO_WATCHLIST", bundle: .module),
-                            systemImage: snapshot.movie.isOnWatchlist ? "eye" : "plus"
+                            systemImage: movie.isOnWatchlist ? "eye" : "plus"
                         ) {
                             Task { await viewModel.toggleOnWatchlist() }
                         }
                         .accessibilityIdentifier(
-                            snapshot.movie.isOnWatchlist
+                            movie.isOnWatchlist
                                 ? "movie-details.watchlist-toggle.on"
                                 : "movie-details.watchlist-toggle.off"
                         )
                         .contentTransition(.symbolEffect(.replace))
-                        .animation(reduceMotion ? nil : .default, value: snapshot.movie.isOnWatchlist)
-                        .sensoryFeedback(.selection, trigger: snapshot.movie.isOnWatchlist)
+                        .animation(reduceMotion ? nil : .default, value: movie.isOnWatchlist)
+                        .sensoryFeedback(.selection, trigger: movie.isOnWatchlist)
                     }
                 }
 
@@ -105,12 +105,11 @@ extension MovieDetailsView {
 
 extension MovieDetailsView {
 
-    private func content(_ snapshot: MovieDetailsViewSnapshot) -> some View {
+    private func content(_ movie: Movie) -> some View {
         MovieDetailsContentView(
-            movie: snapshot.movie,
-            recommendedMovies: snapshot.recommendedMovies,
-            castMembers: snapshot.castMembers,
-            crewMembers: snapshot.crewMembers,
+            movie: movie,
+            recommendedMoviesState: viewModel.recommendedMoviesState,
+            castAndCrewState: viewModel.castAndCrewState,
             isBackdropFocalPointEnabled: viewModel.isBackdropFocalPointEnabled,
             didSelectPerson: { personID in
                 viewModel.selectPerson(id: personID)
@@ -145,14 +144,21 @@ extension MovieDetailsView {
         NavigationStack {
             MovieDetailsView(
                 viewModel: .preview(
-                    viewState: .ready(
-                        .init(
-                            movie: Movie.mock,
-                            recommendedMovies: MoviePreview.mocks,
-                            castMembers: CastMember.mocks,
-                            crewMembers: CrewMember.mocks
-                        )
-                    )
+                    viewState: .ready(.mock),
+                    recommendedMoviesState: .ready(MoviePreview.mocks),
+                    castAndCrewState: .ready(.mock)
+                )
+            )
+        }
+    }
+
+    #Preview("Sections Loading") {
+        NavigationStack {
+            MovieDetailsView(
+                viewModel: .preview(
+                    viewState: .ready(.mock),
+                    recommendedMoviesState: .loading,
+                    castAndCrewState: .loading
                 )
             )
         }

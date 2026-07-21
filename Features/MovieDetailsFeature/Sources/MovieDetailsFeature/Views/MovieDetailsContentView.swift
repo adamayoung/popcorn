@@ -7,14 +7,14 @@
 
 import CoreDomain
 import DesignSystem
+import Presentation
 import SwiftUI
 
 struct MovieDetailsContentView: View {
 
     var movie: Movie
-    var recommendedMovies: [MoviePreview]
-    var castMembers: [CastMember]
-    var crewMembers: [CrewMember]
+    var recommendedMoviesState: ViewState<[MoviePreview]>
+    var castAndCrewState: ViewState<Credits>
     var isBackdropFocalPointEnabled: Bool
     var didSelectPerson: (_ personID: Int) -> Void
     var didSelectMovie: (_ movieID: Int) -> Void
@@ -137,39 +137,72 @@ extension MovieDetailsContentView {
             }
             .padding(.bottom, .spacing40)
 
-            if !castMembers.isEmpty || !crewMembers.isEmpty {
-                castAndCrewCarousel
-                    .padding(.bottom)
-            }
-
-            if !recommendedMovies.isEmpty {
-                recommendedMoviesCarousel
-                    .padding(.bottom)
-            }
+            castAndCrewSection
+            recommendedMoviesSection
         }
         .padding(.vertical)
     }
 
-    private var castAndCrewCarousel: some View {
+    @ViewBuilder
+    private var castAndCrewSection: some View {
+        switch castAndCrewState {
+        case .loading:
+            VStack(alignment: .leading, spacing: 8) {
+                sectionHeader("CAST_AND_CREW")
+                CarouselPlaceholder(shape: .profile)
+                    .padding(.leading, 16)
+                    .accessibilityElement()
+                    .accessibilityLabel(Text("LOADING", bundle: .module))
+            }
+            .padding(.bottom)
+        case .ready(let credits) where !credits.castMembers.isEmpty || !credits.crewMembers.isEmpty:
+            castAndCrewCarousel(credits)
+                .padding(.bottom)
+        default:
+            EmptyView()
+        }
+    }
+
+    @ViewBuilder
+    private var recommendedMoviesSection: some View {
+        switch recommendedMoviesState {
+        case .loading:
+            VStack(alignment: .leading, spacing: 8) {
+                sectionHeader("RECOMMENDED")
+                CarouselPlaceholder(shape: .backdrop)
+                    .padding(.leading, 16)
+                    .accessibilityElement()
+                    .accessibilityLabel(Text("LOADING", bundle: .module))
+            }
+            .padding(.bottom)
+        case .ready(let movies) where !movies.isEmpty:
+            recommendedMoviesCarousel(movies)
+                .padding(.bottom)
+        default:
+            EmptyView()
+        }
+    }
+
+    private func castAndCrewCarousel(_ credits: Credits) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             sectionHeader("CAST_AND_CREW") {
                 navigateToCastAndCrew(movie.id)
             }
 
             CastAndCrewCarousel(
-                castMembers: castMembers,
-                crewMembers: crewMembers,
+                castMembers: credits.castMembers,
+                crewMembers: credits.crewMembers,
                 didSelectPerson: didSelectPerson
             )
         }
     }
 
-    private var recommendedMoviesCarousel: some View {
+    private func recommendedMoviesCarousel(_ movies: [MoviePreview]) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             sectionHeader("RECOMMENDED")
 
             RecommendedCarousel(
-                movies: recommendedMovies,
+                movies: movies,
                 didSelectMovie: didSelectMovie
             )
         }
@@ -210,9 +243,8 @@ extension MovieDetailsContentView {
     NavigationStack {
         MovieDetailsContentView(
             movie: Movie.mock,
-            recommendedMovies: MoviePreview.mocks,
-            castMembers: CastMember.mocks,
-            crewMembers: CrewMember.mocks,
+            recommendedMoviesState: .ready(MoviePreview.mocks),
+            castAndCrewState: .ready(.mock),
             isBackdropFocalPointEnabled: true,
             didSelectPerson: { _ in },
             didSelectMovie: { _ in },

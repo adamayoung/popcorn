@@ -10,35 +10,18 @@ import Observation
 import OSLog
 import Presentation
 
-/// The data shown by ``MovieDetailsView`` once loaded.
-public struct MovieDetailsViewSnapshot: Equatable, Sendable {
-
-    public let movie: Movie
-    public let recommendedMovies: [MoviePreview]
-    public let castMembers: [CastMember]
-    public let crewMembers: [CrewMember]
-
-    public init(
-        movie: Movie,
-        recommendedMovies: [MoviePreview],
-        castMembers: [CastMember],
-        crewMembers: [CrewMember]
-    ) {
-        self.movie = movie
-        self.recommendedMovies = recommendedMovies
-        self.castMembers = castMembers
-        self.crewMembers = crewMembers
-    }
-
-}
-
 /// Drives ``MovieDetailsView``.
+///
+/// The screen renders progressively: ``viewState`` gates the primary movie content and
+/// becomes `.ready` as soon as the movie itself loads, while the recommended-movies and
+/// cast-and-crew carousels each load independently into their own view state. A failure
+/// in either section degrades that section only — it never fails the whole screen.
 ///
 /// Loading and live updates are driven by the view through ``load()`` from a
 /// `.task(id:)`, so SwiftUI owns the lifetime: the work is cancelled on disappear
 /// and restarted on reappear (or when ``reload()`` bumps ``reloadID``). There is
 /// deliberately no view-model-owned `Task` — structured concurrency keeps the
-/// stream tied to the view's lifetime with no manual cancellation.
+/// streams tied to the view's lifetime with no manual cancellation.
 ///
 /// The live ``MovieDetailsDependencies/streamMovie`` subscription is the single
 /// source of truth for post-fetch movie mutations (including watchlist on/off):
@@ -48,11 +31,18 @@ public struct MovieDetailsViewSnapshot: Equatable, Sendable {
 @MainActor
 public final class MovieDetailsViewModel {
 
-    public typealias ViewSnapshot = MovieDetailsViewSnapshot
-
     private static let logger = Logger.movieDetails
 
-    public private(set) var viewState: ViewState<ViewSnapshot>
+    /// The primary movie content. Becomes `.ready` once the movie has loaded, without
+    /// waiting for the recommended-movies or cast-and-crew sections.
+    public private(set) var viewState: ViewState<Movie>
+
+    /// The recommended-movies carousel, loaded independently after the movie is ready.
+    public private(set) var recommendedMoviesState: ViewState<[MoviePreview]>
+
+    /// The cast-and-crew carousel, loaded independently after the movie is ready.
+    public private(set) var castAndCrewState: ViewState<Credits>
+
     public private(set) var isWatchlistEnabled: Bool
     public private(set) var isIntelligenceEnabled: Bool
     public private(set) var isBackdropFocalPointEnabled: Bool
@@ -71,7 +61,9 @@ public final class MovieDetailsViewModel {
         transitionID: String? = nil,
         dependencies: MovieDetailsDependencies,
         navigator: any MovieDetailsNavigating,
-        viewState: ViewState<ViewSnapshot> = .initial,
+        viewState: ViewState<Movie> = .initial,
+        recommendedMoviesState: ViewState<[MoviePreview]> = .initial,
+        castAndCrewState: ViewState<Credits> = .initial,
         isWatchlistEnabled: Bool = false,
         isIntelligenceEnabled: Bool = false,
         isBackdropFocalPointEnabled: Bool = false
@@ -81,6 +73,8 @@ public final class MovieDetailsViewModel {
         self.dependencies = dependencies
         self.navigator = navigator
         self.viewState = viewState
+        self.recommendedMoviesState = recommendedMoviesState
+        self.castAndCrewState = castAndCrewState
         self.isWatchlistEnabled = isWatchlistEnabled
         self.isIntelligenceEnabled = isIntelligenceEnabled
         self.isBackdropFocalPointEnabled = isBackdropFocalPointEnabled
@@ -98,13 +92,21 @@ public final class MovieDetailsViewModel {
         isBackdropFocalPointEnabled = (try? dependencies.isBackdropFocalPointEnabled()) ?? false
     }
 
-    /// Fetches details, then observes live movie updates until cancelled.
+    /// Fetches the movie, then loads the sections and observes live movie updates.
     ///
     /// Drive this from the view's `.task(id:)`; SwiftUI cancels it on disappear
-    /// and reruns it on reappear / ``reload()``.
+    /// and reruns it on reappear / ``reload()``. The sections and the live stream run
+    /// concurrently once the movie is ready, so cancellation propagates to all of them.
     public func load() async {
         await fetch()
-        await observeMovieUpdates()
+        guard viewState.isReady else {
+            return
+        }
+
+        async let recommended: Void = loadRecommendedMovies()
+        async let castAndCrew: Void = loadCastAndCrew()
+        async let updates: Void = observeMovieUpdates()
+        _ = await (recommended, castAndCrew, updates)
     }
 
     /// Retries loading after an error by changing ``reloadID``, which reruns the
@@ -160,33 +162,57 @@ public final class MovieDetailsViewModel {
         viewState = .loading
         Self.logger.info("User fetching movie details")
 
-        let isCastAndCrewEnabled = (try? dependencies.isCastAndCrewEnabled()) ?? false
-        let isRecommendedMoviesEnabled = (try? dependencies.isRecommendedMoviesEnabled()) ?? false
-
-        let snapshot: ViewSnapshot
         do {
-            async let movie = dependencies.fetchMovie(movieID)
-            async let recommendedMovies = isRecommendedMoviesEnabled
-                ? dependencies.fetchRecommendedMovies(movieID) : []
-            async let credits = isCastAndCrewEnabled
-                ? dependencies.fetchCredits(movieID) : nil
-
-            let resolvedCredits = try await credits
-            snapshot = try await ViewSnapshot(
-                movie: movie,
-                recommendedMovies: recommendedMovies,
-                castMembers: resolvedCredits?.castMembers ?? [],
-                crewMembers: resolvedCredits?.crewMembers ?? []
-            )
+            let movie = try await dependencies.fetchMovie(movieID)
+            viewState = .ready(movie)
         } catch {
             Self.logger.error(
                 "Failed fetching movie details: \(error.localizedDescription, privacy: .public)"
             )
             viewState.applyLoadFailure(error)
+        }
+    }
+
+    func loadRecommendedMovies() async {
+        guard (try? dependencies.isRecommendedMoviesEnabled()) == true else {
+            recommendedMoviesState = .initial
+            return
+        }
+        guard !recommendedMoviesState.isReady, !recommendedMoviesState.isLoading else {
             return
         }
 
-        viewState = .ready(snapshot)
+        recommendedMoviesState = .loading
+        do {
+            let movies = try await dependencies.fetchRecommendedMovies(movieID)
+            recommendedMoviesState = .ready(movies)
+        } catch {
+            Self.logger.error(
+                "Failed fetching recommended movies: \(error.localizedDescription, privacy: .public)"
+            )
+            recommendedMoviesState.applyLoadFailure(error)
+        }
+    }
+
+    func loadCastAndCrew() async {
+        guard (try? dependencies.isCastAndCrewEnabled()) == true else {
+            castAndCrewState = .initial
+            return
+        }
+        guard !castAndCrewState.isReady, !castAndCrewState.isLoading else {
+            return
+        }
+
+        castAndCrewState = .loading
+        do {
+            let credits = try await dependencies.fetchCredits(movieID)
+            castAndCrewState = .ready(credits)
+        } catch {
+            Self.logger.error(
+                "Failed fetching cast and crew: \(error.localizedDescription, privacy: .public)"
+            )
+            castAndCrewState.applyLoadFailure(error)
+        }
     }
 
     func observeMovieUpdates() async {
@@ -211,15 +237,10 @@ public final class MovieDetailsViewModel {
     }
 
     private func applyMovieUpdate(_ movie: Movie) {
-        guard case .ready(let snapshot) = viewState else {
+        guard case .ready = viewState else {
             return
         }
-        viewState = .ready(ViewSnapshot(
-            movie: movie,
-            recommendedMovies: snapshot.recommendedMovies,
-            castMembers: snapshot.castMembers,
-            crewMembers: snapshot.crewMembers
-        ))
+        viewState = .ready(movie)
     }
 
 }
@@ -227,19 +248,23 @@ public final class MovieDetailsViewModel {
 #if DEBUG
     public extension MovieDetailsViewModel {
 
-        /// A view model pinned to a fixed view state with no-op dependencies and
+        /// A view model pinned to fixed view states with no-op dependencies and
         /// navigation, for previews and snapshot tests.
         static func preview(
-            viewState: ViewState<ViewSnapshot>,
+            viewState: ViewState<Movie>,
+            recommendedMoviesState: ViewState<[MoviePreview]> = .initial,
+            castAndCrewState: ViewState<Credits> = .initial,
             isWatchlistEnabled: Bool = false,
             isIntelligenceEnabled: Bool = false,
             isBackdropFocalPointEnabled: Bool = false
         ) -> MovieDetailsViewModel {
             MovieDetailsViewModel(
-                movieID: viewState.content?.movie.id ?? 0,
+                movieID: viewState.content?.id ?? 0,
                 dependencies: .preview,
                 navigator: NoOpMovieDetailsNavigator(),
                 viewState: viewState,
+                recommendedMoviesState: recommendedMoviesState,
+                castAndCrewState: castAndCrewState,
                 isWatchlistEnabled: isWatchlistEnabled,
                 isIntelligenceEnabled: isIntelligenceEnabled,
                 isBackdropFocalPointEnabled: isBackdropFocalPointEnabled

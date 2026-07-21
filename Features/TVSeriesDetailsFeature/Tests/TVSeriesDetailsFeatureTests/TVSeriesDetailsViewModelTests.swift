@@ -14,19 +14,19 @@ import Testing
 @Suite("TVSeriesDetailsViewModel Tests")
 struct TVSeriesDetailsViewModelTests {
 
-    @Test("fetch success loads tv series and credits")
+    // MARK: - Primary fetch
+
+    @Test("fetch success sets viewState to the series without touching the section")
     @MainActor
-    func fetchSuccessLoadsAllData() async {
+    func fetchSuccessSetsSeries() async {
         let viewModel = Self.makeViewModel(
-            dependencies: Self.stubDependencies(
-                fetchTVSeries: { _ in Self.testTVSeries },
-                fetchCredits: { _ in Self.testCredits }
-            )
+            dependencies: Self.stubDependencies(fetchTVSeries: { _ in Self.testTVSeries })
         )
 
         await viewModel.fetch()
 
-        #expect(viewModel.viewState == .ready(Self.testViewSnapshot))
+        #expect(viewModel.viewState == .ready(Self.testTVSeries))
+        #expect(viewModel.castAndCrewState.isInitial)
     }
 
     @Test("fetch failure sets viewState to error")
@@ -39,27 +39,65 @@ struct TVSeriesDetailsViewModelTests {
         await viewModel.fetch()
 
         #expect(viewModel.viewState == .error(ViewStateError(TestError.generic)))
+        #expect(viewModel.castAndCrewState.isInitial)
     }
 
-    @Test("fetch succeeds with empty credits when credits fetch throws")
+    // MARK: - Progressive load
+
+    @Test("load populates the cast-and-crew section after the series is ready")
     @MainActor
-    func fetchSucceedsWithEmptyCreditsWhenCreditsFetchThrows() async {
+    func loadPopulatesSection() async {
         let viewModel = Self.makeViewModel(
             dependencies: Self.stubDependencies(
                 fetchTVSeries: { _ in Self.testTVSeries },
-                fetchCredits: { _ in throw TestError.generic },
-                isCastAndCrewEnabled: { true }
+                fetchCredits: { _ in Self.testCredits }
             )
         )
 
-        await viewModel.fetch()
+        await viewModel.load()
 
-        #expect(viewModel.viewState == .ready(TVSeriesDetailsViewSnapshot(tvSeries: Self.testTVSeries)))
+        #expect(viewModel.viewState == .ready(Self.testTVSeries))
+        #expect(viewModel.castAndCrewState == .ready(Self.testCredits))
     }
 
-    @Test("fetch omits credits when cast and crew disabled")
+    @Test("load short-circuits the section when the primary fetch fails")
     @MainActor
-    func fetchOmitsCreditsWhenCastAndCrewDisabled() async {
+    func loadShortCircuitsSectionOnPrimaryFailure() async {
+        let creditsCalled = Mutex(false)
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchTVSeries: { _ in throw TestError.generic },
+                fetchCredits: { _ in creditsCalled.withLock { $0 = true }; return Self.testCredits }
+            )
+        )
+
+        await viewModel.load()
+
+        #expect(creditsCalled.withLock { $0 } == false)
+        #expect(viewModel.castAndCrewState.isInitial)
+    }
+
+    @Test("a credits failure degrades the section without failing the screen")
+    @MainActor
+    func creditsFailureDegradesOnly() async {
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchTVSeries: { _ in Self.testTVSeries },
+                fetchCredits: { _ in throw TestError.generic }
+            )
+        )
+
+        await viewModel.load()
+
+        #expect(viewModel.viewState == .ready(Self.testTVSeries))
+        #expect(viewModel.castAndCrewState.isError)
+    }
+
+    // MARK: - Feature flags
+
+    @Test("a disabled cast-and-crew flag leaves the section initial and skips its dependency")
+    @MainActor
+    func disabledFlagSkipsDependency() async {
         let creditsCalled = Mutex(false)
         let viewModel = Self.makeViewModel(
             dependencies: Self.stubDependencies(
@@ -69,28 +107,101 @@ struct TVSeriesDetailsViewModelTests {
             )
         )
 
-        await viewModel.fetch()
+        await viewModel.load()
 
         #expect(creditsCalled.withLock { $0 } == false)
-        #expect(viewModel.viewState == .ready(TVSeriesDetailsViewSnapshot(tvSeries: Self.testTVSeries)))
+        #expect(viewModel.castAndCrewState.isInitial)
     }
+
+    @Test("a flag turning off resets a previously ready section to initial")
+    @MainActor
+    func flagTurningOffResetsSection() async {
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(isCastAndCrewEnabled: { false }),
+            castAndCrewState: .ready(Self.testCredits)
+        )
+
+        await viewModel.loadCastAndCrew()
+
+        #expect(viewModel.castAndCrewState.isInitial)
+    }
+
+    // MARK: - Re-entry guards
+
+    @Test("a cancelled section load resets to initial and reloads on the next run")
+    @MainActor
+    func cancelledSectionReloadsOnNextRun() async {
+        let callCount = Mutex(0)
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchCredits: { _ in
+                    let attempt = callCount.withLock { $0 += 1; return $0 }
+                    if attempt == 1 {
+                        throw CancellationError()
+                    }
+                    return Self.testCredits
+                }
+            )
+        )
+
+        await viewModel.loadCastAndCrew()
+        #expect(viewModel.castAndCrewState.isInitial)
+
+        await viewModel.loadCastAndCrew()
+        #expect(viewModel.castAndCrewState == .ready(Self.testCredits))
+    }
+
+    @Test("a section load is a no-op when the section is already ready")
+    @MainActor
+    func sectionLoadNoOpWhenReady() async {
+        let called = Mutex(false)
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchCredits: { _ in called.withLock { $0 = true }; return Self.testCredits }
+            ),
+            castAndCrewState: .ready(Self.testCredits)
+        )
+
+        await viewModel.loadCastAndCrew()
+
+        #expect(called.withLock { $0 } == false)
+        #expect(viewModel.castAndCrewState == .ready(Self.testCredits))
+    }
+
+    @Test("a section load is a no-op when the section is already loading")
+    @MainActor
+    func sectionLoadNoOpWhenLoading() async {
+        let called = Mutex(false)
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchCredits: { _ in called.withLock { $0 = true }; return Self.testCredits }
+            ),
+            castAndCrewState: .loading
+        )
+
+        await viewModel.loadCastAndCrew()
+
+        #expect(called.withLock { $0 } == false)
+        #expect(viewModel.castAndCrewState.isLoading)
+    }
+
+    // MARK: - Guards
 
     @Test("fetch is a no-op when already ready")
     @MainActor
     func fetchNoOpWhenReady() async {
         let fetchCalled = Mutex(false)
-        let snapshot = Self.testViewSnapshot
         let viewModel = Self.makeViewModel(
             dependencies: Self.stubDependencies(
                 fetchTVSeries: { _ in fetchCalled.withLock { $0 = true }; return Self.testTVSeries }
             ),
-            viewState: .ready(snapshot)
+            viewState: .ready(Self.testTVSeries)
         )
 
         await viewModel.fetch()
 
         #expect(fetchCalled.withLock { $0 } == false)
-        #expect(viewModel.viewState == .ready(snapshot))
+        #expect(viewModel.viewState == .ready(Self.testTVSeries))
     }
 
     @Test("fetch is a no-op when already loading")
@@ -203,7 +314,8 @@ extension TVSeriesDetailsViewModelTests {
     static func makeViewModel(
         dependencies: TVSeriesDetailsDependencies = stubDependencies(),
         navigator: any TVSeriesDetailsNavigating = SpyTVSeriesDetailsNavigator(),
-        viewState: ViewState<TVSeriesDetailsViewSnapshot> = .initial,
+        viewState: ViewState<TVSeries> = .initial,
+        castAndCrewState: ViewState<Credits> = .initial,
         isCastAndCrewEnabled: Bool = false,
         isIntelligenceEnabled: Bool = false,
         isBackdropFocalPointEnabled: Bool = false
@@ -213,6 +325,7 @@ extension TVSeriesDetailsViewModelTests {
             dependencies: dependencies,
             navigator: navigator,
             viewState: viewState,
+            castAndCrewState: castAndCrewState,
             isCastAndCrewEnabled: isCastAndCrewEnabled,
             isIntelligenceEnabled: isIntelligenceEnabled,
             isBackdropFocalPointEnabled: isBackdropFocalPointEnabled
@@ -262,14 +375,6 @@ extension TVSeriesDetailsViewModelTests {
             CrewMember(id: "crew-1", personID: 789, personName: "Director", job: "Director", department: "Directing")
         ]
     )
-
-    static var testViewSnapshot: TVSeriesDetailsViewSnapshot {
-        TVSeriesDetailsViewSnapshot(
-            tvSeries: testTVSeries,
-            castMembers: testCredits.castMembers,
-            crewMembers: testCredits.crewMembers
-        )
-    }
 
 }
 

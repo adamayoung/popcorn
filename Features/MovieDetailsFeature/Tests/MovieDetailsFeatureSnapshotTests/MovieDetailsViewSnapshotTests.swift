@@ -20,19 +20,18 @@ struct MovieDetailsViewSnapshotTests {
         let view = NavigationStack {
             MovieDetailsView(
                 viewModel: .preview(
-                    viewState: .ready(
-                        .init(
-                            movie: .mock,
-                            recommendedMovies: MoviePreview.mocks,
-                            castMembers: CastMember.mocks,
-                            crewMembers: CrewMember.mocks
-                        )
-                    )
+                    viewState: .ready(.mock),
+                    recommendedMoviesState: .ready(MoviePreview.mocks),
+                    castAndCrewState: .ready(.mock)
                 )
             )
         }
 
         verifyViewSnapshot(of: view)
     }
+
+    // Note: a "sections loading" snapshot was intentionally not added. The stretchy
+    // header fills the viewport, so the carousel placeholders sit below the fold and
+    // aren't captured — the loading state is covered by MovieDetailsViewModelTests instead.
 
 }
