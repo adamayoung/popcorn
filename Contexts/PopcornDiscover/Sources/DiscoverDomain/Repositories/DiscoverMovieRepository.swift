@@ -22,13 +22,13 @@ public protocol DiscoverMovieRepository: Sendable {
     /// - Parameters:
     ///   - filter: Optional filter criteria to apply (e.g., genre, year, rating). Pass `nil` for no filtering.
     ///   - page: The page number to fetch (1-indexed).
-    /// - Returns: An array of ``MoviePreview`` instances matching the filter criteria.
+    /// - Returns: A ``MoviePreviewPage`` of movies matching the filter criteria, with pagination metadata.
     /// - Throws: ``DiscoverMovieRepositoryError`` if the movies cannot be fetched.
     ///
     func movies(
         filter: MovieFilter?,
         page: Int
-    ) async throws(DiscoverMovieRepositoryError) -> [MoviePreview]
+    ) async throws(DiscoverMovieRepositoryError) -> MoviePreviewPage
 
 }
 

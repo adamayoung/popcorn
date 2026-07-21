@@ -11,14 +11,14 @@ import Foundation
 
 public protocol FetchDiscoverMoviesUseCase: Sendable {
 
-    func execute() async throws(FetchDiscoverMoviesError) -> [MoviePreviewDetails]
+    func execute() async throws(FetchDiscoverMoviesError) -> MoviePreviewDetailsPage
 
     func execute(filter: MovieFilter) async throws(FetchDiscoverMoviesError)
-        -> [MoviePreviewDetails]
+        -> MoviePreviewDetailsPage
 
-    func execute(page: Int) async throws(FetchDiscoverMoviesError) -> [MoviePreviewDetails]
+    func execute(page: Int) async throws(FetchDiscoverMoviesError) -> MoviePreviewDetailsPage
 
     func execute(filter: MovieFilter?, page: Int) async throws(FetchDiscoverMoviesError)
-        -> [MoviePreviewDetails]
+        -> MoviePreviewDetailsPage
 
 }

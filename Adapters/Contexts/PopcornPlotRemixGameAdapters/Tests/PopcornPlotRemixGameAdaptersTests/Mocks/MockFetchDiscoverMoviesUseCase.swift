@@ -28,7 +28,7 @@ final class MockFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase, @uncheck
     var executeWithFilterAndPageCallCount = 0
     var executeWithFilterAndPageStub: Result<[MoviePreviewDetails], FetchDiscoverMoviesError>?
 
-    func execute() async throws(FetchDiscoverMoviesError) -> [MoviePreviewDetails] {
+    func execute() async throws(FetchDiscoverMoviesError) -> MoviePreviewDetailsPage {
         executeCallCount += 1
 
         guard let stub = executeStub else {
@@ -37,13 +37,13 @@ final class MockFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase, @uncheck
 
         switch stub {
         case .success(let movies):
-            return movies
+            return MoviePreviewDetailsPage(page: 1, totalPages: 1, movies: movies)
         case .failure(let error):
             throw error
         }
     }
 
-    func execute(filter: MovieFilter) async throws(FetchDiscoverMoviesError) -> [MoviePreviewDetails] {
+    func execute(filter: MovieFilter) async throws(FetchDiscoverMoviesError) -> MoviePreviewDetailsPage {
         executeWithFilterCallCount += 1
         executeWithFilterCalledWith.append(ExecuteWithFilterCall(filter: filter))
 
@@ -53,13 +53,13 @@ final class MockFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase, @uncheck
 
         switch stub {
         case .success(let movies):
-            return movies
+            return MoviePreviewDetailsPage(page: 1, totalPages: 1, movies: movies)
         case .failure(let error):
             throw error
         }
     }
 
-    func execute(page: Int) async throws(FetchDiscoverMoviesError) -> [MoviePreviewDetails] {
+    func execute(page: Int) async throws(FetchDiscoverMoviesError) -> MoviePreviewDetailsPage {
         executeWithPageCallCount += 1
 
         guard let stub = executeWithPageStub else {
@@ -68,7 +68,7 @@ final class MockFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase, @uncheck
 
         switch stub {
         case .success(let movies):
-            return movies
+            return MoviePreviewDetailsPage(page: 1, totalPages: 1, movies: movies)
         case .failure(let error):
             throw error
         }
@@ -77,7 +77,7 @@ final class MockFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase, @uncheck
     func execute(
         filter: MovieFilter?,
         page: Int
-    ) async throws(FetchDiscoverMoviesError) -> [MoviePreviewDetails] {
+    ) async throws(FetchDiscoverMoviesError) -> MoviePreviewDetailsPage {
         executeWithFilterAndPageCallCount += 1
 
         guard let stub = executeWithFilterAndPageStub else {
@@ -86,7 +86,7 @@ final class MockFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase, @uncheck
 
         switch stub {
         case .success(let movies):
-            return movies
+            return MoviePreviewDetailsPage(page: 1, totalPages: 1, movies: movies)
         case .failure(let error):
             throw error
         }

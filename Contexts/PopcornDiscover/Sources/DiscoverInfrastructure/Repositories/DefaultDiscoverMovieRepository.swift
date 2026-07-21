@@ -24,25 +24,25 @@ final class DefaultDiscoverMovieRepository: DiscoverMovieRepository {
     func movies(
         filter: MovieFilter?,
         page: Int
-    ) async throws(DiscoverMovieRepositoryError) -> [MoviePreview] {
+    ) async throws(DiscoverMovieRepositoryError) -> MoviePreviewPage {
         do {
-            if let cachedMovies = try await localDataSource.movies(filter: filter, page: page) {
-                return cachedMovies
+            if let cachedPage = try await localDataSource.movies(filter: filter, page: page) {
+                return cachedPage
             }
         } catch let error {
             throw DiscoverMovieRepositoryError(error)
         }
 
-        let movies: [MoviePreview]
+        let moviePage: MoviePreviewPage
         do {
-            movies = try await remoteDataSource.movies(filter: filter, page: page)
+            moviePage = try await remoteDataSource.movies(filter: filter, page: page)
         } catch let error {
             throw DiscoverMovieRepositoryError(error)
         }
 
-        try? await localDataSource.setMovies(movies, filter: filter, page: page)
+        try? await localDataSource.setMovies(moviePage, filter: filter)
 
-        return movies
+        return moviePage
     }
 
 }

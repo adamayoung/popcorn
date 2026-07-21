@@ -57,12 +57,32 @@ struct TMDbDiscoverRemoteDataSourceTests {
 
         let result = try await dataSource.movies(filter: nil, page: 1)
 
-        #expect(result.count == 1)
-        #expect(result[0].id == 550)
-        #expect(result[0].title == "Fight Club")
+        #expect(result.page == 1)
+        #expect(result.totalPages == 1)
+        #expect(result.movies.count == 1)
+        #expect(result.movies[0].id == 550)
+        #expect(result.movies[0].title == "Fight Club")
         #expect(mockService.moviesCallCount == 1)
         #expect(mockService.moviesCalledWith[0].page == 1)
         #expect(mockService.moviesCalledWith[0].language == nil)
+    }
+
+    @Test("movies clamps totalPages to TMDb's 1000-page limit")
+    func movies_clampsTotalPagesToLimit() async throws {
+        let mockService = MockDiscoverService()
+        let pageableList = MoviePageableList(
+            page: 1,
+            results: [],
+            totalResults: 100_000,
+            totalPages: 5000
+        )
+        mockService.moviesStub = .success(pageableList)
+
+        let dataSource = TMDbDiscoverRemoteDataSource(discoverService: mockService)
+
+        let result = try await dataSource.movies(filter: nil, page: 1)
+
+        #expect(result.totalPages == 1000)
     }
 
     @Test("movies with filter passes filter to service")
@@ -128,7 +148,7 @@ struct TMDbDiscoverRemoteDataSourceTests {
 
         let result = try await dataSource.movies(filter: nil, page: 1)
 
-        #expect(result.isEmpty)
+        #expect(result.movies.isEmpty)
     }
 
     // MARK: - TV Series Tests

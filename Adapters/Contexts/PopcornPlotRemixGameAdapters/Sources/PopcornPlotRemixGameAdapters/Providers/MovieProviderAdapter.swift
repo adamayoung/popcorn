@@ -36,7 +36,7 @@ public struct MovieProviderAdapter: MovieProviding {
         do {
             moviePreviewDetails = try await fetchDiscoverMoviesUseCase.execute(
                 filter: discoverMovieFilter
-            )
+            ).movies
         } catch let error {
             throw MovieProviderError(error)
         }

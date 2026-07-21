@@ -13,12 +13,12 @@ actor MockDiscoverMovieLocalDataSource: DiscoverMovieLocalDataSource {
 
     var moviesCallCount = 0
     var moviesCalledWith: [(filter: MovieFilter?, page: Int)] = []
-    nonisolated(unsafe) var moviesStub: Result<[MoviePreview]?, DiscoverMovieLocalDataSourceError>?
+    nonisolated(unsafe) var moviesStub: Result<MoviePreviewPage?, DiscoverMovieLocalDataSourceError>?
 
     func movies(
         filter: MovieFilter?,
         page: Int
-    ) async throws(DiscoverMovieLocalDataSourceError) -> [MoviePreview]? {
+    ) async throws(DiscoverMovieLocalDataSourceError) -> MoviePreviewPage? {
         moviesCallCount += 1
         moviesCalledWith.append((filter: filter, page: page))
 
@@ -27,8 +27,8 @@ actor MockDiscoverMovieLocalDataSource: DiscoverMovieLocalDataSource {
         }
 
         switch stub {
-        case .success(let movies):
-            return movies
+        case .success(let moviePage):
+            return moviePage
         case .failure(let error):
             throw error
         }
@@ -67,16 +67,15 @@ actor MockDiscoverMovieLocalDataSource: DiscoverMovieLocalDataSource {
     }
 
     var setMoviesCallCount = 0
-    var setMoviesCalledWith: [(movies: [MoviePreview], filter: MovieFilter?, page: Int)] = []
+    var setMoviesCalledWith: [(page: MoviePreviewPage, filter: MovieFilter?)] = []
     nonisolated(unsafe) var setMoviesStub: Result<Void, DiscoverMovieLocalDataSourceError>?
 
     func setMovies(
-        _ moviePreviews: [MoviePreview],
-        filter: MovieFilter?,
-        page: Int
+        _ page: MoviePreviewPage,
+        filter: MovieFilter?
     ) async throws(DiscoverMovieLocalDataSourceError) {
         setMoviesCallCount += 1
-        setMoviesCalledWith.append((movies: moviePreviews, filter: filter, page: page))
+        setMoviesCalledWith.append((page: page, filter: filter))
 
         guard let stub = setMoviesStub else {
             return

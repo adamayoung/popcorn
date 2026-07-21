@@ -13,7 +13,7 @@ public protocol DiscoverMovieLocalDataSource: Sendable, Actor {
     func movies(
         filter: MovieFilter?,
         page: Int
-    ) async throws(DiscoverMovieLocalDataSourceError) -> [MoviePreview]?
+    ) async throws(DiscoverMovieLocalDataSourceError) -> MoviePreviewPage?
 
     func moviesStream(
         filter: MovieFilter?
@@ -24,9 +24,8 @@ public protocol DiscoverMovieLocalDataSource: Sendable, Actor {
     ) async throws(DiscoverMovieLocalDataSourceError) -> Int?
 
     func setMovies(
-        _ moviePreviews: [MoviePreview],
-        filter: MovieFilter?,
-        page: Int
+        _ page: MoviePreviewPage,
+        filter: MovieFilter?
     ) async throws(DiscoverMovieLocalDataSourceError)
 
 }

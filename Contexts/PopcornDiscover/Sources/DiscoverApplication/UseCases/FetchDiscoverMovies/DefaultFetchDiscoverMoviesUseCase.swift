@@ -32,24 +32,24 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
         self.themeColorProvider = themeColorProvider
     }
 
-    func execute() async throws(FetchDiscoverMoviesError) -> [MoviePreviewDetails] {
+    func execute() async throws(FetchDiscoverMoviesError) -> MoviePreviewDetailsPage {
         try await execute(filter: nil, page: 1)
     }
 
     func execute(
         filter: MovieFilter
-    ) async throws(FetchDiscoverMoviesError) -> [MoviePreviewDetails] {
+    ) async throws(FetchDiscoverMoviesError) -> MoviePreviewDetailsPage {
         try await execute(filter: filter, page: 1)
     }
 
-    func execute(page: Int) async throws(FetchDiscoverMoviesError) -> [MoviePreviewDetails] {
+    func execute(page: Int) async throws(FetchDiscoverMoviesError) -> MoviePreviewDetailsPage {
         try await execute(filter: nil, page: page)
     }
 
     func execute(
         filter: MovieFilter?,
         page: Int
-    ) async throws(FetchDiscoverMoviesError) -> [MoviePreviewDetails] {
+    ) async throws(FetchDiscoverMoviesError) -> MoviePreviewDetailsPage {
         let span = SpanContext.startChild(
             operation: .useCaseExecute,
             description: "FetchDiscoverMoviesUseCase.execute"
@@ -59,15 +59,15 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
             "page": page
         ])
 
-        let moviePreviews: [MoviePreview]
+        let moviePreviewPage: MoviePreviewPage
         let genres: [Genre]
         let appConfiguration: AppConfiguration
         do {
-            async let moviePreviewsTask = repository.movies(filter: filter, page: page)
+            async let moviePreviewPageTask = repository.movies(filter: filter, page: page)
             async let genresTask = genreProvider.movieGenres()
             async let appConfigurationTask = appConfigurationProvider.appConfiguration()
-            (moviePreviews, genres, appConfiguration) = try await (
-                moviePreviewsTask, genresTask, appConfigurationTask
+            (moviePreviewPage, genres, appConfiguration) = try await (
+                moviePreviewPageTask, genresTask, appConfigurationTask
             )
         } catch let error {
             let moviesError = FetchDiscoverMoviesError(error)
@@ -77,14 +77,18 @@ final class DefaultFetchDiscoverMoviesUseCase: FetchDiscoverMoviesUseCase {
         }
 
         let moviePreviewDetails = try await mapMoviePreviews(
-            moviePreviews,
+            moviePreviewPage.movies,
             genres: genres,
             appConfiguration: appConfiguration,
             span: span
         )
 
         span?.finish()
-        return moviePreviewDetails
+        return MoviePreviewDetailsPage(
+            page: moviePreviewPage.page,
+            totalPages: moviePreviewPage.totalPages,
+            movies: moviePreviewDetails
+        )
     }
 
     private func mapMoviePreviews(

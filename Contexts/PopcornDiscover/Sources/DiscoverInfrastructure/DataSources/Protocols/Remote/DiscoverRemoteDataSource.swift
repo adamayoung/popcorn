@@ -13,7 +13,7 @@ public protocol DiscoverRemoteDataSource: Sendable {
     func movies(
         filter: MovieFilter?,
         page: Int
-    ) async throws(DiscoverRemoteDataSourceError) -> [MoviePreview]
+    ) async throws(DiscoverRemoteDataSourceError) -> MoviePreviewPage
 
     func tvSeries(
         filter: TVSeriesFilter?,
