@@ -16,7 +16,7 @@ table (`date · PR · weight · one-line outcome`) — see [`README.md`](README.
 
 <!-- Newest entry goes here. -->
 
-### Trending movies infinite scroll · `feature/trending-movies-infinite-scroll` · 2026-07-21 · full
+### Trending movies infinite scroll · PR #80 · 2026-07-21 · full
 
 *Phases / skills:* plan mode (2 Explore + 1 Plan agent, `AskUserQuestion` on
 end-of-list detection) → `/deliver` → `/implement-plan` (Canon TDD, per-package
