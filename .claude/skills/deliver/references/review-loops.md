@@ -35,6 +35,51 @@ DocC break in the first mock before it replicated into 25 siblings. For
 per-unit review only adds churn; the single end-diff fan-out's per-dimension
 adversarial pass already covers the whole diff.
 
+## Clone-of-a-merged-sibling review (parity, not fan-out)
+
+A **clone unit** (tagged `clone-of:<sibling>` in the ledger) is a wholesale copy
+of a sibling **already merged on `main`** — so already reviewed. It does not get
+a fresh fan-out; it gets a **parity check** against the merged sibling. The lane
+has two halves — *clone-and-substitute* (implementation, Phase 3) then
+*parity-review* (Phase 4).
+
+**Implementation — `cp -R` + ordered `sed`, not by hand** (Phase 3). Cloning a
+whole module by hand is slow and drops the sibling's tests + formatting; copy it
+instead. In PR #83 this was the *fastest* part of the delivery and inherited the
+sibling's coverage. Traps, in order:
+
+1. **Substitute the specific product/module names FIRST** (e.g.
+   `TrendingApplication` → `MoviesApplication`, `PopcornTrending` →
+   `PopcornMovies`) **before** the generic rename (`Trending` → `Popular`), or
+   the generic pass corrupts the specific ones.
+2. **Rename dirs before files, in two passes** — a single `-depth` walk renames
+   the parent dir and leaves the file paths stale. Rename directories first,
+   then files.
+3. **Strip build artifacts and `__Snapshots__/*.png` before renaming** so
+   snapshots re-record fresh, and fix the sibling's `.swiftformat` `--header`
+   template. Equal-or-shorter substitutions preserve formatting (so `make
+   format` reports 0 changes).
+
+**Parity review** (Phase 4):
+
+1. **Normalize** the clone against the sibling — apply the inverse of the rename
+   map (or `diff -r` the two dirs after a scripted un-rename) so only *content*
+   deltas remain.
+2. Every remaining delta must be an **enumerated intended deviation** listed in
+   the ledger up front (from the plan) — the context dependency, a
+   transition-context string, accessibility IDs, localization values.
+3. Confirm the clone's **tests were copied too** (it inherits the sibling's
+   coverage) — a clone that *drops* a sibling test is a regression to flag.
+4. Any non-mechanical delta → **reclassify that unit/delta `novel`** → full
+   fan-out for that delta.
+
+**Guardrail — shape-similarity is NOT clone status.** The paged-pipeline units in
+PR #83 mirrored Discover's *shape* but were real new SwiftData-migration code
+that needed the full fan-out. Only a wholesale copy of a **merged** sibling
+qualifies as a clone; "looks like a clone" is decided by the parity diff, not by
+eyeballing. This is the highest-value **and** the riskiest lane — the whole point
+is to review *less* of a clone, so the parity guardrail must be airtight.
+
 ## Why review fixes must be committed
 
 `/review-changes` diffs **committed** history (`git diff origin/main...HEAD`),

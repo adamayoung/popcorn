@@ -85,6 +85,21 @@ under a few hundred changed lines) ⇒ skip `/review-plan`'s critics;
 `/review-changes` takes its single-reviewer path. **Full** — anything risky
 or large. **When unsure, prefer full.**
 
+**Per-unit novelty — a second axis on top of Lite/Full.** Weight scales the
+machinery to *size and risk*; novelty scales it to *how much of the diff is
+genuinely new*. During Phase 3, tag each cohesive unit in the ledger as either
+`novel` or `clone-of:<merged-sibling-path>`. A unit is a **clone** only when it
+is a wholesale copy of a sibling that is **already merged on `main`** (so
+already reviewed), with differences limited to mechanical renames/substitutions
+plus a short, enumerable set of intended deviations (the context dependency, a
+transition-context string, accessibility IDs, localization values). "Looks like
+a clone" ≠ "is a clone" — the **parity diff in Phase 4** is what proves it, and
+any non-mechanical delta reclassifies the unit `novel`. Novelty is judged **per
+unit, not per PR**: a PR can hold a genuine clone package *and* new
+migration/context code that only mirrors a sibling's *shape* — the latter is
+`novel` and gets the full fan-out. Clone units take the parity lane (Phase 4)
+and the `cp`+`sed` implementation path (Phase 3); `novel` units are unchanged.
+
 ## Multi-deliverable plans — one run, several PRs
 
 A plan that is a *program* of cohesive deliverables becomes **one PR per
@@ -199,14 +214,26 @@ at a time, done only when the list is empty and `/test`, `/test-snapshots`,
 and `/build-for-testing` are green). It commits at logical checkpoints —
 required: Phase 4 reviews **committed** history. Don't advance until the
 suites pass and the work is committed; re-confirm the weight from the diff.
-Popcorn bookkeeping: a new `FeatureFlag` needs its Statsig gate (CLAUDE.md →
+**Record the green-gate SHA in the ledger** — the HEAD commit at which the
+finishing gate (`build-for-testing` + `test` + `test-snapshots`) last passed;
+update it after any Phase 4/5 code fix that re-runs that gate green (a fix that
+is *not* re-gated green does not update it, so Phase 9 then runs the full gate).
+Phase 9 passes this SHA to `/pr` to skip a redundant build/test when only docs
+changed since. Popcorn bookkeeping: a new `FeatureFlag` needs its Statsig gate (CLAUDE.md →
 *Feature flag creation*); a new unit-test target needs registering in
 `TestPlans/PopcornUnitTests.xctestplan` (snapshot targets in the snapshot
-plan). Two hard checkpoints:
+plan). Hard checkpoints:
 
 - **"Fix every instance of pattern X" → enumerate ALL sites up front** with a
   single **type-driven sweep**, listed in the test list before implementing —
   piecemeal discovery ships subsets (incidents:
+  [`references/review-loops.md`](references/review-loops.md)).
+- **A clone unit (`clone-of:<sibling>`) → implement by `cp -R` + ordered
+  `sed`, not by hand.** Copy the already-merged sibling wholesale and
+  substitute; it inherits the sibling's tests and formatting. Two traps:
+  substitute the *specific* product/module names **before** the generic rename,
+  and rename **dirs before files in two passes** (full procedure and the
+  snapshot / `.swiftformat` traps:
   [`references/review-loops.md`](references/review-loops.md)).
 - **Consult the specialist skills — mandatory, topic-triggered, including for
   fanned-out subagents.** `swift-concurrency` the moment actors,
@@ -233,6 +260,14 @@ item. Granularity by weight:
   (procedure: [`references/review-loops.md`](references/review-loops.md)).
 - **Full, otherwise** → one review of the full end diff via the fan-out
   path; do **not** interleave per unit.
+- **Clone of a merged sibling** (a unit tagged `clone-of:<sibling>`) → **parity
+  review, not a fan-out.** Diff the clone against its sibling and confirm every
+  difference is either a mechanical rename/substitution or one of the intended
+  deviations listed in the ledger. Anything else — logic that differs, a
+  modifier dropped, an import that isn't a rename — is **reclassified `novel`**
+  and goes through the full fan-out for that delta. The **novel** units in the
+  same PR still get the full end-diff fan-out; the clone units do not (procedure:
+  [`references/review-loops.md`](references/review-loops.md)).
 
 Converge via **`/review-changes`**: read the severity-graded report; fix each
 **Critical/High** test-first, re-run `/test` (+ `/test-snapshots` if UI
@@ -243,6 +278,18 @@ the PR description) vs stop. Medium/Low: apply the cheap, clearly-correct
 ones; note the rest in the PR description. This is the **single substantive
 review** — `/pr` therefore runs in `reviewed` mode (Phase 9).
 
+**Phase 4 ∥ Phase 5 on the cold pass.** Code review (Phase 4) and security
+review (Phase 5) both only **read** the committed tree, so their **cold first
+pass may run concurrently** — converge them independently. **Serialize only on
+the fix path:** if either produces fixes, apply them, then re-run the *other* on
+the fixed tree (a review of a now-stale tree doesn't count). Guardrail: review
+agents are read-mostly (`git diff` + file reads); if one runs a build it may
+contend with the other on the worktree's single build dir — acceptable for the
+cold pass. Rubric verification (Phase 7) stays strictly **after** both
+converge — it is the maker-graded exit gate and it builds/tests, so it is never
+part of the parallel set. (PR #82's retro did this ad hoc; this makes it the
+default.)
+
 ## Phase 5 — Security review + fix loop
 
 **Run only when the diff touches a security-relevant surface**: Swift source,
@@ -252,7 +299,9 @@ scale-down on lite.
 Invoke **`/security-review`** (findings only — the conductor fixes) and
 converge with the Phase 4 loop: fix each **High** (and any Medium with a
 concrete attack path) test-first where reproducible, commit, re-invoke, cap
-at 3. **Auto:** panel — but a **credential leak or clear exploit is a hard
+at 3. Its **cold first pass may run concurrently with Phase 4** (both are
+read-only on the same committed tree — see the *Phase 4 ∥ Phase 5* note);
+serialize only once either yields fixes. **Auto:** panel — but a **credential leak or clear exploit is a hard
 stop even in auto**. This is the pipeline's **only** security gate (CI has no
 SAST). Surfaces that bite:
 [`references/review-loops.md`](references/review-loops.md).
@@ -311,12 +360,23 @@ oldest into the archive table). Format detail:
 **Gate check first (template→replicate only):** the `Phase 4a` ledger task
 must be **completed** — still open → back to Phase 4.
 
-Invoke **`/pr reviewed`** (Phase 4 already converged this code, so `/pr`
-skips its internal review). It rebases onto `origin/main`, runs the
+Invoke **`/pr reviewed base=<green-gate-sha>`** — `reviewed` because Phase 4
+already converged this code (so `/pr` skips its internal review), and
+`base=<green-gate-sha>` is the Phase 3 green-gate SHA from the ledger (omit the
+arg if none was recorded). It rebases onto `origin/main`, runs the
 **mandatory pre-PR gate** — `make lint` + the new-file `--no-cache` re-lint,
 `/build-for-testing` (warnings-as-errors), `/test`, `/test-snapshots`;
-scaled to a lint-only fast gate when nothing build-affecting changed —
-pushes with `git push`, and opens the PR. Note the gate's coverage: it
+scaled to a lint-only fast gate when nothing build-affecting changed since
+**either `origin/main` or the green-gate base** — pushes with `git push`, and
+opens the PR.
+
+**Green-gate fast-path:** when the green-gate SHA is still an ancestor of HEAD
+(the rebase was a no-op) and the only delta since it is docs (the Phase 6
+capture + Phase 8 retro `.md`), `/pr` skips the build/test/snapshot legs and
+runs lint only. This is safe because the identical tree already passed the
+identical gate in Phase 3, proven by `/pr`'s is-ancestor + docs-only-delta
+checks; **CI still runs the full matrix**, so the local skip never lowers what
+guards `main`. Note the gate's coverage: it
 builds Debug, so a **Release-only** failure (`release-build.yml`) is caught
 by CI, not locally — expected; Phase 10 handles it. The `claude-review` job
 is a **non-blocking** neutral check — never treat it as a gate. **Run each long

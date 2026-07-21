@@ -7,10 +7,17 @@ description: Create a pull request
 
 I'll create a pull request for the current branch by following these steps. If any steps fail, stop.
 
-**Arguments:** pass `reviewed` to skip the internal code-reviewer pass (step 4) — use
-this when the change has already been code-reviewed and converged (e.g. `/deliver`'s
-Phase 3 already ran `/review-changes`). The review is also skipped automatically when
-the diff touches no `*.swift`.
+**Arguments:**
+
+- `reviewed` — skip the internal code-reviewer pass (step 4); use this when the change
+  has already been code-reviewed and converged (e.g. `/deliver`'s Phase 3 already ran
+  `/review-changes`). The review is also skipped automatically when the diff touches no
+  `*.swift`.
+- `base=<sha>` — a **known-green base** SHA for the fast gate (step 3): a commit at which
+  the full `build-for-testing` + `test` + `test-snapshots` gate already passed on this
+  identical tree. When the delta since it is docs-only *and* it is still an ancestor of
+  HEAD, the build/test/snapshot legs are skipped (lint still runs). `/deliver` passes its
+  Phase 3 green-gate SHA here. Omitted → the fast gate keys on `origin/main` as today.
 
 1. **Commit all outstanding work.** Formatting is applied automatically by the
    PostToolUse hook as files are edited, so there is no separate format step. Run `git
@@ -58,6 +65,32 @@ the diff touches no `*.swift`.
      The PR's own CI still runs its full matrix regardless — this only trims the
      **local** gate; it never lowers what actually guards `main`. When in doubt, run
      the full gate.
+   - **Known-green-base fast gate** (only when `base=<sha>` was passed). The plain
+     docs-only gate above keys on `origin/main` — but the delta *since the last green
+     gate* can be docs-only even when the whole PR diff has Swift (e.g. `/deliver` has
+     already gated the tree green in Phase 3, and the only commits since are the capture
+     + retro `.md`). When `base=<sha>` is supplied and **both** hold — (a)
+     `git merge-base --is-ancestor <base> HEAD` succeeds (the rebase did **not** rewrite
+     the base, so it was a genuine no-op and still describes this tree), and (b)
+     `git diff --name-only <base> HEAD` touches no build-affecting file (same extension
+     set as the docs-only gate above) — run **`make lint` + the new-file `--no-cache`
+     re-lint** and skip build/test/snapshot. Detect with:
+
+     ```bash
+     if git merge-base --is-ancestor "$BASE" HEAD \
+       && ! git diff --name-only "$BASE" HEAD \
+            | grep -qE '\.swift$|Makefile|Package\.(swift|resolved)$|\.xctestplan$|\.xcconfig$|\.pbxproj|\.xcstrings$|^\.github/workflows/'; then
+       echo "docs-only since green base → make lint (+ new-file re-lint) only"
+     else
+       echo "build-affecting delta since base, or base was rewritten → full gate"
+     fi
+     ```
+
+     Keep **both** lint checks (the new-file `--no-cache` re-lint is `/pr`-only and
+     genuinely valuable); only the build/test/snapshot legs drop. Safety line: the
+     identical tree already passed the identical gate at `<base>` (proven by the
+     is-ancestor + docs-only-delta checks), and the PR's CI still runs the full matrix
+     regardless. If either check fails, fall through to the full gate.
    - `make lint` — the clean-tree lint gate (swiftlint `--strict` + swiftformat `--lint`
      over the whole repo; catches pre-existing violations the per-edit hook won't). Run
      it **first** (it depends on `clean-spm`, which clears build caches, so subsequent
