@@ -11,6 +11,29 @@ and dated; link an ADR if a decision came out of it.
 *YYYY-MM-DD.* What bit us, why, and the resolution. Keep it to a few lines.
 -->
 
+### Wiring a new local feature package into the app is a 5-part hand-edit of `project.pbxproj`
+
+*2026-07-21.* `Popcorn.xcodeproj` uses Xcode-16 **`PBXFileSystemSynchronized`
+folders**, and its `packageReferences = ()` is **empty** — there are **no
+`XCLocalSwiftPackageReference` objects**. So adding a new `Features/<X>Feature`
+package to the app target is not "add a package reference"; it is five hand-edits,
+easiest done by mirroring an existing feature (e.g. `TrendingMoviesFeature`) and
+generating two fresh unique 24-hex-char object IDs:
+
+1. add the folder name to the **`Features` folder's
+   `PBXFileSystemSynchronizedBuildFileExceptionSet` `membershipExceptions`** list
+   (this is what makes the synced folder a *package* rather than loose sources);
+2. a `PBXBuildFile` — `<id1> /* X in Frameworks */ = {isa = PBXBuildFile;
+   productRef = <id2> /* X */; };`;
+3. `<id1>` in the app target's **Frameworks** build-phase `files`;
+4. `<id2> /* X */` in the app target's **`packageProductDependencies`**;
+5. an `XCSwiftPackageProductDependency` object — `<id2> /* X */ = { isa =
+   XCSwiftPackageProductDependency; productName = X; };`.
+
+Miss step 1 and the package's product won't resolve. The `add-feature` skill
+doesn't cover this. (The whole app build is what validates it — a wrong edit
+surfaces as `no such module 'X'` in the App target.)
+
 ### A feature package can't be built or tested from the SwiftPM CLI at all
 
 *2026-07-21.* Trying to `/test-package` `TrendingMoviesFeature` failed at the
