@@ -16,6 +16,57 @@ table (`date · PR · weight · one-line outcome`) — see [`README.md`](README.
 
 <!-- Newest entry goes here. -->
 
+### Trending movies infinite scroll · `feature/trending-movies-infinite-scroll` · 2026-07-21 · full
+
+*Phases / skills:* plan mode (2 Explore + 1 Plan agent, `AskUserQuestion` on
+end-of-list detection) → `/deliver` → `/implement-plan` (Canon TDD, per-package
+checkpoints) → `swift-concurrency` (loadMore re-entrancy design) → `/review-changes`
+(7-dimension fan-out + adversarial verify) → `/security-review` → `/capture-knowledge`
+(ADR-0003 + 1 gotcha) → independent grader (all 6 ACs met). First infinite-scroll UI
+in the codebase; also a mid-run live-simulator verification (see deviations).
+
+*What worked:*
+- **The `page:` param was already threaded end-to-end** (use case → repository →
+  adapter → TMDb); exploration confirmed the gap was purely top-of-stack, so the diff
+  concentrated in the view model + view + adapter metadata rather than a deep refactor.
+- **Per-package TDD units.** Context (102 tests) and adapter (57 tests) validated via
+  `/test-package`; the feature (which can't CLI-build) + composition verified together
+  via one full-app `make test`. Fast where SwiftPM works, one xcodebuild pass where it
+  doesn't.
+- **Live-sim verification gave a definitive answer.** When the user reported scroll not
+  loading, driving the *branch* build on a simulator (poster index climbed 11→179, the
+  footer spinner observed) proved the feature works and the user was testing `main` —
+  a fact, not a guess.
+- **Consulting `swift-concurrency` before writing `loadMore`** confirmed the
+  re-entrancy design (`isLoadingMore` set before the first `await` on `@MainActor`)
+  up front, so the concurrency lens of the review was clean by construction — 0
+  Critical/High overall, only 2 test-coverage edges (both applied).
+
+*Friction:*
+- **A feature package can't build via the SwiftPM CLI at all** — `swift build` (even
+  sources-only) trips on committed `__Snapshots__` PNGs as unhandled resources, on top
+  of the known UIKit-in-snapshot-target issue. Cost a subagent round-trip before it was
+  clear; captured to `gotchas.md`. Every feature-code iteration pays full-app xcodebuild
+  cost. **This is the third retro in a row to hit the feature-package-can't-CLI-build
+  wall** (#79, explore-trending, this).
+- **Strict test-file limits bit twice** — `type_body_length` is effectively 250 for
+  tests under `--strict`; the pagination suite needed splitting into two suites + a
+  shared support file after the first `make lint`.
+
+*Deviations:*
+- Skipped a standalone `/review-plan` — the plan went through plan-mode Explore+Plan
+  design + an `AskUserQuestion` decision this session, and `ExitPlanMode` approval is
+  the Phase 2 skip condition.
+- Ran an **unplanned live-simulator verification** mid-run (user reported the feature
+  not working). Not a pipeline phase, but the right call to answer "is it actually
+  broken?" definitively rather than speculating — root cause was the user on `main`.
+
+*One improvement:* the `/test-package` skill should **hard-gate feature packages** —
+detect a snapshot-test target (or a `__Snapshots__` dir) and refuse up front with "use
+the full-app gate", instead of leaving both blockers (UIKit + unhandled-resources) as
+trailing notes that cost a wasted subagent run each time. Three consecutive retros now
+carry this friction.
+
 ### Progressive movie & TV details render · PR #79 · 2026-07-21 · full
 
 *Phases / skills:* plan mode (Explore + Plan agents) → `/deliver` → `/implement-plan`
