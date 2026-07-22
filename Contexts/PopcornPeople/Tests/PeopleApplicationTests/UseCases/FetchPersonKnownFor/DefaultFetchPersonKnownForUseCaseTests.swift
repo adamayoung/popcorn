@@ -133,6 +133,22 @@ struct DefaultFetchPersonKnownForUseCaseTests {
         #expect(result[0].logoURLSet == nil)
     }
 
+    @Test("routes a TV series credit's logo fetch to the TV series provider")
+    func routesTVSeriesLogoToTVSeriesProvider() async throws {
+        stubPerson(knownForDepartment: "Acting")
+        mockRepository.combinedCreditsStub = .success([
+            PersonCredit.mock(id: 8, mediaType: .tvSeries, role: .cast)
+        ])
+        let logoURLSet = try #require(ImagesConfiguration.mock().logoURLSet(for: URL(string: "/logo.png")))
+        mockTVSeriesLogoImageProvider.imageURLSetStubs[8] = .success(logoURLSet)
+
+        let result = try await makeUseCase().execute(personID: 1)
+
+        #expect(result[0].logoURLSet == logoURLSet)
+        #expect(mockTVSeriesLogoImageProvider.imageURLSetCalledWith == [8])
+        #expect(mockMovieLogoImageProvider.imageURLSetCallCount == 0)
+    }
+
     // MARK: - Error Translation
 
     @Test("translates a combined-credits notFound error")

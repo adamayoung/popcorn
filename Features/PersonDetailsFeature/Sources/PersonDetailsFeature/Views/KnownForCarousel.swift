@@ -15,7 +15,9 @@ struct KnownForCarousel: View {
 
     var body: some View {
         Carousel {
-            ForEach(Array(items.enumerated()), id: \.offset) { offset, item in
+            // Key on the offset, not the item id: a movie and a TV series can share
+            // the same TMDb id, so the id alone is not a unique identity here.
+            ForEach(items.enumerated(), id: \.offset) { offset, item in
                 Button {
                     didSelectItem(item)
                 } label: {
@@ -34,7 +36,7 @@ struct KnownForCarousel: View {
             }
         }
         .accessibilityIdentifier("person-details.known-for.carousel")
-        .contentMargins([.leading, .trailing], 16)
+        .contentMargins([.leading, .trailing], .spacing16)
     }
 
     private func hint(for item: KnownForItem) -> Text {
