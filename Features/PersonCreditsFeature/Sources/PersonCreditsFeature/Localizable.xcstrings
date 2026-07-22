@@ -1,0 +1,138 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "CREDITS" : {
+      "comment" : "The navigation title for the person credits screen.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Credits"
+          }
+        }
+      }
+    },
+    "CREDITS_NOT_FOUND_FOR_PERSON_ERROR_DESCRIPTION" : {
+      "comment" : "Error title shown when a person's credits cannot be found.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Credits Not Found"
+          }
+        }
+      }
+    },
+    "CREDITS_NOT_FOUND_FOR_PERSON_ERROR_REASON" : {
+      "comment" : "Error reason shown when a person's credits cannot be found.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Credits are not available for this person."
+          }
+        }
+      }
+    },
+    "CREDITS_NOT_FOUND_FOR_PERSON_ERROR_RECOVERY" : {
+      "comment" : "Error recovery suggestion shown when a person's credits cannot be found.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try again later."
+          }
+        }
+      }
+    },
+    "LOADING" : {
+      "comment" : "Accessibility label for a loading indicator.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading"
+          }
+        }
+      }
+    },
+    "NO_CREDITS" : {
+      "comment" : "Title shown when a person has no credits to display.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No Credits"
+          }
+        }
+      }
+    },
+    "NO_CREDITS_DESCRIPTION" : {
+      "comment" : "Description shown when a person has no credits to display.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This person has no movie or TV series credits yet."
+          }
+        }
+      }
+    },
+    "UNKNOWN_ERROR_DESCRIPTION" : {
+      "comment" : "Error title shown when an unknown error occurs.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "An Unknown Error Occurred"
+          }
+        }
+      }
+    },
+    "UNKNOWN_ERROR_REASON" : {
+      "comment" : "Error reason shown when an unknown error occurs.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Something unexpected went wrong."
+          }
+        }
+      }
+    },
+    "UNKNOWN_ERROR_RECOVERY" : {
+      "comment" : "Error recovery suggestion shown when an unknown error occurs.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Try again later."
+          }
+        }
+      }
+    },
+    "VIEW_MOVIE_DETAILS_HINT" : {
+      "comment" : "Accessibility hint for a row that opens a movie's details.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View movie details"
+          }
+        }
+      }
+    },
+    "VIEW_TV_SERIES_DETAILS_HINT" : {
+      "comment" : "Accessibility hint for a row that opens a TV series' details.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View TV series details"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

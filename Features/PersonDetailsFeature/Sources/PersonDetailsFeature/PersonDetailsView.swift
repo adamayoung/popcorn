@@ -74,7 +74,8 @@ extension PersonDetailsView {
             person: person,
             knownForState: viewModel.knownForState,
             isFocalPointEnabled: viewModel.isFocalPointEnabled,
-            didSelectKnownForItem: { viewModel.selectKnownForItem($0) }
+            didSelectKnownForItem: { viewModel.selectKnownForItem($0) },
+            didSelectKnownFor: { viewModel.selectKnownFor() }
         )
     }
 

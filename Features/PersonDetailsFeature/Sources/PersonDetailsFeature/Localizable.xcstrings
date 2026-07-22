@@ -23,6 +23,17 @@
         }
       }
     },
+    "VIEW_ALL_CREDITS_HINT" : {
+      "comment" : "Accessibility hint for the Known For section header, describing what happens when activated.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View all credits"
+          }
+        }
+      }
+    },
     "VIEW_MOVIE_DETAILS_HINT" : {
       "comment" : "Accessibility hint for a movie in the Known For carousel, describing what happens when activated.",
       "localizations" : {

@@ -15,6 +15,7 @@ struct PersonDetailsContentView: View {
     var knownForState: ViewState<[KnownForItem]>
     var isFocalPointEnabled: Bool
     var didSelectKnownForItem: (_ item: KnownForItem) -> Void
+    var didSelectKnownFor: () -> Void
 
     private static let toolbarHeaderScrollThreshold: CGFloat = 200
     private static let maxProfileSize: CGFloat = 300
@@ -103,7 +104,9 @@ extension PersonDetailsContentView {
             .padding(.bottom)
         case .ready(let items) where !items.isEmpty:
             VStack(alignment: .leading, spacing: .spacing8) {
-                SectionHeader(Text("KNOWN_FOR", bundle: .module))
+                SectionHeader(Text("KNOWN_FOR", bundle: .module), action: didSelectKnownFor)
+                    .accessibilityIdentifier("person-details.known-for.header")
+                    .accessibilityHint(Text("VIEW_ALL_CREDITS_HINT", bundle: .module))
                 KnownForCarousel(items: items, didSelectItem: didSelectKnownForItem)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -121,7 +124,8 @@ extension PersonDetailsContentView {
             person: Person.mock,
             knownForState: .ready(KnownForItem.mocks),
             isFocalPointEnabled: true,
-            didSelectKnownForItem: { _ in }
+            didSelectKnownForItem: { _ in },
+            didSelectKnownFor: {}
         )
     }
 }

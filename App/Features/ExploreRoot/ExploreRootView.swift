@@ -10,6 +10,7 @@ import ExploreFeature
 import MovieCastAndCrewFeature
 import MovieDetailsFeature
 import MovieIntelligenceFeature
+import PersonCreditsFeature
 import PersonDetailsFeature
 import PopularMoviesFeature
 import SwiftUI
@@ -99,6 +100,10 @@ struct ExploreRootView: View {
             )
         case .personDetails(let id, let transitionID):
             personDetails(id: id, transitionID: transitionID)
+        case .personCredits(let personID):
+            PersonCreditsView(
+                viewModel: factory.makePersonCredits(personID: personID, navigator: navigator)
+            )
         case .movieCastAndCrew(let movieID):
             MovieCastAndCrewView(
                 viewModel: factory.makeMovieCastAndCrew(movieID: movieID, navigator: navigator)

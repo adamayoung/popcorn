@@ -1,18 +1,18 @@
 //
-//  PersonDetailsNavigating.swift
-//  PersonDetailsFeature
+//  PersonCreditsNavigating.swift
+//  Popcorn
 //
 //  Copyright © 2026 Adam Young.
 //
 
-/// Navigation actions a ``PersonDetailsViewModel`` can request.
+/// Navigation actions a ``PersonCreditsViewModel`` can request.
 ///
 /// The root coordinator supplies a concrete implementation (a `RouterNavigator`).
 ///
-/// Tapping a "Known For" item opens the related movie or TV series, so the
-/// protocol routes to either detail screen.
+/// Tapping a credit row opens the related movie or TV series, so the protocol
+/// routes to either detail screen.
 @MainActor
-public protocol PersonDetailsNavigating {
+public protocol PersonCreditsNavigating {
 
     /// Opens the details screen for the given movie.
     ///
@@ -24,19 +24,13 @@ public protocol PersonDetailsNavigating {
     /// - Parameter id: The identifier of the TV series to open.
     func openTVSeriesDetails(id: Int)
 
-    /// Opens the full credits list for the given person.
-    ///
-    /// - Parameter personID: The identifier of the person whose credits to open.
-    func openPersonCredits(personID: Int)
-
 }
 
 #if DEBUG
     /// A no-op navigator for previews and snapshot tests.
-    public struct NoOpPersonDetailsNavigator: PersonDetailsNavigating {
+    public struct NoOpPersonCreditsNavigator: PersonCreditsNavigating {
         public init() {}
         public func openMovieDetails(id: Int) {}
         public func openTVSeriesDetails(id: Int) {}
-        public func openPersonCredits(personID: Int) {}
     }
 #endif

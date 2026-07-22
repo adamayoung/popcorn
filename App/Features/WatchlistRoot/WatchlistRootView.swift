@@ -8,6 +8,7 @@
 import MovieCastAndCrewFeature
 import MovieDetailsFeature
 import MovieIntelligenceFeature
+import PersonCreditsFeature
 import PersonDetailsFeature
 import SwiftUI
 import TVEpisodeCastAndCrewFeature
@@ -95,6 +96,13 @@ struct WatchlistRootView: View {
             PersonDetailsView(
                 viewModel: factory.makePersonDetails(
                     id: id,
+                    navigator: navigator
+                )
+            )
+        case .personCredits(let personID):
+            PersonCreditsView(
+                viewModel: factory.makePersonCredits(
+                    personID: personID,
                     navigator: navigator
                 )
             )

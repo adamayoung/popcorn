@@ -115,6 +115,11 @@ public final class PersonDetailsViewModel {
         }
     }
 
+    /// Opens the person's full credits list from the "Known For" section header.
+    public func selectKnownFor() {
+        navigator.openPersonCredits(personID: personID)
+    }
+
     // MARK: - Loading
 
     func fetch() async {
