@@ -16,7 +16,7 @@ table (`date · PR · weight · one-line outcome`) — see [`README.md`](README.
 
 <!-- Newest entry goes here. -->
 
-### Person credits list from the "Known For" header · feature/person-credits · 2026-07-22 · full
+### Person credits list from the "Known For" header · PR #88 · 2026-07-22 · full
 
 *Phases / skills:* plan mode (3 Explore agents + 1 Plan agent, 3 product questions
 answered up front) → `/deliver` → `/review-plan` **skipped** (ExitPlanMode approval)
