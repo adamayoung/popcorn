@@ -13,10 +13,7 @@
 		666AEE272ECDEEEC0038814E /* TrendingPeopleFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 666AEE262ECDEEEC0038814E /* TrendingPeopleFeature */; };
 		666AEE492ECE0A1B0038814E /* PersonDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 666AEE482ECE0A1B0038814E /* PersonDetailsFeature */; };
 		668F587E2ECCB82A00B47B07 /* MovieDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 668F587D2ECCB82A00B47B07 /* MovieDetailsFeature */; };
-		66D15C0FE1EA700000000001 /* DiscoverMoviesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66D15C0FE1EA700000000002 /* DiscoverMoviesFeature */; };
 		668F58892ECCFEBE00B47B07 /* TrendingMoviesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 668F58882ECCFEBE00B47B07 /* TrendingMoviesFeature */; };
-		66D15C0FE1EA700000000101 /* PopularMoviesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66D15C0FE1EA700000000102 /* PopularMoviesFeature */; };
-		66D15C0FE1EA700000000201 /* PersonCreditsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66D15C0FE1EA700000000202 /* PersonCreditsFeature */; };
 		668F588C2ECDB2D500B47B07 /* TrendingTVSeriesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 668F588B2ECDB2D500B47B07 /* TrendingTVSeriesFeature */; };
 		668F58912ECDD5CA00B47B07 /* TVSeriesDetailsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 668F58902ECDD5CA00B47B07 /* TVSeriesDetailsFeature */; };
 		66A2E0502F0B01C0002B8706 /* MovieCastAndCrewFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66A2E04F2F0B01C0002B8706 /* MovieCastAndCrewFeature */; };
@@ -28,6 +25,9 @@
 		66C4E0052F5F000000000001 /* TVEpisodeCastAndCrewFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66C4E0042F5F000000000001 /* TVEpisodeCastAndCrewFeature */; };
 		66C873EF2F5B000000000001 /* WatchlistFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66C873EE2F5B000000000001 /* WatchlistFeature */; };
 		66D150023000000000000002 /* TVListingsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66D150013000000000000001 /* TVListingsFeature */; };
+		66D15C0FE1EA700000000001 /* DiscoverMoviesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66D15C0FE1EA700000000002 /* DiscoverMoviesFeature */; };
+		66D15C0FE1EA700000000101 /* PopularMoviesFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66D15C0FE1EA700000000102 /* PopularMoviesFeature */; };
+		66D15C0FE1EA700000000201 /* PersonCreditsFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66D15C0FE1EA700000000202 /* PersonCreditsFeature */; };
 		66D8F4112EE8BE8F00B8AE7A /* GamesCatalogFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66D8F4102EE8BE8F00B8AE7A /* GamesCatalogFeature */; };
 		66D8F4142EE8C93900B8AE7A /* PlotRemixGameFeature in Frameworks */ = {isa = PBXBuildFile; productRef = 66D8F4132EE8C93900B8AE7A /* PlotRemixGameFeature */; };
 		66FDEF692ED714190029B88A /* FeatureAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 66FDEF682ED714190029B88A /* FeatureAccess */; };
@@ -700,6 +700,7 @@
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -757,6 +758,7 @@
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen.storyboard;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -943,21 +945,9 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = MovieDetailsFeature;
 		};
-		66D15C0FE1EA700000000002 /* DiscoverMoviesFeature */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = DiscoverMoviesFeature;
-		};
 		668F58882ECCFEBE00B47B07 /* TrendingMoviesFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TrendingMoviesFeature;
-		};
-		66D15C0FE1EA700000000102 /* PopularMoviesFeature */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = PopularMoviesFeature;
-		};
-		66D15C0FE1EA700000000202 /* PersonCreditsFeature */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = PersonCreditsFeature;
 		};
 		668F588B2ECDB2D500B47B07 /* TrendingTVSeriesFeature */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -1002,6 +992,18 @@
 		66D150013000000000000001 /* TVListingsFeature */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = TVListingsFeature;
+		};
+		66D15C0FE1EA700000000002 /* DiscoverMoviesFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DiscoverMoviesFeature;
+		};
+		66D15C0FE1EA700000000102 /* PopularMoviesFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PopularMoviesFeature;
+		};
+		66D15C0FE1EA700000000202 /* PersonCreditsFeature */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PersonCreditsFeature;
 		};
 		66D8F4102EE8BE8F00B8AE7A /* GamesCatalogFeature */ = {
 			isa = XCSwiftPackageProductDependency;
