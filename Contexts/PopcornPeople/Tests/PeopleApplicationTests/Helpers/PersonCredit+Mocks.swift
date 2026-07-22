@@ -17,7 +17,8 @@ extension PersonCredit {
         backdropPath: URL? = URL(string: "/backdrop.jpg"),
         posterPath: URL? = URL(string: "/poster.jpg"),
         popularity: Double? = 10.0,
-        role: Role = .cast
+        releaseDate: Date? = nil,
+        role: Role = .cast(character: nil)
     ) -> PersonCredit {
         PersonCredit(
             id: id,
@@ -26,6 +27,7 @@ extension PersonCredit {
             backdropPath: backdropPath,
             posterPath: posterPath,
             popularity: popularity,
+            releaseDate: releaseDate,
             role: role
         )
     }

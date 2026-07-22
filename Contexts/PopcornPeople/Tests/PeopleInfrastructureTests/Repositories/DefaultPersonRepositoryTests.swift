@@ -164,7 +164,7 @@ struct DefaultPersonRepositoryTests {
     @Test("combinedCredits passes through to the remote data source")
     func combinedCreditsPassesThroughToRemote() async throws {
         let credits = [
-            PersonCredit(id: 1, mediaType: .movie, title: "Big", role: .cast)
+            PersonCredit(id: 1, mediaType: .movie, title: "Big", role: .cast(character: nil))
         ]
         mockRemoteDataSource.combinedCreditsStub = .success(credits)
 

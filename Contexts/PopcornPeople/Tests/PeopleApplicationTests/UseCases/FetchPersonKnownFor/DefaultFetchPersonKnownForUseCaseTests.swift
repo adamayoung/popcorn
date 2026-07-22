@@ -34,7 +34,12 @@ struct DefaultFetchPersonKnownForUseCaseTests {
     func returnsActorCastCreditsRankedTopFive() async throws {
         stubPerson(knownForDepartment: "Acting")
         let credits = (1 ... 7).map { index in
-            PersonCredit.mock(id: index, title: "Movie \(index)", popularity: Double(index), role: .cast)
+            PersonCredit.mock(
+                id: index,
+                title: "Movie \(index)",
+                popularity: Double(index),
+                role: .cast(character: nil)
+            )
         }
         mockRepository.combinedCreditsStub = .success(credits)
 
@@ -47,9 +52,9 @@ struct DefaultFetchPersonKnownForUseCaseTests {
     @Test("returns a crew person's credits matching their known-for department")
     func returnsCrewCreditsMatchingDepartment() async throws {
         stubPerson(knownForDepartment: "Directing")
-        let directing = PersonCredit.mock(id: 1, popularity: 5, role: .crew(department: "Directing"))
-        let writing = PersonCredit.mock(id: 2, popularity: 9, role: .crew(department: "Writing"))
-        let acting = PersonCredit.mock(id: 3, popularity: 99, role: .cast)
+        let directing = PersonCredit.mock(id: 1, popularity: 5, role: .crew(job: "Director", department: "Directing"))
+        let writing = PersonCredit.mock(id: 2, popularity: 9, role: .crew(job: "Writer", department: "Writing"))
+        let acting = PersonCredit.mock(id: 3, popularity: 99, role: .cast(character: nil))
         mockRepository.combinedCreditsStub = .success([directing, writing, acting])
 
         let result = try await makeUseCase().execute(personID: 1)
@@ -60,8 +65,8 @@ struct DefaultFetchPersonKnownForUseCaseTests {
     @Test("falls back to all credits when the department filter selects nothing")
     func fallsBackToAllCreditsWhenDepartmentEmpty() async throws {
         stubPerson(knownForDepartment: "Directing")
-        let castA = PersonCredit.mock(id: 1, popularity: 3, role: .cast)
-        let castB = PersonCredit.mock(id: 2, popularity: 8, role: .cast)
+        let castA = PersonCredit.mock(id: 1, popularity: 3, role: .cast(character: nil))
+        let castB = PersonCredit.mock(id: 2, popularity: 8, role: .cast(character: nil))
         mockRepository.combinedCreditsStub = .success([castA, castB])
 
         let result = try await makeUseCase().execute(personID: 1)
@@ -72,8 +77,8 @@ struct DefaultFetchPersonKnownForUseCaseTests {
     @Test("drops credits that have no backdrop")
     func dropsCreditsWithoutBackdrop() async throws {
         stubPerson(knownForDepartment: "Acting")
-        let withBackdrop = PersonCredit.mock(id: 1, backdropPath: URL(string: "/b.jpg"), role: .cast)
-        let withoutBackdrop = PersonCredit.mock(id: 2, backdropPath: nil, popularity: 99, role: .cast)
+        let withBackdrop = PersonCredit.mock(id: 1, backdropPath: URL(string: "/b.jpg"), role: .cast(character: nil))
+        let withoutBackdrop = PersonCredit.mock(id: 2, backdropPath: nil, popularity: 99, role: .cast(character: nil))
         mockRepository.combinedCreditsStub = .success([withBackdrop, withoutBackdrop])
 
         let result = try await makeUseCase().execute(personID: 1)
@@ -84,8 +89,8 @@ struct DefaultFetchPersonKnownForUseCaseTests {
     @Test("deduplicates a repeated title keeping the more popular instance")
     func deduplicatesKeepingMorePopular() async throws {
         stubPerson(knownForDepartment: "Acting")
-        let lowPopularity = PersonCredit.mock(id: 10, title: "Old", popularity: 5, role: .cast)
-        let highPopularity = PersonCredit.mock(id: 10, title: "New", popularity: 9, role: .cast)
+        let lowPopularity = PersonCredit.mock(id: 10, title: "Old", popularity: 5, role: .cast(character: nil))
+        let highPopularity = PersonCredit.mock(id: 10, title: "New", popularity: 9, role: .cast(character: nil))
         mockRepository.combinedCreditsStub = .success([lowPopularity, highPopularity])
 
         let result = try await makeUseCase().execute(personID: 1)
@@ -100,7 +105,7 @@ struct DefaultFetchPersonKnownForUseCaseTests {
     func fetchesLogosOnlyForCappedSet() async throws {
         stubPerson(knownForDepartment: "Acting")
         let credits = (1 ... 7).map {
-            PersonCredit.mock(id: $0, popularity: Double($0), role: .cast)
+            PersonCredit.mock(id: $0, popularity: Double($0), role: .cast(character: nil))
         }
         mockRepository.combinedCreditsStub = .success(credits)
 
@@ -112,7 +117,7 @@ struct DefaultFetchPersonKnownForUseCaseTests {
     @Test("attaches a fetched logo to its item")
     func attachesFetchedLogoToItem() async throws {
         stubPerson(knownForDepartment: "Acting")
-        mockRepository.combinedCreditsStub = .success([PersonCredit.mock(id: 3, role: .cast)])
+        mockRepository.combinedCreditsStub = .success([PersonCredit.mock(id: 3, role: .cast(character: nil))])
         let logoURLSet = try #require(ImagesConfiguration.mock().logoURLSet(for: URL(string: "/logo.png")))
         mockMovieLogoImageProvider.imageURLSetStubs[3] = .success(logoURLSet)
 
@@ -124,7 +129,7 @@ struct DefaultFetchPersonKnownForUseCaseTests {
     @Test("keeps an item with a nil logo when its logo fetch fails")
     func keepsItemWhenLogoFetchFails() async throws {
         stubPerson(knownForDepartment: "Acting")
-        mockRepository.combinedCreditsStub = .success([PersonCredit.mock(id: 3, role: .cast)])
+        mockRepository.combinedCreditsStub = .success([PersonCredit.mock(id: 3, role: .cast(character: nil))])
         mockMovieLogoImageProvider.imageURLSetStubs[3] = .failure(.notFound)
 
         let result = try await makeUseCase().execute(personID: 1)
@@ -137,7 +142,7 @@ struct DefaultFetchPersonKnownForUseCaseTests {
     func routesTVSeriesLogoToTVSeriesProvider() async throws {
         stubPerson(knownForDepartment: "Acting")
         mockRepository.combinedCreditsStub = .success([
-            PersonCredit.mock(id: 8, mediaType: .tvSeries, role: .cast)
+            PersonCredit.mock(id: 8, mediaType: .tvSeries, role: .cast(character: nil))
         ])
         let logoURLSet = try #require(ImagesConfiguration.mock().logoURLSet(for: URL(string: "/logo.png")))
         mockTVSeriesLogoImageProvider.imageURLSetStubs[8] = .success(logoURLSet)

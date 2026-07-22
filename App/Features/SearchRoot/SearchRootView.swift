@@ -9,6 +9,7 @@ import MediaSearchFeature
 import MovieCastAndCrewFeature
 import MovieDetailsFeature
 import MovieIntelligenceFeature
+import PersonCreditsFeature
 import PersonDetailsFeature
 import SwiftUI
 import TVEpisodeCastAndCrewFeature
@@ -92,6 +93,8 @@ struct SearchRootView: View {
             PersonDetailsView(
                 viewModel: factory.makePersonDetails(id: id, navigator: navigator)
             )
+        case .personCredits(let personID):
+            personCredits(personID: personID)
         case .movieCastAndCrew(let movieID):
             MovieCastAndCrewView(
                 viewModel: factory.makeMovieCastAndCrew(movieID: movieID, navigator: navigator)
@@ -127,6 +130,12 @@ struct SearchRootView: View {
     private func tvSeriesDetails(id: Int) -> some View {
         TVSeriesDetailsView(
             viewModel: factory.makeTVSeriesDetails(id: id, navigator: navigator)
+        )
+    }
+
+    private func personCredits(personID: Int) -> some View {
+        PersonCreditsView(
+            viewModel: factory.makePersonCredits(personID: personID, navigator: navigator)
         )
     }
 

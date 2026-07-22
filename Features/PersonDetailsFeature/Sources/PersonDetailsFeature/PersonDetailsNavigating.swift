@@ -24,6 +24,11 @@ public protocol PersonDetailsNavigating {
     /// - Parameter id: The identifier of the TV series to open.
     func openTVSeriesDetails(id: Int)
 
+    /// Opens the full credits list for the given person.
+    ///
+    /// - Parameter personID: The identifier of the person whose credits to open.
+    func openPersonCredits(personID: Int)
+
 }
 
 #if DEBUG
@@ -32,5 +37,6 @@ public protocol PersonDetailsNavigating {
         public init() {}
         public func openMovieDetails(id: Int) {}
         public func openTVSeriesDetails(id: Int) {}
+        public func openPersonCredits(personID: Int) {}
     }
 #endif

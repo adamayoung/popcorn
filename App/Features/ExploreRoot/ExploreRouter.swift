@@ -17,6 +17,7 @@ enum ExploreRoute: Hashable {
     case tvSeasonDetails(tvSeriesID: Int, seasonNumber: Int)
     case tvEpisodeDetails(tvSeriesID: Int, seasonNumber: Int, episodeNumber: Int)
     case personDetails(id: Int, transitionID: String?)
+    case personCredits(personID: Int)
     case movieCastAndCrew(movieID: Int)
     case tvSeriesCastAndCrew(tvSeriesID: Int)
     case tvEpisodeCastAndCrew(tvSeriesID: Int, seasonNumber: Int, episodeNumber: Int)

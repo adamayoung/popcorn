@@ -282,6 +282,17 @@ struct PersonDetailsViewModelTests {
         #expect(navigator.openedMovieID == nil)
     }
 
+    @Test("selecting the known-for header opens the person's credits")
+    @MainActor
+    func selectKnownForOpensPersonCredits() {
+        let navigator = SpyPersonDetailsNavigator()
+        let viewModel = Self.makeViewModel(navigator: navigator)
+
+        viewModel.selectKnownFor()
+
+        #expect(navigator.openedCreditsPersonID == 2283)
+    }
+
 }
 
 // MARK: - Spy Navigator
@@ -291,6 +302,7 @@ struct PersonDetailsViewModelTests {
 final class SpyPersonDetailsNavigator: PersonDetailsNavigating {
     private(set) var openedMovieID: Int?
     private(set) var openedTVSeriesID: Int?
+    private(set) var openedCreditsPersonID: Int?
 
     func openMovieDetails(id: Int) {
         openedMovieID = id
@@ -298,6 +310,10 @@ final class SpyPersonDetailsNavigator: PersonDetailsNavigating {
 
     func openTVSeriesDetails(id: Int) {
         openedTVSeriesID = id
+    }
+
+    func openPersonCredits(personID: Int) {
+        openedCreditsPersonID = personID
     }
 }
 

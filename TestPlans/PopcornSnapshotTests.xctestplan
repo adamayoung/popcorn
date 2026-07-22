@@ -109,6 +109,13 @@
     },
     {
       "target" : {
+        "containerPath" : "container:Features\/PersonCreditsFeature",
+        "identifier" : "PersonCreditsFeatureSnapshotTests",
+        "name" : "PersonCreditsFeatureSnapshotTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Features\/TrendingPeopleFeature",
         "identifier" : "TrendingPeopleFeatureSnapshotTests",
         "name" : "TrendingPeopleFeatureSnapshotTests"

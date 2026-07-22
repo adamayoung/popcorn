@@ -25,7 +25,8 @@ struct PersonCreditMapper {
                 backdropPath: movie.backdropPath,
                 posterPath: movie.posterPath,
                 popularity: movie.popularity,
-                role: .cast
+                releaseDate: movie.releaseDate,
+                role: .cast(character: Self.character(movie.character))
             )
 
         case .tvSeries(let tvSeries):
@@ -36,7 +37,8 @@ struct PersonCreditMapper {
                 backdropPath: tvSeries.backdropPath,
                 posterPath: tvSeries.posterPath,
                 popularity: tvSeries.popularity,
-                role: .cast
+                releaseDate: tvSeries.firstAirDate,
+                role: .cast(character: Self.character(tvSeries.character))
             )
         }
     }
@@ -51,7 +53,8 @@ struct PersonCreditMapper {
                 backdropPath: movie.backdropPath,
                 posterPath: movie.posterPath,
                 popularity: movie.popularity,
-                role: .crew(department: movie.department)
+                releaseDate: movie.releaseDate,
+                role: .crew(job: movie.job, department: movie.department)
             )
 
         case .tvSeries(let tvSeries):
@@ -62,9 +65,15 @@ struct PersonCreditMapper {
                 backdropPath: tvSeries.backdropPath,
                 posterPath: tvSeries.posterPath,
                 popularity: tvSeries.popularity,
-                role: .crew(department: tvSeries.department)
+                releaseDate: tvSeries.firstAirDate,
+                role: .crew(job: tvSeries.job, department: tvSeries.department)
             )
         }
+    }
+
+    /// TMDb reports an unknown character as an empty string; normalise it to `nil`.
+    private static func character(_ character: String) -> String? {
+        character.isEmpty ? nil : character
     }
 
 }

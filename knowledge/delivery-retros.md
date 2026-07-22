@@ -16,6 +16,46 @@ table (`date · PR · weight · one-line outcome`) — see [`README.md`](README.
 
 <!-- Newest entry goes here. -->
 
+### Person credits list from the "Known For" header · PR #88 · 2026-07-22 · full
+
+*Phases / skills:* plan mode (3 Explore agents + 1 Plan agent, 3 product questions
+answered up front) → `/deliver` → `/review-plan` **skipped** (ExitPlanMode approval)
+→ `/implement-plan` (Canon TDD; 3 checkpoints: domain+adapter → use case → feature+
+wiring) → `/review-changes` (7-dimension fan-out: **0 crit/high, 1 medium, 1 low, 0
+dropped**; both applied) → `/security-review` (clean; delta re-check after fixes also
+clean) → `/capture-knowledge` (1 gotcha) → independent grader (**all 4 ACs + entry
+point met**). Added `PersonCredit.Role` payloads (character/job) + `releaseDate`,
+`FetchPersonCreditsUseCase` (group-per-title, parts merge, newest-first/undated-first
+sort), the `PersonCreditsFeature` package, and `.personCredits` routes in all three
+tabs.
+
+*What worked:*
+
+- **Product questions before design.** Three AskUserQuestion decisions (cast+crew
+  scope, flat newest-first layout, merged duplicate rows) settled the ambiguous 20%
+  before the Plan agent ran — zero product rework downstream.
+- **The Phase 4 ∥ Phase 5 concurrent cold pass** — security review and the
+  7-dimension code-review Workflow ran simultaneously; the whole review stage cost
+  one Workflow wall-clock.
+- **Sibling templates carried the feature**: `MovieCastAndCrewFeature` for the
+  view/VM/row shape, `PopularMoviesFeature` for the package shape, the documented
+  5-part pbxproj edit applied cleanly first try.
+
+*Friction:*
+
+- One full-app gate failure: the feature's `CreditItemMapper` was `internal` but the
+  App-layer Live builder needs it — package tests can't catch this (captured as a
+  gotcha).
+- A Haiku test-runner subagent returned "I'll wait" instead of running its command;
+  needed a SendMessage nudge to get the result.
+
+*Deviations:* none from the approved plan; review fixes were additive (error-mapping
+test suite + destination-builder extraction).
+
+*One improvement:* the `add-feature` scaffold (or its skill) should generate the
+feature's context→presentation mapper as `public` with a public init from the start —
+the internal-mapper trap will recur on every new feature otherwise.
+
 ### Person details "Known For" carousel · PR #87 · 2026-07-22 · full
 
 *Phases / skills:* plan mode (inline exploration — Explore agents were declined, so
@@ -416,17 +456,11 @@ worktree-first instruction actively risks stranding the user's work.
   from mutable UI state that can change between failure and retry" — the exact class the bot
   caught and the local reviewer didn't.
 
-### async-let use-case sweep · PR #62 · 2026-07-05 · full (mechanical)
+## Archive
 
-- *Phases / skills:* implement (subagent, 22 sites) → `code-reviewer` → `capture-knowledge`
-  → gate → watch → merge. Behaviour-preserving concurrency win.
-- *What worked:* delegating the mechanical 22-site sweep kept the conductor context lean;
-  code review confirmed byte-level correctness; CI green first try.
-- *Friction:* the local iOS 26.5 simulator runtime is environmentally broken (FoundationModels
-  symbol mismatch), so `make test` couldn't run — surfaced to the user, who directed iOS 27.0.
-  This recurred for every subsequent item.
-- *Deviations:* ran local tests on iOS 27.0 (not the Makefile default 26.5); deferred local
-  snapshots to CI (no UI change).
-- *One improvement:* the `/pr` gate should detect an SDK/simruntime mismatch (build succeeds
-  but 0 tests execute) and fall back to another installed runtime — or surface it — instead
-  of a confusing "test execute failed".
+Distilled older entries — `date · PR · weight · one-line outcome` (full prose in git
+history).
+
+| Date | PR | Weight | Outcome |
+| --- | --- | --- | --- |
+| 2026-07-05 | #62 | full (mechanical) | 22-site async-let sweep via subagent; green first try; surfaced the broken iOS 26.5 simruntime that dogged later runs |

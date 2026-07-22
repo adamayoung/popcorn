@@ -96,6 +96,13 @@
     },
     {
       "target" : {
+        "containerPath" : "container:Features\/PersonCreditsFeature",
+        "identifier" : "PersonCreditsFeatureTests",
+        "name" : "PersonCreditsFeatureTests"
+      }
+    },
+    {
+      "target" : {
         "containerPath" : "container:Contexts\/PopcornPeople",
         "identifier" : "PeopleApplicationTests",
         "name" : "PeopleApplicationTests"

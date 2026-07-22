@@ -11,6 +11,18 @@ and dated; link an ADR if a decision came out of it.
 *YYYY-MM-DD.* What bit us, why, and the resolution. Keep it to a few lines.
 -->
 
+### A feature mapper used by its `Dependencies+Live` builder must be `public`
+
+*2026-07-22.* The app-layer `App/Composition/Live/<Feature>Dependencies+Live.swift`
+builder constructs the feature's context→presentation mapper (e.g.
+`CreditItemMapper()` in `PersonCreditsDependencies+Live`), so that mapper needs
+`public` visibility — a `public struct` with a `public init()` and `public func
+map(...)` (see `MovieCastAndCrewFeature`'s `CreditsMapper` for the shape). Leaving
+it `internal` compiles fine in the feature package **and** in its package tests;
+the failure only surfaces later, at the **App-target** compile of the Live file
+(`cannot find 'X' in scope`) — far from the file that's actually wrong. When
+scaffolding a new feature, make the mapper public from the start.
+
 ### A mixed movie + TV series carousel must key `ForEach` on the offset, not the item id
 
 *2026-07-22.* TMDb movie IDs and TV series IDs live in the **same integer namespace**,

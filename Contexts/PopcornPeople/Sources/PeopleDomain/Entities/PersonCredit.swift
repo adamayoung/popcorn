@@ -35,11 +35,11 @@ public struct PersonCredit: Equatable, Sendable {
     ///
     public enum Role: Equatable, Sendable {
 
-        /// The person appeared in the title's cast.
-        case cast
+        /// The person appeared in the title's cast, optionally as a named character.
+        case cast(character: String?)
 
-        /// The person worked on the title's crew in the given department.
-        case crew(department: String)
+        /// The person worked on the title's crew, in the given job and department.
+        case crew(job: String, department: String)
 
     }
 
@@ -61,6 +61,9 @@ public struct PersonCredit: Equatable, Sendable {
     /// The title's popularity score, used to rank a person's most relevant credits.
     public let popularity: Double?
 
+    /// The movie's release date or the TV series' first air date, if known.
+    public let releaseDate: Date?
+
     /// Whether the person was a cast or crew member on the title.
     public let role: Role
 
@@ -74,6 +77,7 @@ public struct PersonCredit: Equatable, Sendable {
     ///   - backdropPath: URL path to the title's backdrop image. Defaults to `nil`.
     ///   - posterPath: URL path to the title's poster image. Defaults to `nil`.
     ///   - popularity: The title's popularity score. Defaults to `nil`.
+    ///   - releaseDate: The movie's release date or the TV series' first air date. Defaults to `nil`.
     ///   - role: Whether the person was a cast or crew member on the title.
     ///
     public init(
@@ -83,6 +87,7 @@ public struct PersonCredit: Equatable, Sendable {
         backdropPath: URL? = nil,
         posterPath: URL? = nil,
         popularity: Double? = nil,
+        releaseDate: Date? = nil,
         role: Role
     ) {
         self.id = id
@@ -91,6 +96,7 @@ public struct PersonCredit: Equatable, Sendable {
         self.backdropPath = backdropPath
         self.posterPath = posterPath
         self.popularity = popularity
+        self.releaseDate = releaseDate
         self.role = role
     }
 

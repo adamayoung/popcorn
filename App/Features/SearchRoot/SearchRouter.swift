@@ -9,6 +9,7 @@ import MediaSearchFeature
 import MovieCastAndCrewFeature
 import MovieDetailsFeature
 import Observation
+import PersonCreditsFeature
 import PersonDetailsFeature
 import TVEpisodeCastAndCrewFeature
 import TVEpisodeDetailsFeature
@@ -23,6 +24,7 @@ enum SearchRoute: Hashable {
     case tvSeasonDetails(tvSeriesID: Int, seasonNumber: Int)
     case tvEpisodeDetails(tvSeriesID: Int, seasonNumber: Int, episodeNumber: Int)
     case personDetails(id: Int)
+    case personCredits(personID: Int)
     case movieCastAndCrew(movieID: Int)
     case tvSeriesCastAndCrew(tvSeriesID: Int)
     case tvEpisodeCastAndCrew(tvSeriesID: Int, seasonNumber: Int, episodeNumber: Int)
@@ -67,8 +69,8 @@ final class SearchRouter {
 @MainActor
 struct SearchRouterNavigator: MediaSearchNavigating, MovieDetailsNavigating,
     TVSeriesDetailsNavigating, TVSeasonDetailsNavigating, TVEpisodeDetailsNavigating,
-    PersonDetailsNavigating, MovieCastAndCrewNavigating, TVSeriesCastAndCrewNavigating,
-    TVEpisodeCastAndCrewNavigating {
+    PersonDetailsNavigating, PersonCreditsNavigating, MovieCastAndCrewNavigating,
+    TVSeriesCastAndCrewNavigating, TVEpisodeCastAndCrewNavigating {
 
     let router: SearchRouter
 
@@ -84,6 +86,12 @@ struct SearchRouterNavigator: MediaSearchNavigating, MovieDetailsNavigating,
 
     func openPersonDetails(id: Int) {
         router.path.append(.personDetails(id: id))
+    }
+
+    // MARK: - PersonDetailsNavigating
+
+    func openPersonCredits(personID: Int) {
+        router.path.append(.personCredits(personID: personID))
     }
 
     // MARK: - MovieDetailsNavigating

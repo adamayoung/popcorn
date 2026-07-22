@@ -16,6 +16,7 @@ import MediaSearchFeature
 import MovieCastAndCrewFeature
 import MovieDetailsFeature
 import MovieIntelligenceFeature
+import PersonCreditsFeature
 import PersonDetailsFeature
 import PlotRemixGameFeature
 import PopularMoviesFeature
@@ -116,6 +117,19 @@ final class ViewModelFactory {
     ) -> PersonDetailsViewModel {
         PersonDetailsViewModel(
             personID: id,
+            dependencies: .live(services: services),
+            navigator: navigator
+        )
+    }
+
+    // MARK: - Person Credits
+
+    func makePersonCredits(
+        personID: Int,
+        navigator: some PersonCreditsNavigating
+    ) -> PersonCreditsViewModel {
+        PersonCreditsViewModel(
+            personID: personID,
             dependencies: .live(services: services),
             navigator: navigator
         )
