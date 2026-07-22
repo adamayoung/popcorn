@@ -99,7 +99,7 @@ extension DefaultFetchPersonKnownForUseCase {
         case .cast:
             knownForDepartment == Self.actingDepartment
 
-        case .crew(let department):
+        case .crew(_, let department):
             knownForDepartment != Self.actingDepartment && department == knownForDepartment
         }
     }
