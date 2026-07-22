@@ -31,6 +31,27 @@ two fields the dedup step keys on.
 
 <!-- Newest entry goes here. -->
 
+### 2026-07-22 — Constrain short-run Haiku runner subagents to run-now + report-only · applied
+
+- **Pattern:** Haiku runner/diagnosis subagents misbehaving in three distinct ways
+  across retros: an unrequested `Package.swift` edit while "fixing" a sources build
+  (PR #79 retro), premature interim "still waiting" replies on long gates (PR #76
+  retro — the long-gate case was already fixed via backgrounded Bash, 2026-07-05
+  entry), and an "I'll wait for the test to complete" reply without ever running the
+  command (PR #88 retro, needed a SendMessage nudge).
+- **Decision:** applied — every runner-skill subagent prompt (`build`,
+  `build-for-testing`, `build-package`, `build-package-for-testing`, `test`,
+  `test-package`, `test-single`, `test-snapshots`) now ends with two standing
+  constraints: run the command yourself, immediately, in the foreground, and never
+  reply before it finishes; and report-only — beyond the command's own log file,
+  never create/edit/delete any file or attempt a fix. `fix-pr-checks`' diagnosis
+  prompt gains the matching diagnosis-only clause. Landed on
+  `chore/haiku-runner-constraints` (this PR).
+- **Rationale:** the runner prompts specified *what to report* but never *how to
+  behave* — a small model fills that gap unpredictably; two explicit sentences in
+  the prompt template are cheaper than another confused round-trip per occurrence.
+- **Reconsider when:** n/a.
+
 ### 2026-07-21 — Scale review depth to per-unit novelty (the clone lane) · applied
 
 - **Pattern:** in PR #83 (retro), a 2,786-line diff that was ~90% a faithful `cp`+`sed`
