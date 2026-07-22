@@ -11,6 +11,22 @@ and dated; link an ADR if a decision came out of it.
 *YYYY-MM-DD.* What bit us, why, and the resolution. Keep it to a few lines.
 -->
 
+### A mixed movie + TV series carousel must key `ForEach` on the offset, not the item id
+
+*2026-07-22.* TMDb movie IDs and TV series IDs live in the **same integer namespace**,
+so within one list that mixes both (a person's combined credits → the "Known For"
+carousel), two different items can share an `id` (e.g. movie `1396` and series `1396`).
+Keying `ForEach` on the item `id` there gives SwiftUI a **non-unique** identity —
+duplicate-key rendering, broken diffing, and ambiguous `matchedTransitionSource` zoom
+sources. `docs/SWIFTUI.md` recommends `ForEach(x.enumerated(), id: \.element.id)`, but
+that advice assumes a single-media list; for a **mixed-media** list key on `\.offset`
+instead (the list is loaded once and never reorders, so the index is a stable identity).
+Still drop the `Array(...)` wrap per the doc — `ForEach(items.enumerated(), id: \.offset)`
+compiles (an `EnumeratedSequence` over an `Array` is a valid `ForEach` source on the
+iOS 26 SDK; `PosterGrid` already relies on this). Sibling of
+[the per-screen zoom-id gotcha](#zoom-transition-ids-must-be-scoped-per-screen-not-per-item)
+— both are identity-collision traps.
+
 ### swift-testing hangs on `async` methods that use typed throws — the suite gets `.disabled`
 
 *2026-07-21.* `TMDbMovieRemoteDataSourceListsTests` (in `PopcornMoviesAdapters`) is
@@ -225,6 +241,12 @@ call-log array / increments a counter) is only safe when the mock is invoked
 first run. Fix: move the call-tracking state behind a `Synchronization.Mutex<State>` and
 read/write it via `.withLock`. Stub *inputs* set before the exercise and only read during
 it don't need the lock; only the mutated tracking state does.
+
+Recurred 2026-07-22 in `DefaultFetchPersonKnownForUseCase`'s concurrent logo fan-out
+(`MovieLogoImageProviding` / `TVSeriesLogoImageProviding` mocks), there as **signal 11**.
+The crash can masquerade as the `Runner._applyScopingTraits` scoping-traits flake — but
+it is **deterministic** (a real data race in your mock), not the flake: guard the mock,
+don't just re-run.
 
 ### Injecting an observability provider in tests — use `$localProvider`, never a global
 
