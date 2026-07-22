@@ -159,6 +159,60 @@ struct DefaultPersonRepositoryTests {
         )
     }
 
+    // MARK: - Combined Credits Tests
+
+    @Test("combinedCredits passes through to the remote data source")
+    func combinedCreditsPassesThroughToRemote() async throws {
+        let credits = [
+            PersonCredit(id: 1, mediaType: .movie, title: "Big", role: .cast)
+        ]
+        mockRemoteDataSource.combinedCreditsStub = .success(credits)
+
+        let repository = makeRepository()
+
+        let result = try await repository.combinedCredits(forPerson: 42)
+
+        #expect(result == credits)
+        #expect(mockRemoteDataSource.combinedCreditsCallCount == 1)
+        #expect(mockRemoteDataSource.combinedCreditsCalledWith[0] == 42)
+    }
+
+    @Test("combinedCredits does not touch the local cache")
+    func combinedCreditsDoesNotTouchLocalCache() async throws {
+        mockRemoteDataSource.combinedCreditsStub = .success([])
+
+        let repository = makeRepository()
+
+        _ = try await repository.combinedCredits(forPerson: 1)
+
+        let localPersonCallCount = await mockLocalDataSource.personCallCount
+        let setCallCount = await mockLocalDataSource.setPersonCallCount
+        #expect(localPersonCallCount == 0)
+        #expect(setCallCount == 0)
+    }
+
+    @Test("combinedCredits propagates the remote error")
+    func combinedCreditsPropagatesRemoteError() async {
+        mockRemoteDataSource.combinedCreditsStub = .failure(.notFound)
+
+        let repository = makeRepository()
+
+        await #expect(
+            performing: {
+                try await repository.combinedCredits(forPerson: 1)
+            },
+            throws: { error in
+                guard let repoError = error as? PersonRepositoryError else {
+                    return false
+                }
+                if case .notFound = repoError {
+                    return true
+                }
+                return false
+            }
+        )
+    }
+
     // MARK: - Helpers
 
     private func makeRepository() -> DefaultPersonRepository {

@@ -25,6 +25,15 @@ public protocol PersonRepository: Sendable {
     ///
     func person(withID id: Int) async throws(PersonRepositoryError) -> Person
 
+    ///
+    /// Fetches a person's combined movie and TV series credits.
+    ///
+    /// - Parameter id: The unique identifier of the person whose credits to fetch.
+    /// - Returns: The person's ``PersonCredit`` list, both cast and crew.
+    /// - Throws: ``PersonRepositoryError`` if the credits cannot be fetched.
+    ///
+    func combinedCredits(forPerson id: Int) async throws(PersonRepositoryError) -> [PersonCredit]
+
 }
 
 ///

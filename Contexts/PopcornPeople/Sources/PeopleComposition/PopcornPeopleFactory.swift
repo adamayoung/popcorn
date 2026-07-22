@@ -16,19 +16,27 @@ public final class PopcornPeopleFactory: Sendable {
 
     public init(
         personRemoteDataSource: some PersonRemoteDataSource,
-        appConfigurationProvider: some AppConfigurationProviding
+        appConfigurationProvider: some AppConfigurationProviding,
+        movieLogoImageProvider: some MovieLogoImageProviding,
+        tvSeriesLogoImageProvider: some TVSeriesLogoImageProviding
     ) {
         let infrastructureFactory = PeopleInfrastructureFactory(
             personRemoteDataSource: personRemoteDataSource
         )
         self.applicationFactory = PeopleApplicationFactory(
             personRepository: infrastructureFactory.makePersonRepository(),
-            appConfigurationProvider: appConfigurationProvider
+            appConfigurationProvider: appConfigurationProvider,
+            movieLogoImageProvider: movieLogoImageProvider,
+            tvSeriesLogoImageProvider: tvSeriesLogoImageProvider
         )
     }
 
     public func makeFetchPersonDetailsUseCase() -> FetchPersonDetailsUseCase {
         applicationFactory.makeFetchPersonDetailsUseCase()
+    }
+
+    public func makeFetchPersonKnownForUseCase() -> FetchPersonKnownForUseCase {
+        applicationFactory.makeFetchPersonKnownForUseCase()
     }
 
 }
