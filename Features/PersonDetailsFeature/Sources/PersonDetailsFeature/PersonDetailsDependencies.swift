@@ -18,13 +18,17 @@ public struct PersonDetailsDependencies: Sendable {
 
     public var fetchPerson: @Sendable (_ id: Int) async throws -> Person
 
+    public var fetchKnownFor: @Sendable (_ personID: Int) async throws -> [KnownForItem]
+
     public var isFocalPointEnabled: @Sendable () throws -> Bool
 
     public init(
         fetchPerson: @escaping @Sendable (_ id: Int) async throws -> Person,
+        fetchKnownFor: @escaping @Sendable (_ personID: Int) async throws -> [KnownForItem],
         isFocalPointEnabled: @escaping @Sendable () throws -> Bool
     ) {
         self.fetchPerson = fetchPerson
+        self.fetchKnownFor = fetchKnownFor
         self.isFocalPointEnabled = isFocalPointEnabled
     }
 
@@ -37,6 +41,7 @@ public struct PersonDetailsDependencies: Sendable {
         static var preview: PersonDetailsDependencies {
             PersonDetailsDependencies(
                 fetchPerson: { _ in Person.mock },
+                fetchKnownFor: { _ in KnownForItem.mocks },
                 isFocalPointEnabled: { true }
             )
         }

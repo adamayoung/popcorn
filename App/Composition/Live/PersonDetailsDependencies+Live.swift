@@ -16,6 +16,7 @@ extension PersonDetailsDependencies {
     /// Builds the production dependencies from the app's shared services.
     static func live(services: AppServices) -> PersonDetailsDependencies {
         let fetchPersonDetails = services.peopleFactory.makeFetchPersonDetailsUseCase()
+        let fetchPersonKnownFor = services.peopleFactory.makeFetchPersonKnownForUseCase()
         let featureFlags = services.featureFlags
 
         return PersonDetailsDependencies(
@@ -27,6 +28,11 @@ extension PersonDetailsDependencies {
                 } catch let error as FetchPersonDetailsError {
                     throw FetchPersonError(error)
                 }
+            },
+            fetchKnownFor: { personID in
+                let items = try await fetchPersonKnownFor.execute(personID: personID)
+                let mapper = KnownForItemMapper()
+                return items.map(mapper.map)
             },
             // Shares the backdropFocalPoint gate intentionally — focal point
             // alignment is a single feature covering both backdrop and profile images.

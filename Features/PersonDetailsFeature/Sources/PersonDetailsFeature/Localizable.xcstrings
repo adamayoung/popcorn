@@ -1,6 +1,17 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "KNOWN_FOR" : {
+      "comment" : "A label displayed above a carousel of the movies and TV series a person is known for.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Known For"
+          }
+        }
+      }
+    },
     "LOADING" : {
       "comment" : "Accessibility label for a loading indicator.",
       "localizations" : {
@@ -8,6 +19,28 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Loading"
+          }
+        }
+      }
+    },
+    "VIEW_MOVIE_DETAILS_HINT" : {
+      "comment" : "Accessibility hint for a movie in the Known For carousel, describing what happens when activated.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View movie details"
+          }
+        }
+      }
+    },
+    "VIEW_TV_SERIES_DETAILS_HINT" : {
+      "comment" : "Accessibility hint for a TV series in the Known For carousel, describing what happens when activated.",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View TV series details"
           }
         }
       }

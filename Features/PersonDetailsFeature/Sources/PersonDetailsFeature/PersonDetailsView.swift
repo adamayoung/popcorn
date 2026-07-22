@@ -72,7 +72,9 @@ extension PersonDetailsView {
     private func content(person: Person) -> some View {
         PersonDetailsContentView(
             person: person,
-            isFocalPointEnabled: viewModel.isFocalPointEnabled
+            knownForState: viewModel.knownForState,
+            isFocalPointEnabled: viewModel.isFocalPointEnabled,
+            didSelectKnownForItem: { viewModel.selectKnownForItem($0) }
         )
     }
 
@@ -96,7 +98,10 @@ extension PersonDetailsView {
     #Preview("Ready") {
         NavigationStack {
             PersonDetailsView(
-                viewModel: .preview(viewState: .ready(.init(person: Person.mock)))
+                viewModel: .preview(
+                    viewState: .ready(.init(person: Person.mock)),
+                    knownForState: .ready(KnownForItem.mocks)
+                )
             )
         }
     }

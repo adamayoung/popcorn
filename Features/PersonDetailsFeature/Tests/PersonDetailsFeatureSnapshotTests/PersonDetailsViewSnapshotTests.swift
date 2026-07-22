@@ -22,7 +22,8 @@ struct PersonDetailsViewSnapshotTests {
                 viewModel: .preview(
                     viewState: .ready(
                         .init(person: .mock)
-                    )
+                    ),
+                    knownForState: .ready(KnownForItem.mocks)
                 )
             )
         }
