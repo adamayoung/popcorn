@@ -226,6 +226,61 @@ struct TMDbPersonRemoteDataSourceTests {
         #expect(mockService.detailsCalledWith[0].language == nil)
     }
 
+    // MARK: - Combined Credits
+
+    @Test("combinedCredits maps the service response and uses the default language")
+    func combinedCredits_mapsResponseAndUsesDefaultLanguage() async throws {
+        let id = 287
+        let castCredit = TMDb.MovieCastCredit(
+            id: 550,
+            title: "Fight Club",
+            originalTitle: "Fight Club",
+            originalLanguage: "en",
+            overview: "",
+            genreIDs: [],
+            popularity: 61.4,
+            character: "The Narrator",
+            creditID: "abc",
+            order: 0
+        )
+        mockService.combinedCreditsStub = .success(
+            TMDb.PersonCombinedCredits(id: id, cast: [.movie(castCredit)], crew: [])
+        )
+
+        let dataSource = TMDbPersonRemoteDataSource(personService: mockService)
+
+        let result = try await dataSource.combinedCredits(forPerson: id)
+
+        #expect(result.count == 1)
+        #expect(result[0].id == 550)
+        #expect(result[0].mediaType == .movie)
+        #expect(result[0].title == "Fight Club")
+        #expect(mockService.combinedCreditsCallCount == 1)
+        #expect(mockService.combinedCreditsCalledWith[0] == .init(personID: id, language: nil))
+    }
+
+    @Test("combinedCredits throws notFound error for TMDb notFound")
+    func combinedCredits_throwsNotFoundForTMDbNotFound() async {
+        mockService.combinedCreditsStub = .failure(.notFound())
+
+        let dataSource = TMDbPersonRemoteDataSource(personService: mockService)
+
+        await #expect(
+            performing: {
+                try await dataSource.combinedCredits(forPerson: 999)
+            },
+            throws: { error in
+                guard let error = error as? PersonRepositoryError else {
+                    return false
+                }
+                if case .notFound = error {
+                    return true
+                }
+                return false
+            }
+        )
+    }
+
 }
 
 // MARK: - Test Helpers

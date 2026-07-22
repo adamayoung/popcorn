@@ -31,6 +31,18 @@ final class TMDbPersonRemoteDataSource: PersonRemoteDataSource {
         return mapper.map(tmdbPerson)
     }
 
+    func combinedCredits(forPerson id: Int) async throws(PersonRepositoryError) -> [PersonCredit] {
+        let combinedCredits: TMDb.PersonCombinedCredits
+        do {
+            combinedCredits = try await personService.combinedCredits(forPerson: id, language: nil)
+        } catch let error {
+            throw PersonRepositoryError(error)
+        }
+
+        let mapper = PersonCreditMapper()
+        return mapper.map(combinedCredits)
+    }
+
 }
 
 private extension PersonRepositoryError {
