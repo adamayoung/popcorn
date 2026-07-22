@@ -39,4 +39,11 @@ public final class PopcornPeopleFactory: Sendable {
         applicationFactory.makeFetchPersonKnownForUseCase()
     }
 
+    /// Makes a use case that fetches every movie and TV series a person is credited on.
+    ///
+    /// - Returns: A ``FetchPersonCreditsUseCase``.
+    public func makeFetchPersonCreditsUseCase() -> FetchPersonCreditsUseCase {
+        applicationFactory.makeFetchPersonCreditsUseCase()
+    }
+
 }

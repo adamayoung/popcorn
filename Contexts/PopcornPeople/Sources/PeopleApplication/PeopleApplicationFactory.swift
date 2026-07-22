@@ -34,6 +34,13 @@ package final class PeopleApplicationFactory: Sendable {
         )
     }
 
+    package func makeFetchPersonCreditsUseCase() -> some FetchPersonCreditsUseCase {
+        DefaultFetchPersonCreditsUseCase(
+            repository: personRepository,
+            appConfigurationProvider: appConfigurationProvider
+        )
+    }
+
     package func makeFetchPersonKnownForUseCase() -> some FetchPersonKnownForUseCase {
         DefaultFetchPersonKnownForUseCase(
             repository: personRepository,
