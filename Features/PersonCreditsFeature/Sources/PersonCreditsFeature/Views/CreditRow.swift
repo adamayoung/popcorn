@@ -43,10 +43,12 @@ struct CreditRow: View {
 
 }
 
-#Preview {
-    List {
-        ForEach(CreditItem.mocks) { item in
-            CreditRow(item: item)
+#if DEBUG
+    #Preview {
+        List {
+            ForEach(CreditItem.mocks) { item in
+                CreditRow(item: item)
+            }
         }
     }
-}
+#endif
