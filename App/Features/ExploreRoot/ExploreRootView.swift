@@ -101,9 +101,7 @@ struct ExploreRootView: View {
         case .personDetails(let id, let transitionID):
             personDetails(id: id, transitionID: transitionID)
         case .personCredits(let personID):
-            PersonCreditsView(
-                viewModel: factory.makePersonCredits(personID: personID, navigator: navigator)
-            )
+            personCredits(personID: personID)
         case .movieCastAndCrew(let movieID):
             MovieCastAndCrewView(
                 viewModel: factory.makeMovieCastAndCrew(movieID: movieID, navigator: navigator)
@@ -181,6 +179,12 @@ struct ExploreRootView: View {
         } else {
             PersonDetailsView(viewModel: viewModel)
         }
+    }
+
+    private func personCredits(personID: Int) -> some View {
+        PersonCreditsView(
+            viewModel: factory.makePersonCredits(personID: personID, navigator: navigator)
+        )
     }
 
     private func tvSeasonDetails(tvSeriesID: Int, seasonNumber: Int) -> some View {
