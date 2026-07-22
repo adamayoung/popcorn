@@ -52,6 +52,10 @@ tabs.
 *Deviations:* none from the approved plan; review fixes were additive (error-mapping
 test suite + destination-builder extraction).
 
+*watch:* `Build (Release)` failed once — `CreditRow`'s unguarded `#Preview` used
+DEBUG-only `CreditItem.mocks` (Debug gate can't catch it); fixed first attempt in
+8d6b9063 after a local Release-build verify, then merged clean (squash ba2f771c).
+
 *One improvement:* the `add-feature` scaffold (or its skill) should generate the
 feature's context→presentation mapper as `public` with a public init from the start —
 the internal-mapper trap will recur on every new feature otherwise.

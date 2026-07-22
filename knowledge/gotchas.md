@@ -11,6 +11,17 @@ and dated; link an ADR if a decision came out of it.
 *YYYY-MM-DD.* What bit us, why, and the resolution. Keep it to a few lines.
 -->
 
+### `#Preview` blocks compile in Release — guard any that touch DEBUG-only fixtures
+
+*2026-07-22.* `#Preview` macro bodies are **not** stripped from Release builds, so a
+preview referencing a fixture that only exists under `#if DEBUG` (the `.mocks` /
+`.preview` helpers every feature ships) compiles fine in Debug — through the whole
+local gate, which builds Debug only — and then breaks **only** CI's `Build (Release)`
+job (`cannot find 'mocks' in scope`). Wrap such previews in `#if DEBUG … #endif`
+(most sibling views already do; `CreditRow` on PR #88 didn't and cost a CI round
+trip). Rule of thumb: a bare `#Preview` is fine only when it builds its own inline
+data; the moment it touches a DEBUG-gated symbol, it needs the guard.
+
 ### A feature mapper used by its `Dependencies+Live` builder must be `public`
 
 *2026-07-22.* The app-layer `App/Composition/Live/<Feature>Dependencies+Live.swift`
