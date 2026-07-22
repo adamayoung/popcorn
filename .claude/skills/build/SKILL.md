@@ -25,6 +25,10 @@ status, and report ONLY:
 - Each error/warning as `file:line — message` (omit if none; warnings are errors)
 - On failure, the log path `.build/last-build.log`
 Do not paste raw logs or successful-compilation output.
+Run the command yourself, immediately, in the foreground — never reply before it
+has finished, and never defer, poll, or say you are waiting.
+You are report-only: apart from the log file the command writes, do not create,
+edit, or delete any file, and never attempt to fix what you find — report it.
 ```
 
 After fixing any issues, re-invoke this skill to re-check.

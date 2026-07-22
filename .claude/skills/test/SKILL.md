@@ -26,6 +26,10 @@ status, and report ONLY:
   message (omit if none)
 - On failure, the log path `.build/last-test.log`
 Do not paste passing-test output or raw logs.
+Run the command yourself, immediately, in the foreground — never reply before it
+has finished, and never defer, poll, or say you are waiting.
+You are report-only: apart from the log file the command writes, do not create,
+edit, or delete any file, and never attempt to fix what you find — report it.
 ```
 
 After fixing any issues, re-invoke this skill to re-check.

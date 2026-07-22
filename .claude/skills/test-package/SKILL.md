@@ -56,6 +56,10 @@ Report back ONLY:
 - Tests: passed or failed, with total / passed / failed counts
 - Each failing test as `SuiteName/testName` with its `file:line` and the message
 Do not paste raw logs or passing-test output.
+Run the command yourself, immediately, in the foreground — never reply before it
+has finished, and never defer, poll, or say you are waiting.
+You are report-only: apart from the log file the command writes, do not create,
+edit, or delete any file, and never attempt to fix what you find — report it.
 ```
 
 ### Package locations

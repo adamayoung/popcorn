@@ -24,6 +24,10 @@ check the exit status, and report ONLY:
 - Each failing test as `SuiteName/testName` with its `file:line` (omit if none)
 - On failure, the log path `.build/last-snapshots.log`
 Do not paste passing-test output or raw logs.
+Run the command yourself, immediately, in the foreground — never reply before it
+has finished, and never defer, poll, or say you are waiting.
+You are report-only: apart from the log file the command writes, do not create,
+edit, or delete any file, and never attempt to fix what you find — report it.
 ```
 
 Snapshot failures usually mean the rendered UI changed — inspect the failure images to

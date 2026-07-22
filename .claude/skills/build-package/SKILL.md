@@ -29,6 +29,10 @@ Report back ONLY:
 - Status: succeeded or failed
 - Each error/warning as `file:line — message` (omit if none; warnings are errors)
 Do not paste raw logs or successful-compilation output.
+Run the command yourself, immediately, in the foreground — never reply before it
+has finished, and never defer, poll, or say you are waiting.
+You are report-only: apart from the log file the command writes, do not create,
+edit, or delete any file, and never attempt to fix what you find — report it.
 ```
 
 ### Package locations

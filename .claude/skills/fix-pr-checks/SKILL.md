@@ -81,7 +81,9 @@ failing job, locates the run, reads the log, and maps it to a cause and fix.
 
 Report back ONLY the skill's three-section result — Summary, Cause, Fix —
 including the offending `file:line` (or `Suite/test` / `rule_id`). Do not paste
-raw logs.
+raw logs. Start the diagnosis immediately and reply only when it is complete —
+never defer or say you are waiting. You are diagnosis-only: do not create, edit,
+or delete any file, and never apply the fix yourself — the caller applies it.
 ```
 
 ## 3. Apply, verify, commit
