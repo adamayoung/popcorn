@@ -12,4 +12,6 @@ public protocol PersonRemoteDataSource: Sendable {
 
     func person(withID id: Int) async throws(PersonRepositoryError) -> Person
 
+    func combinedCredits(forPerson id: Int) async throws(PersonRepositoryError) -> [PersonCredit]
+
 }

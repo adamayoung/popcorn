@@ -10,11 +10,18 @@ import MovieDetailsFeature
 import MovieIntelligenceFeature
 import PersonDetailsFeature
 import SwiftUI
+import TVEpisodeCastAndCrewFeature
+import TVEpisodeDetailsFeature
+import TVSeasonDetailsFeature
+import TVSeriesCastAndCrewFeature
+import TVSeriesDetailsFeature
+import TVSeriesIntelligenceFeature
 import WatchlistFeature
 
 /// The Watchlist tab root. Hosts the watchlist home in a `NavigationStack`,
-/// drives push navigation (movie details, person details, cast and crew) and the
-/// movie intelligence modal via ``WatchlistRouter``.
+/// drives push navigation (movie / TV series / season / episode details, person
+/// details, cast and crew) and the movie / TV series intelligence modals via
+/// ``WatchlistRouter``.
 struct WatchlistRootView: View {
 
     @Bindable private var router: WatchlistRouter
@@ -56,6 +63,11 @@ struct WatchlistRootView: View {
                 viewModel: factory.makeMovieIntelligence(movieID: intel.movieID)
             )
         }
+        .platformModal(item: $router.presentedTVSeriesIntelligence) { intel in
+            TVSeriesIntelligenceView(
+                viewModel: factory.makeTVSeriesIntelligence(tvSeriesID: intel.tvSeriesID)
+            )
+        }
     }
 
     /// A fresh navigator bound to this view's router. Each destination builds its
@@ -69,6 +81,16 @@ struct WatchlistRootView: View {
         switch route {
         case .movieDetails(let id, let transitionID):
             movieDetails(id: id, transitionID: transitionID)
+        case .tvSeriesDetails(let id):
+            tvSeriesDetails(id: id)
+        case .tvSeasonDetails(let tvSeriesID, let seasonNumber):
+            tvSeasonDetails(tvSeriesID: tvSeriesID, seasonNumber: seasonNumber)
+        case .tvEpisodeDetails(let tvSeriesID, let seasonNumber, let episodeNumber):
+            tvEpisodeDetails(
+                tvSeriesID: tvSeriesID,
+                seasonNumber: seasonNumber,
+                episodeNumber: episodeNumber
+            )
         case .personDetails(let id):
             PersonDetailsView(
                 viewModel: factory.makePersonDetails(
@@ -82,6 +104,14 @@ struct WatchlistRootView: View {
                     movieID: movieID,
                     navigator: navigator
                 )
+            )
+        case .tvSeriesCastAndCrew(let tvSeriesID):
+            tvSeriesCastAndCrew(tvSeriesID: tvSeriesID)
+        case .tvEpisodeCastAndCrew(let tvSeriesID, let seasonNumber, let episodeNumber):
+            tvEpisodeCastAndCrew(
+                tvSeriesID: tvSeriesID,
+                seasonNumber: seasonNumber,
+                episodeNumber: episodeNumber
             )
         }
     }
@@ -101,6 +131,61 @@ struct WatchlistRootView: View {
         } else {
             MovieDetailsView(viewModel: viewModel)
         }
+    }
+
+    private func tvSeriesDetails(id: Int) -> some View {
+        TVSeriesDetailsView(
+            viewModel: factory.makeTVSeriesDetails(id: id, navigator: navigator)
+        )
+    }
+
+    private func tvSeasonDetails(tvSeriesID: Int, seasonNumber: Int) -> some View {
+        TVSeasonDetailsView(
+            viewModel: factory.makeTVSeasonDetails(
+                tvSeriesID: tvSeriesID,
+                seasonNumber: seasonNumber,
+                navigator: navigator
+            )
+        )
+    }
+
+    private func tvEpisodeDetails(
+        tvSeriesID: Int,
+        seasonNumber: Int,
+        episodeNumber: Int
+    ) -> some View {
+        TVEpisodeDetailsView(
+            viewModel: factory.makeTVEpisodeDetails(
+                tvSeriesID: tvSeriesID,
+                seasonNumber: seasonNumber,
+                episodeNumber: episodeNumber,
+                navigator: navigator
+            )
+        )
+    }
+
+    private func tvSeriesCastAndCrew(tvSeriesID: Int) -> some View {
+        TVSeriesCastAndCrewView(
+            viewModel: factory.makeTVSeriesCastAndCrew(
+                tvSeriesID: tvSeriesID,
+                navigator: navigator
+            )
+        )
+    }
+
+    private func tvEpisodeCastAndCrew(
+        tvSeriesID: Int,
+        seasonNumber: Int,
+        episodeNumber: Int
+    ) -> some View {
+        TVEpisodeCastAndCrewView(
+            viewModel: factory.makeTVEpisodeCastAndCrew(
+                tvSeriesID: tvSeriesID,
+                seasonNumber: seasonNumber,
+                episodeNumber: episodeNumber,
+                navigator: navigator
+            )
+        )
     }
 
 }

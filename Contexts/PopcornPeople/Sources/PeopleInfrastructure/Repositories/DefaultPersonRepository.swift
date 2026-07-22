@@ -31,4 +31,8 @@ final class DefaultPersonRepository: PersonRepository {
         return person
     }
 
+    func combinedCredits(forPerson id: Int) async throws(PersonRepositoryError) -> [PersonCredit] {
+        try await remoteDataSource.combinedCredits(forPerson: id)
+    }
+
 }

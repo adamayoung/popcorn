@@ -16,6 +16,55 @@ table (`date · PR · weight · one-line outcome`) — see [`README.md`](README.
 
 <!-- Newest entry goes here. -->
 
+### Person details "Known For" carousel · PR #87 · 2026-07-22 · full
+
+*Phases / skills:* plan mode (inline exploration — Explore agents were declined, so
+I read the code directly + 5 clarifying questions) → `/deliver` → `/review-plan`
+**skipped** (ExitPlanMode approval counts as reviewed) → `/implement-plan` (Canon
+TDD, per-package checkpoints) → `/review-changes` (7-dimension fan-out + adversarial
+verify: **0 crit/high, 3 medium, 0 dropped**) → `/security-review` (clean) →
+`/capture-knowledge` (1 new gotcha + 1 enhanced + ADR-0005) → independent grader
+(**all 3 ACs PASS**). Added `FetchPersonKnownForUseCase` (combined-credits ranking),
+two cross-context logo ports, the `KnownForCarousel`, and the Watchlist TV route set.
+
+*What worked:*
+- **Every hard part already had a merged reference.** The cross-context logo
+  providers cloned Trending/Discover's `MovieLogoImageProviding` shape; the carousel
+  cloned `RecommendedCarousel`; the Watchlist TV routes mirrored `SearchRoot`; the
+  progressive per-section `knownForState` followed ADR-0002. Little was genuinely
+  novel beyond the ranking heuristic (ADR-0005).
+- **Per-package `swift test` green checkpoints** for the context (35→36 tests) and
+  adapter (38) before the App was touched, then one full-app build/test/snapshot for
+  the feature + wiring. Both reviews came back with nothing blocking.
+- **The concurrent-mock segfault was diagnosed, not dismissed.** The logo fan-out's
+  `withTaskGroup` crashed swift-testing with signal 11; recognised it as the
+  documented unguarded-mock data race (not the scoping-traits flake) and fixed it
+  with a `Mutex` — enhanced that gotcha with the masquerade note.
+
+*Friction:*
+- **A full restart from scratch, caused by writing to main-checkout paths.**
+  `EnterWorktree` moves the Bash CWD, but `Edit`/`Write` take literal absolute
+  paths — I passed `…/popcorn/Contexts/…` (main) instead of
+  `…/popcorn/.claude/worktrees/<wt>/Contexts/…`, so the first ~9 files landed on the
+  main working tree (empty `git status` in the worktree was the tell). A follow-up
+  `rm` without `-C` then deleted files from the wrong tree. Recovered by reverting
+  main clean and re-doing the work with worktree-prefixed paths. **Biggest time sink
+  of the run.**
+- **The reviewer's suggested `ForEach(id: \.element.id)` fix was unsafe** — TMDb
+  movie/TV ids collide in a mixed-media list — so I applied only the valid half
+  (drop the `Array` wrap, keep `\.offset`) and captured the trap.
+
+*Deviations:*
+- Security review **not** re-run after the Phase-4 fixes (they were a test + a
+  below-the-fold view's identity/spacing — no security surface).
+- No feature flag (Adam chose always-on), so no Statsig gate / `FeatureFlag` change.
+
+*One improvement:* `/deliver` Phase 1 should state the **worktree-absolute path
+prefix** once, explicitly, and every subsequent `Edit`/`Write`/`rm`/`cp` should use
+it — the empty-worktree-`git status` check caught it, but only after 9 mis-targeted
+files. Consider a Phase-1 reminder that `Edit`/`Write` paths are literal and do
+**not** inherit the worktree CWD.
+
 ### Popular movies grid + paged popular pipeline · PR #83 · 2026-07-21 · full
 
 *Phases / skills:* plan mode (`get_context` + 2 Explore + 1 Plan agent) → `/deliver`

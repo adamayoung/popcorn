@@ -7,7 +7,8 @@
 
 import PersonDetailsFeature
 
-/// `PersonDetailsNavigating` is a marker protocol with no requirements — person
-/// details is a leaf screen. The conformance exists so the coordinator has a
-/// consistent injection point across the detail features.
+/// `PersonDetailsNavigating`'s `openMovieDetails(id:)` / `openTVSeriesDetails(id:)`
+/// requirements are already satisfied by `ExploreRouterNavigator`'s
+/// `MovieDetailsNavigating` / `TVSeriesDetailsNavigating` witnesses (shared across
+/// the detail features), so this conformance needs no further members.
 extension ExploreRouterNavigator: PersonDetailsNavigating {}

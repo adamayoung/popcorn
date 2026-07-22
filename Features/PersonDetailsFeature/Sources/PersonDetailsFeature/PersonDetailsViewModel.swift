@@ -39,6 +39,11 @@ public final class PersonDetailsViewModel {
     private static let logger = Logger.personDetails
 
     public private(set) var viewState: ViewState<ViewSnapshot>
+
+    /// The "Known For" carousel's state, loaded after the person is ready and
+    /// degrading independently so an auxiliary failure never blanks the screen.
+    public private(set) var knownForState: ViewState<[KnownForItem]>
+
     public private(set) var isFocalPointEnabled: Bool
 
     /// Drives `.task(id:)` reruns. ``reload()`` bumps it to retry after an error.
@@ -56,6 +61,7 @@ public final class PersonDetailsViewModel {
         dependencies: PersonDetailsDependencies,
         navigator: any PersonDetailsNavigating,
         viewState: ViewState<ViewSnapshot> = .initial,
+        knownForState: ViewState<[KnownForItem]> = .initial,
         isFocalPointEnabled: Bool = false
     ) {
         self.personID = personID
@@ -63,6 +69,7 @@ public final class PersonDetailsViewModel {
         self.dependencies = dependencies
         self.navigator = navigator
         self.viewState = viewState
+        self.knownForState = knownForState
         self.isFocalPointEnabled = isFocalPointEnabled
     }
 
@@ -76,18 +83,36 @@ public final class PersonDetailsViewModel {
         isFocalPointEnabled = (try? dependencies.isFocalPointEnabled()) ?? false
     }
 
-    /// Fetches the person details.
+    /// Fetches the person details, then loads the "Known For" section.
     ///
     /// Drive this from the view's `.task(id:)`; SwiftUI cancels it on disappear
-    /// and reruns it on reappear / ``reload()``.
+    /// and reruns it on reappear / ``reload()``. The section loads only once the
+    /// person is ready, so its latency never delays the primary content.
     public func load() async {
         await fetch()
+        guard viewState.isReady else {
+            return
+        }
+
+        await loadKnownFor()
     }
 
     /// Retries loading after an error by changing ``reloadID``, which reruns the
     /// view's `.task(id:)`.
     public func reload() {
         reloadID += 1
+    }
+
+    // MARK: - Navigation
+
+    /// Opens the movie or TV series a tapped "Known For" item refers to.
+    public func selectKnownForItem(_ item: KnownForItem) {
+        switch item.mediaType {
+        case .movie:
+            navigator.openMovieDetails(id: item.id)
+        case .tvSeries:
+            navigator.openTVSeriesDetails(id: item.id)
+        }
     }
 
     // MARK: - Loading
@@ -120,6 +145,23 @@ public final class PersonDetailsViewModel {
         viewState = .ready(snapshot)
     }
 
+    func loadKnownFor() async {
+        guard !knownForState.isReady, !knownForState.isLoading else {
+            return
+        }
+
+        knownForState = .loading
+        do {
+            let items = try await dependencies.fetchKnownFor(personID)
+            knownForState = .ready(items)
+        } catch {
+            Self.logger.error(
+                "Failed fetching known for: [personID: \"\(self.personID, privacy: .private)\"] \(error.localizedDescription, privacy: .public)"
+            )
+            knownForState.applyLoadFailure(error)
+        }
+    }
+
 }
 
 #if DEBUG
@@ -129,6 +171,7 @@ public final class PersonDetailsViewModel {
         /// navigation, for previews and snapshot tests.
         static func preview(
             viewState: ViewState<ViewSnapshot>,
+            knownForState: ViewState<[KnownForItem]> = .initial,
             isFocalPointEnabled: Bool = false
         ) -> PersonDetailsViewModel {
             PersonDetailsViewModel(
@@ -136,6 +179,7 @@ public final class PersonDetailsViewModel {
                 dependencies: .preview,
                 navigator: NoOpPersonDetailsNavigator(),
                 viewState: viewState,
+                knownForState: knownForState,
                 isFocalPointEnabled: isFocalPointEnabled
             )
         }

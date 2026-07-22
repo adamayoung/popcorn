@@ -126,7 +126,7 @@ extension AppServices {
         let genres = makeGenres(foundations: foundations)
         let movies = makeMovies(foundations: foundations)
         let tvSeries = makeTVSeries(foundations: foundations)
-        let people = makePeople(foundations: foundations)
+        let people = makePeople(foundations: foundations, movies: movies, tvSeries: tvSeries)
         let discover = makeDiscover(
             foundations: foundations,
             genres: genres,
@@ -248,14 +248,22 @@ extension AppServices {
         )
     }
 
-    private static func makePeople(foundations: Foundations) -> PeopleBundle {
+    private static func makePeople(
+        foundations: Foundations,
+        movies: MoviesBundle,
+        tvSeries: TVSeriesBundle
+    ) -> PeopleBundle {
         let adapters = PopcornPeopleAdaptersFactory(
             personService: foundations.tmdb.people,
-            fetchAppConfigurationUseCase: foundations.fetchAppConfiguration
+            fetchAppConfigurationUseCase: foundations.fetchAppConfiguration,
+            fetchMovieImageCollectionUseCase: movies.fetchImageCollection,
+            fetchTVSeriesImageCollectionUseCase: tvSeries.fetchImageCollection
         )
         let factory = PopcornPeopleFactory(
             personRemoteDataSource: adapters.makePersonRemoteDataSource(),
-            appConfigurationProvider: adapters.makeAppConfigurationProvider()
+            appConfigurationProvider: adapters.makeAppConfigurationProvider(),
+            movieLogoImageProvider: adapters.makeMovieLogoImageProvider(),
+            tvSeriesLogoImageProvider: adapters.makeTVSeriesLogoImageProvider()
         )
         return PeopleBundle(factory: factory, fetchDetails: factory.makeFetchPersonDetailsUseCase())
     }

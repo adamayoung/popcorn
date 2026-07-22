@@ -159,15 +159,147 @@ struct PersonDetailsViewModelTests {
         #expect(viewModel.isFocalPointEnabled)
     }
 
+    // MARK: - Known For
+
+    @Test("load loads the known-for section once the person is ready")
+    @MainActor
+    func loadLoadsKnownForWhenReady() async {
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchPerson: { _ in Self.testPerson },
+                fetchKnownFor: { _ in Self.testKnownForItems }
+            )
+        )
+
+        await viewModel.load()
+
+        #expect(viewModel.knownForState == .ready(Self.testKnownForItems))
+    }
+
+    @Test("load does not load the known-for section when the person fetch fails")
+    @MainActor
+    func loadSkipsKnownForWhenPersonFails() async {
+        let knownForCalled = Mutex(false)
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchPerson: { _ in throw TestError.generic },
+                fetchKnownFor: { _ in knownForCalled.withLock { $0 = true }; return [] }
+            )
+        )
+
+        await viewModel.load()
+
+        #expect(knownForCalled.withLock { $0 } == false)
+        #expect(viewModel.knownForState == .initial)
+    }
+
+    @Test("loadKnownFor success moves the known-for state to ready")
+    @MainActor
+    func loadKnownForSuccess() async {
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(fetchKnownFor: { _ in Self.testKnownForItems })
+        )
+
+        await viewModel.loadKnownFor()
+
+        #expect(viewModel.knownForState == .ready(Self.testKnownForItems))
+    }
+
+    @Test("loadKnownFor failure sets the known-for state to error, leaving viewState ready")
+    @MainActor
+    func loadKnownForFailureIsIsolated() async {
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(fetchKnownFor: { _ in throw TestError.generic }),
+            viewState: .ready(Self.testViewSnapshot)
+        )
+
+        await viewModel.loadKnownFor()
+
+        #expect(viewModel.knownForState == .error(ViewStateError(TestError.generic)))
+        #expect(viewModel.viewState == .ready(Self.testViewSnapshot))
+    }
+
+    @Test("loadKnownFor is a no-op when already ready")
+    @MainActor
+    func loadKnownForNoOpWhenReady() async {
+        let called = Mutex(false)
+        let items = Self.testKnownForItems
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchKnownFor: { _ in called.withLock { $0 = true }; return [] }
+            ),
+            knownForState: .ready(items)
+        )
+
+        await viewModel.loadKnownFor()
+
+        #expect(called.withLock { $0 } == false)
+        #expect(viewModel.knownForState == .ready(items))
+    }
+
+    @Test("loadKnownFor is a no-op when already loading")
+    @MainActor
+    func loadKnownForNoOpWhenLoading() async {
+        let called = Mutex(false)
+        let viewModel = Self.makeViewModel(
+            dependencies: Self.stubDependencies(
+                fetchKnownFor: { _ in called.withLock { $0 = true }; return [] }
+            ),
+            knownForState: .loading
+        )
+
+        await viewModel.loadKnownFor()
+
+        #expect(called.withLock { $0 } == false)
+        #expect(viewModel.knownForState.isLoading)
+    }
+
+    @Test("selecting a movie known-for item opens movie details")
+    @MainActor
+    func selectMovieItemOpensMovieDetails() {
+        let navigator = SpyPersonDetailsNavigator()
+        let viewModel = Self.makeViewModel(navigator: navigator)
+
+        viewModel.selectKnownForItem(
+            KnownForItem(id: 99, mediaType: .movie, title: "Movie")
+        )
+
+        #expect(navigator.openedMovieID == 99)
+        #expect(navigator.openedTVSeriesID == nil)
+    }
+
+    @Test("selecting a TV series known-for item opens TV series details")
+    @MainActor
+    func selectTVSeriesItemOpensTVSeriesDetails() {
+        let navigator = SpyPersonDetailsNavigator()
+        let viewModel = Self.makeViewModel(navigator: navigator)
+
+        viewModel.selectKnownForItem(
+            KnownForItem(id: 77, mediaType: .tvSeries, title: "Series")
+        )
+
+        #expect(navigator.openedTVSeriesID == 77)
+        #expect(navigator.openedMovieID == nil)
+    }
+
 }
 
 // MARK: - Spy Navigator
 
-/// `PersonDetailsNavigating` has no requirements (person details is a leaf screen
-/// with no onward navigation), so the spy is a minimal conformance used only to
-/// satisfy the view model's `navigator` parameter.
+/// Records the movie / TV series a "Known For" tap routes to.
 @MainActor
-private final class SpyPersonDetailsNavigator: PersonDetailsNavigating {}
+final class SpyPersonDetailsNavigator: PersonDetailsNavigating {
+    private(set) var openedMovieID: Int?
+    private(set) var openedTVSeriesID: Int?
+
+    func openMovieDetails(id: Int) {
+        openedMovieID = id
+    }
+
+    func openTVSeriesDetails(id: Int) {
+        openedTVSeriesID = id
+    }
+}
 
 // MARK: - Factories
 
@@ -178,6 +310,7 @@ extension PersonDetailsViewModelTests {
         dependencies: PersonDetailsDependencies = stubDependencies(),
         navigator: any PersonDetailsNavigating = SpyPersonDetailsNavigator(),
         viewState: ViewState<PersonDetailsViewSnapshot> = .initial,
+        knownForState: ViewState<[KnownForItem]> = .initial,
         isFocalPointEnabled: Bool = false
     ) -> PersonDetailsViewModel {
         PersonDetailsViewModel(
@@ -185,16 +318,19 @@ extension PersonDetailsViewModelTests {
             dependencies: dependencies,
             navigator: navigator,
             viewState: viewState,
+            knownForState: knownForState,
             isFocalPointEnabled: isFocalPointEnabled
         )
     }
 
     static func stubDependencies(
         fetchPerson: @escaping @Sendable (Int) async throws -> Person = { _ in testPerson },
+        fetchKnownFor: @escaping @Sendable (Int) async throws -> [KnownForItem] = { _ in [] },
         isFocalPointEnabled: @escaping @Sendable () throws -> Bool = { true }
     ) -> PersonDetailsDependencies {
         PersonDetailsDependencies(
             fetchPerson: fetchPerson,
+            fetchKnownFor: fetchKnownFor,
             isFocalPointEnabled: isFocalPointEnabled
         )
     }
@@ -218,6 +354,11 @@ extension PersonDetailsViewModelTests {
     static var testViewSnapshot: PersonDetailsViewSnapshot {
         PersonDetailsViewSnapshot(person: testPerson)
     }
+
+    static let testKnownForItems = [
+        KnownForItem(id: 1, mediaType: .movie, title: "The Devil Wears Prada"),
+        KnownForItem(id: 2, mediaType: .tvSeries, title: "Fortitude")
+    ]
 
 }
 
