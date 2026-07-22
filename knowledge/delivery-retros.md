@@ -16,7 +16,7 @@ table (`date · PR · weight · one-line outcome`) — see [`README.md`](README.
 
 <!-- Newest entry goes here. -->
 
-### Person details "Known For" carousel · branch feature/person-known-for-carousel · 2026-07-22 · full
+### Person details "Known For" carousel · PR #87 · 2026-07-22 · full
 
 *Phases / skills:* plan mode (inline exploration — Explore agents were declined, so
 I read the code directly + 5 clarifying questions) → `/deliver` → `/review-plan`
