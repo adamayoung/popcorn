@@ -33,17 +33,23 @@ final class MockTVSeriesRepository: TVSeriesRepository, @unchecked Sendable {
     var tvSeriesStreamCallCount = 0
     var tvSeriesStreamCalledWith: [Int] = []
     var tvSeriesStreamValues: [TVSeries?] = []
+    var tvSeriesStreamError: Error?
 
     func tvSeriesStream(withID id: Int) async -> AsyncThrowingStream<TVSeries?, Error> {
         tvSeriesStreamCallCount += 1
         tvSeriesStreamCalledWith.append(id)
 
         let values = tvSeriesStreamValues
+        let error = tvSeriesStreamError
         return AsyncThrowingStream { continuation in
             for value in values {
                 continuation.yield(value)
             }
-            continuation.finish()
+            if let error {
+                continuation.finish(throwing: error)
+            } else {
+                continuation.finish()
+            }
         }
     }
 

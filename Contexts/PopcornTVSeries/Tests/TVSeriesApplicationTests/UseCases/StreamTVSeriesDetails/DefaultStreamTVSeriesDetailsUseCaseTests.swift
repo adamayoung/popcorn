@@ -102,6 +102,21 @@ struct DefaultStreamTVSeriesDetailsUseCaseTests {
         #expect(mockRepository.imagesForTVSeriesCallCount == 2)
     }
 
+    @Test("stream forwards an upstream terminal error to the consumer")
+    func stream_forwardsUpstreamTerminalError() async {
+        let id = 1396
+        mockRepository.tvSeriesStreamError = TestError.upstream
+
+        let useCase = DefaultStreamTVSeriesDetailsUseCase(
+            repository: mockRepository,
+            appConfigurationProvider: mockAppConfigProvider
+        )
+
+        await #expect(throws: TestError.upstream) {
+            _ = try await self.collect(useCase.stream(id: id))
+        }
+    }
+
     // MARK: - Helpers
 
     private func collect(
@@ -114,4 +129,8 @@ struct DefaultStreamTVSeriesDetailsUseCaseTests {
         return results
     }
 
+}
+
+private enum TestError: Error {
+    case upstream
 }

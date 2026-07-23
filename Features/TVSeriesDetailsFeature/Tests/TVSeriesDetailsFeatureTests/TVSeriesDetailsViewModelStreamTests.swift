@@ -66,4 +66,38 @@ struct TVSeriesDetailsViewModelStreamTests {
         #expect(viewModel.viewState == .ready(base))
     }
 
+    @Test("a stream failure after an update leaves the last good series in place")
+    @MainActor
+    func streamFailurePreservesLastGoodSeries() async {
+        let base = TVSeriesDetailsViewModelTests.testTVSeries
+        let updated = TVSeries(
+            id: base.id,
+            name: "Updated Series",
+            genres: base.genres,
+            overview: base.overview,
+            seasons: base.seasons
+        )
+
+        let viewModel = TVSeriesDetailsViewModelTests.makeViewModel(
+            dependencies: TVSeriesDetailsViewModelTests.stubDependencies(
+                fetchTVSeries: { _ in base },
+                streamTVSeries: { _ in
+                    AsyncThrowingStream { continuation in
+                        continuation.yield(updated)
+                        continuation.finish(throwing: StreamTestError.boom)
+                    }
+                }
+            )
+        )
+
+        await viewModel.load()
+
+        // The stream error is caught and logged; the last good series stays put.
+        #expect(viewModel.viewState == .ready(updated))
+    }
+
+}
+
+private enum StreamTestError: Error {
+    case boom
 }

@@ -58,6 +58,29 @@ struct DefaultTVSeriesRepositoryTVSeriesTests {
         #expect(await local.setTVSeriesCalledWith.first?.name == "Breaking Bad (fresh)")
     }
 
+    @Test("tvSeriesStream still yields the cached value when the remote refresh fails")
+    func tvSeriesStream_stillYieldsCachedWhenRemoteRefreshFails() async throws {
+        let id = 1396
+        let cached = TVSeries.mock(id: id, name: "Breaking Bad")
+        mockLocalDataSource.tvSeriesStreamValues = [cached]
+        mockRemoteDataSource.tvSeriesWithIDStub = .failure(.notFound)
+
+        let repository = DefaultTVSeriesRepository(
+            remoteDataSource: mockRemoteDataSource,
+            localDataSource: mockLocalDataSource
+        )
+
+        let stream = await repository.tvSeriesStream(withID: id)
+        var iterator = stream.makeAsyncIterator()
+        let first = try await iterator.next()
+        #expect(first ?? nil == cached)
+
+        // The background refresh attempts the remote fetch, which fails — so nothing is cached.
+        let remote = mockRemoteDataSource
+        try await waitUntil { remote.tvSeriesWithIDCallCount == 1 }
+        #expect(await mockLocalDataSource.setTVSeriesCallCount == 0)
+    }
+
     /// Polls `condition` (max ~2s) so a racy background `Task` can be asserted deterministically.
     private func waitUntil(_ condition: () async -> Bool) async throws {
         for _ in 0 ..< 200 {
