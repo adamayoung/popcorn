@@ -16,6 +16,50 @@ table (`date · PR · weight · one-line outcome`) — see [`README.md`](README.
 
 <!-- Newest entry goes here. -->
 
+### TV series details fetch-then-stream · `feature/tv-series-details-stream` (PR #TBD) · 2026-07-23 · full
+
+*Phases / skills:* plan mode (2 Explore agents + a fable `plan-reviewer` pass — 0
+blockers, all 4 should-fix + 4 nice-to-have folded into the plan) → `/deliver` →
+`/review-plan` **skipped** (plan already reviewed this session) → `/implement-plan`
+(Canon TDD; 3 commits: context stream layer → feature+app wiring → review error-path
+fixes) → `/review-changes` (7-dimension fan-out: **0 crit/high, 3 medium, 0 dropped** —
+all three were error-path test gaps, all applied) → `/security-review` (**clean**; the
+fixes were test-only so the verdict stood, no re-run) → `/capture-knowledge` (ADR-0006 +
+2 gotchas) → independent grader (**all 5 ACs met — PASS**). Added `tvSeriesStream`
+end-to-end (domain → SwiftData observation + background TMDb refresh →
+`StreamTVSeriesDetailsUseCase`), removed theme-colour extraction from the fetch, and
+wired the feature's `observeTVSeriesUpdates()` — mirroring `MovieDetailsFeature`.
+
+*What worked:*
+
+- **Mirroring a merged sibling (movie details) end-to-end** made the plan and
+  implementation fast and low-risk — the movie files were a near-complete blueprint at
+  every layer.
+- **The fable plan-review caught the movie code's latent per-tick `Task` hang** before
+  implementation, so the TV copy *fixed* it (do/catch + continue; `finish(throwing:)` on
+  terminal error) instead of inheriting it.
+- **Phase 4 ∥ Phase 5 concurrent cold pass** — the 7-dimension code-review Workflow and
+  the security agent ran simultaneously; the whole review stage cost one wall-clock.
+- **Package-first verification** (`/test-package PopcornTVSeries`, 298 tests) validated
+  the entire context layer before the slower full-app gate.
+
+*Friction:*
+
+- The Live `live()` function tripped `function_body_length` (50) once the stream closure
+  was inlined — the TV Live closures carry Observability spans the movie ones don't, so
+  the sibling's shape didn't fit; extracted a `makeStreamTVSeries` helper. One lint round.
+- Testing the SwiftData notification re-yield is inherently flaky; settled on
+  deterministic initial-snapshot tests + covered-by-reuse for the shared engine (gotcha).
+
+*Deviations:* none from the approved plan; the three review fixes were additive
+error-path tests (repo remote-failure, use-case terminal-error, view-model
+stream-failure), no production change.
+
+*One improvement:* for a "clone a sibling feature end-to-end" plan, make the plan-review
+**explicitly diff the sibling for latent defects to carry-or-fix** — it did so here for
+the `Task` hang, and that was the single highest-value catch; worth standardising for
+clone-shaped plans.
+
 ### Person credits list from the "Known For" header · PR #88 · 2026-07-22 · full
 
 *Phases / skills:* plan mode (3 Explore agents + 1 Plan agent, 3 product questions
@@ -445,21 +489,6 @@ worktree-first instruction actively risks stranding the user's work.
 - *One improvement:* pin the simulator reliably (UDID or a robust `DESTINATION` mechanism),
   or make the gate detect the FoundationModels dlopen / "0 tests executed" and fail loudly.
 
-### MediaSearch error state + retry · PR #63 · 2026-07-05 · medium
-
-- *Phases / skills:* implement test-first (subagent, 4 tests) → `code-reviewer` (1 Medium
-  folded in) → gate → watch → merge.
-- *What worked:* the CI `claude-review` bot earned its keep — it caught a real **High**
-  (retry inferring the wrong loader from mutable `query`, stranding genres behind
-  `guard case .initial`) that the local reviewer missed; fixed test-first with a
-  deterministic divergence test.
-- *Friction:* the `.error` snapshot had to be deferred — recording a new reference needs the
-  broken iOS 26.5 runtime, and recording on 27.0 would mismatch CI's 26.5 baseline.
-- *Deviations:* snapshot deferred to follow-up; local tests on iOS 27.0.
-- *One improvement:* `/review-changes` could add a lens for "retry/reload target re-derived
-  from mutable UI state that can change between failure and retry" — the exact class the bot
-  caught and the local reviewer didn't.
-
 ## Archive
 
 Distilled older entries — `date · PR · weight · one-line outcome` (full prose in git
@@ -467,4 +496,5 @@ history).
 
 | Date | PR | Weight | Outcome |
 | --- | --- | --- | --- |
+| 2026-07-05 | #63 | medium | MediaSearch error/retry state; CI `claude-review` caught a real High (retry re-derived the loader from mutable `query`) the local reviewer missed; `.error` snapshot deferred to the iOS 26.5 baseline |
 | 2026-07-05 | #62 | full (mechanical) | 22-site async-let sweep via subagent; green first try; surfaced the broken iOS 26.5 simruntime that dogged later runs |
