@@ -18,6 +18,7 @@ extension TVSeriesDetailsDependencies {
     /// including use cases, mappers, feature flags, and observability spans.
     static func live(services: AppServices) -> TVSeriesDetailsDependencies {
         let fetchTVSeriesDetails = services.tvSeriesFactory.makeFetchTVSeriesDetailsUseCase()
+        let streamTVSeriesDetails = services.tvSeriesFactory.makeStreamTVSeriesDetailsUseCase()
         let fetchTVSeriesCredits = services.tvSeriesFactory.makeFetchTVSeriesCreditsUseCase()
         let featureFlags = services.featureFlags
 
@@ -41,6 +42,7 @@ extension TVSeriesDetailsDependencies {
                     throw FetchTVSeriesError(error)
                 }
             },
+            streamTVSeries: makeStreamTVSeries(using: streamTVSeriesDetails),
             fetchCredits: { tvSeriesID in
                 let span = SpanContext.startChild(
                     operation: .clientFetch,
@@ -64,6 +66,35 @@ extension TVSeriesDetailsDependencies {
             isIntelligenceEnabled: { featureFlags.isEnabled(.tvSeriesIntelligence) },
             isBackdropFocalPointEnabled: { featureFlags.isEnabled(.backdropFocalPoint) }
         )
+    }
+
+    /// Wraps the context stream use case, remapping each emitted context ``TVSeriesDetails``
+    /// to the feature's presentation ``TVSeries`` and finishing the stream on error.
+    private static func makeStreamTVSeries(
+        using streamTVSeriesDetails: any StreamTVSeriesDetailsUseCase
+    ) -> @Sendable (_ id: Int) async -> AsyncThrowingStream<TVSeries?, Error> {
+        { id in
+            let tvSeriesStream = await streamTVSeriesDetails.stream(id: id)
+            return AsyncThrowingStream<TVSeries?, Error> { continuation in
+                let task = Task {
+                    do {
+                        let mapper = TVSeriesMapper()
+                        for try await tvSeries in tvSeriesStream {
+                            guard let tvSeries else {
+                                continuation.yield(nil)
+                                continue
+                            }
+
+                            continuation.yield(mapper.map(tvSeries))
+                        }
+                        continuation.finish()
+                    } catch {
+                        continuation.finish(throwing: error)
+                    }
+                }
+                continuation.onTermination = { _ in task.cancel() }
+            }
+        }
     }
 
 }

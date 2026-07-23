@@ -152,4 +152,32 @@ struct TVSeriesDetailsMapperTests {
         #expect(result.genres == nil)
     }
 
+    @Test("map threads the theme colour through to TV series details")
+    func map_threadsThemeColorThrough() {
+        let tvSeries = TVSeries.mock()
+        let imageCollection = ImageCollection(id: tvSeries.id, posterPaths: [], backdropPaths: [], logoPaths: [])
+        let themeColor = ThemeColor.mock()
+        let mapper = TVSeriesDetailsMapper()
+
+        let result = mapper.map(
+            tvSeries,
+            imageCollection: imageCollection,
+            imagesConfiguration: imagesConfiguration,
+            themeColor: themeColor
+        )
+
+        #expect(result.themeColor == themeColor)
+    }
+
+    @Test("map defaults the theme colour to nil")
+    func map_defaultsThemeColorToNil() {
+        let tvSeries = TVSeries.mock()
+        let imageCollection = ImageCollection(id: tvSeries.id, posterPaths: [], backdropPaths: [], logoPaths: [])
+        let mapper = TVSeriesDetailsMapper()
+
+        let result = mapper.map(tvSeries, imageCollection: imageCollection, imagesConfiguration: imagesConfiguration)
+
+        #expect(result.themeColor == nil)
+    }
+
 }

@@ -5,13 +5,14 @@
 //  Copyright © 2026 Adam Young.
 //
 
+import DataPersistenceInfrastructure
 import Foundation
 import OSLog
 import SwiftData
 import TVSeriesDomain
 
 @ModelActor
-actor SwiftDataTVSeriesLocalDataSource: TVSeriesLocalDataSource {
+actor SwiftDataTVSeriesLocalDataSource: TVSeriesLocalDataSource, SwiftDataFetchStreaming {
 
     private static let logger = Logger.tvSeriesInfrastructure
 
@@ -57,6 +58,17 @@ actor SwiftDataTVSeriesLocalDataSource: TVSeriesLocalDataSource {
 
         let mapper = TVSeriesEntityMapper()
         return mapper.map(entity)
+    }
+
+    func tvSeriesStream(
+        forTVSeries id: Int
+    ) async -> AsyncThrowingStream<TVSeries?, Error> {
+        let descriptor = FetchDescriptor<TVSeriesEntity>(
+            predicate: #Predicate { $0.tvSeriesID == id }
+        )
+        return stream(for: descriptor) {
+            TVSeriesEntityMapper().compactMap($0.first)
+        }
     }
 
     func setTVSeries(

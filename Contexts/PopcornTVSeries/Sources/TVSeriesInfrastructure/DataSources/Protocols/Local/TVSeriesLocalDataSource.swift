@@ -12,6 +12,13 @@ public protocol TVSeriesLocalDataSource: Sendable, Actor {
 
     func tvSeries(withID id: Int) async throws(TVSeriesLocalDataSourceError) -> TVSeries?
 
+    /// Creates a stream that emits the cached TV series and re-emits whenever the
+    /// underlying store changes.
+    ///
+    /// - Parameter id: The unique identifier of the TV series to observe.
+    /// - Returns: An async throwing stream that emits the cached ``TVSeries``, or `nil` when absent.
+    func tvSeriesStream(forTVSeries id: Int) async -> AsyncThrowingStream<TVSeries?, Error>
+
     func setTVSeries(_ tvSeries: TVSeries) async throws(TVSeriesLocalDataSourceError)
 
     func images(

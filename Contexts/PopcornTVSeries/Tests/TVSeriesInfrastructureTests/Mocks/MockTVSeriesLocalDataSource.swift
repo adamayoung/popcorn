@@ -31,6 +31,23 @@ actor MockTVSeriesLocalDataSource: TVSeriesLocalDataSource {
         }
     }
 
+    var tvSeriesStreamCallCount = 0
+    var tvSeriesStreamCalledWith: [Int] = []
+    nonisolated(unsafe) var tvSeriesStreamValues: [TVSeries?] = []
+
+    func tvSeriesStream(forTVSeries id: Int) async -> AsyncThrowingStream<TVSeries?, Error> {
+        tvSeriesStreamCallCount += 1
+        tvSeriesStreamCalledWith.append(id)
+
+        let values = tvSeriesStreamValues
+        return AsyncThrowingStream { continuation in
+            for value in values {
+                continuation.yield(value)
+            }
+            continuation.finish()
+        }
+    }
+
     var setTVSeriesCallCount = 0
     var setTVSeriesCalledWith: [TVSeries] = []
     nonisolated(unsafe) var setTVSeriesStub: Result<Void, TVSeriesLocalDataSourceError>?

@@ -23,7 +23,9 @@ import Presentation
 /// view-model-owned `Task` — structured concurrency keeps the work tied to the
 /// view's lifetime with no manual cancellation.
 ///
-/// TV series details has no live stream and no watchlist toggle.
+/// After the hero is ready, a live stream (``observeTVSeriesUpdates()``) patches
+/// ``viewState`` with late-arriving enrichment such as the poster theme colour and
+/// background-refreshed data. TV series details has no watchlist toggle.
 @Observable
 @MainActor
 public final class TVSeriesDetailsViewModel {
@@ -84,17 +86,22 @@ public final class TVSeriesDetailsViewModel {
         isBackdropFocalPointEnabled = (try? dependencies.isBackdropFocalPointEnabled()) ?? false
     }
 
-    /// Fetches the series, then loads the cast-and-crew section once it is ready.
+    /// Fetches the series, then loads the cast-and-crew section and observes live
+    /// series updates once it is ready.
     ///
     /// Drive this from the view's `.task(id:)`; SwiftUI cancels it on disappear
-    /// and reruns it on reappear / ``reload()``.
+    /// and reruns it on reappear / ``reload()``. The cast-and-crew load and the
+    /// live stream run concurrently once the series is ready, so cancellation
+    /// propagates to both.
     public func load() async {
         await fetch()
         guard viewState.isReady else {
             return
         }
 
-        await loadCastAndCrew()
+        async let castAndCrew: Void = loadCastAndCrew()
+        async let updates: Void = observeTVSeriesUpdates()
+        _ = await (castAndCrew, updates)
     }
 
     /// Retries loading after an error by changing ``reloadID``, which reruns the
@@ -166,6 +173,41 @@ public final class TVSeriesDetailsViewModel {
             )
             castAndCrewState.applyLoadFailure(error)
         }
+    }
+
+    /// Observes the live TV-series stream and patches ``viewState`` as updates arrive.
+    ///
+    /// The stream delivers enrichment that is kept off the initial fetch — most notably
+    /// the poster theme colour — and any background-refreshed data, shortly after the
+    /// hero has already rendered.
+    func observeTVSeriesUpdates() async {
+        guard case .ready = viewState else {
+            return
+        }
+
+        Self.logger.info(
+            "Starting TV series details stream [tvSeriesID: \(self.tvSeriesID, privacy: .private)]"
+        )
+        do {
+            let stream = try await dependencies.streamTVSeries(tvSeriesID)
+            for try await tvSeries in stream {
+                guard let tvSeries else { continue }
+                applyTVSeriesUpdate(tvSeries)
+            }
+        } catch is CancellationError {
+            // Expected when the view disappears and the `.task` is cancelled.
+        } catch {
+            Self.logger.error(
+                "TV series details stream failed [tvSeriesID: \(self.tvSeriesID, privacy: .private)]: \(error.localizedDescription, privacy: .public)"
+            )
+        }
+    }
+
+    private func applyTVSeriesUpdate(_ tvSeries: TVSeries) {
+        guard case .ready = viewState else {
+            return
+        }
+        viewState = .ready(tvSeries)
     }
 
 }

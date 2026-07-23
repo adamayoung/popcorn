@@ -7,9 +7,12 @@
 
 import Foundation
 import Observability
+import OSLog
 import TVSeriesDomain
 
 final class DefaultTVSeriesRepository: TVSeriesRepository {
+
+    private static let logger = Logger.tvSeriesInfrastructure
 
     private let remoteDataSource: any TVSeriesRemoteDataSource
     private let localDataSource: any TVSeriesLocalDataSource
@@ -61,6 +64,21 @@ final class DefaultTVSeriesRepository: TVSeriesRepository {
 
         span?.finish()
         return tvSeries
+    }
+
+    func tvSeriesStream(withID id: Int) async -> AsyncThrowingStream<TVSeriesDomain.TVSeries?, Error> {
+        let stream = await localDataSource.tvSeriesStream(forTVSeries: id)
+
+        Task {
+            do {
+                let tvSeries = try await remoteDataSource.tvSeries(withID: id)
+                try await localDataSource.setTVSeries(tvSeries)
+            } catch {
+                Self.logger.error("Failed to fetch/cache TV series in stream [tvSeriesID: \(id)]: \(error)")
+            }
+        }
+
+        return stream
     }
 
     func images(

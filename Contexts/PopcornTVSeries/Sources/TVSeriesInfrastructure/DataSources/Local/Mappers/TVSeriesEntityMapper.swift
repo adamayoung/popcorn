@@ -27,6 +27,14 @@ struct TVSeriesEntityMapper {
         )
     }
 
+    func compactMap(_ entity: TVSeriesEntity?) -> TVSeries? {
+        guard let entity else {
+            return nil
+        }
+
+        return map(entity)
+    }
+
     func map(_ tvSeries: TVSeries) -> TVSeriesEntity {
         TVSeriesEntity(
             tvSeriesID: tvSeries.id,
