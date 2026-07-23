@@ -334,6 +334,9 @@ extension TVSeriesDetailsViewModelTests {
 
     static func stubDependencies(
         fetchTVSeries: @escaping @Sendable (Int) async throws -> TVSeries = { _ in testTVSeries },
+        streamTVSeries: @escaping @Sendable (Int) async throws -> AsyncThrowingStream<TVSeries?, Error> = { _ in
+            AsyncThrowingStream { $0.finish() }
+        },
         fetchCredits: @escaping @Sendable (Int) async throws -> Credits = { _ in
             Credits(id: 123, castMembers: [], crewMembers: [])
         },
@@ -343,6 +346,7 @@ extension TVSeriesDetailsViewModelTests {
     ) -> TVSeriesDetailsDependencies {
         TVSeriesDetailsDependencies(
             fetchTVSeries: fetchTVSeries,
+            streamTVSeries: streamTVSeries,
             fetchCredits: fetchCredits,
             isCastAndCrewEnabled: isCastAndCrewEnabled,
             isIntelligenceEnabled: isIntelligenceEnabled,

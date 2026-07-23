@@ -17,6 +17,7 @@ import TVSeriesApplication
 public struct TVSeriesDetailsDependencies: Sendable {
 
     public var fetchTVSeries: @Sendable (_ id: Int) async throws -> TVSeries
+    public var streamTVSeries: @Sendable (_ id: Int) async throws -> AsyncThrowingStream<TVSeries?, Error>
     public var fetchCredits: @Sendable (_ tvSeriesID: Int) async throws -> Credits
 
     public var isCastAndCrewEnabled: @Sendable () throws -> Bool
@@ -25,12 +26,14 @@ public struct TVSeriesDetailsDependencies: Sendable {
 
     public init(
         fetchTVSeries: @escaping @Sendable (_ id: Int) async throws -> TVSeries,
+        streamTVSeries: @escaping @Sendable (_ id: Int) async throws -> AsyncThrowingStream<TVSeries?, Error>,
         fetchCredits: @escaping @Sendable (_ tvSeriesID: Int) async throws -> Credits,
         isCastAndCrewEnabled: @escaping @Sendable () throws -> Bool,
         isIntelligenceEnabled: @escaping @Sendable () throws -> Bool,
         isBackdropFocalPointEnabled: @escaping @Sendable () throws -> Bool
     ) {
         self.fetchTVSeries = fetchTVSeries
+        self.streamTVSeries = streamTVSeries
         self.fetchCredits = fetchCredits
         self.isCastAndCrewEnabled = isCastAndCrewEnabled
         self.isIntelligenceEnabled = isIntelligenceEnabled
@@ -46,6 +49,12 @@ public struct TVSeriesDetailsDependencies: Sendable {
         static var preview: TVSeriesDetailsDependencies {
             TVSeriesDetailsDependencies(
                 fetchTVSeries: { _ in TVSeries.mock },
+                streamTVSeries: { _ in
+                    AsyncThrowingStream<TVSeries?, Error> { continuation in
+                        continuation.yield(TVSeries.mock)
+                        continuation.finish()
+                    }
+                },
                 fetchCredits: { _ in Credits.mock },
                 isCastAndCrewEnabled: { true },
                 isIntelligenceEnabled: { true },
