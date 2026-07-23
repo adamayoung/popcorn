@@ -40,6 +40,13 @@ package final class TVSeriesApplicationFactory: Sendable {
     package func makeFetchTVSeriesDetailsUseCase() -> some FetchTVSeriesDetailsUseCase {
         DefaultFetchTVSeriesDetailsUseCase(
             repository: tvSeriesRepository,
+            appConfigurationProvider: appConfigurationProvider
+        )
+    }
+
+    package func makeStreamTVSeriesDetailsUseCase() -> some StreamTVSeriesDetailsUseCase {
+        DefaultStreamTVSeriesDetailsUseCase(
+            repository: tvSeriesRepository,
             appConfigurationProvider: appConfigurationProvider,
             themeColorProvider: themeColorProvider
         )

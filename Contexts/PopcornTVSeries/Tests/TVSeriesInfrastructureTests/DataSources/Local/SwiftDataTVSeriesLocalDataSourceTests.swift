@@ -93,6 +93,34 @@ struct SwiftDataTVSeriesLocalDataSourceTests {
         #expect(result?.name == "Updated Name")
     }
 
+    // MARK: - tvSeriesStream() Tests
+
+    @Test("tvSeriesStream yields nil snapshot when cache is empty")
+    func tvSeriesStreamYieldsNilSnapshotWhenEmpty() async throws {
+        let dataSource = SwiftDataTVSeriesLocalDataSource(modelContainer: modelContainer)
+
+        let stream = await dataSource.tvSeriesStream(forTVSeries: 1396)
+        var iterator = stream.makeAsyncIterator()
+        let first = try await iterator.next()
+
+        // A value was yielded, and that value is nil (empty cache).
+        #expect(first == .some(nil))
+    }
+
+    @Test("tvSeriesStream yields cached series as initial snapshot")
+    func tvSeriesStreamYieldsCachedSeriesSnapshot() async throws {
+        let dataSource = SwiftDataTVSeriesLocalDataSource(modelContainer: modelContainer)
+        try await dataSource.setTVSeries(TVSeries.mock(id: 1396, name: "Breaking Bad"))
+
+        let stream = await dataSource.tvSeriesStream(forTVSeries: 1396)
+        var iterator = stream.makeAsyncIterator()
+        let first = try await iterator.next()
+
+        let series = try #require(first ?? nil)
+        #expect(series.id == 1396)
+        #expect(series.name == "Breaking Bad")
+    }
+
     // MARK: - images() Tests
 
     @Test("images returns nil when cache is empty")

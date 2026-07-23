@@ -241,27 +241,23 @@ struct DefaultFetchTVSeriesDetailsUseCaseTests {
         #expect(result.name == tvSeries.name)
     }
 
-    @Test("execute should apply the theme colour from the provider")
-    func execute_shouldApplyThemeColorFromProvider() async throws {
+    @Test("execute does not extract a theme colour (delivered via the stream instead)")
+    func execute_doesNotExtractThemeColor() async throws {
         let id = 600
         let tvSeries = TVSeries.mock(id: id, posterPath: URL(string: "/poster.jpg"))
         let imageCollection = ImageCollection.mock(id: id)
-        let themeColor = ThemeColor.mock()
 
         mockRepository.tvSeriesWithIDStub = .success(tvSeries)
         mockRepository.imagesForTVSeriesStub = .success(imageCollection)
-        let themeColorProvider = MockThemeColorProvider(themeColorResult: themeColor)
 
         let useCase = DefaultFetchTVSeriesDetailsUseCase(
             repository: mockRepository,
-            appConfigurationProvider: mockAppConfigProvider,
-            themeColorProvider: themeColorProvider
+            appConfigurationProvider: mockAppConfigProvider
         )
 
         let result = try await useCase.execute(id: id)
 
-        #expect(result.themeColor == themeColor)
-        #expect(themeColorProvider.themeColorCallCount == 1)
+        #expect(result.themeColor == nil)
     }
 
     @Test("execute should throw and finish span with internal error on images failure")

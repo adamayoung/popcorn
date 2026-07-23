@@ -115,6 +115,25 @@ struct TVSeriesEntityMapperTests {
         #expect(entity.genres?.isEmpty != false)
     }
 
+    // MARK: - compactMap
+
+    @Test("compactMap nil entity returns nil")
+    func compactMapNilEntity_returnsNil() {
+        let result = mapper.compactMap(nil)
+
+        #expect(result == nil)
+    }
+
+    @Test("compactMap entity returns mapped domain series")
+    func compactMapEntity_returnsMappedSeries() {
+        let entity = TVSeriesEntity.makeEntity(tvSeriesID: 1396, name: "Breaking Bad")
+
+        let result = mapper.compactMap(entity)
+
+        #expect(result?.id == 1396)
+        #expect(result?.name == "Breaking Bad")
+    }
+
     // MARK: - Round-trip
 
     @Test("genres survive domain to entity to domain round-trip")

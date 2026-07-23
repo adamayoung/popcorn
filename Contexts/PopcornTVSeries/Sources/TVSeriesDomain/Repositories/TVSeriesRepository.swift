@@ -26,6 +26,17 @@ public protocol TVSeriesRepository: Sendable {
     func tvSeries(withID id: Int) async throws(TVSeriesRepositoryError) -> TVSeries
 
     ///
+    /// Creates a stream that continuously emits updates for a specific TV series.
+    ///
+    /// This stream is useful for observing changes to TV series data over time,
+    /// such as cache updates or background synchronization.
+    ///
+    /// - Parameter id: The unique identifier of the TV series to observe.
+    /// - Returns: An async throwing stream that emits ``TVSeries`` instances or `nil` if not available.
+    ///
+    func tvSeriesStream(withID id: Int) async -> AsyncThrowingStream<TVSeries?, Error>
+
+    ///
     /// Fetches the image collection for a specific TV series.
     ///
     /// - Parameter tvSeriesID: The unique identifier of the TV series.
