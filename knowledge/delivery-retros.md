@@ -16,7 +16,7 @@ table (`date · PR · weight · one-line outcome`) — see [`README.md`](README.
 
 <!-- Newest entry goes here. -->
 
-### TV series details fetch-then-stream · `feature/tv-series-details-stream` (PR #TBD) · 2026-07-23 · full
+### TV series details fetch-then-stream · PR #93 · 2026-07-23 · full
 
 *Phases / skills:* plan mode (2 Explore agents + a fable `plan-reviewer` pass — 0
 blockers, all 4 should-fix + 4 nice-to-have folded into the plan) → `/deliver` →
