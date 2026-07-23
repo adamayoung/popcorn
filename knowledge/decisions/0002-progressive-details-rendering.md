@@ -4,6 +4,12 @@
 - **Date:** 2026-07-21
 - **Deciders:** Adam Young
 
+> **Note (2026-07-23):** The TV-specific clause below — that `FetchTVSeriesDetails`
+> extracts the theme colour inline *because it has no stream* — is **superseded by
+> [ADR-0006](0006-tv-series-details-fetch-then-stream.md)**, which gives TV series a
+> stream and moves theme colour off the fetch, as with movies. The rest of this ADR
+> stands.
+
 ## Context
 
 The movie and TV series details screens gated their first pixel on **every** piece

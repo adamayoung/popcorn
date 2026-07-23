@@ -11,6 +11,30 @@ and dated; link an ADR if a decision came out of it.
 *YYYY-MM-DD.* What bit us, why, and the resolution. Keep it to a few lines.
 -->
 
+### An unstructured `Task` driving an `AsyncThrowingStream` must finish the continuation on throw
+
+*2026-07-23.* The movie `DefaultStreamMovieDetailsUseCase` drives the repository stream inside
+`let task = Task { for try await … { let x = try await build(…); … }; continuation.finish() }`.
+If `build(…)` (or the upstream `for try await`) **throws**, the error escapes the unstructured
+`Task` and is silently swallowed — `continuation.finish()` never runs, so the consumer's own
+`for try await` **hangs forever** (no value, no completion). It's cosmetic for movies (a later
+watchlist re-tick papers over a one-off failure) but fatal once the stream is the *only* source
+of a value. The TV `DefaultStreamTVSeriesDetailsUseCase` fixes it: wrap each per-tick build in
+`do/catch` + `continue` (skip the bad tick, keep the stream alive), and wrap the whole loop so an
+upstream terminal error calls `continuation.finish(throwing:)`. The `+Live` remap closure does the
+same. Copying a `Stream…UseCase` from a sibling inherits this bug — fix it in the copy. See
+[ADR-0006](decisions/0006-tv-series-details-fetch-then-stream.md).
+
+### `SwiftDataFetchStreaming` re-yield is covered by reuse, not a timing test
+
+*2026-07-23.* A local data source `…Stream` method built on `stream(for:map:)` re-emits on every
+`ModelContext.didSave` process-wide. The **initial snapshot** is deterministic and worth a unit
+test (empty → `nil`; populated → the value — assert on `iterator.next()`). The notification-driven
+**re-yield** is a property of the shared `SwiftDataFetchStreaming` engine (relied on by the movie
+side, untested there too); testing it needs a `sleep`/timeout that flakes in CI. Cover the new
+wiring (the `FetchDescriptor` predicate + `compactMap`) via the initial snapshot, and treat the
+re-yield as covered-by-reuse rather than shipping a flaky timing test into the suite.
+
 ### `#Preview` blocks compile in Release — guard any that touch DEBUG-only fixtures
 
 *2026-07-22.* `#Preview` macro bodies are **not** stripped from Release builds, so a
