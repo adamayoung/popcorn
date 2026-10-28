@@ -27,11 +27,11 @@ Add a separate test target for snapshots (keep them isolated from unit tests):
         "{FeatureName}",
         .product(name: "SnapshotTesting", package: "swift-snapshot-testing")
     ],
-    resources: [.copy("Views/__Snapshots__")]
+    exclude: ["Views/__Snapshots__"]
 )
 ```
 
-The `resources: [.copy("Views/__Snapshots__")]` is critical — it bundles snapshot PNGs into the test target for Xcode Cloud CI compatibility.
+Add the `exclude` once the first reference PNG is recorded, because excluding a path that doesn't exist makes SwiftPM warn. Without it, `swift build` fails with "found N file(s) which are unhandled". References are found via `#filePath`, so they must not be bundled as resources.
 
 ### 3. Register in Test Plan
 
