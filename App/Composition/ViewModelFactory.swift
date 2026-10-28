@@ -6,9 +6,6 @@
 //
 
 import AppDependencies
-#if DEBUG
-    import DeveloperFeature
-#endif
 import DiscoverMoviesFeature
 import ExploreFeature
 import GamesCatalogFeature
@@ -29,6 +26,9 @@ import TVSeriesCastAndCrewFeature
 import TVSeriesDetailsFeature
 import TVSeriesIntelligenceFeature
 import WatchlistFeature
+#if DEBUG
+    import DeveloperFeature
+#endif
 
 /// Builds feature view models from the app's shared ``AppServices`` graph.
 ///

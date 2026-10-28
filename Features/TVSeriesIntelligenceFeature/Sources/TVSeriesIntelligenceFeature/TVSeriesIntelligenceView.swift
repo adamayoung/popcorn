@@ -36,18 +36,18 @@ public struct TVSeriesIntelligenceView: View {
                 .navigationSubtitle(viewModel.tvSeriesTagline ?? "")
             #endif
             #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
+                .navigationBarTitleDisplayMode(.inline)
             #endif
-            .toolbar {
-                ToolbarItem {
-                    Button(role: .close) {
-                        dismiss()
+                .toolbar {
+                    ToolbarItem {
+                        Button(role: .close) {
+                            dismiss()
+                        }
                     }
                 }
-            }
-            .task {
-                await viewModel.startSession()
-            }
+                .task {
+                    await viewModel.startSession()
+                }
         }
     }
 

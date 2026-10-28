@@ -83,10 +83,7 @@ public final class PopularMoviesViewModel {
     /// and reruns it on reappear / ``reload()``. A successful fetch resets
     /// pagination to the fresh first page.
     public func load() async {
-        guard !viewState.isReady else {
-            return
-        }
-        guard !viewState.isLoading else {
+        guard !viewState.isReady, !viewState.isLoading else {
             return
         }
 
@@ -120,10 +117,7 @@ public final class PopularMoviesViewModel {
     ///
     /// - Parameter index: The cell's position in the loaded movies.
     public func loadMoreIfNeeded(at index: Int) async {
-        guard let movies = viewState.content?.movies else {
-            return
-        }
-        guard index >= movies.count - Self.loadMoreThreshold else {
+        guard let movies = viewState.content?.movies, index >= movies.count - Self.loadMoreThreshold else {
             return
         }
 

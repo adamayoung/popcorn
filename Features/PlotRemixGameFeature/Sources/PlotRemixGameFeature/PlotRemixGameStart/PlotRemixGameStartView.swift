@@ -21,7 +21,7 @@ struct PlotRemixGameStartView: View {
             VStack {
                 Image(systemName: metadata.iconSystemName)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .frame(width: 60, height: 60)
 
                 Text(verbatim: metadata.name)
@@ -94,7 +94,7 @@ struct PlotRemixGameStartView: View {
                     // Icon
                     Image(systemName: metadata.iconSystemName)
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
+                        .scaledToFit()
                         .frame(width: 40, height: 40)
                         .foregroundStyle(Color.white)
                         .scaleEffect(reduceMotion ? 1.0 : 1.0 + sin(time * 2) * 0.1)

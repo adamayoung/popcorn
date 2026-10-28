@@ -6,10 +6,10 @@
 //
 
 import AppDependencies
+import FeatureAccess
 #if DEBUG
     import DeveloperFeature
 #endif
-import FeatureAccess
 
 #if DEBUG
     extension FeatureFlagsDependencies {

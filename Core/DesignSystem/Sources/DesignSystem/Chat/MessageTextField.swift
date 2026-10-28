@@ -65,11 +65,7 @@ public struct MessageTextField: View {
     }
 
     private func sendMessage() {
-        guard !isDisabled else {
-            return
-        }
-
-        guard !text.isEmpty else {
+        guard !isDisabled, !text.isEmpty else {
             return
         }
 

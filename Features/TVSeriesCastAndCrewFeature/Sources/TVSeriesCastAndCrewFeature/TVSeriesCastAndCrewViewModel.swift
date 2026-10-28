@@ -92,10 +92,7 @@ public final class TVSeriesCastAndCrewViewModel {
     // MARK: - Loading
 
     func fetch() async {
-        guard !viewState.isReady else {
-            return
-        }
-        guard !viewState.isLoading else {
+        guard !viewState.isReady, !viewState.isLoading else {
             return
         }
 

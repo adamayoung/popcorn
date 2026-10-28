@@ -72,14 +72,14 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
 
     func channels() async throws(TVListingsLocalDataSourceError) -> [Channel] {
         switch channelsStub {
-        case .success(let value): return value
+        case .success(let value): value
         case .failure(let error): throw error
         }
     }
 
     func regions() async throws(TVListingsLocalDataSourceError) -> [TVRegion] {
         switch regionsStub {
-        case .success(let value): return value
+        case .success(let value): value
         case .failure(let error): throw error
         }
     }
@@ -89,7 +89,7 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
         onDate date: Date
     ) async throws(TVListingsLocalDataSourceError) -> [TVProgramme] {
         switch programmesStub {
-        case .success(let value): return value
+        case .success(let value): value
         case .failure(let error): throw error
         }
     }
@@ -98,7 +98,7 @@ actor MockTVListingsLocalDataSource: TVListingsLocalDataSource {
         at date: Date
     ) async throws(TVListingsLocalDataSourceError) -> [TVProgramme] {
         switch nowPlayingStub {
-        case .success(let value): return value
+        case .success(let value): value
         case .failure(let error): throw error
         }
     }

@@ -58,9 +58,9 @@ private struct FlexibleHeaderContentModifier: ViewModifier {
 
 }
 
+@MainActor
 public extension ScrollView {
 
-    @MainActor
     func flexibleHeaderScrollView(onChange: ((ScrollGeometry) -> Void)? = nil) -> some View {
         modifier(FlexibleHeaderScrollViewModifier(onChange: onChange))
     }

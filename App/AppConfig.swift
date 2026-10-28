@@ -22,12 +22,9 @@ enum AppConfig {
                 let raw = AppConfig.resolveValue(
                     infoPlistKey: "SentryEnvironment",
                     environmentKey: "SENTRY_ENVIRONMENT"
-                )
+                ),
+                let value = ObservabilityConfiguration.Environment(rawValue: raw)
             else {
-                return nil
-            }
-
-            guard let value = ObservabilityConfiguration.Environment(rawValue: raw) else {
                 return nil
             }
 
@@ -46,12 +43,9 @@ enum AppConfig {
                 let raw = AppConfig.resolveValue(
                     infoPlistKey: "StatsigEnvironment",
                     environmentKey: "STATSIG_ENVIRONMENT"
-                )
+                ),
+                let value = FeatureFlagsConfiguration.Environment(rawValue: raw)
             else {
-                return nil
-            }
-
-            guard let value = FeatureFlagsConfiguration.Environment(rawValue: raw) else {
                 return nil
             }
 
