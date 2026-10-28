@@ -57,7 +57,8 @@ let package = Package(
             dependencies: [
                 "ExploreFeature",
                 "SnapshotTestHelpers"
-            ]
+            ],
+            exclude: ["__Snapshots__"]
         )
     ]
 )

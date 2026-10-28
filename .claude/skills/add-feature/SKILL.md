@@ -144,6 +144,9 @@ let package = Package(
 )
 ```
 
+Once the first snapshot reference is recorded, add `exclude: ["__Snapshots__"]` to the
+snapshot test target. Without it, `swift build` fails on the PNGs as unhandled files.
+
 ### 3. Create the Dependencies
 
 A plain `Sendable` struct of `@Sendable` closures. Constructing it requires every

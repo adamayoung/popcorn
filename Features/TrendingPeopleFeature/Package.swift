@@ -47,7 +47,8 @@ let package = Package(
             dependencies: [
                 "TrendingPeopleFeature",
                 "SnapshotTestHelpers"
-            ]
+            ],
+            exclude: ["__Snapshots__"]
         )
     ]
 )

@@ -52,7 +52,8 @@ let package = Package(
             dependencies: [
                 "MediaSearchFeature",
                 "SnapshotTestHelpers"
-            ]
+            ],
+            exclude: ["Views/__Snapshots__"]
         )
     ]
 )

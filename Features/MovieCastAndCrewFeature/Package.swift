@@ -52,7 +52,8 @@ let package = Package(
             dependencies: [
                 "MovieCastAndCrewFeature",
                 "SnapshotTestHelpers"
-            ]
+            ],
+            exclude: ["__Snapshots__"]
         )
     ]
 )

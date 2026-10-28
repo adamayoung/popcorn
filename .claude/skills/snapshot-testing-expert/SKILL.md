@@ -44,7 +44,7 @@ Use this skill for authoritative guidance on snapshot testing in the Popcorn pro
 - **Snapshot mismatch after UI change** -> delete old snapshot PNG, re-run to record new one, commit the updated PNG.
 - **Different results on different machines** -> use fixed device config (`.iPhone13Pro`), not `.sizeThatFits` which varies by host.
 - **Force unwrap lint error on `Bundle.module.resourceURL!`** -> use optional chaining (`resourceURL?`).
-- **Missing `Bundle.module`** -> ensure Package.swift test target declares `resources: [.copy("Views/__Snapshots__")]`.
+- **`swift build` fails with "found N file(s) which are unhandled"** -> the snapshot test target must declare `exclude: ["__Snapshots__"]` (or `["Views/__Snapshots__"]` when the tests sit in `Views/`). Don't declare the folder as a resource.
 - **Snapshot test not running in CI** -> ensure target is registered in `TestPlans/PopcornSnapshotTests.xctestplan`.
 
 ## Verification Checklist
@@ -52,7 +52,7 @@ Use this skill for authoritative guidance on snapshot testing in the Popcorn pro
 - Confirm test uses `@Suite(.snapshots(record: .missing))` and `@MainActor`.
 - Confirm test uses `verifySnapshot` with `snapshotDirectory: Self.snapshotDirectory`, not `assertSnapshot`.
 - Confirm `snapshotDirectory` computed property exists — returns `nil` locally, `Bundle.module` path in CI.
-- Confirm Package.swift has `resources: [.copy("Views/__Snapshots__")]` on the snapshot test target.
+- Confirm Package.swift excludes the snapshot folder on the snapshot test target (`exclude: ["__Snapshots__"]`, or `["Views/__Snapshots__"]`), once the first reference is recorded.
 - Confirm snapshot PNG is committed to git in `__Snapshots__/{TestTypeName}/{testName}.1.png`.
 - Confirm snapshot test target is registered in `TestPlans/PopcornSnapshotTests.xctestplan`.
 - Confirm preview data uses `static var` (not `static let` for `@Model` types).

@@ -51,7 +51,8 @@ let package = Package(
                 "PlotRemixGameFeature",
                 "DesignSystem",
                 "SnapshotTestHelpers"
-            ]
+            ],
+            exclude: ["__Snapshots__"]
         )
     ]
 )
