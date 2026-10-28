@@ -81,10 +81,7 @@ public final class ExploreViewModel {
     /// Drive this from the view's `.task(id:)`; SwiftUI cancels it on disappear
     /// and reruns it on reappear / ``reload()``. A no-op once the content is already loaded.
     public func load() async {
-        guard !viewState.isReady else {
-            return
-        }
-        guard !viewState.isLoading else {
+        guard !viewState.isReady, !viewState.isLoading else {
             return
         }
 

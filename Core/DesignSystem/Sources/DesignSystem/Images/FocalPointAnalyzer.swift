@@ -38,8 +38,7 @@ public actor FocalPointAnalyzer {
                 bytesPerRow: 4,
                 space: CGColorSpaceCreateDeviceRGB(),
                 bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
-            )?.makeImage()
-            else {
+            )?.makeImage() else {
                 return
             }
 

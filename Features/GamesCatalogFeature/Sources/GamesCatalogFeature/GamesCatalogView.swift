@@ -87,7 +87,7 @@ extension GamesCatalogView {
                 Spacer()
                 Image(systemName: game.iconSystemName)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .frame(width: 40, height: 40)
             }
             Spacer()

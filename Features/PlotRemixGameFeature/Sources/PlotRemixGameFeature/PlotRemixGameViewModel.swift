@@ -108,10 +108,7 @@ public final class PlotRemixGameViewModel {
     /// A no-op without metadata. Hops progress callbacks to the main actor and
     /// starts the game on success.
     public func generateGame() async {
-        guard metadata != nil else {
-            return
-        }
-        guard isGeneratingGame else {
+        guard metadata != nil, isGeneratingGame else {
             return
         }
 

@@ -82,12 +82,7 @@ extension ImageAverageColorExtractorTests {
             bytesPerRow: width * 4,
             space: colorSpace,
             bitmapInfo: bitmapInfo
-        )
-        else {
-            throw ImageTestError.failedToCreateContext
-        }
-
-        guard let fillColor = CGColor(
+        ), let fillColor = CGColor(
             colorSpace: colorSpace,
             components: [
                 CGFloat(red) / 255.0,
@@ -95,8 +90,7 @@ extension ImageAverageColorExtractorTests {
                 CGFloat(blue) / 255.0,
                 1.0
             ]
-        )
-        else {
+        ) else {
             throw ImageTestError.failedToCreateContext
         }
 
@@ -113,8 +107,7 @@ extension ImageAverageColorExtractorTests {
             of: ciImage,
             format: .RGBA8,
             colorSpace: colorSpace
-        )
-        else {
+        ) else {
             throw ImageTestError.failedToCreatePNG
         }
 

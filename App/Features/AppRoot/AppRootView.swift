@@ -6,13 +6,13 @@
 //
 
 import AppDependencies
-#if DEBUG
-    import DeveloperFeature
-#endif
 import DesignSystem
 import SwiftUI
 import TVListingsFeature
 import WatchlistFeature
+#if DEBUG
+    import DeveloperFeature
+#endif
 
 struct AppRootView: View {
 
@@ -50,15 +50,15 @@ struct AppRootView: View {
         }
         #if DEBUG
         .sheet(isPresented: $viewModel.isPresentingDeveloper) {
-                DeveloperView(makeFeatureFlags: { factory.makeFeatureFlags() })
-            }
+            DeveloperView(makeFeatureFlags: { factory.makeFeatureFlags() })
+        }
         #endif
         #if DEBUG && os(iOS)
         .onShake {
-            viewModel.presentDeveloper()
-        }
+                viewModel.presentDeveloper()
+            }
         #endif
-        .task {
+            .task {
                 await viewModel.start()
             }
             .onChange(of: scenePhase) { _, newPhase in

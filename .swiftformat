@@ -12,7 +12,8 @@
 --elseposition same-line
 --funcattributes prev-line
 --typeattributes prev-line
---varattributes same-line
+--storedvarattributes preserve
+--computedvarattributes preserve
 
 --disable wrapMultilineStatementBraces
 --disable redundantLetError

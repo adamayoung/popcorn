@@ -36,10 +36,9 @@ struct DefaultGeneratePlotRemixGameUseCaseErrorTests {
                 try await useCase.execute(config: .mock(), progress: { _ in })
             },
             throws: { error in
-                guard let generateError = error as? GeneratePlotRemixGameError else {
-                    return false
-                }
-                guard case .unauthorised = generateError else {
+                guard let generateError = error as? GeneratePlotRemixGameError,
+                      case .unauthorised = generateError
+                else {
                     return false
                 }
                 return true
@@ -58,10 +57,7 @@ struct DefaultGeneratePlotRemixGameUseCaseErrorTests {
                 try await useCase.execute(config: .mock(), progress: { _ in })
             },
             throws: { error in
-                guard let generateError = error as? GeneratePlotRemixGameError else {
-                    return false
-                }
-                guard case .unknown = generateError else {
+                guard let generateError = error as? GeneratePlotRemixGameError, case .unknown = generateError else {
                     return false
                 }
                 return true
@@ -82,10 +78,9 @@ struct DefaultGeneratePlotRemixGameUseCaseErrorTests {
                 try await useCase.execute(config: .mock(), progress: { _ in })
             },
             throws: { error in
-                guard let generateError = error as? GeneratePlotRemixGameError else {
-                    return false
-                }
-                guard case .riddleGeneration(let underlying) = generateError else {
+                guard let generateError = error as? GeneratePlotRemixGameError,
+                      case .riddleGeneration(let underlying) = generateError
+                else {
                     return false
                 }
                 return underlying is SynopsisRiddleGeneratorError
@@ -106,10 +101,9 @@ struct DefaultGeneratePlotRemixGameUseCaseErrorTests {
                 try await useCase.execute(config: .mock(), progress: { _ in })
             },
             throws: { error in
-                guard let generateError = error as? GeneratePlotRemixGameError else {
-                    return false
-                }
-                guard case .riddleGeneration(let underlying) = generateError else {
+                guard let generateError = error as? GeneratePlotRemixGameError,
+                      case .riddleGeneration(let underlying) = generateError
+                else {
                     return false
                 }
                 return underlying is SynopsisRiddleGeneratorError
@@ -130,10 +124,9 @@ struct DefaultGeneratePlotRemixGameUseCaseErrorTests {
                 try await useCase.execute(config: .mock(), progress: { _ in })
             },
             throws: { error in
-                guard let generateError = error as? GeneratePlotRemixGameError else {
-                    return false
-                }
-                guard case .riddleGeneration(let underlying) = generateError else {
+                guard let generateError = error as? GeneratePlotRemixGameError,
+                      case .riddleGeneration(let underlying) = generateError
+                else {
                     return false
                 }
                 return underlying is MovieProviderError
@@ -154,10 +147,9 @@ struct DefaultGeneratePlotRemixGameUseCaseErrorTests {
                 try await useCase.execute(config: .mock(), progress: { _ in })
             },
             throws: { error in
-                guard let generateError = error as? GeneratePlotRemixGameError else {
-                    return false
-                }
-                guard case .riddleGeneration(let underlying) = generateError else {
+                guard let generateError = error as? GeneratePlotRemixGameError,
+                      case .riddleGeneration(let underlying) = generateError
+                else {
                     return false
                 }
                 return underlying is MovieProviderError

@@ -33,11 +33,9 @@ public final class DefaultThemeColorProvider: ThemeColorProviding, Sendable {
             return cached
         }
 
-        guard let data = try? await urlSession.data(from: posterThumbnailURL).0 else {
-            return nil
-        }
-
-        guard let themeColor = ImageAverageColorExtractor.averageColor(from: data) else {
+        guard let data = try? await urlSession.data(from: posterThumbnailURL).0,
+              let themeColor = ImageAverageColorExtractor.averageColor(from: data)
+        else {
             return nil
         }
 

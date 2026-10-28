@@ -15,7 +15,6 @@ extension View {
     /// Collapses the `#if !os(macOS)` `fullScreenCover(item:)`-vs-`sheet(item:)`
     /// split that every tab root repeated for its modally-presented screens
     /// (intelligence chats, the Plot Remix game).
-    @ViewBuilder
     func platformModal<Item: Identifiable>(
         item: Binding<Item?>,
         @ViewBuilder content: @escaping (Item) -> some View

@@ -149,11 +149,7 @@ final class TMDbMovieRemoteDataSource: MovieRemoteDataSource {
         let releaseDates = tmdbReleaseDatesByCountry.first { $0.countryCode == countryCode }?.releaseDates
             ?? tmdbReleaseDatesByCountry.first { $0.countryCode == "US" }?.releaseDates
 
-        guard let releaseDates else {
-            throw .notFound
-        }
-
-        guard let firstReleaseDate = releaseDates.first(where: { !$0.certification.isEmpty }) else {
+        guard let releaseDates, let firstReleaseDate = releaseDates.first(where: { !$0.certification.isEmpty }) else {
             throw .notFound
         }
 
