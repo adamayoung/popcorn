@@ -11,6 +11,31 @@ and dated; link an ADR if a decision came out of it.
 *YYYY-MM-DD.* What bit us, why, and the resolution. Keep it to a few lines.
 -->
 
+### A snapshot test target must `exclude` its `__Snapshots__` folder
+
+*2026-10-28 (first hit 2026-07-21).* Without it, `swift build` in a feature
+package fails at the manifest, before any compile, with *"found N file(s) which
+are unhandled; explicitly declare them as resources or exclude from the
+target"*. The SwiftPM CLI treats the committed `__Snapshots__/….png` references
+as undeclared resources. In this toolchain that is a hard error, not a warning.
+Xcode's build doesn't complain, so the full-app build and CI never catch it.
+Every snapshot test target now declares `exclude: ["__Snapshots__"]`, or
+`["Views/__Snapshots__"]` where the test files sit in a `Views/` subfolder. When
+adding a snapshot target, add the exclude once the first reference is recorded:
+excluding a path that doesn't exist yet makes SwiftPM warn. Excluding is safe
+because swift-snapshot-testing finds references via `#filePath`, not the bundle.
+`swift build` (sources only) then works for feature packages; `swift test`
+still doesn't (see the UIKit entry below).
+
+### `make lint` / `make format` delete every `.build` folder in the repo
+
+*2026-10-28.* Both targets depend on `clean-spm`, which runs
+`find . -name .build -exec rm -rf`. Writing logs to `.build/` in a command chain
+that starts with `make lint` loses them, and later redirects into the deleted
+folder fail, so the later `make` steps never run. Keep gate logs outside the
+repo, such as in the scratchpad, or run lint last. `make build` and `make test`
+don't clean `.build`, so the skills' `.build/last-*.log` paths are fine.
+
 ### An unstructured `Task` driving an `AsyncThrowingStream` must finish the continuation on throw
 
 *2026-07-23.* The movie `DefaultStreamMovieDetailsUseCase` drives the repository stream inside
@@ -124,23 +149,6 @@ generating two fresh unique 24-hex-char object IDs:
 Miss step 1 and the package's product won't resolve. The `add-feature` skill
 doesn't cover this. (The whole app build is what validates it — a wrong edit
 surfaces as `no such module 'X'` in the App target.)
-
-### A feature package can't be built or tested from the SwiftPM CLI at all
-
-*2026-07-21.* Trying to `/test-package` `TrendingMoviesFeature` failed at the
-package manifest, before any compile: `swift build` — even sources-only
-(`swift build -Xswiftc -warnings-as-errors`) — errors with *"found 2 file(s)
-which are unhandled; explicitly declare them as resources or exclude from the
-target"*, naming the committed `__Snapshots__/….png` references in the snapshot
-test target. The SwiftPM CLI treats stray files under a target directory as
-undeclared resources; Xcode's build handles them fine. This compounds the sibling
-gotcha below (`swift test` fails on the snapshot target's `import UIKit` on
-macOS): net effect — a **feature** package (any with a snapshot-test target)
-can't be built *or* tested via the SwiftPM CLI, so `/build-package` /
-`/test-package` don't apply to it. Build and test features through the full-app
-xcodebuild path (`/build-for-testing`, `/test`, `/test-snapshots`). **Context**
-and **adapter** packages have no snapshot target and build/test fine via
-`swift build --build-tests` / `swift test`.
 
 ### A full-view snapshot of a `StretchyHeaderScrollView` screen only captures the header
 

@@ -49,7 +49,8 @@ let package = Package(
             dependencies: [
                 "GamesCatalogFeature",
                 "SnapshotTestHelpers"
-            ]
+            ],
+            exclude: ["__Snapshots__"]
         )
     ]
 )

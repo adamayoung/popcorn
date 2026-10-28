@@ -16,19 +16,15 @@ package; use `/test` for the entire app's suite.
 **Before delegating, check the package.** A **feature** package — anything under
 `Features/`, or any package with a snapshot-test target (look for a `__Snapshots__/`
 directory, or a test target that imports `SnapshotTestHelpers` / `UIKit`) —
-**cannot be built or tested from the SwiftPM CLI at all**, so this skill does not
-apply to it. Two independent blockers, either of which fails the run before any
-test executes:
+**cannot be tested from the SwiftPM CLI**, so this skill does not apply to it:
+`swift build --build-tests` / `swift test` fail building the snapshot target's
+`import UIKit` on macOS, before any test executes.
 
-- `swift build --build-tests` / `swift test` fail building the snapshot target's
-  `import UIKit` on macOS.
-- `swift build` — even **sources-only** — fails at the manifest with *"found N
-  file(s) which are unhandled"*, because the committed `__Snapshots__/*.png`
-  references are undeclared resources to the SwiftPM CLI (Xcode handles them fine).
-
-There is therefore **no sources-only fallback** for a feature package. Route it to
-the full-app xcodebuild gate instead — **`/build-for-testing`**, **`/test`**, and
-**`/test-snapshots`** — and don't spawn the subagent below. Only **context**,
+A **sources-only** `/build-package` does work for a feature package. Its snapshot
+target excludes `__Snapshots__`, so SwiftPM no longer rejects the PNGs as
+unhandled files. To test a feature package, route it to the full-app xcodebuild
+gate instead: **`/build-for-testing`**, **`/test`**, and **`/test-snapshots`**.
+Don't spawn the subagent below. Only **context**,
 **adapter**, **core**, and **platform** packages (no snapshot target) are testable
 here; proceed with those.
 
@@ -75,7 +71,7 @@ edit, or delete any file, and never attempt to fix what you find — report it.
 | AppDependencies | `AppDependencies/` |
 
 > **Feature packages are excluded** — see *Gate first* above. Any package with a
-> snapshot-test target can't be built or tested via the SwiftPM CLI (UIKit **and**
-> undeclared `__Snapshots__` resources both block it, with no sources-only
-> fallback); test it through the full-app `/build-for-testing` / `/test` /
-> `/test-snapshots` instead.
+> snapshot-test target can't be tested via the SwiftPM CLI, because the snapshot
+> target imports UIKit. `/build-package` still works for a sources-only build.
+> Test it through the full-app `/build-for-testing` / `/test` / `/test-snapshots`
+> instead.
